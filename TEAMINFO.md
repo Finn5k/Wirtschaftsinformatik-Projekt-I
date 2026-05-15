@@ -10,12 +10,12 @@ LocalCourt ist eine Webanwendung zur Organisation spontaner Sport-Sessions auf l
 
 ## Team
 
-| Name | Studiengang | Rolle |
-|---|---|---|
-| Afrem Aydin | Wirtschaftsinformatik B.Sc. | Spec / Requirements Lead |
-| Finn Belk | Wirtschaftsinformatik B.Sc. | Project Lead & Backend Lead |
-| Hascher Malik | Wirtschaftsinformatik B.Sc. | QA / Test Lead |
-| Chevron Rustler | Wirtschaftsinformatik B.Sc. | Frontend / UI-UX Lead |
+| Name | Studiengang | Rolle | Github-Handle |
+|---|---|---|---|
+| Afrem Aydin | Wirtschaftsinformatik B.Sc. | Spec / Requirements Lead | AfremAydin |
+| Finn Belk | Wirtschaftsinformatik B.Sc. | Project Lead & Backend Lead | Finn5k |
+| Hascher Malik | Wirtschaftsinformatik B.Sc. | QA / Test Lead | Hascher16 |
+| Chevron Rustler | Wirtschaftsinformatik B.Sc. | Frontend / UI-UX Lead | iamchevyy |
 
 **Rollen-Empfehlung (frei änderbar):** Projektleiter:in, Software Architect, Spec/Requirements Lead, Implementation Lead, QA/Test Lead, DevOps/Build Lead.
 
