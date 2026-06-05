@@ -48,13 +48,6 @@ export function DiscoverPage() {
         ))}
       </div>
 
-      <div className="mb-5 grid grid-cols-2 rounded-2xl bg-slate-100 p-1 text-sm font-bold">
-        <button className="rounded-xl bg-blue-600 py-2 text-white">
-          Kurzfristig
-        </button>
-        <button className="rounded-xl py-2 text-slate-500">Langfristig</button>
-      </div>
-
       <section>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="font-bold text-slate-950">Empfohlene Sessions</h2>

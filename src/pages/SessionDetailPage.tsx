@@ -23,9 +23,6 @@ export function SessionDetailPage() {
           <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
             {session.sportType}
           </span>
-          <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
-            {session.mode}
-          </span>
         </div>
 
         <h1 className="text-3xl font-extrabold text-slate-950">

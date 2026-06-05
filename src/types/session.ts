@@ -9,8 +9,6 @@ export type SportType =
 
 export type SessionStatus = "OPEN" | "FULL" | "CANCELLED" | "COMPLETED";
 
-export type SessionMode = "Kurzfristig" | "Langfristig";
-
 export type Rank =
   | "Beginner 1"
   | "Beginner 2"
@@ -30,7 +28,6 @@ export interface SportSession {
   id: string;
   title: string;
   sportType: SportType;
-  mode: SessionMode;
   locationName: string;
   city: string;
   dateLabel: string;
