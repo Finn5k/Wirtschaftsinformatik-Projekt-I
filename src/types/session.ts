@@ -44,4 +44,6 @@ export interface SportSession {
   xpReward: number;
   imageUrl: string;
   participants: Participant[];
+  latitude: number;
+  longitude: number;
 }

@@ -1,11 +1,12 @@
+import L from "leaflet";
 import {
   LocateFixed,
-  MapPin,
   Navigation,
   SlidersHorizontal,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
+import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { StatusBadge } from "../components/sessions/StatusBadge";
 import { getSessions } from "../services/sessionService";
 import type { SportSession } from "../types/session";
@@ -20,14 +21,35 @@ const filters = [
   "Schwimmen",
 ];
 
-const positions = [
-  { top: "22%", left: "54%" },
-  { top: "42%", left: "24%" },
-  { top: "56%", left: "68%" },
-  { top: "30%", left: "72%" },
-  { top: "64%", left: "32%" },
-  { top: "70%", left: "58%" },
-];
+const defaultCenter: [number, number] = [50.5841, 8.6784];
+
+function createSessionMarkerIcon(isSelected: boolean) {
+  return L.divIcon({
+    className: "",
+    html: `
+      <div style="
+        width: 48px;
+        height: 48px;
+        background: ${isSelected ? "#10B981" : "#2563EB"};
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 12px 24px rgba(37, 99, 235, 0.35);
+        transform: ${isSelected ? "scale(1.12)" : "scale(1)"};
+        transition: transform 150ms ease;
+      ">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0Z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+      </div>
+    `,
+    iconSize: [48, 48],
+    iconAnchor: [24, 48],
+    popupAnchor: [0, -46],
+  });
+}
 
 export function MapPage() {
   const [selectedSession, setSelectedSession] = useState<SportSession | null>(
@@ -36,37 +58,29 @@ export function MapPage() {
 
   const sessions = getSessions();
 
+  const mapCenter = useMemo<[number, number]>(() => {
+    if (!selectedSession) {
+      return defaultCenter;
+    }
+
+    return [selectedSession.latitude, selectedSession.longitude];
+  }, [selectedSession]);
+
   return (
     <div className="relative min-h-[780px] overflow-hidden bg-slate-100">
-      <div
-        role="button"
-        tabIndex={0}
-        aria-label="Kartenauswahl schließen"
-        onClick={() => setSelectedSession(null)}
-        onKeyDown={(event) => {
-          if (event.key === "Escape") {
-            setSelectedSession(null);
-          }
-        }}
-        className="absolute inset-0 z-0 cursor-default"
-      >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#bfdbfe_1px,transparent_1px)] [background-size:24px_24px]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-transparent to-white/90" />
-      </div>
-
-      <header
-        className="relative z-20 px-4 pt-5"
-        onClick={(event) => event.stopPropagation()}
-      >
+      <header className="absolute left-0 right-0 top-0 z-[1000] px-4 pt-5">
         <div className="mb-4 flex items-center justify-between">
-          <div>
+          <div className="rounded-3xl bg-white/90 px-4 py-3 shadow-sm backdrop-blur">
             <p className="text-xs font-semibold text-blue-600">Karte</p>
-            <h1 className="text-2xl font-extrabold text-slate-950">
+            <h1 className="text-xl font-extrabold text-slate-950">
               Sessions in deiner Nähe
             </h1>
           </div>
 
-          <button className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-slate-700 shadow-sm">
+          <button
+            type="button"
+            className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-slate-700 shadow-sm"
+          >
             <SlidersHorizontal size={20} />
           </button>
         </div>
@@ -77,10 +91,10 @@ export function MapPage() {
               key={filter}
               type="button"
               className={[
-                "whitespace-nowrap rounded-2xl px-4 py-2 text-sm font-bold shadow-sm",
+                "whitespace-nowrap rounded-2xl px-4 py-2 text-sm font-bold shadow-sm backdrop-blur",
                 index === 0
                   ? "bg-blue-600 text-white"
-                  : "bg-white text-slate-700",
+                  : "bg-white/90 text-slate-700",
               ].join(" ")}
             >
               {filter}
@@ -89,71 +103,55 @@ export function MapPage() {
         </div>
       </header>
 
-      <div
-        className="relative z-10 h-[500px]"
-        onClick={() => setSelectedSession(null)}
-      >
-        {sessions.map((session, index) => {
-          const position = positions[index] ?? positions[0];
-          const isSelected = selectedSession?.id === session.id;
+      <div className="h-[780px] w-full">
+        <MapContainer
+          center={defaultCenter}
+          zoom={12}
+          scrollWheelZoom
+          className="h-full w-full"
+        >
+          <TileLayer
+            attribution='&copy; OpenStreetMap contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
 
-          return (
-            <button
-              key={session.id}
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                setSelectedSession(session);
-              }}
-              className="absolute"
-              style={position}
-            >
-              <div className="relative">
-                <div
-                  className={[
-                    "flex h-14 w-14 items-center justify-center rounded-full text-white shadow-xl transition",
-                    isSelected
-                      ? "scale-110 bg-emerald-500 shadow-emerald-300"
-                      : "bg-blue-600 shadow-blue-300",
-                  ].join(" ")}
-                >
-                  <MapPin size={24} />
-                </div>
+          <MapFlyTo center={mapCenter} />
 
-                <div
-                  className={[
-                    "absolute -bottom-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 transition",
-                    isSelected ? "bg-emerald-500" : "bg-blue-600",
-                  ].join(" ")}
-                />
+          {sessions.map((session) => {
+            const isSelected = selectedSession?.id === session.id;
 
-                <div className="absolute left-1/2 top-16 w-max max-w-[160px] -translate-x-1/2 rounded-2xl bg-white px-3 py-2 text-center shadow-lg">
-                  <p className="text-xs font-extrabold text-slate-950">
-                    {session.title}
-                  </p>
-                  <p className="text-[11px] text-slate-500">
-                    {session.timeLabel}
-                  </p>
-                </div>
-              </div>
-            </button>
-          );
-        })}
+            return (
+              <Marker
+                key={session.id}
+                position={[session.latitude, session.longitude]}
+                icon={createSessionMarkerIcon(isSelected)}
+                eventHandlers={{
+                  click: () => setSelectedSession(session),
+                }}
+              >
+                <Popup>
+                  <strong>{session.title}</strong>
+                  <br />
+                  {session.locationName}
+                  <br />
+                  {session.timeLabel}
+                </Popup>
+              </Marker>
+            );
+          })}
+        </MapContainer>
       </div>
 
       <button
         type="button"
-        onClick={(event) => event.stopPropagation()}
-        className="absolute right-4 top-40 z-20 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-lg"
+        onClick={() => setSelectedSession(null)}
+        className="absolute right-4 top-44 z-[1000] flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-lg"
       >
         <LocateFixed size={22} />
       </button>
 
       {selectedSession && (
-        <section
-          onClick={(event) => event.stopPropagation()}
-          className="absolute bottom-24 left-4 right-4 z-20 rounded-[2rem] bg-white p-4 shadow-2xl"
-        >
+        <section className="absolute bottom-24 left-4 right-4 z-[1000] rounded-[2rem] bg-white p-4 shadow-2xl">
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
               <div className="mb-2 flex items-center gap-2">
@@ -211,4 +209,20 @@ export function MapPage() {
       )}
     </div>
   );
+}
+
+interface MapFlyToProps {
+  center: [number, number];
+}
+
+function MapFlyTo({ center }: MapFlyToProps) {
+  const map = useMap();
+
+  useEffect(() => {
+    map.flyTo(center, 13, {
+      duration: 0.8,
+    });
+  }, [center, map]);
+
+  return null;
 }
