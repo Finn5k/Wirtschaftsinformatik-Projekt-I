@@ -1,13 +1,5 @@
-import {
-  Award,
-  Bike,
-  Flame,
-  Footprints,
-  Medal,
-  Settings,
-  Shirt,
-  Trophy,
-} from "lucide-react";
+import type { ReactNode } from "react";
+import { Award, Flame, Medal, Settings, Shirt, Trophy } from "lucide-react";
 import { mockActivities } from "../data/mockActivities";
 import { mockUser } from "../data/mockUser";
 
@@ -102,15 +94,13 @@ export function ProfilePage() {
 
       <section className="px-4 pt-5">
         <div className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <h2 className="font-extrabold text-slate-950">
-                Bevorzugte Sportarten
-              </h2>
-              <p className="text-sm text-slate-500">
-                Darauf basieren deine Empfehlungen
-              </p>
-            </div>
+          <div className="mb-4">
+            <h2 className="font-extrabold text-slate-950">
+              Bevorzugte Sportarten
+            </h2>
+            <p className="text-sm text-slate-500">
+              Darauf basieren deine Empfehlungen
+            </p>
           </div>
 
           <div className="flex gap-2 overflow-x-auto pb-1">
@@ -188,7 +178,7 @@ export function ProfilePage() {
 }
 
 interface StatCardProps {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   value: string;
   colorClass: string;
