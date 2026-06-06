@@ -7,7 +7,7 @@ import {
 import { useState } from "react";
 import { Link } from "react-router";
 import { StatusBadge } from "../components/sessions/StatusBadge";
-import { mockSessions } from "../data/mockSessions";
+import { getSessions } from "../services/sessionService";
 import type { SportSession } from "../types/session";
 
 const filters = [
@@ -20,10 +20,21 @@ const filters = [
   "Schwimmen",
 ];
 
+const positions = [
+  { top: "22%", left: "54%" },
+  { top: "42%", left: "24%" },
+  { top: "56%", left: "68%" },
+  { top: "30%", left: "72%" },
+  { top: "64%", left: "32%" },
+  { top: "70%", left: "58%" },
+];
+
 export function MapPage() {
   const [selectedSession, setSelectedSession] = useState<SportSession | null>(
     null,
   );
+
+  const sessions = getSessions();
 
   return (
     <div className="relative min-h-[780px] overflow-hidden bg-slate-100">
@@ -64,6 +75,7 @@ export function MapPage() {
           {filters.map((filter, index) => (
             <button
               key={filter}
+              type="button"
               className={[
                 "whitespace-nowrap rounded-2xl px-4 py-2 text-sm font-bold shadow-sm",
                 index === 0
@@ -81,16 +93,7 @@ export function MapPage() {
         className="relative z-10 h-[500px]"
         onClick={() => setSelectedSession(null)}
       >
-        {mockSessions.map((session, index) => {
-          const positions = [
-  { top: "22%", left: "54%" },
-  { top: "42%", left: "24%" },
-  { top: "56%", left: "68%" },
-  { top: "30%", left: "72%" },
-  { top: "64%", left: "32%" },
-  { top: "70%", left: "58%" },
-];
-
+        {sessions.map((session, index) => {
           const position = positions[index] ?? positions[0];
           const isSelected = selectedSession?.id === session.id;
 
@@ -139,6 +142,7 @@ export function MapPage() {
       </div>
 
       <button
+        type="button"
         onClick={(event) => event.stopPropagation()}
         className="absolute right-4 top-40 z-20 flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-lg"
       >

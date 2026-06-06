@@ -1,9 +1,12 @@
 import type { ReactNode } from "react";
 import { Award, Flame, Medal, Settings, Shirt, Trophy } from "lucide-react";
-import { mockActivities } from "../data/mockActivities";
-import { mockUser } from "../data/mockUser";
+import { getRecentActivities } from "../services/activityService";
+import { getCurrentUser } from "../services/userService";
 
 export function ProfilePage() {
+  const mockUser = getCurrentUser();
+  const mockActivities = getRecentActivities();
+
   const progress = Math.round(
     (mockUser.currentXp / mockUser.nextLevelXp) * 100,
   );

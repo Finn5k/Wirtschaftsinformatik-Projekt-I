@@ -1,12 +1,11 @@
 import { CheckCircle2, QrCode, Trophy } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams } from "react-router";
-import { mockSessions } from "../data/mockSessions";
+import { getSessionById, getSessions } from "../services/sessionService";
 
 export function CheckInPage() {
   const { sessionId } = useParams();
-  const session =
-    mockSessions.find((item) => item.id === sessionId) ?? mockSessions[0];
+  const session = getSessionById(sessionId) ?? getSessions()[0];
 
   const [isCheckedIn, setIsCheckedIn] = useState(false);
 
@@ -78,8 +77,8 @@ export function CheckInPage() {
       </h1>
 
       <p className="mt-2 max-w-xs text-center text-sm leading-6 text-slate-300">
-        Scanne den QR-Code des Leaders, um deine Anwesenheit bei „{session.title}“
-        zu bestätigen und XP zu sammeln.
+        Scanne den QR-Code des Leaders, um deine Anwesenheit bei „
+        {session.title}“ zu bestätigen und XP zu sammeln.
       </p>
 
       <div className="mt-8 flex h-60 w-60 items-center justify-center rounded-[2rem] bg-white text-slate-950">
@@ -94,7 +93,10 @@ export function CheckInPage() {
         Teilnahme bestätigen
       </button>
 
-      <button className="mt-3 w-full rounded-2xl border border-white/20 py-3 font-bold text-white">
+      <button
+        type="button"
+        className="mt-3 w-full rounded-2xl border border-white/20 py-3 font-bold text-white"
+      >
         Code manuell eingeben
       </button>
 

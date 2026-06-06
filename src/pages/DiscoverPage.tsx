@@ -9,8 +9,8 @@ import {
 import { useState } from "react";
 import { Link } from "react-router";
 import { SessionCard } from "../components/sessions/SessionCard";
-import { mockSessions } from "../data/mockSessions";
-import { mockUser } from "../data/mockUser";
+import { getSessionsBySportType } from "../services/sessionService";
+import { getCurrentUser } from "../services/userService";
 import type { SportType } from "../types/session";
 
 type SessionFilter = "Alle" | SportType;
@@ -28,10 +28,8 @@ const filters: SessionFilter[] = [
 export function DiscoverPage() {
   const [activeFilter, setActiveFilter] = useState<SessionFilter>("Alle");
 
-  const filteredSessions =
-    activeFilter === "Alle"
-      ? mockSessions
-      : mockSessions.filter((session) => session.sportType === activeFilter);
+  const mockUser = getCurrentUser();
+  const filteredSessions = getSessionsBySportType(activeFilter);
 
   const featuredSession = filteredSessions[0];
   const otherSessions = filteredSessions.slice(1);

@@ -1,15 +1,13 @@
 import { CalendarDays, Sparkles, Trophy } from "lucide-react";
 import { ChallengeCard } from "../components/events/ChallengeCard";
-import { mockChallenges } from "../data/mockChallenges";
+import {
+  getActiveChallenges,
+  getUpcomingChallenges,
+} from "../services/challengeService";
 
 export function EventsPage() {
-  const activeChallenges = mockChallenges.filter(
-    (challenge) => challenge.status === "ACTIVE",
-  );
-
-  const upcomingEvents = mockChallenges.filter(
-    (challenge) => challenge.status === "UPCOMING",
-  );
+const activeChallenges = getActiveChallenges();
+const upcomingEvents = getUpcomingChallenges();
 
   return (
     <div className="min-h-[780px] bg-slate-50 px-4 py-5">

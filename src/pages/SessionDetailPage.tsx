@@ -11,12 +11,10 @@ import {
 } from "lucide-react";
 import { Link, useParams } from "react-router";
 import { StatusBadge } from "../components/sessions/StatusBadge";
-import { mockSessions } from "../data/mockSessions";
-
+import { getSessionById, getSessions } from "../services/sessionService";
 export function SessionDetailPage() {
   const { sessionId } = useParams();
-  const session =
-    mockSessions.find((item) => item.id === sessionId) ?? mockSessions[0];
+const session = getSessionById(sessionId) ?? getSessions()[0];
 
   return (
     <div className="min-h-[780px] bg-white">
