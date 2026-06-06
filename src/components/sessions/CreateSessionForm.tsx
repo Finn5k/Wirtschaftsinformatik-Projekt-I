@@ -12,6 +12,7 @@ import {
   Users,
   Zap,
 } from "lucide-react";
+import type { ReactNode } from "react";
 import { useState } from "react";
 
 const sports = [
@@ -44,9 +45,12 @@ interface FormState {
   visibility: string;
 }
 
+type FormErrors = Partial<Record<keyof FormState, string>>;
+
 export function CreateSessionForm() {
   const [participantLimit, setParticipantLimit] = useState(15);
   const [isCreated, setIsCreated] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const [form, setForm] = useState<FormState>({
     sportType: "Laufen",
@@ -64,6 +68,11 @@ export function CreateSessionForm() {
       ...current,
       [field]: value,
     }));
+
+    setErrors((current) => ({
+      ...current,
+      [field]: undefined,
+    }));
   }
 
   function decreaseLimit() {
@@ -74,7 +83,37 @@ export function CreateSessionForm() {
     setParticipantLimit((current: number) => Math.min(99, current + 1));
   }
 
+  function validateForm() {
+    const nextErrors: FormErrors = {};
+
+    if (!form.title.trim()) {
+      nextErrors.title = "Bitte gib einen Titel ein.";
+    }
+
+    if (!form.date) {
+      nextErrors.date = "Bitte wähle ein Datum aus.";
+    }
+
+    if (!form.time) {
+      nextErrors.time = "Bitte wähle eine Uhrzeit aus.";
+    }
+
+    if (!form.location.trim()) {
+      nextErrors.location = "Bitte gib einen Ort oder Treffpunkt an.";
+    }
+
+    setErrors(nextErrors);
+
+    return Object.keys(nextErrors).length === 0;
+  }
+
   function handleCreateSession() {
+    const isValid = validateForm();
+
+    if (!isValid) {
+      return;
+    }
+
     setIsCreated(true);
   }
 
@@ -86,9 +125,7 @@ export function CreateSessionForm() {
             <CheckCircle2 size={30} />
           </div>
 
-          <h2 className="mt-5 text-2xl font-extrabold">
-            Session erstellt
-          </h2>
+          <h2 className="mt-5 text-2xl font-extrabold">Session erstellt</h2>
 
           <p className="mt-2 text-sm leading-6 text-white/85">
             Deine Session wurde im UI-Prototyp erfolgreich erstellt. Im finalen
@@ -99,7 +136,7 @@ export function CreateSessionForm() {
         <section className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
           <p className="text-xs font-bold text-blue-600">Vorschau</p>
           <h3 className="mt-1 text-xl font-extrabold text-slate-950">
-            {form.title || "Neue Sport-Session"}
+            {form.title}
           </h3>
 
           <p className="mt-2 text-sm leading-6 text-slate-600">
@@ -108,9 +145,9 @@ export function CreateSessionForm() {
 
           <div className="mt-4 grid grid-cols-2 gap-3">
             <PreviewItem label="Sportart" value={form.sportType} />
-            <PreviewItem label="Datum" value={form.date || "Nicht gesetzt"} />
-            <PreviewItem label="Uhrzeit" value={form.time || "Nicht gesetzt"} />
-            <PreviewItem label="Ort" value={form.location || "Nicht gesetzt"} />
+            <PreviewItem label="Datum" value={form.date} />
+            <PreviewItem label="Uhrzeit" value={form.time} />
+            <PreviewItem label="Ort" value={form.location} />
             <PreviewItem label="Teilnehmer" value={`${participantLimit}`} />
             <PreviewItem label="Rang" value={form.recommendedRank} />
           </div>
@@ -142,6 +179,7 @@ export function CreateSessionForm() {
         label="Titel"
         value={form.title}
         onChange={(value) => updateForm("title", value)}
+        error={errors.title}
         placeholder="z.B. Morning Run"
       />
 
@@ -158,6 +196,7 @@ export function CreateSessionForm() {
         label="Datum"
         value={form.date}
         onChange={(value) => updateForm("date", value)}
+        error={errors.date}
         type="date"
       />
 
@@ -166,6 +205,7 @@ export function CreateSessionForm() {
         label="Uhrzeit"
         value={form.time}
         onChange={(value) => updateForm("time", value)}
+        error={errors.time}
         type="time"
       />
 
@@ -174,6 +214,7 @@ export function CreateSessionForm() {
         label="Ort / Treffpunkt"
         value={form.location}
         onChange={(value) => updateForm("location", value)}
+        error={errors.location}
         placeholder="z.B. Treptower Park, Berlin"
       />
 
@@ -262,10 +303,11 @@ export function CreateSessionForm() {
 }
 
 interface FormInputProps {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   value: string;
   onChange: (value: string) => void;
+  error?: string;
   placeholder?: string;
   type?: string;
 }
@@ -275,13 +317,24 @@ function FormInput({
   label,
   value,
   onChange,
+  error,
   placeholder,
   type = "text",
 }: FormInputProps) {
   return (
-    <label className="block rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
+    <label
+      className={[
+        "block rounded-3xl border bg-white p-4 shadow-sm",
+        error ? "border-red-200" : "border-slate-100",
+      ].join(" ")}
+    >
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-50 text-slate-600">
+        <div
+          className={[
+            "flex h-10 w-10 items-center justify-center rounded-2xl",
+            error ? "bg-red-50 text-red-600" : "bg-slate-50 text-slate-600",
+          ].join(" ")}
+        >
           {icon}
         </div>
 
@@ -296,12 +349,14 @@ function FormInput({
           />
         </div>
       </div>
+
+      {error && <p className="mt-3 text-xs font-bold text-red-600">{error}</p>}
     </label>
   );
 }
 
 interface FormTextareaProps {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   value: string;
   onChange: (value: string) => void;
@@ -338,7 +393,7 @@ function FormTextarea({
 }
 
 interface FormSelectProps {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   value: string;
   options: string[];
