@@ -10,7 +10,15 @@ import { StatusBadge } from "../components/sessions/StatusBadge";
 import { mockSessions } from "../data/mockSessions";
 import type { SportSession } from "../types/session";
 
-const filters = ["Alle", "Laufen", "Radfahren", "Fußball", "Basketball"];
+const filters = [
+  "Alle",
+  "Laufen",
+  "Radfahren",
+  "Fußball",
+  "Basketball",
+  "Badminton",
+  "Schwimmen",
+];
 
 export function MapPage() {
   const [selectedSession, setSelectedSession] = useState<SportSession | null>(
@@ -75,10 +83,13 @@ export function MapPage() {
       >
         {mockSessions.map((session, index) => {
           const positions = [
-            { top: "24%", left: "54%" },
-            { top: "45%", left: "24%" },
-            { top: "56%", left: "68%" },
-          ];
+  { top: "22%", left: "54%" },
+  { top: "42%", left: "24%" },
+  { top: "56%", left: "68%" },
+  { top: "30%", left: "72%" },
+  { top: "64%", left: "32%" },
+  { top: "70%", left: "58%" },
+];
 
           const position = positions[index] ?? positions[0];
           const isSelected = selectedSession?.id === session.id;

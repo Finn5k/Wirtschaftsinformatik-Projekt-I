@@ -21,6 +21,8 @@ const filters: SessionFilter[] = [
   "Radfahren",
   "Fußball",
   "Basketball",
+  "Badminton",
+  "Schwimmen",
 ];
 
 export function DiscoverPage() {
