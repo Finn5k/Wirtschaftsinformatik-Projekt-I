@@ -47,6 +47,38 @@ Beschreibt aus Anwendungssicht, wie sich LocalCourt in seine Umgebung einbettet:
 
 ---
 
+### **F1 — Geschäftsprozesse** ✅ (fertig)
+**Status**: ✅ Fertig  
+**Datei**: `F1-geschaeftsprozesse.md`
+
+Nach Siedersleben (Kapitel 4.3): Reale (IT-unabhängige) Workflows mit temporaler und logischer Folge von Aktivitäten, durchgeführt von Akteuren (Menschen & IT-Systeme).
+
+**Inhalte**:
+- **F1.1 GP-01: Spontan Sportaktivitäten finden** (Participant-Sicht)
+  - Akteure: Teilnehmer, Browser, LocalCourt, Supabase, OpenStreetMap
+  - Aktivitäten A1–A18: Von "Lust auf Sport" → Suche → Karte → Beitreten → Session-Start
+  - Activity Diagram mit Swimlanes
+  
+- **F1.2 GP-02: Regelmäßige Treffen organisieren** (Organizer-Sicht)
+  - Akteure: Organisator, Browser, LocalCourt, QR-Code-Library
+  - Aktivitäten A1–A23: Session-Erstellung → QR+PIN Generation → Check-In (QR oder PIN) → Auto-Close
+  - Check-In-Details: QR-Code-Scan + Fallback PIN-Eingabe
+  - Activity Diagram mit Swimlanes
+  
+- **F1.3 GP-03: Neue Sportarten entdecken** (Variant von GP-01)
+  - Vereinfachte Beschreibung: Filterung auf "Alle Sportarten" statt einzelne
+  
+- **F1.4 Grenzen (Boundaries)**:
+  - ❌ KEINE Benachrichtigungen (Email, SMS, Push)
+  - ❌ KEINE Wartelisten (würden Notifications brauchen)
+  - ❌ KEINE Ratings/Reviews
+  - ❌ KEINE Admin-Reports
+  - ❌ KEINE Direct Messaging
+  
+- **F1.5 Konsistenz-Check**: Mapping F1-Akteure ↔ P1-Stakeholder, P2-Nachbarsysteme, P1-Constraints
+
+---
+
 ### **M1 — Fachliche/Fachliche Anforderungen** (geplant)
 **Status**: 🔄 Ausstehend  
 **Geplante Inhalte**:
