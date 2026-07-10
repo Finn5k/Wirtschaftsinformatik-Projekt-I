@@ -187,13 +187,13 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Hauptszenario | 1. Teilnehmer öffnet eine Session. 2. Teilnehmer wählt "Beitreten". 3. LocalCourt prüft Anmeldestatus, Sessionstatus und Kapazität. 4. LocalCourt trägt den Nutzer als Teilnehmer ein. 5. LocalCourt bestätigt den Beitritt. |
 | Alternative Szenarien | Nutzer ist nicht angemeldet und wird zuerst zu UC-01 geführt. |
 | Ausnahmefälle | Session ist voll, abgeschlossen, nicht mehr sichtbar oder Nutzer ist bereits beigetreten. |
-| Fachliche Regeln | Ein Nutzer darf derselben Session nicht mehrfach beitreten. Kapazitätsgrenzen werden eingehalten. Wartelisten werden nach aktuellem F1-Stand nicht modelliert. |
+| Fachliche Regeln | Ein Nutzer darf derselben Session nicht mehrfach beitreten. Kapazitätsgrenzen werden eingehalten. Wartelisten sind out of scope (P1 NG-10). Die vollständige Beitritts- und Kapazitätsregel ist in F3 AF-01 spezifiziert. |
 | Bezug zu F1 | GP-01 A9-A13. |
 | Bezug zu Daten | Session, Participant, Profile |
 | Bezug zu Benutzerschnittstelle | Beitrittsaktion in der Session-Detailansicht; später in B1 zu konkretisieren. |
 | Bezug zu NFR / Qualität | Konsistenz bei parallelen Beitritten, verständliche Fehler, Datenschutz. |
 | Akzeptanzkriterien | Given eine offene Session mit freier Kapazität, When ein angemeldeter Teilnehmer beitritt, Then ist er Teilnehmer der Session. Given eine volle Session, When ein Teilnehmer beitreten möchte, Then wird kein Beitritt gespeichert und die Session wird als voll erklärt. |
-| Offene Punkte | Verhalten bei gleichzeitigem Beitritt mehrerer Nutzer ist in F3/D2 technisch zu präzisieren. |
+| Offene Punkte | Verhalten bei gleichzeitigem Beitritt mehrerer Nutzer ist in F3 AF-01 fachlich präzisiert (Wer-zuerst-kommt, keine Überbuchung); die technische Umsetzung der Atomarität folgt in D2/N2. |
 
 ### UC-05 — Eigene Sessions anzeigen
 
@@ -297,7 +297,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Bezug zu Benutzerschnittstelle | Check-in-Ansicht und Bestätigung; später in B1 zu konkretisieren. |
 | Bezug zu NFR / Qualität | Schnelle mobile Bedienbarkeit, Sicherheit gegen falsche Session-Zuordnung, verständliche Fehlermeldungen. |
 | Akzeptanzkriterien | Given ein beigetretener angemeldeter Teilnehmer und eine aktive Check-in-Phase, When er den gültigen QR-Code nutzt, Then ist er eingecheckt. Given ein ungültiger QR-Code, Then bleibt der Status unverändert und der Nutzer erhält eine Fehlermeldung. |
-| Offene Punkte | Exakter Zeitraum der Check-in-Fähigkeit ist in F3 oder N1 fachlich zu konkretisieren. |
+| Offene Punkte | Exakter Zeitraum der Check-in-Fähigkeit ist in F3 AF-02/AF-03 festgelegt: Check-in ist nur möglich, solange die Session im Status active ist (Start bis Start + Dauer). |
 
 ### UC-09 — Check-in per PIN durchführen
 
@@ -323,7 +323,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Bezug zu Benutzerschnittstelle | PIN-Eingabe und Bestätigung; später in B1 zu konkretisieren. |
 | Bezug zu NFR / Qualität | Usability als Fallback, Sicherheit, klare Fehlertexte. |
 | Akzeptanzkriterien | Given ein beigetretener angemeldeter Teilnehmer und eine gültige PIN, When er die PIN eingibt, Then ist er eingecheckt. Given eine falsche PIN, Then bleibt der Teilnehmer nicht eingecheckt. |
-| Offene Punkte | Länge und Erzeugungsregel der PIN sind in F3/D2 festzulegen; F1 nennt eine 4-stellige PIN als bisherige Annahme. |
+| Offene Punkte | Länge und Erzeugungsregel der PIN sind in F3 AF-04 festgelegt: 4-stellige numerische PIN, je Session zufällig erzeugt und pro Session eindeutig geprüft. |
 
 ### UC-10 — Court / Sportort erfassen oder auswählen
 
@@ -410,7 +410,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | UC-01 | GP-02 A2; Voraussetzung für geschützte Aktionen | Authentifizierung, Profile, DSGVO | NB-01, NB-02 | Passt zu Supabase Auth und Web-UI. |
 | UC-02 | GP-01 A2-A7, GP-03 A1-A7 | G-02, G-03, Session-Discovery | NB-01, NB-03, NB-04 | Kernfunktion für Finden lokaler Sportaktivitäten. |
 | UC-03 | GP-01 A8, GP-02 A11-A12 | Web-UI für Session-Verwaltung | NB-01, NB-03, NB-04 | Detailansicht verbindet Suche, Beitritt und Organisation. |
-| UC-04 | GP-01 A9-A13 | Teilnehmer-Verwaltung, Kapazität | NB-01, NB-02, NB-03 | Warteliste wird trotz P1-Scope nicht als fertiger Use Case modelliert, weil F1 sie ausschließt. |
+| UC-04 | GP-01 A9-A13 | Teilnehmer-Verwaltung, Kapazität | NB-01, NB-02, NB-03 | Kapazität ist harte Grenze ohne Warteliste (P1 NG-10). Beitritts- und Kapazitätslogik ist in F3 AF-01 präzisiert. |
 | UC-05 | GP-01 A13-A14, GP-02 A11, A22-A23 | Session-Verwaltung, Nutzerübersicht | NB-01, NB-03 | Unterstützt Orientierung nach Beitritt und Erstellung. |
 | UC-06 | GP-02 A3-A9 | Session-Erstellung, SC-02 | NB-01, NB-02, NB-03 | Kernfunktion des Organisators. |
 | UC-07 | GP-02 A11, A17, A22 | Teilnehmer-Verwaltung, Check-in | NB-01, NB-03 | Keine Admin-Reports; nur Session-bezogene Liste. |
@@ -432,7 +432,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Native Mobile App | P1 setzt auf responsive Web-UI statt nativer Apps. |
 | KI-Features | P1/P2 schließen KI-Integration aus; Discovery erfolgt über Filter und Karte. |
 | Kommerzielle Court-Buchung | LocalCourt koordiniert informelle Sport-Sessions, keine verbindlichen kommerziellen Reservierungen. |
-| Wartelisten | P1 erwähnt Wartelisten, F1 schließt sie wegen fehlender Benachrichtigungen aus. Daher in F2 nicht als fertiger Use Case modelliert; offener Scope-Konflikt für Teamklärung. |
+| Wartelisten | Nach P1-Anpassung explizit out of scope (P1 NG-10). Ohne Benachrichtigungskanal fachlich nicht sinnvoll; Kapazität ist eine harte Grenze (F3 AF-01). Der frühere Scope-Konflikt zwischen P1 und F1/F2 ist damit aufgelöst. |
 | Session-Serien | F1 modelliert keine Cross-Process-Serien. Jede Session ist im MVP unabhängig. |
 | Session-Bearbeitung nach Erstellung | F1 schließt Modifikation nach Erstellung als MVP-Vereinfachung aus. |
 | Session-Kommentare | P1 erwähnt externe Koordination bzw. Kommentare nur indirekt im Out-of-Scope-Kontext; F1 modelliert keinen Kommentarprozess. |
