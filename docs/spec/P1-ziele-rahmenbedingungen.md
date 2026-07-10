@@ -42,7 +42,7 @@ LocalCourt löst das Problem der dezentralisierten Koordination: Heute brauchen 
 
 - **Web-UI für Session-Verwaltung**: Erstellen, bearbeiten, löschen, anschauen, beitreten.
 - **Court-/Sportplatz-Verzeichnis**: Erfassen, durchsuchen, filtern nach Sportart und Location.
-- **Teilnehmer-Verwaltung**: Check-In, Wartelisten, Kapazitätsverwaltung (max. X Teilnehmer pro Session).
+- **Teilnehmer-Verwaltung**: Check-In und Kapazitätsverwaltung (max. X Teilnehmer pro Session). Wartelisten sind bewusst ausgeschlossen (siehe NG-10).
 - **Session-Status-Management**: Status-Lifecycle (geplant, aktiv, abgeschlossen, storniert).
 - **Nutzer-Profile**: Basis-Informationen (Name, Profil-Bild, Sportarten-Interessen), Sichtbarkeit regulierbar.
 - **Responsive Design**: Mobile & Desktop gleichwertig unterstützt.
@@ -61,6 +61,7 @@ LocalCourt löst das Problem der dezentralisierten Koordination: Heute brauchen 
 | **NG-07** | Native Mobile Apps (iOS, Android) | Responsive Web-UI deckt Mobile vollständig ab. Native Apps → zusätzlicher Build-, Verteil-, und Support-Overhead. |
 | **NG-08** | KI-Integration (z.B. Recommendation Engine) | Kein KI-Budget, keine speziellen Datenquellen verfügbar. Community-Discovery reicht. |
 | **NG-09** | Daten-Migration / Legacy-Import | Greenfield-Projekt, keine Vorgänger-Daten. |
+| **NG-10** | Wartelisten bei vollen Sessions | Eine Warteliste wäre nur mit einem Benachrichtigungskanal ("Platz frei") sinnvoll. Benachrichtigungen (E-Mail/SMS/Push) sind out of scope (NG-02, Free-Tier-Constraint CON-T-05) und in F1 ausgeschlossen. Ohne Rückkanal bringt eine Warteliste keinen fachlichen Nutzen. Kapazität ist daher eine harte Grenze (siehe F3, AF-01). Ursprünglich in P1 in-scope genannt; nach Abgleich mit F1/F2 bewusst zurückgezogen. |
 
 ---
 
