@@ -79,6 +79,28 @@ Nach Siedersleben (Kapitel 4.3): Reale (IT-unabhängige) Workflows mit temporale
 
 ---
 
+### **F2 — Anwendungsfälle** ✅ (fertig)
+**Status**: ✅ Fertig  
+**Datei**: `F2-anwendungsfaelle.md`
+
+Systemunterstützte Interaktionen als stabile Use Cases UC-01 bis UC-12 (Suchen, Detail, Beitreten, Erstellen, Teilnehmer, Check-in, Historie, Profil) mit Use-Case-Diagrammen, detaillierten Spezifikationen, Akzeptanzkriterien und Konsistenzprüfung gegen P1/P2/F1.
+
+---
+
+### **F3 — Anwendungsfunktionen** ✅ (fertig)
+**Status**: ✅ Fertig  
+**Datei**: `F3-anwendungsfunktionen.md`
+
+Nach Siedersleben: komplexe fachliche Regelwerke außerhalb der Anwendungsfälle. Enthält vier Anwendungsfunktionen mit Regeln, Entscheidungstabellen und Pseudocode-Kernen:
+- **AF-01 Beitritts- und Kapazitätsregel** (löst die Concurrency-/Kapazitätsfrage aus UC-04; keine Überbuchung, keine Warteliste)
+- **AF-02 Check-in-Validierung** (QR/PIN gleichwertig, Zeitfenster nur während `active`, Idempotenz)
+- **AF-03 Session-Lifecycle** (zeitbasierte Ableitung scheduled → active → completed, Auto-Close)
+- **AF-04 PIN- und QR-Code-Erzeugung** (4-stellige PIN je Session, QR mit Session-Bezug)
+
+Schließt die in F2 offen gelassenen Punkte und hält Informatik-Algorithmen (Suchen/Sortieren) bewusst heraus.
+
+---
+
 ### **M1 — Fachliche/Fachliche Anforderungen** (geplant)
 **Status**: 🔄 Ausstehend  
 **Geplante Inhalte**:
