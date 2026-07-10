@@ -68,3 +68,6 @@ Beispiele aus der Projekt-Historie: `docs(spec): add F2 use cases`,
 
 - Entwicklung erfolgt auf Feature-Branches, nicht direkt auf `main`.
 - Zusammenführung nach `main` per Pull Request.
+- **Branch-Namen beschreiben direkt den Inhalt/die Aufgabe** im Format `<type>/<kurzbeschreibung>`
+  (z. B. `docs/spec-f3-anwendungsfunktionen`, `feat/session-check-in`, `fix/map-marker-icons`).
+- **Kein Werkzeug-Präfix** (`claude/…`) und **kein Projektname** (`localcourt`) im Branch-Namen.
