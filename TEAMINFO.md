@@ -6,7 +6,7 @@ LocalCourt – Sport-Sessions auf lokalen Courts organisieren
 
 ## Kurzbeschreibung
 
-LocalCourt ist eine Webanwendung zur Organisation spontaner Sport-Sessions auf lokalen Sportplätzen und Courts. Nutzer können Sportorte erfassen, Sessions für bestimmte Sportarten erstellen und anderen Sessions beitreten. Das System verwaltet Teilnehmerlimits, Wartelisten, Check-ins und Sessionstatus, damit Freizeit- und Hochschulsport einfacher koordiniert werden können.
+LocalCourt ist eine Webanwendung zur Organisation spontaner Sport-Sessions auf lokalen Sportplätzen und Courts. Nutzer können Sportorte erfassen, Sessions für bestimmte Sportarten erstellen und anderen Sessions beitreten. Das System verwaltet Teilnehmerlimits (harte Kapazitätsgrenze, keine Warteliste — siehe P1 NG-10), Check-ins und Sessionstatus, damit Freizeit- und Hochschulsport einfacher koordiniert werden können.
 
 ## Team
 
@@ -36,6 +36,6 @@ LocalCourt ist eine Webanwendung zur Organisation spontaner Sport-Sessions auf l
 
 ## Eingesetzte KI-Werkzeuge (vorläufige Planung)
 
-- ChatGPT für Dokumentationsentwürfe, Architekturideen und Refactoring
-- GitHub Copilot für Code-Vervollständigung
-- Claude für Recherche und technische Unterstützung
+- ChatGPT / Codex für Dokumentationsentwürfe, Architekturideen und Refactoring
+- GitHub Copilot für Code-Vervollständigung in der Implementierung
+- Claude (Claude Code) für Spezifikationsentwürfe, Konsistenzprüfung und Recherche
