@@ -210,3 +210,13 @@ Detaillierte Schnittstellen-Contracts je Nachbarsystem (Browser, Supabase Auth, 
 - Tabellen und Listen bevorzugen statt Prosa-Fließtext, wo möglich.
 - Querverweise zwischen Bausteinen (z.B. P1.5 → M2) explizit als Links dokumentieren.
 - Nach Abschluss jeder Phase: Spec-Lead (Afrem) + Project-Lead (Finn) reviewen.
+
+---
+
+## Eingesetzte KI-Werkzeuge
+
+| Aspekt | Inhalt |
+|---|---|
+| Werkzeug | GitHub Copilot (Plan-Mode), Claude Code (Opus 4.8) |
+| Verwendung | Aufbau und Pflege des Spezifikations-Index und der Baustein-Struktur. |
+| Prüfung | Siehe Versionshistorie; Inhalte manuell abgestimmt. Jeder Baustein weist die konkrete KI-Nutzung im eigenen Abschnitt „Eingesetzte KI-Werkzeuge" aus. |

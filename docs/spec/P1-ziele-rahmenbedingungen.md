@@ -123,3 +123,13 @@ Die Mission wird unter klaren Budget-, Technologie-, und zeitlichen Constraints 
 - **Team & Rollen**: Siehe `TEAMINFO.md` im Repository-Root
 - **Technologie-Details**: Siehe zukünftige M1/M2 (Architektur)
 - **Beispiel**: [Herold P1 — Goals and Constraints](https://github.com/carstenlucke/herold/blob/main/docs/spec/P1-ziele-rahmenbedingungen.md) (English reference)
+
+---
+
+## P1.7 Eingesetzte KI-Werkzeuge
+
+| Aspekt | Inhalt |
+|---|---|
+| Werkzeug | GitHub Copilot, Claude (Claude Code) |
+| Verwendung | Entwurf des P1-Bausteins: Mission, Geschäftsziele, Stakeholder, Scope, Rahmenbedingungen und Erfolgskriterien. |
+| Prüfung | Inhalte wurden gegen die Projektidee ([TEAMINFO](../../TEAMINFO.md)), die Herold-Referenz und Teamentscheidungen geprüft und manuell überarbeitet; der Warteliste-Scope wurde später in NG-10 konsolidiert. |

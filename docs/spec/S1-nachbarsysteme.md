@@ -132,3 +132,13 @@ Diese Abschnitte werden in einer späteren Spezifikations-Phase (S1 Details) aus
 - **Supabase Docs**: https://supabase.io/docs
 - **Leaflet Docs**: https://leafletjs.com/
 - **OpenStreetMap Docs**: https://wiki.openstreetmap.org/
+
+---
+
+## S1.6 Eingesetzte KI-Werkzeuge
+
+| Aspekt | Inhalt |
+|---|---|
+| Werkzeug | GitHub Copilot, Claude (Claude Code) |
+| Verwendung | Entwurf der Stub-Struktur für die Nachbarsysteme-Schnittstellen (NB-01–NB-04). |
+| Prüfung | Abgeglichen mit [P2](P2-architekturueberblick.md); die vollständige Schnittstellen-Detaillierung folgt in einer späteren Spezifikationsphase. |
