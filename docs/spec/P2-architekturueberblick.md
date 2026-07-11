@@ -183,23 +183,23 @@ Browser User
      ├─► (5) User selects Session → Click "Join"
      │
      ├─► (6) POST /rest/v1/participants (Supabase PostgREST)
-     │        Body: { session_id, user_id, status: "joined" }
+     │        Body: { session_id, user_id, status: "confirmed" }
      │
-     ├◄─ (7a) Success: { id, status: "joined" }
+     ├◄─ (7a) Success: { id, status: "confirmed" }
      │        → Show "Joined Session" Toast, Update Participant Count
      │
-     ├◄─ (7b) Error (Waitlist): { status: "waiting" }
-     │        → Show "Added to Waitlist" Toast
+     ├◄─ (7b) Error (Session voll): 409 Conflict
+     │        → Show "Session ist voll" Toast (harte Grenze, keine Warteliste; P1 NG-10)
      │
      └─► (8) Refresh Session-Detail View
 
 Database:
      ├─ sessions: SELECT (with count aggregation)
-     └─ participants: INSERT with status="joined" or "waiting" (via RLS)
+     └─ participants: INSERT with status="confirmed" (atomar gegen Kapazität, F3 AF-01; keine Warteliste)
 ```
 
 **Fehlerbehandlung**:
-- 409 Conflict: Session voll, Wartelist voll → "Session ist voll" Message
+- 409 Conflict: Session voll → "Session ist voll" Message (harte Kapazitätsgrenze, keine Warteliste; P1 NG-10, F3 AF-01)
 - 401 Unauthorized: Nicht angemeldet → Redirect zu Login
 - 403 Forbidden: Nutzer darf dieser Session nicht beitreten (RLS) → Explain
 
@@ -210,7 +210,7 @@ Database:
 ```
 Organizer in Session-Detail View
      │
-     ├─► (1) See Participant List (Status: joined, waiting, checked_in)
+     ├─► (1) See Participant List (Status: confirmed, checked_in)
      │
      ├─► (2) Click "Check-in" Button next to Participant Name
      │
@@ -219,15 +219,11 @@ Organizer in Session-Detail View
      │
      ├◄─ (4) Response: { id, status: "checked_in", checked_in_at: ... }
      │
-     ├─► (5) UI: Mark Participant as "✓ Checked in", Update Count
-     │
-     └─► (6) If Waitlist empty: Keep Participant Status as "joined"
-     │        If Waitlist has pending: Auto-promote next Waitlist Participant
+     └─► (5) UI: Mark Participant as "✓ Checked in", Update Count
 
 Database (PostgreSQL):
-     ├─ participants: UPDATE checked_in=true, checked_in_at=NOW()
-     │  Trigger (optional): On Check-in → If Capacity, auto-promote from waitlist
-     └─ participants: Optional Update Status="joined" (moved from waitlist)
+     └─ participants: UPDATE status="checked_in", checked_in_at=NOW()
+        (idempotent, F3 AF-02; kein Nachrücken/keine Warteliste, P1 NG-10)
 ```
 
 **Fehlerbehandlung**:
