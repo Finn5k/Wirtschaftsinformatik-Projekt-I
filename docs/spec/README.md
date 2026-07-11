@@ -101,79 +101,88 @@ Schließt die in F2 offen gelassenen Punkte und hält Informatik-Algorithmen (Su
 
 ---
 
-### **M1 — Fachliche/Fachliche Anforderungen** (geplant)
-**Status**: 🔄 Ausstehend  
-**Geplante Inhalte**:
-- Detaillierte Funktionale Anforderungen
-- Use Cases / User Stories
-- Datenmodell und Geschäftsobjekte
-- Schnittstellen und Integrationen
+### **D1 — Datenmodell** ✅ (fertig)
+**Status**: ✅ Fertig  
+**Datei**: `D1-datenmodell.md`
+
+Fachliches, konzeptionelles Datenmodell nach Siedersleben: Entitätstypen, Attribute und Beziehungen — unabhängig von der technischen Umsetzung.
+
+**Inhalte**:
+- ER-Diagramm (Mermaid) über 6 Entitätstypen: `profile`, `sport`, `court`, `session`, `participant`, `sport_preference`
+- Attributtabellen je Entität (Typ, Multiplizität, Notiz) mit Verweisen auf D2
+- Beziehungstabelle B1–B7; Auflösung der n:m-Beziehungen (Teilnahme, Präferenz)
+- Abgeleitete Merkmale (`status`, `confirmed_count`, `qr_content`) statt gepflegter Felder
+- Invarianten (Organisator-als-Teilnehmer, Eindeutigkeit der Teilnahme, Check-in-Kopplung)
+- Bewusst nicht modellierte Objekte (Warteliste, Nachrichten, Auth-Nutzer)
 
 ---
 
-### **M2 — Technische Architektur** (geplant)
-**Status**: 🔄 Ausstehend  
-**Geplante Inhalte**:
-- Systemarchitektur (Client-Server, Komponenten)
-- Technologie-Stack (React, Node.js, PostgreSQL, …)
-- Deployment-Strategie
-- Sicherheitsarchitektur & Authentication
-- API-Design
+### **D2 — Datentypen (Datentypenverzeichnis)** ✅ (fertig)
+**Status**: ✅ Fertig  
+**Datei**: `D2-datentypen.md`
+
+Fachliches Datentypenverzeichnis: Wertebereiche, Aufzählungen und Validierungsregeln der in D1 verwendeten Typen. Technische Typzuordnung (PostgreSQL) bleibt in N2.
+
+**Inhalte**:
+- Triviale Typen (`Text`, `Integer`, `Boolean`, `Timestamp`, `Url`) + Katalogübersicht
+- Nicht-triviale Typen: `Identifier`, `SessionStatus`, `Pin`, `ParticipantStatus`, `Duration`, `GeoCoordinate`, `QrContent`
+- Je Typ: Wertform, Enum-Werte, Gleichheit/Ordnung, Validierung
+- Notations- und Multiplizitätskonventionen
 
 ---
 
-### **N1 — Nichtfunktionale Anforderungen (Anforderungen)** (geplant)
-**Status**: 🔄 Ausstehend  
-**Geplante Inhalte**:
-- Performance-Anforderungen (Latenz, Throughput)
-- Skalierbarkeit
-- Zuverlässigkeit & Verfügbarkeit
-- Sicherheitsanforderungen (Encryption, DSGVO)
-- Benutzerfreundlichkeit (Usability)
-- Wartbarkeit
+### **S1 — Nachbarsysteme (Schnittstellen)** 🔄 (in Arbeit)
+**Status**: 🔄 Stub vorhanden  
+**Datei**: `S1-nachbarsysteme.md`
+
+Detaillierte Schnittstellen-Contracts je Nachbarsystem (Browser, Supabase Auth, Supabase PostgREST, OpenStreetMap/Leaflet). Inventar liegt in P2.
 
 ---
 
-### **N2 — Nichtfunktionale Anforderungen (Umsetzung)** (geplant)
+### **B1 — Dialogspezifikation** (geplant)
 **Status**: 🔄 Ausstehend  
 **Geplante Inhalte**:
-- Testing-Strategie
-- Sicherheits-Implementierung
-- Monitoring & Logging
-- Performance-Optimierungen
+- Konkrete Benutzerschnittstellen für Suche, Detailansicht, Erstellung, Check-in, Profil, Historie
+- Feld- und Eingabeformate, sichtbare Profil-/Teilnehmerfelder
+- Ableitung aus den Use Cases (F2)
 
 ---
 
-### **A1 — Funktionale Architektur** (geplant)
+### **N1 — Nichtfunktionale Anforderungen** (geplant)
 **Status**: 🔄 Ausstehend  
 **Geplante Inhalte**:
-- Detaillierte Komponentenstruktur
-- Datenfluss zwischen Modulen
-- Fehlerbehandlung
-- Erweiterungspunkte
+- Performance, Skalierbarkeit im Free-Tier, Verfügbarkeit
+- Sicherheit (PIN-Niveau, DSGVO), Usability, Datenschutz
+- Feldlängen und fachliche Obergrenzen (offene Punkte aus D2)
 
 ---
 
-### **A2 — Technische Architektur (Umsetzung)** (geplant)
+### **N2 — Querschnittskonzepte / Umsetzung** (geplant)
 **Status**: 🔄 Ausstehend  
 **Geplante Inhalte**:
-- Code-Struktur & Organisa
-- Framework-Konfiguration
-- Build- und Deployment-Pipeline
-- Dependency Management
+- Technische Typzuordnung, Schlüssel, Constraints, Indizes
+- Atomarität des Beitritts, Statuspersistenz, Zählstrategie (offene Punkte aus D1/F3)
+- PIN-Speicherung, Zeittoleranz beim Check-in, Testing, Monitoring
+
+---
+
+### **E2 — Glossar** (geplant)
+**Status**: 🔄 Ausstehend  
+**Geplante Inhalte**:
+- Einheitliche Begriffe (Session, Teilnahme/Participant, Court/Sportort, Profil, Sportart, Check-in)
 
 ---
 
 ## Workflow
 
-1. **P1 definieren** (✅ Erledigt): Ziele, Scope, Constraints festlegen
-2. **Stakeholder-Feedback** (🔄 Laufend): Team-Review & Approvals einholen
-3. **M1 schreiben**: Fachliche Anforderungen in Details fassen
-4. **M2 schreiben**: Technische Lösung entwerfen
-5. **N1 schreiben**: Nichtfunktionale Kriterien definieren
-6. **N2 schreiben**: Umsetzungsdetails dokumentieren
-7. **A1 schreiben**: Funktionale Architektur konkretisieren
-8. **A2 schreiben**: Technische Implementierung beschreiben
+1. **P1/P2 definieren** (✅ Erledigt): Ziele, Scope, Constraints, Architekturüberblick
+2. **F1–F3 definieren** (✅ Erledigt): Geschäftsprozesse, Anwendungsfälle, Anwendungsfunktionen
+3. **D1/D2 definieren** (✅ Erledigt): Datenmodell und Datentypenverzeichnis
+4. **S1 vervollständigen**: Schnittstellen der Nachbarsysteme detaillieren
+5. **B1 schreiben**: Dialogspezifikation aus den Use Cases ableiten
+6. **N1 schreiben**: Nichtfunktionale Anforderungen definieren
+7. **N2 schreiben**: Querschnittskonzepte und technische Umsetzung dokumentieren
+8. **E2 schreiben**: Glossar konsolidieren
 
 ---
 
@@ -191,7 +200,7 @@ Schließt die in F2 offen gelassenen Punkte und hält Informatik-Algorithmen (Su
 | Datum | Autor | Änderung |
 |-------|-------|----------|
 | 2026-06-19 | Copilot (Plan-Mode) | P1 erstellt, Struktur definiert |
-| — | — | — |
+| 2026-07-11 | Claude Code (Opus 4.8) | D1 (Datenmodell) und D2 (Datentypenverzeichnis) erstellt; Bausteinliste an tatsächliche Siedersleben-Struktur (D1/D2/S1/B1/N1/N2/E2) angepasst |
 
 ---
 
