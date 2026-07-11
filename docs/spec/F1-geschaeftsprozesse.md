@@ -74,48 +74,51 @@ Konkrete Artefakte, die durch den Prozess fließen.
 | **PostgreSQL: sessions** | LocalCourt | Session-Records: id, title, sport, city, court_id, organizer_id, datetime, duration, max_participants, status (scheduled, active, completed) |
 | **PostgreSQL: participants** | LocalCourt | Participant-Records: id, session_id, user_id, joined_at, status (confirmed) |
 | **PostgreSQL: courts** | LocalCourt | Court/Sportplatz-Verzeichnis: id, name, city, address, coordinates (lat/lon) |
-| **PostgreSQL: profiles** | LocalCourt | Nutzer-Profil: id, email, name, favorite_sports |
+| **PostgreSQL: profiles** | LocalCourt | Nutzer-Profil: user_id, display_name, avatar_url. Sportpräferenzen separat (D1 `sport_preference`); E-Mail liegt in Supabase Auth. |
 | **Browser: sessionStorage / localStorage** | Browser | Recent Searches, User Preferences (Lieblings-Sportarten, zuletzt gesuchte Stadt) |
 | **OSM Tile Cache** | OpenStreetMap (Extern) | Kartenkacheln, Browser-seitig gecacht |
 
-### F1.1.5 Activity Diagram (UML, ASCII)
+### F1.1.5 Ablaufdiagramm (Mermaid)
 
-```
-  Participant  Browser       LocalCourt    Supabase      OpenStreetMap
-      |           |              |            |               |
-      |--A1----→ (Ort eingeben)  |            |               |
-      |--------→ |--A2---→ (Input)           |               |
-      |--------→ |--A3---→ (Sportart)        |               |
-      |           |--A4---→ Query ----------→|               |
-      |           |        GET /sessions     |               |
-      |           |←--A5--- JSON Result ←----|               |
-      |           |                          |               |
-      |           |--A6---→ Leaflet render ─────────────→  (OSM Tiles)
-      |           |                          |    ←---------- (Tiles)
-      |           | (A7) Session List + Map displayed
-      |  (A8, Click) |
-      |--------→ |--A8---→ Get Details ---→ |               |
-      |           |←------- Session JSON ←----|               |
-      |           | (A8) Show Detail View
-      | (A9, "Beitreten") |
-      |--------→ |--A10--→ POST /participants→|               |
-      |           |        { session_id, user_id }           |
-      |           |←--A11-- 201 Created ←----|               |
-      |           | (A12) Show "Du bist dabei!"
-      |  (A14) Wait for start  |
-      |        (A16) Sport statt fatt
-      |
-      | [Nach Session-Zeit]
-      |           |←--A17-- Session auto-closed by scheduler
-      |           | (A18) Show in History
-      v           v
+```mermaid
+sequenceDiagram
+    actor T as Teilnehmer
+    participant B as Browser
+    participant LC as LocalCourt
+    participant S as Supabase
+    participant OSM as OpenStreetMap
+
+    T->>B: A1 öffnet LocalCourt
+    T->>B: A2 Ort/Region eingeben
+    T->>B: A3 Sportart filtern (optional)
+    B->>LC: A4 Suchanfrage
+    LC->>S: GET /sessions?city&sport
+    S-->>LC: A5 Session-Liste (nur zukünftige)
+    LC->>OSM: A6 Court-Positionen rendern
+    OSM-->>LC: Tiles
+    LC-->>B: A7 Liste + Karte
+    B-->>T: Anzeige
+    T->>B: A8 Session wählen
+    B->>LC: Detail anfragen
+    LC->>S: GET Session-Detail
+    S-->>LC: Session JSON
+    LC-->>B: A8 Detailansicht
+    T->>B: A9 "Beitreten"
+    B->>LC: A10 Join-Request
+    LC->>S: A11 INSERT participant (confirmed)
+    S-->>LC: 201 Created
+    LC-->>B: A12 Bestätigung
+    B-->>T: A13 "Du bist dabei!" · in "Meine Sessions"
+    Note over LC: A15 Start erreicht → scheduled → active (AF-03)
+    Note over T: A16 Sport findet statt (außerhalb LocalCourt)
+    Note over LC: A17 Ende erreicht → active → completed (Auto-Close)
+    T->>B: A18 Session-Historie ansehen
 ```
 
-**Notiz zu Diagram**:
-- A1, A16, A17–A18 sind **Pre-/Post-LocalCourt**
-- A2–A15 sind **LocalCourt-unterstützt**
-- Swimlanes: Participant, Browser, LocalCourt, Supabase, OpenStreetMap
-- Linear flow mit Query-Response-Muster
+**Hinweise zum Diagramm**:
+- A1, A16 sind **Pre-/Post-LocalCourt** (reale Welt), A17 ist systemautomatisch.
+- A2–A14, A18 sind **LocalCourt-unterstützt**.
+- Der Statuswechsel (A15/A17) ist zeitbasiert abgeleitet; die Regel steht in [F3 AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge).
 
 ---
 
@@ -142,7 +145,7 @@ Zeitliche und logische Reihenfolge.
 | # | Aktivität | Support | Notizen |
 |---|-----------|---------|---------|
 | **Pre-Setup** | | | |
-| A1 | Organisator möchte Trainings-Session organisieren (z.B. jeden Mittwoch Fußball um 19:00) | Participant | Geschäfts-Entscheidung, keine IT. |
+| A1 | Organisator möchte Trainings-Session organisieren (z.B. jeden Mittwoch Fußball um 19:00) | Organizer | Geschäfts-Entscheidung, keine IT. |
 | A2 | Organisator öffnet LocalCourt & loggt sich ein | Organizer, Browser, Supabase Auth | Authentifizierung per Email+Passwort oder OAuth. |
 | **Session-Erstellung** | | | |
 | A3 | Organisator füllt Session-Form aus | Organizer, Browser | Felder: Title, Sport, Court, DateTime (Startzeitpunkt), Duration, Max Participants, Beschreibung. Validierung im Browser (Client-Side). |
@@ -193,67 +196,54 @@ Zeitliche und logische Reihenfolge.
 | **PostgreSQL: sessions** | LocalCourt | Session-Records: id, title, sport, court_id, organizer_id, datetime, duration, max_participants, status, created_at, pin (4-digit string, nullable), qr_code (nullable) |
 | **PostgreSQL: participants** | LocalCourt | Participant-Records: id, session_id, user_id, joined_at, status (confirmed, checked_in), checked_in_at (nullable) |
 | **PostgreSQL: courts** | LocalCourt | Court-Verzeichnis: id, name, city, coordinates |
-| **PostgreSQL: profiles** | LocalCourt | Organisator & Participant Infos: id, email, name, role (organizer, participant) |
+| **PostgreSQL: profiles** | LocalCourt | Nutzer-Profil: user_id, display_name, avatar_url. **Keine** Rollenspalte — die Rolle ergibt sich aus der Aktion (Organisator = wer erstellt); vgl. D1 / UC-01. |
 | **Browser: sessionStorage** | Browser | Aktuelle Session-ID, Organizer-Mode Flag, aktuelle PIN (während Session aktiv) |
 
-### F1.2.5 Activity Diagram (UML, ASCII)
+### F1.2.5 Ablaufdiagramm (Mermaid)
 
-```
-  Organizer Browser       LocalCourt    Supabase   PostgreSQL
-      |         |              |            |          |
-      |--A2--→ Login ---→ Auth --------→ |          |
-      |         | (Authenticated)        |          |
-      |--A3--→ Form Fill               |          |
-      |--A4--→ "Erstellen"             |          |
-      |         |--A5---→ POST /sessions -→|        |
-      |         |                       |--A6-→ INSERT
-      |         |←--A6---- Session JSON-← |        |
-      |         | (A7) Auto-add Organizer as Participant
-      |         |--A8---→ Generate QR+PIN-→|        |
-      |         |←------- QR Code JSON ←---|        |
-      |  (A9) Print/Save QR+PIN
-      |
-      | [Participants Join - GP-01 happens here]
-      |         |--A11--→ GET /participants
-      |         |←------ Participant List-|←-------SELECT
-      |  (A11) View Live Participant Count
-      |
-      | [Session Starts]
-      |         | (A12) Check-In Screen
-      |         | QR+PIN displayed
-      |
-      | [Participant scans QR-Code]
-      |         |← [Participant Phone]
-      |         |--A13-→ QR-Scan (Browser) ──→
-      |         |  (uses URL with session_id & pin)
-      |         |--A14-→ POST /participants/<id>/check_in
-      |         |         { status: 'checked_in' } →|
-      |         |←--A15-- 200 OK ←--|--UPDATE
-      |  (A17) Live: "X / Y Checked in"
-      |
-      | [Or: Participant enters PIN]
-      |         |← [Participant Phone - PIN Form]
-      |         |--A18-→ POST /check-in/by-pin
-      |         |         { session_id, pin, user_id }
-      |         |–------→ |--A19-→ Verify & Check-in
-      |         |←------- Confirmation ←-----|
-      |
-      | [Session runs]
-      |  (A20) Sport happens (Real World)
-      |
-      | [After Duration]
-      |         |← [Scheduler / Trigger]
-      |         | (A21) Session status → 'completed'
-      |         |--A22-→ GET Session Stats
-      |         |←------ { checked_in: 8, didn't: 2 }
-      v         v
+```mermaid
+sequenceDiagram
+    actor O as Organisator
+    participant B as Browser
+    participant LC as LocalCourt
+    participant S as Supabase
+    actor P as Teilnehmer
+
+    O->>B: A2 Login
+    B->>S: Auth (Email/Passwort o. OAuth)
+    S-->>B: authentifiziert (JWT)
+    O->>B: A3 Session-Formular ausfüllen
+    O->>B: A4 "Session erstellen"
+    B->>LC: A5 Session-Daten
+    LC->>S: A6 INSERT session (status=scheduled)
+    LC->>S: A7 INSERT participant (Organisator, confirmed)
+    S-->>LC: Session { id }
+    LC->>LC: A8 QR-Code + PIN erzeugen (AF-04)
+    LC-->>B: QR-Code + PIN
+    B-->>O: A8 Anzeige QR + PIN
+    O->>O: A9 QR/PIN speichern/drucken
+    Note over P,LC: A10 Teilnehmer treten bei (GP-01)
+    O->>B: A11 Teilnehmerliste ansehen
+    B->>LC: GET participants
+    LC->>S: SELECT participants
+    S-->>LC: Liste
+    LC-->>O: A11 Live-Teilnehmerzahl
+    Note over O,P: A12 Start erreicht → active, Check-in-Fenster offen
+    P->>B: A13 QR scannen ODER A18 PIN eingeben
+    B->>LC: A14 Check-in-Request (session, pin)
+    LC->>S: A15/A19 UPDATE participant status=checked_in
+    S-->>LC: OK
+    LC-->>P: A16 "✓ Check-in erfolgreich"
+    LC-->>O: A17 "X / Y eingecheckt"
+    Note over P: A20 Sport findet statt (außerhalb LocalCourt)
+    Note over LC: A21 Nach Ende → active → completed (Auto-Close)
+    O->>B: A22 Ergebnis/Historie ansehen
+    Note over P: A23 Session in "Vergangene Sessions" (read-only)
 ```
 
-**Notizen zu Diagram**:
-- A1, A20, A21–A23 sind **Pre-/Post-LocalCourt oder System-automatisch**
-- A2–A19 sind **Interaktiv**
-- Swimlanes: Organizer, Browser, LocalCourt, Supabase, PostgreSQL
-- Check-In hat zwei Pfade: QR-Scan (A13–A16) oder PIN-Eingabe (A18–A19)
+**Hinweise zum Diagramm**:
+- A1, A20 sind **Pre-/Post-LocalCourt** (reale Welt); A21 ist systemautomatisch (Auto-Close, AF-03).
+- Check-in hat zwei gleichwertige Pfade: QR-Scan (A13–A16) oder PIN-Eingabe (A18–A19); die Prüfung ist in [F3 AF-02](F3-anwendungsfunktionen.md#f34-af-02--check-in-validierung) spezifiziert.
 
 ---
 
@@ -280,14 +270,14 @@ Zeitliche und logische Reihenfolge.
 
 | Concern | Grund | Referenz |
 |---------|-------|----------|
-| **Benachrichtigungen** | Out-of-Scope. MVP hat keine Email/SMS/Push-Notifications. Nutzer muss self-aktiv sein. | P1 NG-08 (No Comms) |
-| **Wartelisten** | Entfernt wegen fehlender Benachrichtigungen. "Platz frei"-Benachrichtigung = kein Feedback-Kanal im MVP. | User Decision (Session 3) |
-| **Nutzer-Bewertungen / Ratings** | Nicht modelliert. Keine 5-Sterne-Ratings oder Review-System. | P1 NG-04 (No Ratings) |
-| **Admin-Reports** | Admin-Funktionen sind Out-of-Scope. Reports-Prozess nicht modelliert. | P1 NG-07 (No Reports), User Decision (Session 3) |
-| **Session-Modifikation nach Erstellung** | Vereinfacht: Organisator kann **nicht** DateTime/Court/Max-Participants nach Erstellung ändern (würde Komplexität für MVP erhöhen). | Scope Simplification |
-| **Messaging zwischen Organisator & Participant** | Kein Direct Chat. Koordination läuft über Session-Kommentar oder extern (WhatsApp, etc.). | P1 NG-02 (No Chat) |
-| **Cross-Process Coordination** | Keine "Threads" von Sessions, keine Session-Serien-Verwaltung. Jede Session ist unabhängig. | P1 NG-09 (No Lifecycle Sync) |
-| **Auszahlung / Spendensystem** | Kein Geld. LocalCourt kostenlos. | P1 NG-01 (No Payment) |
+| **Benachrichtigungen** | Out-of-Scope. MVP hat keine Email/SMS/Push-Notifications. Nutzer muss self-aktiv sein. | P1 NG-02, CON-T-05; F2.6 |
+| **Wartelisten** | Ohne Benachrichtigungskanal ("Platz frei") fachlich nicht sinnvoll; Kapazität ist harte Grenze. | P1 NG-10; F3 AF-01 |
+| **Nutzer-Bewertungen / Ratings** | Nicht modelliert. Keine 5-Sterne-Ratings oder Review-System. | P1 NG-04 |
+| **Admin-Reports** | Admin-Funktionen sind Out-of-Scope. Historie bleibt read-only, kein Reporting. | F2.6; UC-11 |
+| **Session-Modifikation nach Erstellung** | Vereinfacht: Organisator kann **nicht** Startzeit/Court/Teilnehmerlimit nach Erstellung ändern (würde Komplexität für MVP erhöhen). | F2.6 (Scope-Vereinfachung) |
+| **Messaging zwischen Organisator & Participant** | Kein Direct Chat. Koordination läuft extern (WhatsApp, Signal, etc.). | P1 NG-02 |
+| **Cross-Process Coordination** | Keine "Threads" von Sessions, keine Session-Serien-Verwaltung. Jede Session ist unabhängig. | F2.6 (Session-Serien) |
+| **Auszahlung / Spendensystem** | Kein Geld. LocalCourt kostenlos. | P1 NG-01 |
 
 ### Post-LocalCourt (Nicht in Modellierung, aber erwähnt)
 
@@ -321,8 +311,8 @@ Zeitliche und logische Reihenfolge.
 
 | Constraint | F1 Implikation | Referenz |
 |-----------|----------------|----------|
-| Free-Tier Budget | Keine Push-Notifications, keine Email-Service. Wartelisten entfernt. | P1 CON-T-01, CON-T-05 |
-| Single-Tier Nutzer (aktuell) | Nur Participant & Organizer. Kein Admin-Tier im MVP. | P1 CON-3a-04 |
+| Free-Tier Budget | Keine Push-Notifications, keine Email-Service. Wartelisten entfernt (NG-10). | P1 CON-T-02, CON-T-05 |
+| Rollen durch Aktion | Nur Teilnehmer & Organisator; Rolle ergibt sich aus der Aktion, kein Admin-Tier im MVP. | P1 P1.3; UC-01 |
 | Responsive Web UI | F1-Prozesse laufen auf Mobile & Desktop (z.B. A13 QR-Scan auf Smartphone). | P1 CON-T-04 |
 
 ---

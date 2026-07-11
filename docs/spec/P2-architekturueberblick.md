@@ -14,33 +14,27 @@ LocalCourt ist eine **webbasierte Anwendung** für die dezentralisierte Koordina
 
 ### Kontext-Diagramm (High-Level)
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                      LocalCourt System                          │
-│  ┌────────────────────────────────────────────────────────────┐ │
-│  │                                                             │ │
-│  │  React-Frontend (Vercel)                                   │ │
-│  │  - Session Management UI                                   │ │
-│  │  - Court Verzeichnis & Suche                               │ │
-│  │  - Nutzer-Profile & Authentifizierung                      │ │
-│  │  - Check-In / Participant Management                       │ │
-│  │  - Kartendarstellung (OpenStreetMap)                       │ │
-│  │                                                             │ │
-│  └─────────────┬─────────────────────────────────────────────┘ │
-│                │                                               │
-└────────────────┼───────────────────────────────────────────────┘
-                 │ (HTTPS, JSON/REST)
-     ┌───────────┴──────────────────────────┐
-     │                                      │
-┌────▼──────────────────┐        ┌─────────▼────────────────┐
-│   Supabase            │        │  OpenStreetMap /         │
-│                       │        │  Leaflet                 │
-│ - Auth Service        │        │                          │
-│ - PostgreSQL DB       │        │ - Kartendaten            │
-│ - PostgREST API       │        │ - Geocoding (optional)   │
-│                       │        │                          │
-└───────────────────────┘        └──────────────────────────┘
-        (Cloud)                            (Cloud)
+```mermaid
+flowchart TB
+    user(["Browser-Nutzer"])
+
+    subgraph lc["LocalCourt (React-Frontend, Vercel)"]
+        ui["Session-Verwaltung · Court-Suche<br/>Profile · Check-in · Kartenansicht"]
+    end
+
+    subgraph supa["Supabase (Cloud)"]
+        auth["Auth Service"]
+        rest["PostgREST API"]
+        db[("PostgreSQL")]
+    end
+
+    osm["OpenStreetMap / Leaflet<br/>Kartendaten, Geocoding (optional)"]
+
+    user -->|"HTTPS, Interaktion"| ui
+    ui -->|"Login / JWT"| auth
+    ui -->|"CRUD (JSON/REST)"| rest
+    rest --> db
+    ui -.->|"Tiles / GeoJSON (Client-Side)"| osm
 ```
 
 ### Kommunikations-Kanäle
@@ -86,39 +80,34 @@ Detaillierte Interface-Contracts (Endpoints, Payloads, Error Handling) sind ausg
 
 ### Infrastruktur-Übersicht
 
-```
-┌──────────────────────────────────────────────────────────┐
-│                   DEPLOYMENT TOPOLOGY                    │
-├──────────────────────────────────────────────────────────┤
-│                                                          │
-│  FRONTEND TIER           BACKEND TIER     DATA TIER      │
-│  ┌──────────────┐       ┌───────────┐   ┌───────────┐   │
-│  │   Vercel     │       │ Supabase  │   │PostgreSQL │   │
-│  │              │◄─────►│ PostgREST │◄─►│ (Cloud)   │   │
-│  │  React SPA   │       │    API    │   │           │   │
-│  │ (Vite Build) │       │           │   │   Free    │   │
-│  │              │       │  Free     │   │  Tier     │   │
-│  │  Free Tier   │       │  Tier     │   └───────────┘   │
-│  └──────────────┘       └─────┬─────┘        ▲           │
-│         ▲                     │              │            │
-│         │ HTTPS/JSON          │          Connection       │
-│         │                     │          Pool            │
-│  ┌──────┴──────┐              │                          │
-│  │   Browser   │              │                          │
-│  │    User     │              │                          │
-│  └─────────────┘              │                          │
-│                               │                          │
-│     ┌─────────────────────────┴────────────────┐         │
-│     │  Supabase Auth Layer                     │         │
-│     │  - Nutzer-Verwaltung                     │         │
-│     │  - JWT Token-Issuance                    │         │
-│     │  - Row-Level-Security (RLS)              │         │
-│     └──────────────────────────────────────────┘         │
-│                                                          │
-└──────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+    browser(["Browser / Nutzer"])
 
-External: OpenStreetMap / Leaflet (Client-Side Rendering, nicht in Topologie)
+    subgraph frontend["Frontend-Tier"]
+        vercel["Vercel · Free<br/>React SPA (Vite Build)"]
+    end
+
+    subgraph backend["Backend-Tier · Supabase (Free)"]
+        rest["PostgREST API"]
+        auth["Auth Layer<br/>JWT · Row-Level-Security"]
+    end
+
+    subgraph data["Data-Tier"]
+        db[("PostgreSQL · Free<br/>500 MB, 2 Connections")]
+    end
+
+    osm["OpenStreetMap / Leaflet<br/>Client-Side Rendering"]
+
+    browser -->|"HTTPS / JSON"| vercel
+    vercel -->|"REST"| rest
+    vercel -->|"Auth"| auth
+    rest -->|"Connection Pool"| db
+    auth --> db
+    browser -.->|"Tiles"| osm
 ```
+
+Hinweis: OpenStreetMap/Leaflet wird clientseitig gerendert und ist kein deploytes Tier von LocalCourt.
 
 ### Deployment-Details
 
@@ -136,66 +125,52 @@ External: OpenStreetMap / Leaflet (Client-Side Rendering, nicht in Topologie)
 
 ### Szenario 1: Session erstellen (Organizer)
 
-```
-Browser User
-     │
-     ├─► (1) Input Form: Title, Sport, DateTime, Court, Max-Participants
-     │
-     ├─► (2) Validate Frontend
-     │
-     ├─► (3) POST /rest/v1/sessions (Supabase PostgREST)
-     │        Headers: Authorization: Bearer <JWT>
-     │        Body: { organizer_id, title, sport, datetime, court_id, max_participants }
-     │
-     ├◄─ (4) Response: { id, created_at, organizer_id, ... }
-     │
-     ├─► (5) Insert into Participants (organizer auto-joins as "confirmed")
-     │
-     └─► (6) Redirect to Session-Detail; Show "Session Created" Toast
+```mermaid
+sequenceDiagram
+    actor O as Organisator
+    participant FE as Frontend
+    participant API as Supabase PostgREST
+    participant DB as PostgreSQL
 
-Database (PostgreSQL):
-     ├─ sessions table: INSERT new row
-     │  Trigger (optional): Auto-create participants.confirmed_at for organizer
-     └─ participants table: INSERT organizer as confirmed
+    O->>FE: (1) Formular: title, sport, start_at, court, max_participants
+    FE->>FE: (2) Frontend-Validierung
+    FE->>API: (3) POST /rest/v1/sessions (Bearer JWT)
+    API->>DB: (4) INSERT session (status abgeleitet: scheduled)
+    API->>DB: (5) INSERT participant (Organisator, confirmed)
+    API-->>FE: (6) 201 Created { id, ... }
+    FE-->>O: Redirect Session-Detail + "Session erstellt"
 ```
 
 **Fehlerbehandlung**:
 - 401 Unauthorized: JWT abgelaufen → Re-Login erforderlich
-- 400 Bad Request: Validation Error (z.B. DateTime < now) → Show Form Error
+- 400 Bad Request: Validation Error (z.B. `start_at` < now) → Show Form Error
 - 500 Server Error: DB Error → Show "Something went wrong" + Log UUID
 
 ---
 
 ### Szenario 2: Session finden & beitreten (Participant)
 
-```
-Browser User
-     │
-     ├─► (1) Enter City / Select Sport Filter
-     │
-     ├─► (2) GET /rest/v1/sessions?city=<>&sport=<> (Supabase PostgREST)
-     │        Filter, Ordering, Pagination
-     │
-     ├◄─ (3) Response: [ { id, title, datetime, max_participants, confirmed_count, ... } ]
-     │
-     ├─► (4) Display Session List with OpenStreetMap (Leaflet Pins)
-     │
-     ├─► (5) User selects Session → Click "Join"
-     │
-     ├─► (6) POST /rest/v1/participants (Supabase PostgREST)
-     │        Body: { session_id, user_id, status: "confirmed" }
-     │
-     ├◄─ (7a) Success: { id, status: "confirmed" }
-     │        → Show "Joined Session" Toast, Update Participant Count
-     │
-     ├◄─ (7b) Error (Session voll): 409 Conflict
-     │        → Show "Session ist voll" Toast (harte Grenze, keine Warteliste; P1 NG-10)
-     │
-     └─► (8) Refresh Session-Detail View
+```mermaid
+sequenceDiagram
+    actor P as Teilnehmer
+    participant FE as Frontend
+    participant API as Supabase PostgREST
+    participant OSM as OpenStreetMap
 
-Database:
-     ├─ sessions: SELECT (with count aggregation)
-     └─ participants: INSERT with status="confirmed" (atomar gegen Kapazität, F3 AF-01; keine Warteliste)
+    P->>FE: (1) Ort + Sportart-Filter
+    FE->>API: (2) GET /sessions?city&sport (Filter, nur zukünftige)
+    API-->>FE: (3) [ sessions inkl. confirmed_count ]
+    FE->>OSM: (4) Court-Positionen rendern
+    OSM-->>FE: Tiles / Pins
+    P->>FE: (5) Session wählen → "Beitreten"
+    FE->>API: (6) POST /rest/v1/participants { status: confirmed }
+    alt (7a) Kapazität frei (AF-01, atomar)
+        API-->>FE: 201 { status: confirmed }
+        FE-->>P: "Beigetreten"
+    else (7b) Session voll
+        API-->>FE: 409 Conflict
+        FE-->>P: "Session ist voll" (keine Warteliste, NG-10)
+    end
 ```
 
 **Fehlerbehandlung**:
@@ -205,30 +180,31 @@ Database:
 
 ---
 
-### Szenario 3: Check-In durchführen (Organizer)
+### Szenario 3: Check-in durchführen (Teilnehmer)
 
+Der Check-in wird vom **Teilnehmer** selbst ausgelöst — per QR-Scan (UC-08) oder PIN-Eingabe (UC-09); der Organisator stellt QR/PIN nur bereit und sieht das Ergebnis (UC-07). Die fachliche Prüfung ist in [F3 AF-02](F3-anwendungsfunktionen.md#f34-af-02--check-in-validierung) spezifiziert.
+
+```mermaid
+sequenceDiagram
+    actor P as Teilnehmer
+    participant FE as Frontend
+    participant API as Supabase PostgREST
+    participant DB as PostgreSQL
+
+    Note over P,DB: Session ist active (AF-03), Teilnehmer ist confirmed
+    P->>FE: (1) QR-Code scannen ODER PIN eingeben
+    FE->>API: (2) PATCH /participants/<id> { status: checked_in }
+    API->>DB: (3) UPDATE status=checked_in, checked_in_at=NOW()
+    API-->>FE: (4) 200 { status: checked_in }
+    FE-->>P: (5) "✓ Check-in erfolgreich"
+    Note over FE,DB: idempotent (AF-02); keine Statusrücknahme
 ```
-Organizer in Session-Detail View
-     │
-     ├─► (1) See Participant List (Status: confirmed, checked_in)
-     │
-     ├─► (2) Click "Check-in" Button next to Participant Name
-     │
-     ├─► (3) PUT /rest/v1/participants/<id> (Supabase PostgREST)
-     │        Body: { checked_in: true, checked_in_at: <timestamp> }
-     │
-     ├◄─ (4) Response: { id, status: "checked_in", checked_in_at: ... }
-     │
-     └─► (5) UI: Mark Participant as "✓ Checked in", Update Count
 
-Database (PostgreSQL):
-     └─ participants: UPDATE status="checked_in", checked_in_at=NOW()
-        (idempotent, F3 AF-02; kein Nachrücken/keine Warteliste, P1 NG-10)
-```
-
-**Fehlerbehandlung**:
-- 403 Forbidden: Nutzer ist nicht Organizer → "Nicht berechtigt" Message
-- 404 Not Found: Participant nicht gefunden → "Error: Participant deleted"
+**Fehlerbehandlung** (Ergebniscodes aus AF-02):
+- `NOT_JOINED`: Teilnehmer ist der Session nicht beigetreten → Hinweis „zuerst beitreten"
+- `INVALID_CREDENTIAL`: falsche PIN / QR einer anderen Session → „Ungültiger Code"
+- `OUTSIDE_WINDOW`: Session nicht `active` → „Check-in nur während der Session möglich"
+- `ALREADY_CHECKED_IN`: bereits eingecheckt → Bestätigung ohne Änderung (idempotent)
 
 ---
 
