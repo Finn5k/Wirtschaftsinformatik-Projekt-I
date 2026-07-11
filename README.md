@@ -96,7 +96,10 @@ Im Projekt werden KI-Werkzeuge zur Unterstützung eingesetzt und offengelegt:
 
 - **ChatGPT / Codex** — Dokumentations- und Spezifikationsentwürfe, Recherche
 - **Claude (Claude Code)** — Spezifikationsentwürfe, Konsistenzprüfung, Recherche
-- **GitHub Copilot** — Code-Vervollständigung in der Implementierung
+- **GitHub Copilot** — Dokumentations- und Spezifikationsentwürfe, Code-Vervollständigung in der Implementierung (vorraussichtlich), Recherche
+
+Auch das Frontend wird in der Implementierung mit Codex und GitHub Copilot
+umgesetzt.
 
 Alle KI-Beiträge werden manuell geprüft und überarbeitet; die einzelnen
 Spec-Bausteine weisen die konkrete Nutzung im Abschnitt „Eingesetzte
