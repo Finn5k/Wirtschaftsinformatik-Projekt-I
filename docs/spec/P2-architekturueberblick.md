@@ -252,3 +252,13 @@ Alle Nachbarsysteme sind **Cloud-Services** über HTTPS-APIs, ideal für Free-Ti
 - **M1 — Fachliche Architektur**: `M1-...-md` (zukünftig)
 - **Herold P2 Reference** (English): [GitHub](https://github.com/carstenlucke/herold/blob/main/docs/spec/P2-architekturueberblick.md)
 - **Team & Rollen**: `../../TEAMINFO.md`
+
+---
+
+## P2.7 Eingesetzte KI-Werkzeuge
+
+| Aspekt | Inhalt |
+|---|---|
+| Werkzeug | GitHub Copilot, Claude (Claude Code) |
+| Verwendung | Entwurf des Architekturüberblicks: Systemkontext, Nachbarsysteme, Deployment-Topologie und kritische Datenflüsse. |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Umstellung der Diagramme auf Mermaid, Entfernen überholter Waitlist-Datenflüsse gemäß NG-10) mit Claude Code (Opus 4.8). |

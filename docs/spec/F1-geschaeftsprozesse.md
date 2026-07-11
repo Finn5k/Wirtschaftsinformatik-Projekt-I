@@ -338,3 +338,13 @@ Jeder Prozess besteht aus **Akteuren** (Mensch & IT), **Aktivitäten** (zeitlich
 - **S1 — Nachbarsysteme**: `S1-nachbarsysteme.md` (Schnittstellen-Details)
 - **Siedersleben-Schema**: Kapitel 4.3 (Geschäftsprozesse)
 - **Herold F1 Reference** (English): [GitHub](https://github.com/carstenlucke/herold/blob/main/docs/spec/F1-geschaeftsprozesse.md)
+
+---
+
+## F1.6 Eingesetzte KI-Werkzeuge
+
+| Aspekt | Inhalt |
+|---|---|
+| Werkzeug | GitHub Copilot, Claude (Claude Code) |
+| Verwendung | Entwurf der Geschäftsprozesse (GP-01–GP-03), Aktivitäten, Dokumente, Daten-Stores und Ablaufdiagramme. |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Ablaufdiagramme auf Mermaid, Korrektur halluzinierter Querverweise) mit Claude Code (Opus 4.8). |

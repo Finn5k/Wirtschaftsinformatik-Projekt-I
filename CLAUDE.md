@@ -58,6 +58,7 @@ Beispiele aus der Projekt-Historie: `docs(spec): add F2 use cases`,
   (Geschäftsprozess `GP-nn`, Use Case `UC-nn`, Anwendungsfunktion `AF-nn`, Ziel `G-nn`, Nicht-Ziel `NG-nn`).
 - Alle Dokumente sind auf **Deutsch** verfasst; Tabellen/Listen werden Prosa vorgezogen.
 - Querverweise zwischen Bausteinen werden explizit als Markdown-Links gesetzt.
+- **KI-Werkzeug-Offenlegung (verpflichtend):** Jeder Spezifikationsbaustein dokumentiert die eingesetzten KI-Werkzeuge **persistent** in einem eigenen Abschnitt „Eingesetzte KI-Werkzeuge" (Tabelle mit Werkzeug, Verwendung, Prüfung). Der Abschnitt ist Teil des Bausteins und wird bei Überarbeitungen aktuell gehalten.
 
 ## Referenzprojekte (Vorgaben des Professors)
 
