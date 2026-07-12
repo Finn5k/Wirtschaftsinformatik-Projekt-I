@@ -2,20 +2,27 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
-  Eye,
   FileText,
+  KeyRound,
   MapPin,
   Minus,
   Plus,
-  ShieldCheck,
-  Trophy,
+  QrCode,
+  Timer,
   Users,
   Zap,
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useState } from "react";
+import { Link } from "react-router";
+import { mockCourts } from "../../data/mockCourts";
+import type { SportType } from "../../types/session";
 
-const sports = [
+// Feldliste gemäß B1 DLG-05 (normativ): Sportart, Titel, Beschreibung (Kann),
+// Datum, Uhrzeit, Dauer, Court (Auswahl oder Neuerfassung, UC-10), Teilnehmerlimit.
+// "Empfohlener Rang" und "Sichtbarkeit" sind bewusst entfernt (B1.6, NG-05).
+
+const sports: SportType[] = [
   "Laufen",
   "Radfahren",
   "Fußball",
@@ -24,32 +31,30 @@ const sports = [
   "Schwimmen",
 ];
 
-const ranks = [
-  "Alle Level",
-  "Beginner 1+",
-  "Beginner 2+",
-  "Beginner 3+",
-  "Amateur 1+",
-];
-
-const visibilityOptions = ["Öffentlich", "Nur mit Link", "Privat"];
+const NEW_COURT_VALUE = "__new__";
 
 interface FormState {
-  sportType: string;
+  sportType: SportType;
   title: string;
   description: string;
   date: string;
   time: string;
-  location: string;
-  recommendedRank: string;
-  visibility: string;
+  courtId: string;
+  newCourtName: string;
+  newCourtCity: string;
+  newCourtAddress: string;
 }
 
-type FormErrors = Partial<Record<keyof FormState, string>>;
+type FormErrors = Partial<Record<keyof FormState | "duration", string>>;
+
+function generatePin(): string {
+  return String(Math.floor(Math.random() * 10000)).padStart(4, "0");
+}
 
 export function CreateSessionForm() {
-  const [participantLimit, setParticipantLimit] = useState(15);
-  const [isCreated, setIsCreated] = useState(false);
+  const [participantLimit, setParticipantLimit] = useState(10);
+  const [durationMin, setDurationMin] = useState(60);
+  const [createdPin, setCreatedPin] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
 
   const [form, setForm] = useState<FormState>({
@@ -58,10 +63,13 @@ export function CreateSessionForm() {
     description: "",
     date: "",
     time: "",
-    location: "",
-    recommendedRank: "Alle Level",
-    visibility: "Öffentlich",
+    courtId: "",
+    newCourtName: "",
+    newCourtCity: "",
+    newCourtAddress: "",
   });
+
+  const isNewCourt = form.courtId === NEW_COURT_VALUE;
 
   function updateForm(field: keyof FormState, value: string) {
     setForm((current) => ({
@@ -75,12 +83,12 @@ export function CreateSessionForm() {
     }));
   }
 
-  function decreaseLimit() {
-    setParticipantLimit((current: number) => Math.max(1, current - 1));
+  function changeLimit(delta: number) {
+    setParticipantLimit((current) => Math.min(99, Math.max(1, current + delta)));
   }
 
-  function increaseLimit() {
-    setParticipantLimit((current: number) => Math.min(99, current + 1));
+  function changeDuration(delta: number) {
+    setDurationMin((current) => Math.min(480, Math.max(15, current + delta)));
   }
 
   function validateForm() {
@@ -92,14 +100,28 @@ export function CreateSessionForm() {
 
     if (!form.date) {
       nextErrors.date = "Bitte wähle ein Datum aus.";
+    } else if (form.time) {
+      const startAt = new Date(`${form.date}T${form.time}`);
+      if (Number.isFinite(startAt.getTime()) && startAt.getTime() < Date.now()) {
+        nextErrors.date = "Der Zeitpunkt muss in der Zukunft liegen.";
+      }
     }
 
     if (!form.time) {
       nextErrors.time = "Bitte wähle eine Uhrzeit aus.";
     }
 
-    if (!form.location.trim()) {
-      nextErrors.location = "Bitte gib einen Ort oder Treffpunkt an.";
+    if (!form.courtId) {
+      nextErrors.courtId = "Bitte wähle einen Sportort aus.";
+    }
+
+    if (isNewCourt) {
+      if (!form.newCourtName.trim()) {
+        nextErrors.newCourtName = "Bitte gib einen Namen für den Sportort ein.";
+      }
+      if (!form.newCourtCity.trim()) {
+        nextErrors.newCourtCity = "Bitte gib einen Ort an.";
+      }
     }
 
     setErrors(nextErrors);
@@ -108,16 +130,23 @@ export function CreateSessionForm() {
   }
 
   function handleCreateSession() {
-    const isValid = validateForm();
-
-    if (!isValid) {
+    if (!validateForm()) {
       return;
     }
 
-    setIsCreated(true);
+    // Im finalen System: Session speichern (UC-06), Status "scheduled" (AF-03),
+    // PIN/QR erzeugen (AF-04), Organisator als Teilnehmer erfassen (AF-01).
+    setCreatedPin(generatePin());
   }
 
-  if (isCreated) {
+  if (createdPin) {
+    const courtLabel = isNewCourt
+      ? `${form.newCourtName}, ${form.newCourtCity}`
+      : (() => {
+          const court = mockCourts.find((entry) => entry.id === form.courtId);
+          return court ? `${court.name}, ${court.city}` : "—";
+        })();
+
     return (
       <div className="space-y-4">
         <section className="rounded-[2rem] bg-gradient-to-br from-blue-600 via-cyan-500 to-emerald-400 p-5 text-white shadow-lg shadow-blue-100">
@@ -128,9 +157,34 @@ export function CreateSessionForm() {
           <h2 className="mt-5 text-2xl font-extrabold">Session erstellt</h2>
 
           <p className="mt-2 text-sm leading-6 text-white/85">
-            Deine Session wurde im UI-Prototyp erfolgreich erstellt. Im finalen
-            System würde sie jetzt über die API gespeichert werden.
+            Deine Session ist geplant. Teile QR-Code oder PIN mit deinen
+            Teilnehmern für den Check-in vor Ort.
           </p>
+        </section>
+
+        <section className="rounded-3xl bg-slate-950 p-5 text-white">
+          <div className="flex items-start gap-4">
+            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-white text-slate-950">
+              <QrCode size={64} />
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-bold text-emerald-300">
+                Check-in-Code (nur für dich als Organisator:in)
+              </p>
+
+              <div className="mt-3 flex items-center gap-2">
+                <KeyRound size={18} className="text-emerald-300" />
+                <span className="text-3xl font-extrabold tracking-[0.3em]">
+                  {createdPin}
+                </span>
+              </div>
+
+              <p className="mt-3 text-xs leading-5 text-slate-300">
+                QR-Code und PIN bleiben für die gesamte Session gültig.
+              </p>
+            </div>
+          </div>
         </section>
 
         <section className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
@@ -147,18 +201,25 @@ export function CreateSessionForm() {
             <PreviewItem label="Sportart" value={form.sportType} />
             <PreviewItem label="Datum" value={form.date} />
             <PreviewItem label="Uhrzeit" value={form.time} />
-            <PreviewItem label="Ort" value={form.location} />
-            <PreviewItem label="Teilnehmer" value={`${participantLimit}`} />
-            <PreviewItem label="Rang" value={form.recommendedRank} />
+            <PreviewItem label="Dauer" value={`${durationMin} Min.`} />
+            <PreviewItem label="Sportort" value={courtLabel} />
+            <PreviewItem label="Teilnehmerlimit" value={`${participantLimit}`} />
           </div>
         </section>
 
+        <Link
+          to="/discover"
+          className="block w-full rounded-2xl bg-blue-600 py-3 text-center font-bold text-white"
+        >
+          Zum Entdecken
+        </Link>
+
         <button
           type="button"
-          onClick={() => setIsCreated(false)}
+          onClick={() => setCreatedPin(null)}
           className="w-full rounded-2xl border border-slate-200 bg-white py-3 font-bold text-blue-600"
         >
-          Zurück zum Formular
+          Weitere Session erstellen
         </button>
       </div>
     );
@@ -170,7 +231,7 @@ export function CreateSessionForm() {
         icon={<Zap size={18} />}
         label="Sportart"
         value={form.sportType}
-        options={sports}
+        options={sports.map((sport) => ({ value: sport, label: sport }))}
         onChange={(value) => updateForm("sportType", value)}
       />
 
@@ -185,7 +246,7 @@ export function CreateSessionForm() {
 
       <FormTextarea
         icon={<FileText size={18} />}
-        label="Beschreibung"
+        label="Beschreibung (optional)"
         value={form.description}
         onChange={(value) => updateForm("description", value)}
         placeholder="Beschreibe kurz, worum es bei der Session geht..."
@@ -209,87 +270,73 @@ export function CreateSessionForm() {
         type="time"
       />
 
-      <FormInput
+      <StepperField
+        icon={<Timer size={18} />}
+        label="Dauer"
+        description="Bestimmt das Session-Ende und den Check-in-Zeitraum"
+        value={`${durationMin} Min.`}
+        onDecrease={() => changeDuration(-15)}
+        onIncrease={() => changeDuration(15)}
+      />
+
+      <FormSelect
         icon={<MapPin size={18} />}
-        label="Ort / Treffpunkt"
-        value={form.location}
-        onChange={(value) => updateForm("location", value)}
-        error={errors.location}
-        placeholder="z.B. Treptower Park, Berlin"
+        label="Court / Sportort"
+        value={form.courtId}
+        error={errors.courtId}
+        placeholder="Sportort auswählen ..."
+        options={[
+          ...mockCourts.map((court) => ({
+            value: court.id,
+            label: `${court.name}, ${court.city}`,
+          })),
+          { value: NEW_COURT_VALUE, label: "+ Neuen Sportort anlegen" },
+        ]}
+        onChange={(value) => updateForm("courtId", value)}
       />
 
-      <div className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
-            <Users size={18} />
-          </div>
+      {isNewCourt && (
+        <div className="space-y-3 rounded-3xl border border-blue-100 bg-blue-50/50 p-3">
+          <p className="px-1 text-xs font-bold text-blue-700">
+            Neuer Sportort
+          </p>
 
-          <div className="min-w-0 flex-1">
-            <p className="text-xs font-semibold text-slate-500">
-              Teilnehmerlimit
-            </p>
-            <p className="text-sm font-bold text-slate-950">
-              Maximale Anzahl der Teilnehmer
-            </p>
-          </div>
+          <FormInput
+            icon={<MapPin size={18} />}
+            label="Name des Sportorts"
+            value={form.newCourtName}
+            onChange={(value) => updateForm("newCourtName", value)}
+            error={errors.newCourtName}
+            placeholder="z.B. Bolzplatz Nordstadt"
+          />
 
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={decreaseLimit}
-              className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 text-slate-700"
-            >
-              <Minus size={16} />
-            </button>
+          <FormInput
+            icon={<MapPin size={18} />}
+            label="Ort / Stadt"
+            value={form.newCourtCity}
+            onChange={(value) => updateForm("newCourtCity", value)}
+            error={errors.newCourtCity}
+            placeholder="z.B. Gießen"
+          />
 
-            <span className="w-6 text-center font-bold text-slate-950">
-              {participantLimit}
-            </span>
-
-            <button
-              type="button"
-              onClick={increaseLimit}
-              className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-white"
-            >
-              <Plus size={16} />
-            </button>
-          </div>
+          <FormInput
+            icon={<MapPin size={18} />}
+            label="Adresse (optional)"
+            value={form.newCourtAddress}
+            onChange={(value) => updateForm("newCourtAddress", value)}
+            placeholder="z.B. Nordstadtstraße 12"
+          />
         </div>
-      </div>
+      )}
 
-      <FormSelect
-        icon={<Trophy size={18} />}
-        label="Empfohlener Rang"
-        value={form.recommendedRank}
-        options={ranks}
-        onChange={(value) => updateForm("recommendedRank", value)}
+      <StepperField
+        icon={<Users size={18} />}
+        label="Teilnehmerlimit"
+        description="Du belegst als Organisator:in einen der Plätze"
+        value={`${participantLimit}`}
+        onDecrease={() => changeLimit(-1)}
+        onIncrease={() => changeLimit(1)}
       />
-
-      <FormSelect
-        icon={<Eye size={18} />}
-        label="Sichtbarkeit"
-        value={form.visibility}
-        options={visibilityOptions}
-        onChange={(value) => updateForm("visibility", value)}
-      />
-
-      <div className="rounded-3xl bg-blue-50 p-4">
-        <div className="flex gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-white">
-            <ShieldCheck size={18} />
-          </div>
-
-          <div>
-            <p className="text-sm font-bold text-slate-950">
-              Hinweis zum MVP
-            </p>
-            <p className="mt-1 text-xs leading-5 text-slate-600">
-              Die Session wird vorerst lokal als UI-Prototyp dargestellt. Die
-              Backend-Anbindung folgt später über die API.
-            </p>
-          </div>
-        </div>
-      </div>
 
       <button
         type="button"
@@ -392,19 +439,44 @@ function FormTextarea({
   );
 }
 
+interface FormSelectOption {
+  value: string;
+  label: string;
+}
+
 interface FormSelectProps {
   icon: ReactNode;
   label: string;
   value: string;
-  options: string[];
+  options: FormSelectOption[];
   onChange: (value: string) => void;
+  error?: string;
+  placeholder?: string;
 }
 
-function FormSelect({ icon, label, value, options, onChange }: FormSelectProps) {
+function FormSelect({
+  icon,
+  label,
+  value,
+  options,
+  onChange,
+  error,
+  placeholder,
+}: FormSelectProps) {
   return (
-    <label className="block rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
+    <label
+      className={[
+        "block rounded-3xl border bg-white p-4 shadow-sm",
+        error ? "border-red-200" : "border-slate-100",
+      ].join(" ")}
+    >
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-50 text-slate-600">
+        <div
+          className={[
+            "flex h-10 w-10 items-center justify-center rounded-2xl",
+            error ? "bg-red-50 text-red-600" : "bg-slate-50 text-slate-600",
+          ].join(" ")}
+        >
           {icon}
         </div>
 
@@ -415,13 +487,77 @@ function FormSelect({ icon, label, value, options, onChange }: FormSelectProps) 
             onChange={(event) => onChange(event.target.value)}
             className="mt-1 w-full bg-transparent text-sm font-bold text-slate-950 outline-none"
           >
+            {placeholder && (
+              <option value="" disabled>
+                {placeholder}
+              </option>
+            )}
             {options.map((option) => (
-              <option key={option}>{option}</option>
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
             ))}
           </select>
         </div>
       </div>
+
+      {error && <p className="mt-3 text-xs font-bold text-red-600">{error}</p>}
     </label>
+  );
+}
+
+interface StepperFieldProps {
+  icon: ReactNode;
+  label: string;
+  description: string;
+  value: string;
+  onDecrease: () => void;
+  onIncrease: () => void;
+}
+
+function StepperField({
+  icon,
+  label,
+  description,
+  value,
+  onDecrease,
+  onIncrease,
+}: StepperFieldProps) {
+  return (
+    <div className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+          {icon}
+        </div>
+
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-semibold text-slate-500">{label}</p>
+          <p className="text-sm font-bold text-slate-950">{description}</p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onDecrease}
+            className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 text-slate-700"
+          >
+            <Minus size={16} />
+          </button>
+
+          <span className="w-16 text-center font-bold text-slate-950">
+            {value}
+          </span>
+
+          <button
+            type="button"
+            onClick={onIncrease}
+            className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-white"
+          >
+            <Plus size={16} />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

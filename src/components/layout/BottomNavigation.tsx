@@ -1,17 +1,19 @@
 import { CalendarDays, Map, Plus, Search, User } from "lucide-react";
 import { NavLink } from "react-router";
 
+// Hauptnavigation gemäß B1.5.1: Entdecken, Karte, Erstellen, Meine Sessions, Profil.
 const navItems = [
   { to: "/discover", label: "Entdecken", icon: Search },
   { to: "/map", label: "Karte", icon: Map },
   { to: "/sessions/new", label: "Erstellen", icon: Plus },
-  { to: "/events", label: "Events", icon: CalendarDays },
+  { to: "/my-sessions", label: "Sessions", icon: CalendarDays },
   { to: "/profile", label: "Profil", icon: User },
 ];
 
 export function BottomNavigation() {
+  // z-[1200] hält die Navigation über allen Leaflet-Ebenen (Panes/Controls enden bei z-1000).
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-200 bg-white md:left-1/2 md:max-w-md md:-translate-x-1/2 md:rounded-t-3xl md:border md:shadow-lg">
+    <nav className="fixed bottom-0 left-0 right-0 z-[1200] border-t border-slate-200 bg-white md:left-1/2 md:max-w-md md:-translate-x-1/2 md:rounded-t-3xl md:border md:shadow-lg">
       <div className="grid grid-cols-5 px-2 py-2">
         {navItems.map((item) => {
           const Icon = item.icon;

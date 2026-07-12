@@ -3,18 +3,67 @@ import {
   Calendar,
   CheckCircle2,
   Clock,
+  KeyRound,
   MapPin,
   QrCode,
-  Share2,
-  Trophy,
+  SearchX,
+  Timer,
   Users,
 } from "lucide-react";
-import { Link, useParams } from "react-router";
+import { useState } from "react";
+import { Link, useNavigate, useParams } from "react-router";
 import { StatusBadge } from "../components/sessions/StatusBadge";
-import { getSessionById, getSessions } from "../services/sessionService";
+import { getSessionById } from "../services/sessionService";
+import { getCurrentUser } from "../services/userService";
+import { isSessionFull } from "../types/session";
+
+// Session-Detail gemäß B1 DLG-04 mit rollen- und statusabhängigen Zuständen:
+// Offen / Beigetreten / Organisator / Read-only (UC-03, UC-04, UC-07).
 export function SessionDetailPage() {
   const { sessionId } = useParams();
-const session = getSessionById(sessionId) ?? getSessions()[0];
+  const navigate = useNavigate();
+
+  const session = getSessionById(sessionId);
+  const currentUser = getCurrentUser();
+
+  const initiallyJoined = session
+    ? session.participants.some((p) => p.id === currentUser.id)
+    : false;
+
+  // Lokaler Demo-Zustand: simuliert den Beitritt (im finalen System AF-01 über die API).
+  const [hasJoined, setHasJoined] = useState(initiallyJoined);
+
+  if (!session) {
+    return (
+      <div className="flex min-h-[780px] flex-col items-center justify-center bg-slate-50 px-6 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-slate-100 text-slate-400">
+          <SearchX size={30} />
+        </div>
+
+        <h1 className="mt-5 text-2xl font-extrabold text-slate-950">
+          Session nicht gefunden
+        </h1>
+
+        <p className="mt-2 max-w-xs text-sm leading-6 text-slate-500">
+          Diese Session existiert nicht oder ist nicht mehr verfügbar.
+        </p>
+
+        <Link
+          to="/discover"
+          className="mt-6 rounded-2xl bg-blue-600 px-6 py-3 font-bold text-white"
+        >
+          Zurück zum Entdecken
+        </Link>
+      </div>
+    );
+  }
+
+  const isOrganizer = session.organizerId === currentUser.id;
+  const isReadOnly =
+    session.status === "completed" || session.status === "cancelled";
+  const isFull = isSessionFull(session);
+  const canJoin = !isOrganizer && !hasJoined && !isReadOnly && !isFull;
+  const canCheckIn = !isOrganizer && hasJoined && session.status === "active";
 
   return (
     <div className="min-h-[780px] bg-white">
@@ -25,16 +74,13 @@ const session = getSessionById(sessionId) ?? getSessions()[0];
           className="h-64 w-full object-cover"
         />
 
-        <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4">
-          <Link
-            to="/discover"
+        <div className="absolute inset-x-0 top-0 p-4">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
             className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/90 text-slate-800 shadow-sm backdrop-blur"
           >
             <ArrowLeft size={20} />
-          </Link>
-
-          <button className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/90 text-slate-800 shadow-sm backdrop-blur">
-            <Share2 size={20} />
           </button>
         </div>
 
@@ -46,18 +92,34 @@ const session = getSessionById(sessionId) ?? getSessions()[0];
             <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
               {session.sportType}
             </span>
+            {isFull && !isReadOnly && (
+              <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">
+                Voll
+              </span>
+            )}
           </div>
 
           <h1 className="text-3xl font-extrabold text-white">
             {session.title}
           </h1>
           <p className="mt-1 text-sm font-medium text-white/80">
-            organisiert von {session.organizerName}
+            organisiert von {isOrganizer ? "dir" : session.organizerName}
           </p>
         </div>
       </div>
 
       <div className="space-y-5 px-4 py-5">
+        {isReadOnly && (
+          <section className="rounded-3xl bg-slate-100 p-4">
+            <p className="text-sm font-bold text-slate-700">
+              Diese Session ist abgeschlossen.
+            </p>
+            <p className="mt-1 text-sm text-slate-500">
+              Beitritt und Check-in sind nicht mehr möglich (nur Ansicht).
+            </p>
+          </section>
+        )}
+
         <section className="rounded-3xl bg-slate-50 p-4">
           <p className="text-sm leading-6 text-slate-700">
             {session.description}
@@ -76,23 +138,49 @@ const session = getSessionById(sessionId) ?? getSessions()[0];
             value={session.timeLabel}
           />
           <InfoCard
+            icon={<Timer size={18} />}
+            label="Dauer"
+            value={`${session.durationMin} Min.`}
+          />
+          <InfoCard
             icon={<MapPin size={18} />}
             label="Treffpunkt"
             value={session.meetingPoint}
           />
-          <InfoCard
-            icon={<Trophy size={18} />}
-            label="XP"
-            value={`+${session.xpReward} XP`}
-          />
         </section>
+
+        {isOrganizer && !isReadOnly && (
+          <section className="rounded-3xl bg-slate-950 p-4 text-white">
+            <div className="flex items-start gap-4">
+              <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-white text-slate-950">
+                <QrCode size={48} />
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <h2 className="font-extrabold">Check-in-Code</h2>
+                <p className="mt-1 text-xs leading-5 text-slate-300">
+                  Zeige den QR-Code am Treffpunkt oder nenne die PIN, damit
+                  Teilnehmer einchecken können.
+                </p>
+
+                <div className="mt-3 flex items-center gap-2">
+                  <KeyRound size={16} className="text-emerald-300" />
+                  <span className="text-2xl font-extrabold tracking-[0.3em]">
+                    {session.pin}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
 
         <section className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <div>
               <h2 className="font-extrabold text-slate-950">Teilnehmer</h2>
               <p className="text-sm text-slate-500">
-                {session.participantsCount} von {session.maxParticipants} Plätzen belegt
+                {session.participantsCount} von {session.maxParticipants}{" "}
+                Plätzen belegt
               </p>
             </div>
 
@@ -128,48 +216,53 @@ const session = getSessionById(sessionId) ?? getSessions()[0];
                   </p>
                 </div>
 
-                {participant.checkedIn ? (
-                  <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-700">
-                    <CheckCircle2 size={13} />
-                    Eingecheckt
-                  </span>
-                ) : (
-                  <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">
-                    Beigetreten
-                  </span>
-                )}
+                {/* Check-in-Status nur für Organisator:innen sichtbar (B1 DLG-04, UC-07) */}
+                {isOrganizer ? (
+                  participant.status === "checked_in" ? (
+                    <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-700">
+                      <CheckCircle2 size={13} />
+                      Eingecheckt
+                    </span>
+                  ) : (
+                    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">
+                      Beigetreten
+                    </span>
+                  )
+                ) : null}
               </div>
             ))}
           </div>
         </section>
 
-        <section className="rounded-3xl bg-slate-950 p-4 text-white">
-          <div className="flex items-start gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-emerald-300">
-              <QrCode size={24} />
-            </div>
+        {canCheckIn && (
+          <section className="rounded-3xl bg-slate-950 p-4 text-white">
+            <div className="flex items-start gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-emerald-300">
+                <QrCode size={24} />
+              </div>
 
-            <div className="min-w-0 flex-1">
-              <h2 className="font-extrabold">Check-in vor Ort</h2>
-              <p className="mt-1 text-sm leading-6 text-slate-300">
-                Scanne beim Leader den QR-Code, um deine Anwesenheit zu bestätigen
-                und XP zu sammeln.
-              </p>
+              <div className="min-w-0 flex-1">
+                <h2 className="font-extrabold">Check-in vor Ort</h2>
+                <p className="mt-1 text-sm leading-6 text-slate-300">
+                  Scanne den QR-Code beim Organisator oder gib die PIN ein, um
+                  deine Anwesenheit zu bestätigen.
+                </p>
 
-              <Link
-                to={`/check-in/${session.id}`}
-                className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-emerald-500 py-3 font-bold text-white"
-              >
-                Zum Check-in
-              </Link>
+                <Link
+                  to={`/check-in/${session.id}`}
+                  className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-emerald-500 py-3 font-bold text-white"
+                >
+                  Zum Check-in
+                </Link>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         <section className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
             <div>
-              <h2 className="font-extrabold text-slate-950">Location</h2>
+              <h2 className="font-extrabold text-slate-950">Sportort</h2>
               <p className="text-sm text-slate-500">
                 {session.locationName}, {session.city}
               </p>
@@ -186,15 +279,29 @@ const session = getSessionById(sessionId) ?? getSessions()[0];
           </div>
         </section>
 
-        <div className="sticky bottom-24 z-10 grid grid-cols-2 gap-3 rounded-3xl bg-white/90 p-2 shadow-xl backdrop-blur">
-          <button className="rounded-2xl border border-slate-200 py-3 font-bold text-blue-600">
-            Merken
-          </button>
-
-          <button className="rounded-2xl bg-blue-600 py-3 font-bold text-white">
-            Beitreten
-          </button>
-        </div>
+        {!isReadOnly && !isOrganizer && (
+          <div className="sticky bottom-24 z-10 rounded-3xl bg-white/90 p-2 shadow-xl backdrop-blur">
+            {canJoin ? (
+              <button
+                type="button"
+                onClick={() => setHasJoined(true)}
+                className="w-full rounded-2xl bg-blue-600 py-3 font-bold text-white"
+              >
+                Beitreten
+              </button>
+            ) : hasJoined ? (
+              <div className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-50 py-3 font-bold text-emerald-700">
+                <CheckCircle2 size={18} />
+                Du bist dabei
+              </div>
+            ) : (
+              // Volle Session: harte Kapazitätsgrenze, keine Warteliste (P1 NG-10, F3 AF-01)
+              <div className="rounded-2xl bg-amber-50 py-3 text-center font-bold text-amber-700">
+                Session ist voll
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

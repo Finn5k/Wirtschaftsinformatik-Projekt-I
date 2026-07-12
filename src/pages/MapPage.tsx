@@ -1,17 +1,15 @@
 import L from "leaflet";
-import {
-  LocateFixed,
-  Navigation,
-  SlidersHorizontal,
-} from "lucide-react";
+import { LocateFixed, Navigation } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { StatusBadge } from "../components/sessions/StatusBadge";
-import { getSessions } from "../services/sessionService";
-import type { SportSession } from "../types/session";
+import { getSessionsBySportType } from "../services/sessionService";
+import type { SportSession, SportType } from "../types/session";
 
-const filters = [
+type SessionFilter = "Alle" | SportType;
+
+const filters: SessionFilter[] = [
   "Alle",
   "Laufen",
   "Radfahren",
@@ -52,11 +50,13 @@ function createSessionMarkerIcon(isSelected: boolean) {
 }
 
 export function MapPage() {
+  const [activeFilter, setActiveFilter] = useState<SessionFilter>("Alle");
   const [selectedSession, setSelectedSession] = useState<SportSession | null>(
     null,
   );
 
-  const sessions = getSessions();
+  // Nur zukünftige/laufende Sessions, gefiltert nach Sportart (B1 DLG-03, UC-02).
+  const sessions = getSessionsBySportType(activeFilter);
 
   const mapCenter = useMemo<[number, number]>(() => {
     if (!selectedSession) {
@@ -66,48 +66,53 @@ export function MapPage() {
     return [selectedSession.latitude, selectedSession.longitude];
   }, [selectedSession]);
 
+  function selectFilter(filter: SessionFilter) {
+    setActiveFilter(filter);
+    setSelectedSession(null);
+  }
+
   return (
-    <div className="relative min-h-[780px] overflow-hidden bg-slate-100">
+    <div className="relative -mb-24 overflow-hidden bg-slate-100">
       <header className="absolute left-0 right-0 top-0 z-[1000] px-4 pt-5">
-        <div className="mb-4 flex items-center justify-between">
-          <div className="rounded-3xl bg-white/90 px-4 py-3 shadow-sm backdrop-blur">
+        <div className="mb-4">
+          <div className="inline-block rounded-3xl bg-white/90 px-4 py-3 shadow-sm backdrop-blur">
             <p className="text-xs font-semibold text-blue-600">Karte</p>
             <h1 className="text-xl font-extrabold text-slate-950">
               Sessions in deiner Nähe
             </h1>
           </div>
-
-          <button
-            type="button"
-            className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-slate-700 shadow-sm"
-          >
-            <SlidersHorizontal size={20} />
-          </button>
         </div>
 
         <div className="flex gap-2 overflow-x-auto pb-1">
-          {filters.map((filter, index) => (
-            <button
-              key={filter}
-              type="button"
-              className={[
-                "whitespace-nowrap rounded-2xl px-4 py-2 text-sm font-bold shadow-sm backdrop-blur",
-                index === 0
-                  ? "bg-blue-600 text-white"
-                  : "bg-white/90 text-slate-700",
-              ].join(" ")}
-            >
-              {filter}
-            </button>
-          ))}
+          {filters.map((filter) => {
+            const isActive = filter === activeFilter;
+
+            return (
+              <button
+                key={filter}
+                type="button"
+                onClick={() => selectFilter(filter)}
+                className={[
+                  "whitespace-nowrap rounded-2xl px-4 py-2 text-sm font-bold shadow-sm backdrop-blur",
+                  isActive
+                    ? "bg-blue-600 text-white"
+                    : "bg-white/90 text-slate-700",
+                ].join(" ")}
+              >
+                {filter}
+              </button>
+            );
+          })}
         </div>
       </header>
 
-      <div className="h-[780px] w-full">
+      {/* Höhe = Viewport minus Bottom-Navigation, damit die Karte bündig bis zur Navigation reicht */}
+      <div className="h-[calc(100dvh-5.5rem)] w-full">
         <MapContainer
           center={defaultCenter}
           zoom={12}
           scrollWheelZoom
+          zoomControl={false}
           className="h-full w-full"
         >
           <TileLayer
@@ -134,7 +139,7 @@ export function MapPage() {
                   <br />
                   {session.locationName}
                   <br />
-                  {session.timeLabel}
+                  {session.dateLabel} · {session.timeLabel}
                 </Popup>
               </Marker>
             );
@@ -192,9 +197,9 @@ export function MapPage() {
             </div>
 
             <div className="rounded-2xl bg-slate-50 p-3">
-              <p className="text-xs text-slate-500">XP</p>
+              <p className="text-xs text-slate-500">Dauer</p>
               <p className="font-extrabold text-slate-950">
-                +{selectedSession.xpReward}
+                {selectedSession.durationMin} Min.
               </p>
             </div>
           </div>

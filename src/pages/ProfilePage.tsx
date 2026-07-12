@@ -1,223 +1,237 @@
-import type { ReactNode } from "react";
-import { Award, Flame, Medal, Settings, Shirt, Trophy } from "lucide-react";
-import { getRecentActivities } from "../services/activityService";
+import { Check, LogOut, Mail, MapPin, Pencil, X } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router";
 import { getCurrentUser } from "../services/userService";
+import type { SportType } from "../types/session";
+
+// Profil gemäß B1 DLG-08 (UC-12): Anzeigename, Ort, E-Mail (read-only, Auth),
+// bevorzugte Sportarten. Zustände: Ansicht / Bearbeiten.
+// Level/XP/Rang, Streak, Abzeichen und Avatar-Items sind bewusst entfernt (NG-05).
+
+const allSports: SportType[] = [
+  "Laufen",
+  "Radfahren",
+  "Fußball",
+  "Basketball",
+  "Badminton",
+  "Schwimmen",
+];
 
 export function ProfilePage() {
-  const mockUser = getCurrentUser();
-  const mockActivities = getRecentActivities();
+  const navigate = useNavigate();
+  const currentUser = getCurrentUser();
 
-  const progress = Math.round(
-    (mockUser.currentXp / mockUser.nextLevelXp) * 100,
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState(currentUser.name);
+  const [city, setCity] = useState(currentUser.city);
+  const [sports, setSports] = useState<SportType[]>(
+    currentUser.preferredSports,
   );
 
-  const remainingXp = mockUser.nextLevelXp - mockUser.currentXp;
+  const [draftName, setDraftName] = useState(name);
+  const [draftCity, setDraftCity] = useState(city);
+  const [draftSports, setDraftSports] = useState<SportType[]>(sports);
+  const [nameError, setNameError] = useState<string | null>(null);
+
+  function startEditing() {
+    setDraftName(name);
+    setDraftCity(city);
+    setDraftSports(sports);
+    setNameError(null);
+    setIsEditing(true);
+  }
+
+  function toggleSport(sport: SportType) {
+    setDraftSports((current) =>
+      current.includes(sport)
+        ? current.filter((entry) => entry !== sport)
+        : [...current, sport],
+    );
+  }
+
+  function saveChanges() {
+    if (!draftName.trim()) {
+      setNameError("Bitte gib einen Anzeigenamen ein.");
+      return;
+    }
+
+    // Im finalen System: UC-12 speichert die Änderungen über die API.
+    setName(draftName.trim());
+    setCity(draftCity.trim());
+    setSports(draftSports);
+    setIsEditing(false);
+  }
 
   return (
     <div className="min-h-[780px] bg-slate-50">
-      <section className="rounded-b-[2rem] bg-gradient-to-br from-blue-600 via-cyan-500 to-emerald-400 px-4 pb-6 pt-5 text-white">
+      <section className="rounded-b-[2rem] bg-gradient-to-br from-blue-600 via-cyan-500 to-emerald-400 px-4 pb-8 pt-5 text-white">
         <div className="mb-5 flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold text-white/80">Profil</p>
-            <h1 className="text-2xl font-extrabold">{mockUser.name}</h1>
+            <h1 className="text-2xl font-extrabold">{name}</h1>
           </div>
 
-          <button className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/15 backdrop-blur">
-            <Settings size={20} />
-          </button>
+          {!isEditing && (
+            <button
+              type="button"
+              onClick={startEditing}
+              className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/15 backdrop-blur"
+            >
+              <Pencil size={18} />
+            </button>
+          )}
         </div>
 
         <div className="flex items-center gap-4">
           <img
-            src={mockUser.avatarUrl}
-            alt={mockUser.name}
+            src={currentUser.avatarUrl}
+            alt={name}
             className="h-20 w-20 rounded-3xl border-4 border-white/30 object-cover shadow-lg"
           />
 
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-white/80">
-              {mockUser.city}
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-white/85">
+              <MapPin size={14} />
+              {city || "Kein Ort angegeben"}
             </p>
-
-            <div className="mt-2 flex items-center gap-2">
-              <span className="rounded-full bg-white px-3 py-1 text-xs font-extrabold text-blue-700">
-                Level {mockUser.level}
-              </span>
-              <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white">
-                {mockUser.rank}
-              </span>
-            </div>
+            <p className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-white/85">
+              <Mail size={14} />
+              {currentUser.email}
+            </p>
           </div>
         </div>
+      </section>
 
-        <div className="mt-6 rounded-3xl bg-white p-4 text-slate-950 shadow-xl shadow-blue-900/10">
-          <div className="mb-3 flex items-center justify-between">
-            <div>
+      {isEditing ? (
+        <section className="space-y-4 px-4 pt-5">
+          <div className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
+            <h2 className="font-extrabold text-slate-950">Profil bearbeiten</h2>
+
+            <label className="mt-4 block">
               <p className="text-xs font-semibold text-slate-500">
-                XP Fortschritt
+                Anzeigename
               </p>
-              <p className="font-extrabold text-slate-950">
-                {mockUser.currentXp} / {mockUser.nextLevelXp} XP
-              </p>
-            </div>
-
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
-              <Trophy size={22} />
-            </div>
-          </div>
-
-          <div className="h-3 overflow-hidden rounded-full bg-slate-100">
-            <div
-              className="h-full rounded-full bg-blue-600"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-
-          <p className="mt-3 text-sm font-semibold text-slate-500">
-            Noch {remainingXp} XP bis zum nächsten Level
-          </p>
-        </div>
-      </section>
-
-      <section className="grid grid-cols-2 gap-3 px-4 pt-5">
-        <StatCard
-          icon={<Flame size={20} />}
-          label="Streak"
-          value={`${mockUser.streakDays} Tage`}
-          colorClass="bg-orange-50 text-orange-600"
-        />
-
-        <StatCard
-          icon={<Medal size={20} />}
-          label="Abzeichen"
-          value="12"
-          colorClass="bg-blue-50 text-blue-600"
-        />
-      </section>
-
-      <section className="px-4 pt-5">
-        <div className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
-          <div className="mb-4">
-            <h2 className="font-extrabold text-slate-950">
-              Bevorzugte Sportarten
-            </h2>
-            <p className="text-sm text-slate-500">
-              Darauf basieren deine Empfehlungen
-            </p>
-          </div>
-
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {mockUser.preferredSports.map((sport) => (
-              <span
-                key={sport}
-                className="whitespace-nowrap rounded-2xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700"
-              >
-                {sport}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 pt-5">
-        <div className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <h2 className="font-extrabold text-slate-950">Dein Avatar</h2>
-              <p className="text-sm text-slate-500">
-                MVP-Ansicht für spätere Avatar-Items
-              </p>
-            </div>
-
-            <Shirt className="text-blue-600" size={22} />
-          </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            <AvatarItem label="Shirt" active />
-            <AvatarItem label="Shorts" />
-            <AvatarItem label="Shoes" />
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 pb-6 pt-5">
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-extrabold text-slate-950">Letzte Aktivitäten</h2>
-          <button className="text-sm font-bold text-blue-600">
-            Mehr anzeigen
-          </button>
-        </div>
-
-        <div className="space-y-3">
-          {mockActivities.map((activity) => (
-            <div
-              key={activity.id}
-              className="flex items-center gap-3 rounded-3xl border border-slate-100 bg-white p-3 shadow-sm"
-            >
-              <img
-                src={activity.imageUrl}
-                alt={activity.title}
-                className="h-14 w-14 rounded-2xl object-cover"
+              <input
+                value={draftName}
+                onChange={(event) => {
+                  setDraftName(event.target.value);
+                  setNameError(null);
+                }}
+                className={[
+                  "mt-1 w-full rounded-2xl border px-4 py-3 text-sm font-bold text-slate-950 outline-none",
+                  nameError ? "border-red-300 bg-red-50" : "border-slate-200",
+                ].join(" ")}
               />
+              {nameError && (
+                <p className="mt-2 text-xs font-bold text-red-600">
+                  {nameError}
+                </p>
+              )}
+            </label>
 
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-bold text-slate-950">
-                  {activity.title}
-                </p>
-                <p className="text-sm text-slate-500">
-                  {activity.sportType} · {activity.dateLabel}
-                </p>
+            <label className="mt-4 block">
+              <p className="text-xs font-semibold text-slate-500">
+                Ort (optional)
+              </p>
+              <input
+                value={draftCity}
+                onChange={(event) => setDraftCity(event.target.value)}
+                className="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-950 outline-none"
+              />
+            </label>
+
+            <div className="mt-4">
+              <p className="text-xs font-semibold text-slate-500">
+                Bevorzugte Sportarten
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {allSports.map((sport) => {
+                  const isSelected = draftSports.includes(sport);
+
+                  return (
+                    <button
+                      key={sport}
+                      type="button"
+                      onClick={() => toggleSport(sport)}
+                      className={[
+                        "rounded-2xl px-4 py-2 text-sm font-bold transition",
+                        isSelected
+                          ? "bg-blue-600 text-white"
+                          : "bg-slate-100 text-slate-700",
+                      ].join(" ")}
+                    >
+                      {sport}
+                    </button>
+                  );
+                })}
               </div>
-
-              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-extrabold text-emerald-700">
-                +{activity.xp} XP
-              </span>
             </div>
-          ))}
-        </div>
-      </section>
-    </div>
-  );
-}
+          </div>
 
-interface StatCardProps {
-  icon: ReactNode;
-  label: string;
-  value: string;
-  colorClass: string;
-}
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setIsEditing(false)}
+              className="flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white py-3 font-bold text-slate-700"
+            >
+              <X size={16} />
+              Abbrechen
+            </button>
 
-function StatCard({ icon, label, value, colorClass }: StatCardProps) {
-  return (
-    <div className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
-      <div
-        className={`mb-3 flex h-10 w-10 items-center justify-center rounded-2xl ${colorClass}`}
-      >
-        {icon}
-      </div>
-      <p className="text-sm text-slate-500">{label}</p>
-      <p className="font-extrabold text-slate-950">{value}</p>
-    </div>
-  );
-}
+            <button
+              type="button"
+              onClick={saveChanges}
+              className="flex items-center justify-center gap-2 rounded-2xl bg-blue-600 py-3 font-bold text-white"
+            >
+              <Check size={16} />
+              Speichern
+            </button>
+          </div>
+        </section>
+      ) : (
+        <section className="px-4 pt-5">
+          <div className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
+            <div className="mb-4">
+              <h2 className="font-extrabold text-slate-950">
+                Bevorzugte Sportarten
+              </h2>
+              <p className="text-sm text-slate-500">
+                Unterstützen dich bei der Suche
+              </p>
+            </div>
 
-interface AvatarItemProps {
-  label: string;
-  active?: boolean;
-}
+            {sports.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {sports.map((sport) => (
+                  <span
+                    key={sport}
+                    className="rounded-2xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700"
+                  >
+                    {sport}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-slate-500">
+                Noch keine Sportarten ausgewählt.
+              </p>
+            )}
+          </div>
+        </section>
+      )}
 
-function AvatarItem({ label, active = false }: AvatarItemProps) {
-  return (
-    <div
-      className={[
-        "flex h-24 flex-col items-center justify-center rounded-3xl border text-center",
-        active
-          ? "border-blue-200 bg-blue-50 text-blue-700"
-          : "border-slate-100 bg-slate-50 text-slate-500",
-      ].join(" ")}
-    >
-      <Award size={22} />
-      <p className="mt-2 text-xs font-bold">{label}</p>
+      {!isEditing && (
+        <section className="px-4 pb-6 pt-5">
+          <button
+            type="button"
+            onClick={() => navigate("/login")}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white py-3 font-bold text-red-600 shadow-sm"
+          >
+            <LogOut size={18} />
+            Abmelden
+          </button>
+        </section>
+      )}
     </div>
   );
 }

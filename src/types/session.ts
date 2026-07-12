@@ -7,43 +7,61 @@ export type SportType =
   | "Schwimmen"
   | "Sonstiges";
 
-export type SessionStatus = "OPEN" | "FULL" | "CANCELLED" | "COMPLETED";
+// Statuswerte gemäß Spezifikation D2.3 (SessionStatus).
+// "Voll" ist kein Status, sondern wird aus der Belegung abgeleitet (AF-01).
+export type SessionStatus = "scheduled" | "active" | "completed" | "cancelled";
 
-export type Rank =
-  | "Beginner 1"
-  | "Beginner 2"
-  | "Beginner 3"
-  | "Amateur 1"
-  | "Amateur 2"
-  | "Pro 1";
+// Teilnahmestatus gemäß Spezifikation D2.5 (ParticipantStatus).
+export type ParticipantStatus = "confirmed" | "checked_in";
 
 export interface Participant {
   id: string;
   name: string;
-  checkedIn: boolean;
+  status: ParticipantStatus;
   avatarUrl?: string;
+}
+
+// Sportort gemäß Spezifikation D1 (court).
+export interface Court {
+  id: string;
+  name: string;
+  city: string;
+  address?: string;
+  latitude: number;
+  longitude: number;
 }
 
 export interface SportSession {
   id: string;
   title: string;
   sportType: SportType;
+  courtId: string;
   locationName: string;
   city: string;
   dateLabel: string;
   timeLabel: string;
   description: string;
   meetingPoint: string;
-  durationLabel: string;
-  distanceLabel?: string;
+  durationMin: number;
   participantsCount: number;
   maxParticipants: number;
-  recommendedRank: Rank;
   status: SessionStatus;
+  organizerId: string;
   organizerName: string;
-  xpReward: number;
+  pin: string;
   imageUrl: string;
   participants: Participant[];
   latitude: number;
   longitude: number;
+}
+
+export function isSessionFull(session: SportSession): boolean {
+  return session.participantsCount >= session.maxParticipants;
+}
+
+export function isSessionJoinable(session: SportSession): boolean {
+  return (
+    (session.status === "scheduled" || session.status === "active") &&
+    !isSessionFull(session)
+  );
 }
