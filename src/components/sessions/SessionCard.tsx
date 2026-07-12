@@ -1,6 +1,7 @@
-import { Clock, MapPin, Trophy, Users } from "lucide-react";
+import { Clock, MapPin, Timer, Users } from "lucide-react";
 import { Link } from "react-router";
 import type { SportSession } from "../../types/session";
+import { isSessionFull } from "../../types/session";
 import { StatusBadge } from "./StatusBadge";
 
 interface SessionCardProps {
@@ -12,8 +13,9 @@ export function SessionCard({ session }: SessionCardProps) {
     (session.participantsCount / session.maxParticipants) * 100,
   );
 
-  const isFull = session.status === "FULL";
-  const actionLabel = isFull ? "Warteliste" : "Details";
+  // "Voll" ist abgeleitet aus der Belegung (AF-01), kein eigener Status.
+  // Volle Sessions bleiben ansehbar, aber ohne Beitritt — keine Warteliste (P1 NG-10).
+  const isFull = isSessionFull(session);
 
   return (
     <article className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-sm">
@@ -30,6 +32,11 @@ export function SessionCard({ session }: SessionCardProps) {
             <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">
               {session.sportType}
             </span>
+            {isFull && session.status !== "completed" && (
+              <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-700">
+                Voll
+              </span>
+            )}
           </div>
 
           <h3 className="truncate text-base font-extrabold text-slate-950">
@@ -52,8 +59,8 @@ export function SessionCard({ session }: SessionCardProps) {
             </div>
 
             <div className="flex items-center justify-end gap-1 font-semibold text-slate-700">
-              <Trophy size={13} className="text-emerald-600" />
-              <span>+{session.xpReward} XP</span>
+              <Timer size={13} className="text-blue-600" />
+              <span>{session.durationMin} Min.</span>
             </div>
           </div>
         </div>
@@ -83,20 +90,17 @@ export function SessionCard({ session }: SessionCardProps) {
 
         <div className="mt-3 flex items-center justify-between gap-3">
           <div>
-            <p className="text-xs text-slate-500">Empfohlen</p>
+            <p className="text-xs text-slate-500">Organisiert von</p>
             <p className="text-sm font-extrabold text-slate-950">
-              {session.recommendedRank}+
+              {session.organizerName}
             </p>
           </div>
 
           <Link
             to={`/sessions/${session.id}`}
-            className={[
-              "rounded-2xl px-4 py-2 text-sm font-extrabold text-white",
-              isFull ? "bg-amber-500" : "bg-blue-600",
-            ].join(" ")}
+            className="rounded-2xl bg-blue-600 px-4 py-2 text-sm font-extrabold text-white"
           >
-            {actionLabel}
+            Details
           </Link>
         </div>
       </div>

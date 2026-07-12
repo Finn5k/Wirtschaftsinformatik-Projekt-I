@@ -1,11 +1,4 @@
-import {
-  Bell,
-  MapPin,
-  Search,
-  SlidersHorizontal,
-  Sparkles,
-  Trophy,
-} from "lucide-react";
+import { Search, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import { SessionCard } from "../components/sessions/SessionCard";
@@ -27,73 +20,49 @@ const filters: SessionFilter[] = [
 
 export function DiscoverPage() {
   const [activeFilter, setActiveFilter] = useState<SessionFilter>("Alle");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const mockUser = getCurrentUser();
-  const filteredSessions = getSessionsBySportType(activeFilter);
+  const currentUser = getCurrentUser();
+
+  // Suche nach Ort/Region und optional Sportart (B1 DLG-02, UC-02).
+  const normalizedSearch = searchTerm.trim().toLowerCase();
+  const filteredSessions = getSessionsBySportType(activeFilter).filter(
+    (session) => {
+      if (!normalizedSearch) {
+        return true;
+      }
+
+      return [session.title, session.locationName, session.city, session.sportType]
+        .join(" ")
+        .toLowerCase()
+        .includes(normalizedSearch);
+    },
+  );
 
   const featuredSession = filteredSessions[0];
   const otherSessions = filteredSessions.slice(1);
 
   return (
     <div className="min-h-[780px] bg-slate-50 px-4 py-5">
-      <header className="mb-5 flex items-start justify-between">
-        <div>
-          <p className="text-xs font-semibold text-blue-600">
-            Hi, {mockUser.name.split(" ")[0]} 👋
-          </p>
-          <h1 className="mt-1 text-3xl font-extrabold leading-tight text-slate-950">
-            Finde deine nächste
-            <br />
-            Sport-Session
-          </h1>
-        </div>
-
-        <button className="relative rounded-2xl border border-slate-200 bg-white p-2.5 text-slate-600 shadow-sm">
-          <Bell size={20} />
-          <span className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-emerald-500" />
-        </button>
+      <header className="mb-5">
+        <p className="text-xs font-semibold text-blue-600">
+          Hi, {currentUser.name.split(" ")[0]} 👋
+        </p>
+        <h1 className="mt-1 text-3xl font-extrabold leading-tight text-slate-950">
+          Finde deine nächste
+          <br />
+          Sport-Session
+        </h1>
       </header>
-
-      <section className="mb-5 rounded-[2rem] bg-gradient-to-br from-blue-600 via-cyan-500 to-emerald-400 p-5 text-white shadow-lg shadow-blue-100">
-        <div className="mb-5 flex items-start justify-between">
-          <div>
-            <p className="text-sm font-bold text-white/80">Dein Fortschritt</p>
-            <h2 className="mt-1 text-2xl font-extrabold">
-              Level {mockUser.level}
-            </h2>
-          </div>
-
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 backdrop-blur">
-            <Trophy size={24} />
-          </div>
-        </div>
-
-        <div className="mb-2 flex items-center justify-between text-sm">
-          <span className="font-semibold text-white/80">{mockUser.rank}</span>
-          <span className="font-bold">
-            {mockUser.currentXp} / {mockUser.nextLevelXp} XP
-          </span>
-        </div>
-
-        <div className="h-3 overflow-hidden rounded-full bg-white/25">
-          <div
-            className="h-full rounded-full bg-white"
-            style={{
-              width: `${Math.round(
-                (mockUser.currentXp / mockUser.nextLevelXp) * 100,
-              )}%`,
-            }}
-          />
-        </div>
-      </section>
 
       <div className="mb-4 flex items-center gap-2 rounded-2xl bg-white px-3 py-3 shadow-sm">
         <Search size={18} className="text-slate-400" />
         <input
+          value={searchTerm}
+          onChange={(event) => setSearchTerm(event.target.value)}
           className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-slate-400"
-          placeholder="Suche nach Sport, Ort oder Titel ..."
+          placeholder="Suche nach Ort, Titel oder Sportart ..."
         />
-        <SlidersHorizontal size={18} className="text-slate-500" />
       </div>
 
       <div className="mb-5 flex gap-2 overflow-x-auto pb-1">
@@ -124,11 +93,11 @@ export function DiscoverPage() {
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <h2 className="font-extrabold text-slate-950">
-                  Featured Session
+                  Nächste Session
                 </h2>
                 <p className="text-sm text-slate-500">
                   {activeFilter === "Alle"
-                    ? "Besonders passend für dich"
+                    ? "Bald in deiner Nähe"
                     : `Passend für ${activeFilter}`}
                 </p>
               </div>
@@ -155,7 +124,8 @@ export function DiscoverPage() {
                       {featuredSession.sportType}
                     </span>
                     <span className="rounded-full bg-emerald-400 px-3 py-1 text-xs font-bold text-slate-950">
-                      +{featuredSession.xpReward} XP
+                      {featuredSession.participantsCount}/
+                      {featuredSession.maxParticipants} Plätze
                     </span>
                   </div>
 
@@ -163,9 +133,9 @@ export function DiscoverPage() {
                     {featuredSession.title}
                   </h3>
 
-                  <p className="mt-1 flex items-center gap-1 text-sm text-white/80">
-                    <MapPin size={14} />
-                    {featuredSession.locationName} · {featuredSession.timeLabel}
+                  <p className="mt-1 text-sm text-white/80">
+                    {featuredSession.locationName} · {featuredSession.dateLabel}{" "}
+                    {featuredSession.timeLabel}
                   </p>
                 </div>
               </div>
@@ -173,21 +143,15 @@ export function DiscoverPage() {
           </section>
 
           <section className="pb-4">
-            <div className="mb-3 flex items-center justify-between">
-              <div>
-                <h2 className="font-extrabold text-slate-950">
-                  Weitere Sessions
-                </h2>
-                <p className="text-sm text-slate-500">
-                  {otherSessions.length > 0
-                    ? "Offen für deine Sportarten"
-                    : "Keine weiteren Sessions für diesen Filter"}
-                </p>
-              </div>
-
-              <button className="text-sm font-bold text-blue-600">
-                Mehr sehen
-              </button>
+            <div className="mb-3">
+              <h2 className="font-extrabold text-slate-950">
+                Weitere Sessions
+              </h2>
+              <p className="text-sm text-slate-500">
+                {otherSessions.length > 0
+                  ? "Offen für deine Sportarten"
+                  : "Keine weiteren Sessions für diesen Filter"}
+              </p>
             </div>
 
             <div className="space-y-3">
@@ -208,8 +172,8 @@ export function DiscoverPage() {
           </h2>
 
           <p className="mt-2 text-sm leading-6 text-slate-500">
-            Für den Filter „{activeFilter}“ gibt es aktuell keine passende
-            Session. Erstelle eine neue Session oder wähle einen anderen Filter.
+            Für deine Suche gibt es aktuell keine passende Session. Erstelle
+            eine neue Session oder ändere Suche und Filter.
           </p>
 
           <Link
