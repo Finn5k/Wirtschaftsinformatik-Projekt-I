@@ -139,12 +139,18 @@ Detaillierte Schnittstellen-Contracts je Nachbarsystem (Browser, Supabase Auth, 
 
 ---
 
-### **B1 — Dialogspezifikation** (geplant)
-**Status**: 🔄 Ausstehend  
-**Geplante Inhalte**:
-- Konkrete Benutzerschnittstellen für Suche, Detailansicht, Erstellung, Check-in, Profil, Historie
-- Feld- und Eingabeformate, sichtbare Profil-/Teilnehmerfelder
-- Ableitung aus den Use Cases (F2)
+### **B1 — Dialogspezifikation** ✅ (fertig)
+**Status**: ✅ Fertig  
+**Datei**: `B1-dialogspezifikation.md`
+
+Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste) und Dynamik (Aktionsliste, Zustände). Normativ für das MVP; der UI-Prototyp dient als Illustration.
+
+**Inhalte**:
+- Dialoglandkarte (Mermaid) und Index DLG-01–DLG-08 mit UC-/AF-Bezug
+- 8 Dialoge: Anmelden, Entdecken (Liste), Karte, Session-Detail (zustandsabhängig), Session erstellen, Check-in (QR/PIN-Zustände), Meine Sessions (bevorstehend/vergangen), Profil
+- Feldlisten mit Datentyp (D2), Datenmodell-Bezug (D1), Vorbelegung, Muss/Kann, Prüfung
+- Standard-Benutzeraktionen (Navigation, Validierung, Fehler-/Leerzustände) einmal zentral
+- Abweichungen des Prototyps: Nicht-MVP-Elemente (XP/Level, Events, Skins) und fehlende MVP-Dialoge
 
 ---
 
@@ -179,7 +185,7 @@ Detaillierte Schnittstellen-Contracts je Nachbarsystem (Browser, Supabase Auth, 
 2. **F1–F3 definieren** (✅ Erledigt): Geschäftsprozesse, Anwendungsfälle, Anwendungsfunktionen
 3. **D1/D2 definieren** (✅ Erledigt): Datenmodell und Datentypenverzeichnis
 4. **S1 vervollständigen**: Schnittstellen der Nachbarsysteme detaillieren
-5. **B1 schreiben**: Dialogspezifikation aus den Use Cases ableiten
+5. **B1 definieren** (✅ Erledigt): Dialogspezifikation aus den Use Cases abgeleitet
 6. **N1 schreiben**: Nichtfunktionale Anforderungen definieren
 7. **N2 schreiben**: Querschnittskonzepte und technische Umsetzung dokumentieren
 8. **E2 schreiben**: Glossar konsolidieren
@@ -201,6 +207,7 @@ Detaillierte Schnittstellen-Contracts je Nachbarsystem (Browser, Supabase Auth, 
 |-------|-------|----------|
 | 2026-06-19 | Copilot (Plan-Mode) | P1 erstellt, Struktur definiert |
 | 2026-07-11 | Claude Code (Opus 4.8) | D1 (Datenmodell) und D2 (Datentypenverzeichnis) erstellt; Bausteinliste an tatsächliche Siedersleben-Struktur (D1/D2/S1/B1/N1/N2/E2) angepasst |
+| 2026-07-12 | Claude Code (Fable 5) | B1 (Dialogspezifikation) erstellt: Dialoglandkarte, DLG-01–DLG-08, Prototyp-Abgleich |
 
 ---
 
