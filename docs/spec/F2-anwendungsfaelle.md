@@ -4,7 +4,7 @@
 
 Dieser Baustein beschreibt die Anwendungsfälle von LocalCourt. Er konkretisiert die systemunterstützten Interaktionen aus [F1](F1-geschaeftsprozesse.md): Nutzer suchen Sessions, öffnen Details, treten bei, erstellen Sessions, verwalten Teilnehmer und führen Check-ins durch.
 
-F2 beschreibt dabei die fachlich sichtbaren Nutzerziele und Systemreaktionen. Systeminterne Abläufe wie Datenbankabfragen, Komponentenlogik, API-Details, Scheduler oder konkrete Validierungsimplementierungen gehören nicht in F2, sondern später in F3, D1/D2, S1 oder die Architekturbausteine.
+F2 beschreibt dabei die fachlich sichtbaren Nutzerziele und Systemreaktionen. Systeminterne Abläufe wie Datenbankabfragen, Komponentenlogik, API-Details, Scheduler oder konkrete Validierungsimplementierungen gehören nicht in F2, sondern in F3, D1/D2, S1, N1/N2 oder die Architekturdokumentation nach arc42.
 
 Die UC-IDs in diesem Dokument bleiben stabil. Sie dienen später als Referenz in Architektur, Tests und Code, damit im Review nachvollziehbar bleibt: Use Case in der Spezifikation → Architekturkomponente oder Sequenz → Implementierung → Test.
 
@@ -33,61 +33,61 @@ Die UC-IDs in diesem Dokument bleiben stabil. Sie dienen später als Referenz in
 
 ```mermaid
 flowchart LR
-    teilnehmer[Teilnehmer]
+    teilnehmer([Teilnehmer])
 
-    subgraph lc[LocalCourt]
+    subgraph lc["Systemgrenze: LocalCourt"]
         direction TB
-        uc01((UC-01\nRegistrieren / Anmelden))
-        uc02((UC-02\nSession suchen))
-        uc03((UC-03\nSession-Detail ansehen))
-        uc04((UC-04\nSession beitreten))
-        uc05((UC-05\nEigene Sessions anzeigen))
-        uc08((UC-08\nCheck-in per QR-Code))
-        uc09((UC-09\nCheck-in per PIN))
-        uc11((UC-11\nSession-Historie ansehen))
-        uc12((UC-12\nProfil und Sportpräferenzen verwalten))
+        uc01(("UC-01<br/>Registrieren / Anmelden"))
+        uc02(("UC-02<br/>Session suchen"))
+        uc03(("UC-03<br/>Session-Detail ansehen"))
+        uc04(("UC-04<br/>Session beitreten"))
+        uc05(("UC-05<br/>Eigene Sessions anzeigen"))
+        uc08(("UC-08<br/>Check-in per QR-Code"))
+        uc09(("UC-09<br/>Check-in per PIN"))
+        uc11(("UC-11<br/>Session-Historie ansehen"))
+        uc12(("UC-12<br/>Profil und Sportpräferenzen verwalten"))
     end
 
-    teilnehmer --> uc01
-    teilnehmer --> uc02
-    teilnehmer --> uc03
-    teilnehmer --> uc04
-    teilnehmer --> uc05
-    teilnehmer --> uc08
-    teilnehmer --> uc09
-    teilnehmer --> uc11
-    teilnehmer --> uc12
+    teilnehmer --- uc01
+    teilnehmer --- uc02
+    teilnehmer --- uc03
+    teilnehmer --- uc04
+    teilnehmer --- uc05
+    teilnehmer --- uc08
+    teilnehmer --- uc09
+    teilnehmer --- uc11
+    teilnehmer --- uc12
 ```
 
 ### Organisator-Use-Cases
 
 ```mermaid
 flowchart LR
-    organisator[Organisator]
+    organisator([Organisator])
 
-    subgraph lc[LocalCourt]
+    subgraph lc["Systemgrenze: LocalCourt"]
         direction TB
-        uc01((UC-01\nRegistrieren / Anmelden))
-        uc03((UC-03\nSession-Detail ansehen))
-        uc05((UC-05\nEigene Sessions anzeigen))
-        uc06((UC-06\nSession erstellen))
-        uc07((UC-07\nTeilnehmerliste anzeigen))
-        uc10((UC-10\nCourt / Sportort erfassen oder auswählen))
-        uc11((UC-11\nSession-Historie ansehen))
-        uc12((UC-12\nProfil und Sportpräferenzen verwalten))
+        uc01(("UC-01<br/>Registrieren / Anmelden"))
+        uc03(("UC-03<br/>Session-Detail ansehen"))
+        uc05(("UC-05<br/>Eigene Sessions anzeigen"))
+        uc06(("UC-06<br/>Session erstellen"))
+        uc07(("UC-07<br/>Teilnehmerliste anzeigen"))
+        uc10(("UC-10<br/>Court / Sportort erfassen oder auswählen"))
+        uc11(("UC-11<br/>Session-Historie ansehen"))
+        uc12(("UC-12<br/>Profil und Sportpräferenzen verwalten"))
     end
 
-    organisator --> uc01
-    organisator --> uc03
-    organisator --> uc05
-    organisator --> uc06
-    organisator --> uc07
-    organisator --> uc10
-    organisator --> uc11
-    organisator --> uc12
+    organisator --- uc01
+    organisator --- uc03
+    organisator --- uc05
+    organisator --- uc06
+    organisator --- uc07
+    organisator --- uc10
+    organisator --- uc11
+    organisator --- uc12
 ```
 
-Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze LocalCourt. Die zugehörigen Nachbarsysteme wie Supabase Auth, Supabase PostgREST/PostgreSQL und OpenStreetMap/Leaflet werden im Architekturüberblick [P2](P2-architekturueberblick.md) und in [S1](S1-nachbarsysteme.md) beschrieben.
+Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze sowie die zugehörigen Use Cases innerhalb der Systemgrenze „LocalCourt". Die zugehörigen Nachbarsysteme wie Supabase Auth, Supabase PostgREST/PostgreSQL und OpenStreetMap/Leaflet gehören nicht zur Systemgrenze und werden im Architekturüberblick [P2](P2-architekturueberblick.md) und in [S1](S1-nachbarsysteme.md) beschrieben.
 
 ## F2.4 Detaillierte Use-Case-Spezifikationen
 
@@ -112,7 +112,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Fachliche Regeln | Geschützte Aktionen dürfen nur angemeldeten Nutzern zugeordnet werden. Rollen sind im MVP fachlich durch die Aktion bestimmt: Wer eine Session erstellt, ist für diese Session Organisator. |
 | Bezug zu F1 | GP-02 A2; Voraussetzung für GP-01 A9-A13 und GP-02 A3-A19. |
 | Bezug zu Daten | Profile, Auth-Nutzerkennung |
-| Bezug zu Benutzerschnittstelle | Anmelde- und Registrierungsansicht; später in B1 zu konkretisieren. |
+| Bezug zu Benutzerschnittstelle | Anmelde- und Registrierungsansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Sicherheit, Datenschutz, einfache Bedienbarkeit, klare Fehlermeldungen. |
 | Akzeptanzkriterien | Given ein nicht angemeldeter Nutzer, When er gültige Zugangsdaten eingibt, Then ist er angemeldet. Given ungültige Zugangsdaten, When er die Anmeldung absendet, Then bleibt er abgemeldet und erhält eine verständliche Fehlermeldung. |
 | Offene Punkte | Konkretes Anmeldeverfahren: E-Mail/Passwort ist naheliegend; OAuth bleibt nach P1 möglich, aber nicht final festgelegt. |
@@ -138,7 +138,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Fachliche Regeln | Standardmäßig werden nur zukünftige oder aktive, öffentlich auffindbare Sessions angezeigt. Abgeschlossene Sessions gehören in UC-11. |
 | Bezug zu F1 | GP-01 A2-A7; GP-03 A1-A7. |
 | Bezug zu Daten | Session, Court, Sportart, Participant-Zählung |
-| Bezug zu Benutzerschnittstelle | Suchformular, Filter, Ergebnisliste, Kartenansicht; später in B1 zu konkretisieren. |
+| Bezug zu Benutzerschnittstelle | Suchformular, Filter, Ergebnisliste, Kartenansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Performance bei Suche, mobile Nutzbarkeit, Graceful Degradation der Karte. |
 | Akzeptanzkriterien | Given Sessions in einer Region, When der Teilnehmer nach dieser Region sucht, Then werden passende zukünftige Sessions angezeigt. Given keine Treffer, When die Suche abgeschlossen ist, Then erscheint eine leere Ergebnisansicht ohne Systemfehler. |
 | Offene Punkte | Automatische Standortermittlung bleibt datenschutzsensibel und ist nicht als Pflichtfunktion modelliert. |
@@ -164,7 +164,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Fachliche Regeln | Detailansicht darf keine nicht benötigten privaten Profildaten anderer Nutzer anzeigen. Aktionen richten sich nach Status, Rolle und Teilnahmezustand. |
 | Bezug zu F1 | GP-01 A8, A14; GP-02 A11-A12. |
 | Bezug zu Daten | Session, Court, Participant, Profile |
-| Bezug zu Benutzerschnittstelle | Session-Detailansicht; später in B1 zu konkretisieren. |
+| Bezug zu Benutzerschnittstelle | Session-Detailansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Datenschutz, Verständlichkeit, mobile Bedienbarkeit. |
 | Akzeptanzkriterien | Given eine sichtbare Session, When der Nutzer sie öffnet, Then werden die Kerndaten angezeigt. Given eine abgeschlossene Session, When sie geöffnet wird, Then sind keine Beitritts- oder Check-in-Aktionen verfügbar. |
 | Offene Punkte | Umfang der sichtbaren Profilinformationen anderer Teilnehmer ist in D1/D2 und B1 zu konkretisieren. |
@@ -190,7 +190,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Fachliche Regeln | Ein Nutzer darf derselben Session nicht mehrfach beitreten. Kapazitätsgrenzen werden eingehalten. Wartelisten sind out of scope (P1 NG-10). Die vollständige Beitritts- und Kapazitätsregel ist in F3 AF-01 spezifiziert. |
 | Bezug zu F1 | GP-01 A9-A13. |
 | Bezug zu Daten | Session, Participant, Profile |
-| Bezug zu Benutzerschnittstelle | Beitrittsaktion in der Session-Detailansicht; später in B1 zu konkretisieren. |
+| Bezug zu Benutzerschnittstelle | Beitrittsaktion in der Session-Detailansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Konsistenz bei parallelen Beitritten, verständliche Fehler, Datenschutz. |
 | Akzeptanzkriterien | Given eine offene Session mit freier Kapazität, When ein angemeldeter Teilnehmer beitritt, Then ist er Teilnehmer der Session. Given eine volle Session, When ein Teilnehmer beitreten möchte, Then wird kein Beitritt gespeichert und die Session wird als voll erklärt. |
 | Offene Punkte | Verhalten bei gleichzeitigem Beitritt mehrerer Nutzer ist in F3 AF-01 fachlich präzisiert (Wer-zuerst-kommt, keine Überbuchung); die technische Umsetzung der Atomarität folgt in D2/N2. |
@@ -216,7 +216,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Fachliche Regeln | Nutzer sehen nur Sessions, zu denen sie fachlich berechtigt sind. Organisierte und beigetretene Sessions dürfen unterscheidbar sein. |
 | Bezug zu F1 | GP-01 A13-A14; GP-02 A11, A22-A23. |
 | Bezug zu Daten | Session, Participant, Profile |
-| Bezug zu Benutzerschnittstelle | Übersicht "Meine Sessions"; später in B1 zu konkretisieren. |
+| Bezug zu Benutzerschnittstelle | Übersicht "Meine Sessions"; siehe B1. |
 | Bezug zu NFR / Qualität | Übersichtlichkeit, mobile Nutzbarkeit, Performance. |
 | Akzeptanzkriterien | Given ein angemeldeter Nutzer mit beigetretenen Sessions, When er "Meine Sessions" öffnet, Then werden diese Sessions angezeigt. Given keine eigenen Sessions, Then wird ein leerer Zustand angezeigt. |
 | Offene Punkte | Konkrete Sortierung und Gruppierung sind in B1 festzulegen. |
@@ -242,7 +242,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Fachliche Regeln | Sessions benötigen Sportart, Zeitpunkt, Dauer, Court/Sportort und Teilnehmerlimit. Session-Bearbeitung nach Erstellung ist nach F1 aktuell nicht modelliert. |
 | Bezug zu F1 | GP-02 A3-A9. |
 | Bezug zu Daten | Session, Court, Sportart, Participant, Profile |
-| Bezug zu Benutzerschnittstelle | Session-Erstellformular; später in B1 zu konkretisieren. |
+| Bezug zu Benutzerschnittstelle | Session-Erstellformular; siehe B1. |
 | Bezug zu NFR / Qualität | Erstellung soll mit niedriger Einstiegshürde möglich sein; P1 SC-02 nennt unter 2 Minuten als Ziel. |
 | Akzeptanzkriterien | Given ein angemeldeter Organisator mit gültigen Angaben, When er die Erstellung absendet, Then existiert eine geplante Session. Given fehlende Pflichtangaben, Then wird keine Session veröffentlicht und die Eingaben werden erklärt. |
 | Offene Punkte | Umgang mit Session-Serien und späterer Bearbeitung bleibt außerhalb des MVP. |
@@ -268,7 +268,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Fachliche Regeln | Teilnehmerlisten sind nicht als öffentliches soziales Verzeichnis zu verstehen. Sichtbarkeit folgt Datenschutz- und Berechtigungsregeln. |
 | Bezug zu F1 | GP-02 A11, A17, A22. |
 | Bezug zu Daten | Session, Participant, Profile |
-| Bezug zu Benutzerschnittstelle | Teilnehmerliste in der Session-Detail- oder Organisatoransicht; später in B1 zu konkretisieren. |
+| Bezug zu Benutzerschnittstelle | Teilnehmerliste in der Session-Detail- oder Organisatoransicht; siehe B1. |
 | Bezug zu NFR / Qualität | Datenschutz, klare Statusanzeige, Aktualität. |
 | Akzeptanzkriterien | Given ein Organisator mit eigener Session, When er die Teilnehmerliste öffnet, Then sieht er die beigetretenen Teilnehmer. Given ein nicht berechtigter Nutzer, Then erhält er keine Teilnehmerliste mit geschützten Daten. |
 | Offene Punkte | Umfang der angezeigten Profildaten ist in D1/D2 und B1 festzulegen. |
@@ -294,7 +294,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Fachliche Regeln | Check-in setzt Teilnahme voraus. Mehrfacher Check-in ändert den fachlichen Endzustand nicht. |
 | Bezug zu F1 | GP-02 A12-A17. |
 | Bezug zu Daten | Session, Participant, Check-in-Zeitpunkt |
-| Bezug zu Benutzerschnittstelle | Check-in-Ansicht und Bestätigung; später in B1 zu konkretisieren. |
+| Bezug zu Benutzerschnittstelle | Check-in-Ansicht und Bestätigung; siehe B1. |
 | Bezug zu NFR / Qualität | Schnelle mobile Bedienbarkeit, Sicherheit gegen falsche Session-Zuordnung, verständliche Fehlermeldungen. |
 | Akzeptanzkriterien | Given ein beigetretener angemeldeter Teilnehmer und eine aktive Check-in-Phase, When er den gültigen QR-Code nutzt, Then ist er eingecheckt. Given ein ungültiger QR-Code, Then bleibt der Status unverändert und der Nutzer erhält eine Fehlermeldung. |
 | Offene Punkte | Exakter Zeitraum der Check-in-Fähigkeit ist in F3 AF-02/AF-03 festgelegt: Check-in ist nur möglich, solange die Session im Status active ist (Start bis Start + Dauer). |
@@ -320,7 +320,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Fachliche Regeln | PIN-Check-in ist fachlich gleichwertig zum QR-Check-in. Falsche PINs dürfen keinen Check-in erzeugen. |
 | Bezug zu F1 | GP-02 A18-A19. |
 | Bezug zu Daten | Session, Participant, Check-in-Zeitpunkt |
-| Bezug zu Benutzerschnittstelle | PIN-Eingabe und Bestätigung; später in B1 zu konkretisieren. |
+| Bezug zu Benutzerschnittstelle | PIN-Eingabe und Bestätigung; siehe B1. |
 | Bezug zu NFR / Qualität | Usability als Fallback, Sicherheit, klare Fehlertexte. |
 | Akzeptanzkriterien | Given ein beigetretener angemeldeter Teilnehmer und eine gültige PIN, When er die PIN eingibt, Then ist er eingecheckt. Given eine falsche PIN, Then bleibt der Teilnehmer nicht eingecheckt. |
 | Offene Punkte | Länge und Erzeugungsregel der PIN sind in F3 AF-04 festgelegt: 4-stellige numerische PIN, je Session zufällig erzeugt und pro Session eindeutig geprüft. |
@@ -346,7 +346,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Fachliche Regeln | Ein Court benötigt mindestens einen Namen und eine Ortsangabe. Koordinaten verbessern die Kartendarstellung, ersetzen aber nicht die fachliche Benennung. |
 | Bezug zu F1 | GP-02 A3; indirekt relevant für GP-01 A6-A8, weil Court-Daten dort zur Anzeige und Auffindbarkeit genutzt werden. |
 | Bezug zu Daten | Court, Sportart, Session |
-| Bezug zu Benutzerschnittstelle | Court-Auswahl und einfache Erfassungsmaske; später in B1 zu konkretisieren. |
+| Bezug zu Benutzerschnittstelle | Court-Auswahl und einfache Erfassungsmaske; siehe B1. |
 | Bezug zu NFR / Qualität | Datenqualität, einfache Bedienbarkeit, Fallback ohne Karte. |
 | Akzeptanzkriterien | Given ein vorhandener Court, When ein Organisator ihn auswählt, Then kann die Session mit diesem Court erstellt werden. Given gültige neue Court-Daten, When der Organisator sie erfasst, Then ist der Court für die Session auswählbar. |
 | Offene Punkte | Dublettenprüfung und Geocoding-Genauigkeit sind später zu konkretisieren. |
@@ -372,7 +372,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Fachliche Regeln | Historie ist kein Admin-Report, kein Rating und keine Statistikplattform. |
 | Bezug zu F1 | GP-01 A18; GP-02 A22-A23. |
 | Bezug zu Daten | Session, Participant, Check-in-Zeitpunkt |
-| Bezug zu Benutzerschnittstelle | Historienübersicht und read-only Detailansicht; später in B1 zu konkretisieren. |
+| Bezug zu Benutzerschnittstelle | Historienübersicht und read-only Detailansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Datenschutz, Übersichtlichkeit, Nachvollziehbarkeit. |
 | Akzeptanzkriterien | Given abgeschlossene eigene Sessions, When der Nutzer die Historie öffnet, Then werden diese angezeigt. Given keine Historie, Then erscheint ein leerer Zustand ohne Fehler. |
 | Offene Punkte | Umfang einfacher Organisator-Ergebnisdaten ist von Admin-Reports abzugrenzen. |
@@ -398,7 +398,7 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Fachliche Regeln | Profilinformationen werden auf notwendige Basisdaten begrenzt. Sportpräferenzen dürfen die Suche unterstützen, ersetzen aber nicht die manuelle Filterung. |
 | Bezug zu F1 | GP-01 A2-A3; GP-03 A1-A3. |
 | Bezug zu Daten | Profile, Sportart |
-| Bezug zu Benutzerschnittstelle | Profileinstellungen; später in B1 zu konkretisieren. |
+| Bezug zu Benutzerschnittstelle | Profileinstellungen; siehe B1. |
 | Bezug zu NFR / Qualität | Datenschutz, einfache Bedienbarkeit, Datenminimierung. |
 | Akzeptanzkriterien | Given ein angemeldeter Nutzer, When er gültige Profiländerungen speichert, Then werden diese beim erneuten Öffnen angezeigt. Given ungültige Angaben, Then bleibt das bestehende Profil erhalten und der Fehler wird erklärt. |
 | Offene Punkte | Profilbild ist in P1 erwähnt, aber für F1 nicht zentral; MVP-Umfang ist im Team zu bestätigen. |
@@ -442,14 +442,14 @@ Die Diagramme zeigen nur die fachlichen Use Cases innerhalb der Systemgrenze Loc
 | Block | Relevanz für F2 |
 |---|---|
 | [F1](F1-geschaeftsprozesse.md) | Grundlage der Geschäftsprozesse, Aktivitäten, Akteure und bewussten Ausschlüsse. |
-| F3 | Später zu konkretisieren: funktionale Detailanforderungen, Validierungsregeln, Statusübergänge und systeminterne Abläufe. |
-| D1 | Später zu konkretisieren: fachliche Begriffe und Datenobjekte wie Session, Court, Participant, Profile, Sportart. |
-| D2 | Später zu konkretisieren: Datenmodell mit identischen Benennungen für Session, Court, Participant, Profile und Sportart. |
-| B1 | Später zu konkretisieren: konkrete Benutzerschnittstellen für Suche, Detailansicht, Erstellung, Check-in, Profil und Historie. |
-| [S1](S1-nachbarsysteme.md) | Nachbarsysteme und spätere Schnittstellendetails zu Browser, Supabase Auth, Supabase PostgREST und OpenStreetMap/Leaflet. |
-| N1 | Später zu konkretisieren: nichtfunktionale Anforderungen wie Usability, Datenschutz, Performance, Sicherheit und Free-Tier-Betrieb. |
-| N2 | Später zu konkretisieren: technische Umsetzung der nichtfunktionalen Anforderungen, Tests, Monitoring und Sicherheitsmaßnahmen. |
-| E2 | Später zu konkretisieren: Glossar und Begriffsklärungen, insbesondere konsistente Begriffe wie Session, Court/Sportort, Participant/Teilnehmer, Profile/Profil und Check-in. |
+| [F3](F3-anwendungsfunktionen.md) | Konkretisiert funktionale Detailanforderungen, Validierungsregeln, Statusübergänge und systeminterne fachliche Regeln. |
+| [D1](D1-datenmodell.md) | Konkretisiert fachliche Datenobjekte wie `session`, `court`, `participant`, `profile`, `sport` und `sport_preference`. |
+| [D2](D2-datentypen.md) | Definiert Datentypen, Wertebereiche, Statuswerte und Validierungsregeln. |
+| [B1](B1-dialogspezifikation.md) | Konkretisiert die Dialoge für Suche, Detailansicht, Erstellung, Check-in, Profil und Historie. |
+| [S1](S1-nachbarsysteme.md) | Nachbarsysteme und Schnittstellendetails zu Browser, Supabase Auth, Supabase PostgREST und OpenStreetMap/Leaflet. |
+| [N1](N1-nichtfunktionale-anforderungen.md) | Konkretisiert Qualitätsanforderungen wie Usability, Datenschutz, Performance, Sicherheit und Free-/Student-Tier-Betrieb. |
+| N2 | Geplant: technische Umsetzung der nichtfunktionalen Anforderungen, Tests, Monitoring und Sicherheitsmaßnahmen. |
+| E2 | Geplant: Glossar und Begriffsklärungen, insbesondere konsistente Begriffe wie Session, Court/Sportort, Participant/Teilnehmer, Profile/Profil und Check-in. |
 
 ## F2.8 Zusammenfassung
 
@@ -464,5 +464,6 @@ Die stabilen IDs UC-01 bis UC-12 müssen später in Architektur, Tests und Code 
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Codex / ChatGPT |
-| Verwendung | Entwurf des F2-Bausteins, Strukturierung der Use Cases, Formulierung prüfbarer Akzeptanzkriterien. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [S1](S1-nachbarsysteme.md), Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. |
+| Verwendung | Entwurf, Strukturierung, Formulierung prüfbarer Akzeptanzkriterien und Konsistenzprüfung. |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. |
+| Fachliche Verantwortung | Bleibt beim Team. |
