@@ -43,12 +43,12 @@ Beschreibt aus Anwendungssicht, wie sich LocalCourt in seine Umgebung einbettet:
 - 3 kritische Datenflüsse: Session erstellen, Session entdecken/beitreten, Check-in
 - Bewusste Ausschlüsse (KI-APIs, Payment, Email-Services, Message Queues)
 
-**Hinweis**: Interne Komponenten-Architektur (z.B. React Component Structure) gehört zu M1–M2, nicht zu P2.
+**Hinweis**: Interne Komponenten-Architektur (z. B. React-Komponentenstruktur) ist nicht Bestandteil von P2 und im aktuellen Spezifikationsbestand noch nicht als eigener Baustein vorhanden.
 
 ---
 
 ### **F1 — Geschäftsprozesse** ✅ (fertig)
-**Status**: ✅ Fertig  
+**Status**: ✅ Fertig
 **Datei**: `F1-geschaeftsprozesse.md`
 
 Nach Siedersleben (Kapitel 4.3): Reale (IT-unabhängige) Workflows mit temporaler und logischer Folge von Aktivitäten, durchgeführt von Akteuren (Menschen & IT-Systeme).
@@ -150,16 +150,24 @@ Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste)
 - 8 Dialoge: Anmelden, Entdecken (Liste), Karte, Session-Detail (zustandsabhängig), Session erstellen, Check-in (QR/PIN-Zustände), Meine Sessions (bevorstehend/vergangen), Profil
 - Feldlisten mit Datentyp (D2), Datenmodell-Bezug (D1), Vorbelegung, Muss/Kann, Prüfung
 - Standard-Benutzeraktionen (Navigation, Validierung, Fehler-/Leerzustände) einmal zentral
-- Abweichungen des Prototyps: Nicht-MVP-Elemente (XP/Level, Events, Skins) und fehlende MVP-Dialoge
+- Abgleich mit dem aktuellen Frontend: alle acht Dialoge sind im UI-Prototyp realisiert, aber noch ohne Backend beziehungsweise Persistenz
+- Tatsächlich verbleibende Abweichungen, insbesondere Authentifizierung, Zugriffsschutz, Persistenz, echte QR-Verarbeitung und API-Fehlerzustände
 
 ---
 
-### **N1 — Nichtfunktionale Anforderungen** (geplant)
-**Status**: 🔄 Ausstehend  
-**Geplante Inhalte**:
-- Performance, Skalierbarkeit im Free-Tier, Verfügbarkeit
-- Sicherheit (PIN-Niveau, DSGVO), Usability, Datenschutz
-- Feldlängen und fachliche Obergrenzen (offene Punkte aus D2)
+### **N1 — Nichtfunktionale Anforderungen** ✅ (fertig)
+**Status**: ✅ Fertig
+**Datei**: `N1-nichtfunktionale-anforderungen.md`
+
+Qualitätsanforderungen und prüfbare Qualitätsszenarien für den MVP.
+
+**Inhalte**:
+- Performance, mobile Nutzbarkeit und Bedienbarkeit
+- Datenschutz, Sicherheit und Fehlerrobustheit
+- Wartbarkeit, Testbarkeit und verständliche Fehlerkommunikation
+- Betrieb im Free-/Student-Tier
+- Zuordnung zu Use Cases, Dialogen, Datenobjekten und Prüfmethoden
+- bewusst offene Qualitäts- und Umsetzungsfragen
 
 ---
 
@@ -186,7 +194,7 @@ Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste)
 3. **D1/D2 definieren** (✅ Erledigt): Datenmodell und Datentypenverzeichnis
 4. **S1 vervollständigen**: Schnittstellen der Nachbarsysteme detaillieren
 5. **B1 definieren** (✅ Erledigt): Dialogspezifikation aus den Use Cases abgeleitet
-6. **N1 schreiben**: Nichtfunktionale Anforderungen definieren
+6. **N1 schreiben** (✅ Erledigt): Nichtfunktionale Anforderungen definieren
 7. **N2 schreiben**: Querschnittskonzepte und technische Umsetzung dokumentieren
 8. **E2 schreiben**: Glossar konsolidieren
 
@@ -196,7 +204,8 @@ Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste)
 
 - **Projekt-Root**: `README.md` (Tech-Stack, Kurzbeschreibung)
 - **Team & Rollen**: `TEAMINFO.md`
-- **Architektur**: `docs/arch/` (falls vorhanden)
+- **Frontend-Prototyp**: [`../frontend.md`](../frontend.md)
+- **Architekturüberblick**: [`P2-architekturueberblick.md`](P2-architekturueberblick.md)
 - **Herold-Referenz**: [Herold P1 Example](https://github.com/carstenlucke/herold/blob/main/docs/spec/P1-ziele-rahmenbedingungen.md)
 
 ---
@@ -208,6 +217,7 @@ Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste)
 | 2026-06-19 | Copilot (Plan-Mode) | P1 erstellt, Struktur definiert |
 | 2026-07-11 | Claude Code (Opus 4.8) | D1 (Datenmodell) und D2 (Datentypenverzeichnis) erstellt; Bausteinliste an tatsächliche Siedersleben-Struktur (D1/D2/S1/B1/N1/N2/E2) angepasst |
 | 2026-07-12 | Claude Code (Fable 5) | B1 (Dialogspezifikation) erstellt: Dialoglandkarte, DLG-01–DLG-08, Prototyp-Abgleich |
+| 2026-07-16 | ChatGPT / Codex | Index an vorhandenen N1-Baustein und aktuellen UI-Prototyp angeglichen; veraltete Verweise korrigiert |
 
 ---
 
@@ -224,6 +234,6 @@ Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste)
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | GitHub Copilot (Plan-Mode), Claude Code (Opus 4.8) |
-| Verwendung | Aufbau und Pflege des Spezifikations-Index und der Baustein-Struktur. |
-| Prüfung | Siehe Versionshistorie; Inhalte manuell abgestimmt. Jeder Baustein weist die konkrete KI-Nutzung im eigenen Abschnitt „Eingesetzte KI-Werkzeuge" aus. |
+| Werkzeug | GitHub Copilot (Plan-Mode), Claude Code (Opus 4.8), ChatGPT / Codex |
+| Verwendung | Aufbau und Pflege des Spezifikations-Index und der Baustein-Struktur; Abgleich der Statusangaben und Frontend-Verweise mit dem aktuellen Repository-Stand. |
+| Prüfung | Statusangaben wurden gegen die vorhandenen Dateien unter `docs/spec/` und der Frontend-Hinweis gegen `src/` sowie [`../frontend.md`](../frontend.md) geprüft. Es wurden keine neuen fachlichen oder technischen Entscheidungen getroffen. Jeder Baustein weist die konkrete KI-Nutzung im eigenen Abschnitt „Eingesetzte KI-Werkzeuge" aus. |

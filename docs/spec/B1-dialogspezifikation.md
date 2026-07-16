@@ -4,7 +4,7 @@
 
 Dieser Baustein spezifiziert die Benutzerdialoge von LocalCourt nach Siedersleben: die **Dialoglandkarte** (welche Dialoge gibt es, wie navigiert man dazwischen), je Dialog die **Statik** (was sieht der Benutzer — Formular und Feldliste) und die **Dynamik** (was kann der Benutzer tun — Aktionsliste, ggf. Zustände).
 
-B1 beschreibt den **MVP-Sollzustand** und ist damit die verbindliche Referenz für das Frontend. Der vorhandene UI-Prototyp (`src/pages/`) dient als Illustration und Ausgangspunkt; er enthält teils Elemente über den MVP hinaus und lässt teils spezifizierte Dialoge noch aus. Diese Abweichungen sind in [B1.6](#b16-abweichungen-des-prototyps) vollständig ausgewiesen und widersprechen B1 nicht — sie sind Arbeitsstand.
+B1 beschreibt den **MVP-Sollzustand** und ist damit die verbindliche Referenz für das Frontend. Der vorhandene UI-Prototyp (`src/pages/`) dient als Illustration und Ausgangspunkt. Alle acht spezifizierten Dialoge sind dort inzwischen als klickbare Oberflächen vorhanden, jedoch noch ohne Backend beziehungsweise Persistenz und teilweise nur als Simulation fachlicher Zustände. Die verbleibenden Abweichungen sind in [B1.6](#b16-abweichungen-des-prototyps) ausgewiesen und widersprechen B1 nicht — sie sind Arbeitsstand.
 
 **Abgrenzung:** Visuelles Design (Farben, Typografie, Pixel-Layout, Komponentenbibliothek) ist nicht Teil von B1. Die Feld- und Aktionslisten definieren, *welche* Informationen und Interaktionen ein Dialog fachlich bietet; das *Wie* der Gestaltung bleibt dem Frontend überlassen (responsive, mobile-first gemäß P1 CON-T-04 und SC-05). Fachliche Regeln hinter den Aktionen stehen in [F3](F3-anwendungsfunktionen.md); Datenobjekte und -typen in [D1](D1-datenmodell.md)/[D2](D2-datentypen.md).
 
@@ -50,14 +50,14 @@ Suche und Detailansicht (DLG-02, DLG-03, DLG-04) sind ohne Anmeldung nutzbar (UC
 
 | DLG-ID | Name | Realisiert (UC) | Nutzt Regeln (AF) | Route (Prototyp) |
 |---|---|---|---|---|
-| [DLG-01](#b141-dlg-01--anmelden--registrieren) | Anmelden / Registrieren | UC-01 | — | *(fehlt noch, [B1.6](#b16-abweichungen-des-prototyps))* |
+| [DLG-01](#b141-dlg-01--anmelden--registrieren) | Anmelden / Registrieren | UC-01 | — | `/login` |
 | [DLG-02](#b142-dlg-02--session-entdecken-liste) | Session entdecken (Liste) | UC-02 | AF-03 (Sichtbarkeit) | `/discover` |
 | [DLG-03](#b143-dlg-03--session-karte) | Session-Karte | UC-02 | AF-03 (Sichtbarkeit) | `/map` |
-| [DLG-04](#b144-dlg-04--session-detail) | Session-Detail | UC-03, UC-04, UC-07 | AF-01, AF-03 | `/sessions/:id` |
+| [DLG-04](#b144-dlg-04--session-detail) | Session-Detail | UC-03, UC-04, UC-07 | AF-01, AF-03 | `/sessions/:sessionId` |
 | [DLG-05](#b145-dlg-05--session-erstellen) | Session erstellen | UC-06, UC-10 | AF-03, AF-04 | `/sessions/new` |
-| [DLG-06](#b146-dlg-06--check-in) | Check-in | UC-08, UC-09 | AF-02, AF-03, AF-04 | `/check-in/:id` |
-| [DLG-07](#b147-dlg-07--meine-sessions) | Meine Sessions | UC-05, UC-11 | AF-03 | *(fehlt noch, [B1.6](#b16-abweichungen-des-prototyps))* |
-| [DLG-08](#b148-dlg-08--profil) | Profil | UC-12 | — | `/profile` (MVP-Teilmenge) |
+| [DLG-06](#b146-dlg-06--check-in) | Check-in | UC-08, UC-09 | AF-02, AF-03, AF-04 | `/check-in/:sessionId` |
+| [DLG-07](#b147-dlg-07--meine-sessions) | Meine Sessions | UC-05, UC-11 | AF-03 | `/my-sessions` |
+| [DLG-08](#b148-dlg-08--profil) | Profil | UC-12 | — | `/profile` |
 
 ## B1.3 Gliederungsschema je Dialog
 
@@ -229,7 +229,7 @@ Der Zustand ergibt sich aus Anmeldung, Rolle, Teilnahme und Session-Status (AF-0
 | Court / Sportort | Eingabe (Muss) | Auswahl oder Neuerfassung | `session.court_id` → `court` | leer | Auswahl aus Verzeichnis **oder** Neuerfassung (UC-10): `name` (Muss), `city` (Muss), `address` (Kann); Koordinaten optional |
 | Teilnehmerlimit | Eingabe (Muss) | Integer | `session.max_participants` | 10 | ≥ 1; Hinweis im Dialog: Organisator belegt einen Platz (AF-01 R4) |
 
-Die Prototyp-Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht** Teil dieser Feldliste (Nicht-MVP, siehe [B1.6](#b16-abweichungen-des-prototyps)).
+Frühere Prototyp-Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht** Teil dieser Feldliste und im aktuellen Prototyp nicht mehr vorhanden.
 
 **Dynamik**
 
@@ -343,7 +343,7 @@ Diese Aktionen und Muster funktionieren in allen Dialogen gleich und werden dort
 
 ### B1.5.1 Hauptnavigation
 
-Persistente Navigationsleiste (mobil unten) mit fünf Zielen: **Entdecken** (DLG-02), **Karte** (DLG-03), **Erstellen** (DLG-05, hervorgehoben), **Meine Sessions** (DLG-07), **Profil** (DLG-08). Das aktive Ziel ist markiert. DLG-04 und DLG-06 sind Kontextdialoge ohne eigenen Navigationseintrag; die Leiste bleibt sichtbar. *(Prototyp-Abweichung: Tab „Events" statt „Meine Sessions", siehe [B1.6](#b16-abweichungen-des-prototyps).)*
+Persistente Navigationsleiste (mobil unten) mit fünf Zielen: **Entdecken** (DLG-02), **Karte** (DLG-03), **Erstellen** (DLG-05, hervorgehoben), **Meine Sessions** (DLG-07), **Profil** (DLG-08). Das aktive Ziel ist markiert. DLG-04 und DLG-06 sind Kontextdialoge ohne eigenen Navigationseintrag; die Leiste bleibt sichtbar. Diese Navigationsstruktur ist im UI-Prototyp umgesetzt.
 
 ### B1.5.2 Weiterleitung nicht angemeldeter Nutzer
 
@@ -367,33 +367,40 @@ Kontextdialoge (DLG-04, DLG-06) bieten eine Zurück-Aktion zum aufrufenden Dialo
 
 ## B1.6 Abweichungen des Prototyps
 
-Der UI-Prototyp (`src/pages/`, Stand dieses Bausteins) weicht wie folgt vom MVP-Soll ab. Die Abweichungen sind bekannt und **kein** Bestandteil der Spezifikation; sie sind bei der Angleichung des Frontends aufzulösen.
+Der aktuelle UI-Prototyp bildet alle Dialoge DLG-01 bis DLG-08 ab. Die nachfolgend genannten Funktionen sind **im UI-Prototyp realisiert, aber noch ohne Backend beziehungsweise Persistenz**. Eine sichtbare Oberfläche oder lokale Zustandsänderung gilt daher nicht als vollständige Umsetzung des zugehörigen Use Cases oder der Anwendungsfunktion.
 
-### Im Prototyp enthalten, aber nicht MVP
+### Im UI-Prototyp realisiert
 
-| Element | Fundort im Prototyp | Begründung des Ausschlusses |
+| Dialog / Bereich | Realisierter UI-Stand | Begrenzung |
 |---|---|---|
-| XP-/Level-/Rang-System (Fortschrittskarten, XP-Badges, „+XP"-Anzeigen) | Entdecken, Karte, Session-Detail, Check-in-Erfolg, Profil | Gamification ist nicht MVP ([P1 NG-05](P1-ziele-rahmenbedingungen.md#p14-scope)) |
-| Events & Challenges (gesamter Tab) | `/events`, Navigationseintrag „Events" | NG-05; kein Use Case in [F2](F2-anwendungsfaelle.md) |
-| Avatar-Items / Skins („Dein Avatar") | Profil | NG-05 (Skins/Customizing) |
-| Streak / Abzeichen | Profil | NG-05 |
-| Benachrichtigungs-Glocke | Entdecken (Header) | Benachrichtigungen out of scope (P1 NG-02, F1-Grenzen) |
-| Feld „Empfohlener Rang" | Session-erstellen-Formular | setzt Rang-System voraus (NG-05) |
-| Feld „Sichtbarkeit" (Öffentlich/Link/Privat) | Session-erstellen-Formular | in F2/D1 nicht spezifiziert; MVP kennt nur öffentlich auffindbare Sessions (UC-02) |
-| „Merken"-Schaltfläche | Session-Detail | nicht spezifiziert (kein UC) |
-| „Teilen"-Schaltfläche | Session-Detail | nicht spezifiziert; unkritisch, aber nicht normativ |
+| DLG-01 Anmelden / Registrieren | Zustandswechsel, Eingabefelder und clientseitige Validierung | keine echte Authentifizierung oder Sitzung |
+| DLG-02 Entdecken | Textsuche, Sportartenfilter, Ergebnis- und Leerzustand | Filterung ausschließlich über Mockdaten |
+| DLG-03 Karte | Leaflet-/OpenStreetMap-Karte, Marker, Filter und Vorschau | keine API-Daten und kein Fehler-Fallback |
+| DLG-04 Session-Detail | Kerndaten, Belegung, Teilnehmerliste, Organisator-, Beitritts-, Check-in- und Read-only-Darstellung | Rolle, Teilnahme und Status stammen aus Mockdaten; Beitritt bleibt lokal |
+| DLG-05 Session erstellen | vollständige aktuelle Feldgruppe einschließlich Dauer und Court-Auswahl/-Neuerfassung, Validierung und Erfolgsvorschau | keine Session- oder Court-Persistenz; keine neue Detailseite |
+| DLG-06 Check-in | QR-Platzhalter, PIN-Eingabe, lokale PIN-Prüfung, Zeitfensterdarstellung und Erfolg | kein QR-Scan/Deep-Link und kein persistenter Check-in |
+| DLG-07 Meine Sessions | bevorstehende und vergangene Sessions, Rollen- und Check-in-Anzeige, Leerzustände | ausschließlich aus Mockdaten abgeleitet |
+| DLG-08 Profil | Ansicht und Bearbeitung von Anzeigename, Ort und Sportpräferenzen | Änderungen nur im lokalen Seitenzustand; Profilbild nicht editierbar |
+| Hauptnavigation | fünf spezifizierte Navigationsziele | geschützte Ziele sind ohne Auth-Prüfung direkt erreichbar |
 
-### Im MVP spezifiziert, aber im Prototyp noch fehlend
+### Tatsächlich verbleibende Abweichungen
 
-| Fehlendes Element | Soll laut B1 | Bezug |
+| Abweichung | Aktueller Prototypstand | Bezug / offener Bedarf |
 |---|---|---|
-| Anmelden / Registrieren | [DLG-01](#b141-dlg-01--anmelden--registrieren) | UC-01 |
-| Meine Sessions / Historie | [DLG-07](#b147-dlg-07--meine-sessions) (Navigationseintrag ersetzt „Events") | UC-05, UC-11 |
-| Feld „Dauer" im Erstellformular | [DLG-05](#b145-dlg-05--session-erstellen), Muss-Feld | AF-03: Ende = Start + Dauer; ohne Dauer kein Auto-Close |
-| Court-Auswahl/-Erfassung (statt Freitext „Ort/Treffpunkt") | [DLG-05](#b145-dlg-05--session-erstellen) | UC-10, D1 `court` |
-| PIN-Eingabe-Zustand im Check-in | [DLG-06](#b146-dlg-06--check-in), Zustand *PIN-Eingabe* | UC-09 (Schaltfläche existiert, Dialog fehlt) |
-| Rollen-/statusabhängige Zustände im Session-Detail | [DLG-04](#b144-dlg-04--session-detail) (Gast/Offen/Beigetreten/Organisator/Read-only) | UC-03/04/07, AF-01/03 |
-| Profil-Bearbeiten-Zustand | [DLG-08](#b148-dlg-08--profil) | UC-12 (Prototyp zeigt nur Ansicht) |
+| Backend und Persistenz | Mockdaten und lokaler React-Zustand | persistente Umsetzung aller schreibenden Use Cases fehlt |
+| Authentifizierung und Abmeldung | DLG-01 navigiert nach lokaler Validierung weiter; Abmelden navigiert nur zu `/login` | echte Authentifizierung, Sitzung und Fehlerbehandlung über NB-02 fehlen |
+| Schutz personenbezogener Aktionen | Erstellen, Meine Sessions, Profil und Check-in sind direkt aufrufbar | Weiterleitung und Rückkehr gemäß [B1.5.2](#b152-weiterleitung-nicht-angemeldeter-nutzer) fehlen |
+| Atomarer Beitritt | Schaltfläche setzt lokalen Zustand | AF-01, gemeinsame Aktualisierung von Belegung und DLG-07 sowie fachliche Ergebniscodes fehlen |
+| Session-Erstellung | lokale Erfolgsvorschau mit zufälliger PIN | persistente Session, Court und Organisator-Teilnahme sowie Wechsel zur neuen DLG-04 fehlen |
+| QR-Verarbeitung | QR-Symbol als Platzhalter | echte QR-Erzeugung, Scan beziehungsweise Deep-Link und konkretes Format bleiben offen |
+| Check-in | PIN wird lokal gegen Mockdaten geprüft; QR-Weg bestätigt direkt | Teilnahmeprüfung, Idempotenz, Persistenz und vollständige AF-02-Ergebniscodes fehlen |
+| Session-Lifecycle | Statuswerte sind statische Mockdaten | Umsetzung der Statusableitung nach AF-03 fehlt; technische Ausgestaltung bleibt offen |
+| Kartenfehler | echte OSM-Karte ist eingebunden | Graceful Degradation zu DLG-02 bei Ausfall fehlt |
+| Lade- und Netzwerkzustände | keine asynchronen Backend-Anfragen | Muster aus [B1.5.4](#b154-fehler--und-ladezustände) sind noch nicht demonstriert |
+| Profil | Bearbeitung lokal; Ort wird zusätzlich angezeigt und bearbeitet | Persistenz fehlt; Profilbild-Umfang und weitere sichtbare Profildaten bleiben offene Punkte |
+| Validierungsgrenzen | ausgewählte Pflichtfelder werden geprüft | endgültige Feldlängen, Obergrenzen und Fehlertexte bleiben offen |
+
+Im aktuellen Prototyp sind keine früher dokumentierten Gamification-, Events-/Challenges-, Benachrichtigungs-, Rang-, Sichtbarkeits-, Merken- oder Teilen-Funktionen mehr vorhanden.
 
 ## B1.7 Konsistenz und Cross-References
 
@@ -404,8 +411,8 @@ Der UI-Prototyp (`src/pages/`, Stand dieses Bausteins) weicht wie folgt vom MVP-
 | [F3](F3-anwendungsfunktionen.md) | Aktionen binden die fachlichen Regeln an: Beitreten (AF-01), Check-in (AF-02), Statusabhängigkeit (AF-03), QR/PIN (AF-04). |
 | [D1](D1-datenmodell.md) / [D2](D2-datentypen.md) | Feldlisten referenzieren Entitäten/Attribute (D1) und Datentypen inkl. Prüfregeln (D2). |
 | [S1](S1-nachbarsysteme.md) | Auth-Dialog (NB-02), Kartendarstellung (NB-04) werden durch Nachbarsysteme erbracht. |
-| N1 | Feldlängen, Fehlertext-Qualität, Performance der Suche, Barrierefreiheit/Mobile-Usability. |
-| E2 | Einheitliche Begriffe in Beschriftungen (Session, Teilnahme, Check-in, Court). |
+| [N1](N1-nichtfunktionale-anforderungen.md) | Qualitätsanforderungen an Performance, mobile Nutzbarkeit, Fehlertexte, Datenschutz und Robustheit. |
+| E2 (geplant) | Einheitliche Begriffe in Beschriftungen (Session, Teilnahme, Check-in, Court). |
 
 ## B1.8 Offene Punkte
 
@@ -416,12 +423,20 @@ Der UI-Prototyp (`src/pages/`, Stand dieses Bausteins) weicht wie folgt vom MVP-
 | Konkrete Fehlertexte | Endgültige Formulierungen je Ergebniscode (AF-01/AF-02). | N1 / E2 |
 | Profilbild-Umfang | Ob `avatar_url` im MVP editierbar ist (D1.9). | Team |
 | Court-Dubletten in der Auswahl | UI-Verhalten bei offensichtlichen Dubletten (UC-10). | N1 / N2 |
-| Angleichung des Prototyps | Abbau der Abweichungen aus [B1.6](#b16-abweichungen-des-prototyps). | Frontend |
+| Profil-Ort | Der Prototyp zeigt und bearbeitet einen Ort, während Umfang und Datenmodellbezug in den bestehenden Bausteinen nicht abschließend geklärt sind. | Team / Spezifikation |
+| Angleichung des Prototyps | Umsetzung der weiterhin bestehenden Abweichungen aus [B1.6](#b16-abweichungen-des-prototyps). | Frontend / Backend |
 
-## B1.9 Eingesetzte KI-Werkzeuge
+## B1.9 Versionshistorie
+
+| Datum | Autor | Änderung |
+|---|---|---|
+| 2026-07-12 | Claude Code (Fable 5) | B1 mit Dialoglandkarte, DLG-01 bis DLG-08 und initialem Prototyp-Abgleich erstellt |
+| 2026-07-16 | ChatGPT / Codex | Dialogrouten und Prototyp-Abgleich an den aktuellen UI-Stand angepasst; verbleibende Abweichungen und offene Punkte aktualisiert |
+
+## B1.10 Eingesetzte KI-Werkzeuge
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | Claude Code (Fable 5) |
-| Verwendung | Entwurf des B1-Bausteins: Ableitung der Dialoglandkarte und der Feld-/Aktionslisten aus F2/F3/D1/D2 und dem UI-Prototyp; systematischer Abgleich Prototyp ↔ MVP-Scope (B1.6). |
-| Prüfung | Inhalte wurden gegen [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), den Prototyp-Code (`src/pages/`) und die Herold-Referenz geprüft; Richtungsentscheidungen (Soll-Dialoge, UC-05/UC-11 als ein Dialog, keine Screenshots, normative Feldlisten) wurden vorab vom Team bestätigt. |
+| Werkzeug | Claude Code (Fable 5), ChatGPT / Codex |
+| Verwendung | Entwurf des B1-Bausteins sowie späterer Abgleich des Prototypstatus mit den vorhandenen Routen, Seiten, Komponenten, Mockdaten und Services. Aktualisierung des Dialogindex und der Abweichungsanalyse. |
+| Prüfung | Inhalte wurden gegen [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [N1](N1-nichtfunktionale-anforderungen.md), [`../frontend.md`](../frontend.md) und den aktuellen Prototyp-Code (`src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/`) geprüft. Es wurden keine neuen fachlichen oder technischen Entscheidungen getroffen; ungeklärte Punkte bleiben als offene Punkte markiert. |
