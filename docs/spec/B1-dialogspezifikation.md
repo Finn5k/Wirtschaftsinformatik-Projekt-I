@@ -74,6 +74,15 @@ Standard-Benutzeraktionen, die in allen Dialogen gleich funktionieren, sind einm
 
 ### B1.4.1 DLG-01 — Anmelden / Registrieren
 
+<table>
+  <tr>
+    <td align="center"><img src="screenshots/dlg-01-login-anmelden.png" width="220"><br><sub><em>Anmelden</em></sub></td>
+    <td align="center"><img src="screenshots/dlg-01-login-registrieren.png" width="220"><br><sub><em>Registrieren</em></sub></td>
+  </tr>
+</table>
+
+> Screenshots aus dem UI-Prototyp (mobiler Viewport); illustrativ, nicht bindend für das visuelle Design ([B1.1](#b11-zweck-und-einordnung)).
+
 | Abschnitt | Inhalt |
 |---|---|
 | Identifier | DLG-01 |
@@ -107,6 +116,8 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 
 ### B1.4.2 DLG-02 — Session entdecken (Liste)
 
+<p><img src="screenshots/dlg-02-entdecken.png" alt="DLG-02 — Session entdecken (Liste)" width="240"></p>
+
 | Abschnitt | Inhalt |
 |---|---|
 | Identifier | DLG-02 |
@@ -133,6 +144,8 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 | Session erstellen (aus Leerzustand) | Schaltfläche im leeren Zustand | keine Treffer | *Dialog*: Wechsel zu [DLG-05](#b145-dlg-05--session-erstellen) |
 
 ### B1.4.3 DLG-03 — Session-Karte
+
+<p><img src="screenshots/dlg-03-karte.png" alt="DLG-03 — Session-Karte" width="260"></p>
 
 | Abschnitt | Inhalt |
 |---|---|
@@ -163,6 +176,19 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 **Fehlerfall Karte:** Ist der Kartendienst nicht erreichbar, zeigt der Dialog einen Hinweis und verweist auf die Listenansicht DLG-02 (UC-02, Graceful Degradation).
 
 ### B1.4.4 DLG-04 — Session-Detail
+
+<table>
+  <tr>
+    <td align="center"><img src="screenshots/dlg-04-detail-offen.png" width="200"><br><sub><em>Offen (Beitreten)</em></sub></td>
+    <td align="center"><img src="screenshots/dlg-04-detail-organisator.png" width="200"><br><sub><em>Organisator (QR/PIN)</em></sub></td>
+    <td align="center"><img src="screenshots/dlg-04-detail-beigetreten.png" width="200"><br><sub><em>Beigetreten (Check-in)</em></sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="screenshots/dlg-04-detail-voll.png" width="200"><br><sub><em>Voll</em></sub></td>
+    <td align="center"><img src="screenshots/dlg-04-detail-readonly.png" width="200"><br><sub><em>Read-only (abgeschlossen)</em></sub></td>
+    <td></td>
+  </tr>
+</table>
 
 | Abschnitt | Inhalt |
 |---|---|
@@ -208,6 +234,8 @@ Der Zustand ergibt sich aus Anmeldung, Rolle, Teilnahme und Session-Status (AF-0
 
 ### B1.4.5 DLG-05 — Session erstellen
 
+<p><img src="screenshots/dlg-05-session-erstellen.png" alt="DLG-05 — Session erstellen" width="240"></p>
+
 | Abschnitt | Inhalt |
 |---|---|
 | Identifier | DLG-05 |
@@ -243,6 +271,14 @@ Frühere Prototyp-Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht*
 **Validierungsfehler** werden feldbezogen angezeigt ([B1.5.3](#b153-formular-validierung)); es wird keine unvollständige Session veröffentlicht (UC-06 Nachbedingung).
 
 ### B1.4.6 DLG-06 — Check-in
+
+<table>
+  <tr>
+    <td align="center"><img src="screenshots/dlg-06-checkin-qr.png" width="200"><br><sub><em>QR-Scan</em></sub></td>
+    <td align="center"><img src="screenshots/dlg-06-checkin-pin.png" width="200"><br><sub><em>PIN-Eingabe</em></sub></td>
+    <td align="center"><img src="screenshots/dlg-06-checkin-gesperrt.png" width="200"><br><sub><em>Gesperrt (nicht aktiv)</em></sub></td>
+  </tr>
+</table>
 
 | Abschnitt | Inhalt |
 |---|---|
@@ -281,6 +317,13 @@ Frühere Prototyp-Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht*
 
 ### B1.4.7 DLG-07 — Meine Sessions
 
+<table>
+  <tr>
+    <td align="center"><img src="screenshots/dlg-07-meine-sessions-bevorstehend.png" width="220"><br><sub><em>Bevorstehend</em></sub></td>
+    <td align="center"><img src="screenshots/dlg-07-meine-sessions-vergangen.png" width="220"><br><sub><em>Vergangen (read-only)</em></sub></td>
+  </tr>
+</table>
+
 | Abschnitt | Inhalt |
 |---|---|
 | Identifier | DLG-07 |
@@ -308,6 +351,13 @@ Der Dialog hat zwei Zustände (Tabs): *Bevorstehend* (UC-05, Status `scheduled`/
 | Session öffnen | Tippen auf Listeneintrag | — | *Dialog*: Wechsel zu DLG-04; bei `completed` im Zustand *Read-only* |
 
 ### B1.4.8 DLG-08 — Profil
+
+<table>
+  <tr>
+    <td align="center"><img src="screenshots/dlg-08-profil.png" width="220"><br><sub><em>Ansicht</em></sub></td>
+    <td align="center"><img src="screenshots/dlg-08-profil-bearbeiten.png" width="220"><br><sub><em>Bearbeiten</em></sub></td>
+  </tr>
+</table>
 
 | Abschnitt | Inhalt |
 |---|---|
