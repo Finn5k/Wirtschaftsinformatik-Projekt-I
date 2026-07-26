@@ -146,7 +146,7 @@ Zeitliche und logische Reihenfolge.
 |---|-----------|---------|---------|
 | **Pre-Setup** | | | |
 | A1 | Organisator möchte Trainings-Session organisieren (z.B. jeden Mittwoch Fußball um 19:00) | Organizer | Geschäfts-Entscheidung, keine IT. |
-| A2 | Organisator öffnet LocalCourt & loggt sich ein | Organizer, Browser, Supabase Auth | Authentifizierung per Email+Passwort oder OAuth. |
+| A2 | Organisator öffnet LocalCourt & loggt sich ein | Organizer, Browser, Supabase Auth | Authentifizierung per E-Mail und Passwort (kein OAuth, S1.3). |
 | **Session-Erstellung** | | | |
 | A3 | Organisator füllt Session-Form aus | Organizer, Browser | Felder: Title, Sport, Court, DateTime (Startzeitpunkt), Duration, Max Participants, Beschreibung. Validierung im Browser (Client-Side). |
 | A4 | Organisator klickt "Session erstellen" | Organizer | Form Submission. |
@@ -157,17 +157,17 @@ Zeitliche und logische Reihenfolge.
 | A9 | Organisator speichert / druckt QR-Code + PIN | Organizer | Kann für physisches Sharing genutzt werden (ausdrucken für Treffpunkt). |
 | **Vor Session-Start** | | | |
 | A10 | Potenzielle Teilnehmer öffnen LocalCourt (GP-01: Suche & Beitreten) | Participant, Browser, LocalCourt | Sessions sind für alle sichtbar (public discovery). Participants treten bei. |
-| A11 | Organisator sieht wachsende Teilnehmer-Liste in real-time | Organizer, Browser → LocalCourt | GET /rest/v1/sessions/<id>/participants (Live Update oder Poll). |
+| A11 | Organisator sieht die wachsende Teilnehmer-Liste | Organizer, Browser → LocalCourt | Teilnehmerliste wird beim Aufruf bzw. Neuladen gelesen (kein Echtzeit-Kanal, S1.6). |
 | **Session-Start (Check-In Phase)** | | | |
 | A12 | Zum Startzeitpunkt: Organisator öffnet Check-In-Screen | Organizer, Browser, LocalCourt | Status sichtbar: "aktiv", QR-Code + PIN prominent angezeigt. |
-| A13 | Teilnehmer scannt QR-Code mit Handy (z.B. native Camera App oder Browser-Scanner) | Participant | QR-Code enkodiert: Redirect zu LocalCourt/check-in?session=<id>&pin=<pin> (oder ähnlich). |
-| A14 | QR-Code-Scan führt zu Browser-Seite mit automatischem Check-In | Browser (Participant) | LocalCourt erkennt session_id & pin aus URL. POST /rest/v1/participants/<participant_id>/check_in { status: 'checked_in', checked_in_at: NOW() }. |
+| A13 | Teilnehmer scannt QR-Code mit der Kamera-App des Geräts | Participant | QR-Code enkodiert: Redirect zu LocalCourt/check-in?session=<id>&pin=<pin>. LocalCourt selbst nutzt keine Kamera-Schnittstelle (S1.2). |
+| A14 | QR-Code-Scan führt zu Browser-Seite mit automatischem Check-In | Browser (Participant) | LocalCourt erkennt session_id & pin aus URL und ruft die atomare Check-in-Operation auf (S1.4, AF-02). |
 | A15 | LocalCourt markiert Participant als "checked_in" | LocalCourt → PostgreSQL | UPDATE participants SET status='checked_in', checked_in_at=NOW() WHERE id=<>. |
 | A16 | Participant sieht Bestätigung "✓ Check-in erfolgreich!" | Browser (UI Feedback) | Toast oder Modal mit checked_in-Status. |
-| A17 | Organisator sieht in Participant-Liste: "X / Y Checked in" | Organizer, Browser | Real-time Update der Liste. Grüne Häkchen für checked_in, Grau für "confirmed aber nicht checked_in". |
+| A17 | Organisator sieht in Participant-Liste: "X / Y Checked in" | Organizer, Browser | Aktualisierung beim Aufruf bzw. Neuladen der Liste (kein Echtzeit-Kanal, S1.6). Grüne Häkchen für checked_in, Grau für "confirmed aber nicht checked_in". |
 | **Fallback: PIN-Eingabe (falls QR-Scan fehlschlägt)** | | | |
 | A18 | Teilnehmer kann alternativ 4-stellige PIN manuell eingeben | Participant, Browser | Form: "Check-In PIN" → LocalCourt verifiziert PIN. |
-| A19 | LocalCourt validiert PIN & markiert als checked_in | LocalCourt → PostgreSQL | SELECT sessions WHERE pin=<> AND status='active', dann CHECK-IN für Participant. |
+| A19 | LocalCourt validiert PIN & markiert als checked_in | LocalCourt → PostgreSQL | Dieselbe atomare Check-in-Operation wie beim QR-Weg (S1.4, AF-02): Teilnahme, PIN und Zeitfenster werden serverseitig geprüft. |
 | **Session-Laufzeit** | | | |
 | A20 | Sport findet statt (physisch, außerhalb LocalCourt) | Participant, Organizer | Real-World Activity. LocalCourt inaktiv. |
 | **Nach Session-Zeit** | | | |
@@ -210,7 +210,7 @@ sequenceDiagram
     actor P as Teilnehmer
 
     O->>B: A2 Login
-    B->>S: Auth (Email/Passwort o. OAuth)
+    B->>S: Auth (E-Mail/Passwort)
     S-->>B: authentifiziert (JWT)
     O->>B: A3 Session-Formular ausfüllen
     O->>B: A4 "Session erstellen"
@@ -347,4 +347,4 @@ Jeder Prozess besteht aus **Akteuren** (Mensch & IT), **Aktivitäten** (zeitlich
 |---|---|
 | Werkzeug | GitHub Copilot, Claude (Claude Code) |
 | Verwendung | Entwurf der Geschäftsprozesse (GP-01–GP-03), Aktivitäten, Dokumente, Daten-Stores und Ablaufdiagramme. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Ablaufdiagramme auf Mermaid, Korrektur halluzinierter Querverweise) mit Claude Code (Opus 4.8). Terminologie-Fix (2026-07-26, Claude Sonnet 5): Teilnehmerstatus in A17 von "joined" auf "confirmed" korrigiert (konsistent mit D2.5/N2-Enum). |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Ablaufdiagramme auf Mermaid, Korrektur halluzinierter Querverweise) mit Claude Code (Opus 4.8). Terminologie-Fix (2026-07-26, Claude Sonnet 5): Teilnehmerstatus in A17 von "joined" auf "confirmed" korrigiert (konsistent mit D2.5/N2-Enum). Angleichung an S1 (2026-07-26, Claude Sonnet 5): Check-in-Aufrufe in A14/A19 auf die atomare Operation umgestellt, QR-Scan auf die Kamera-App des Geräts eingegrenzt (A13), Echtzeit-Zusagen in A11/A17 zurückgenommen, OAuth in A2 entfernt. |

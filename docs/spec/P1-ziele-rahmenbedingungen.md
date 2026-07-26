@@ -46,7 +46,7 @@ LocalCourt löst das Problem der dezentralisierten Koordination: Heute brauchen 
 - **Session-Status-Management**: Status-Lifecycle (geplant, aktiv, abgeschlossen, storniert).
 - **Nutzer-Profile**: Basis-Informationen (Name, Profil-Bild, Sportarten-Interessen) anzeigen und bearbeiten (siehe [B1 DLG-08](B1-dialogspezifikation.md#b148-dlg-08--profil)).
 - **Responsive Design**: Mobile & Desktop gleichwertig unterstützt.
-- **Authentifizierung**: Einfache Nutzer-Anmeldung (E-Mail + Passwort oder OAuth Third-Party).
+- **Authentifizierung**: Einfache Nutzer-Anmeldung mit E-Mail und Passwort. OAuth/Social-Login ist nicht Teil des MVP (siehe [S1.3](S1-nachbarsysteme.md#s13-nb-02--supabase-auth)).
 
 ### Out of Scope
 
@@ -91,7 +91,7 @@ LocalCourt löst das Problem der dezentralisierten Koordination: Heute brauchen 
 |----|-----------|-----------|
 | **CON-D-01** | **DSGVO-Compliance** | EU-Projekt mit potenziell EU-Bürgern als Nutzer. Datenschutzerklärung und angemessener Umgang mit Auskunfts-/Löschanfragen sind zu berücksichtigen. Ein Consent-Banner ist nur erforderlich, falls zustimmungspflichtige Cookies oder Tracking eingesetzt werden. |
 | **CON-D-02** | **Keine Speicherung von Zahlungsdaten** | Out-of-Scope (NG-01). Vereinfacht Compliance (PCI-DSS nicht nötig). |
-| **CON-D-03** | **Authentifizierung ohne SMS** | SMS-Gateway = kostenpflichtig. Alternative: E-Mail oder OAuth. |
+| **CON-D-03** | **Authentifizierung ohne SMS** | SMS-Gateway = kostenpflichtig. Gewählte Variante: Anmeldung mit E-Mail und Passwort. |
 
 ---
 
@@ -121,7 +121,7 @@ Die Mission wird unter klaren Budget-, Technologie-, und zeitlichen Constraints 
 
 - **Siedersleben-Schema**: strukturierte Softwarespezifikation in Bausteine wie P1/P2, F1–F3, D1/D2, B1–B3, S1–S3, N1/N2 und E1/E2.
 - **Team & Rollen**: Siehe [`TEAMINFO.md`](../../TEAMINFO.md) im Repository-Root
-- **Architekturdetails**: siehe Architekturdokumentation nach arc42 unter [`../arch/`](../arch/)
+- **Architekturdetails**: siehe Architekturdokumentation nach arc42 unter `docs/arch/`
 - **Beispiel**: [Herold P1 — Goals and Constraints](https://github.com/carstenlucke/herold/blob/main/docs/spec/P1-ziele-rahmenbedingungen.md) (English reference)
 
 ---
@@ -131,5 +131,5 @@ Die Mission wird unter klaren Budget-, Technologie-, und zeitlichen Constraints 
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | GitHub Copilot / Claude Code |
-| Verwendung | Entwurf des P1-Bausteins: Mission, Geschäftsziele, Stakeholder, Scope, Rahmenbedingungen und Erfolgskriterien. Claude Code (Claude Sonnet 5) zudem für einen Konsistenz-Fix (2026-07-26): Scope-Widersprüche zu F2/F3/D1/B1 in P1.4 (Bearbeiten/Löschen, Teilnehmerlimit-Platzhalter, Profil-Sichtbarkeit) aufgelöst. |
+| Verwendung | Entwurf des P1-Bausteins: Mission, Geschäftsziele, Stakeholder, Scope, Rahmenbedingungen und Erfolgskriterien. Claude Code (Claude Sonnet 5) zudem für zwei Konsistenz-Durchgänge (2026-07-26): Scope-Widersprüche zu F2/F3/D1/B1 in P1.4 (Bearbeiten/Löschen, Teilnehmerlimit-Platzhalter, Profil-Sichtbarkeit) aufgelöst; Authentifizierung auf E-Mail und Passwort festgelegt (OAuth aus dem MVP-Scope und aus CON-D-03 entfernt, siehe S1.3). |
 | Prüfung | Inhalte wurden gegen die Projektidee, [TEAMINFO](../../TEAMINFO.md), bestehende Spezifikationsbausteine, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. |

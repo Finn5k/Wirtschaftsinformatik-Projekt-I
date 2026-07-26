@@ -12,7 +12,7 @@ D1 ist die gemeinsame Referenz für die Datenobjekte, die in [F2](F2-anwendungsf
 
 ## D1.2 Überblick (ER-Diagramm)
 
-Das folgende Diagramm zeigt die Entitätstypen und ihre Beziehungen. Attribute stehen in den Tabellen unter [D1.4](#d14-entitätstypen); abgeleitete Merkmale sind in [D1.6](#d16-abgeleitete-merkmale) beschrieben.
+Das folgende Diagramm zeigt die Entitätstypen und ihre Beziehungen. Attribute stehen in den Tabellen unter [D1.4](#d14-entitätstypen-im-detail); abgeleitete Merkmale sind in [D1.6](#d16-abgeleitete-merkmale) beschrieben.
 
 ```mermaid
 erDiagram
@@ -204,7 +204,7 @@ Einige fachlich zentrale Merkmale werden **nicht als eigenständig gepflegte Att
 | `confirmed_count` | `session` | Anzahl `participant` der Session mit `status ∈ {confirmed, checked_in}`. Grundlage der Kapazitätsprüfung (AF-01) und der Anzeige „x/max". | [F3 AF-01](F3-anwendungsfunktionen.md#f33-af-01--beitritts--und-kapazitätsregel) |
 | `qr_content` | `session` | Verweis auf die Check-in-Ansicht mit `session_id` und `pin` (konzeptionell `…/check-in?session=<id>&pin=<pin>`). | [F3 AF-04](F3-anwendungsfunktionen.md#f36-af-04--pin--und-qr-code-erzeugung), [D2](D2-datentypen.md#d28-qrcontent) |
 
-Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#d14-entitätstypen), sind aber fachlich Teil der Session-Sicht (z. B. in UC-03, UC-07).
+Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#d14-entitätstypen-im-detail), sind aber fachlich Teil der Session-Sicht (z. B. in UC-03, UC-07).
 
 ## D1.7 Nicht modellierte Datenobjekte
 

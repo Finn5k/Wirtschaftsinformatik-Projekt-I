@@ -226,7 +226,7 @@ Der Zustand ergibt sich aus Anmeldung, Rolle, Teilnahme und Session-Status (AF-0
 | Datum | Eingabe (Muss) | Datum | `session.start_at` (Datumsteil) | leer | zusammen mit Uhrzeit: in der Zukunft (UC-06) |
 | Uhrzeit | Eingabe (Muss) | Uhrzeit | `session.start_at` (Zeitteil) | leer | s. o. |
 | Dauer (Minuten) | Eingabe (Muss) | `Duration` | `session.duration_min` | 60 | ≥ 1; bestimmt Ende und Auto-Close (AF-03) |
-| Court / Sportort | Eingabe (Muss) | Auswahl oder Neuerfassung | `session.court_id` → `court` | leer | Auswahl aus Verzeichnis **oder** Neuerfassung (UC-10): `name` (Muss), `city` (Muss), `address` (Kann); Koordinaten optional |
+| Court / Sportort | Eingabe (Muss) | Auswahl oder Neuerfassung | `session.court_id` → `court` | leer | Auswahl aus Verzeichnis **oder** Neuerfassung (UC-10): `name` (Muss), `city` (Muss), `address` (Kann, freie Angabe), Kartenpin (Kann) → `latitude`/`longitude` |
 | Teilnehmerlimit | Eingabe (Muss) | Integer | `session.max_participants` | 10 | ≥ 1; Hinweis im Dialog: Organisator belegt einen Platz (AF-01 R4) |
 
 Die Prototyp-Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht** Teil dieser Feldliste (Nicht-MVP, siehe [B1.6](#b16-abweichungen-des-prototyps)).
@@ -236,7 +236,7 @@ Die Prototyp-Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht** Tei
 | Aktion | Auslöser | Vorbedingung | Wirkung |
 |---|---|---|---|
 | Court auswählen | Auswahlfeld / Suche im Court-Verzeichnis | — | *UC-10*: bestehenden Court übernehmen |
-| Court neu erfassen | Schaltfläche „Neuen Sportort anlegen" | kein passender Court | *UC-10*: Erfassungsmaske (name, city, address); nach Speichern ausgewählt |
+| Court neu erfassen | Schaltfläche „Neuen Sportort anlegen" | kein passender Court | *UC-10*: Erfassungsmaske (`name`, `city`, `address`) mit Kartenausschnitt; ein optional gesetzter Pin liefert die Koordinaten ([S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)) — es wird keine Adresse aus dem Pin abgeleitet und keine Adresse gegen einen Dienst geprüft. Nach Speichern ausgewählt |
 | Session erstellen | Schaltfläche „Session erstellen" | alle Muss-Felder gültig | *UC-06*: Session anlegen (`scheduled`, AF-03); PIN/QR erzeugen (AF-04); Organisator als `participant` `confirmed`; Wechsel zu DLG-04 (*Organisator*) mit Bestätigung |
 | Abbrechen | Zurück-Navigation | — | *Dialog*: keine Session wird gespeichert (UC-06 Alternativszenario) |
 
@@ -424,4 +424,4 @@ Der UI-Prototyp (`src/pages/`, Stand dieses Bausteins) weicht wie folgt vom MVP-
 |---|---|
 | Werkzeug | Claude Code (Fable 5) |
 | Verwendung | Entwurf des B1-Bausteins: Ableitung der Dialoglandkarte und der Feld-/Aktionslisten aus F2/F3/D1/D2 und dem UI-Prototyp; systematischer Abgleich Prototyp ↔ MVP-Scope (B1.6). |
-| Prüfung | Inhalte wurden gegen [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), den Prototyp-Code (`src/pages/`) und die Herold-Referenz geprüft; Richtungsentscheidungen (Soll-Dialoge, UC-05/UC-11 als ein Dialog, keine Screenshots, normative Feldlisten) wurden vorab vom Team bestätigt. |
+| Prüfung | Inhalte wurden gegen [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), den Prototyp-Code (`src/pages/`) und die Herold-Referenz geprüft; Richtungsentscheidungen (Soll-Dialoge, UC-05/UC-11 als ein Dialog, keine Screenshots, normative Feldlisten) wurden vorab vom Team bestätigt. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Erfassung der Court-Koordinaten in DLG-05 als Kartenpin präzisiert. |

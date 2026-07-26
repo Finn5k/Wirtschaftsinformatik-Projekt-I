@@ -115,7 +115,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Anmelde- und Registrierungsansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Sicherheit, Datenschutz, einfache Bedienbarkeit, klare Fehlermeldungen. |
 | Akzeptanzkriterien | Given ein nicht angemeldeter Nutzer, When er gültige Zugangsdaten eingibt, Then ist er angemeldet. Given ungültige Zugangsdaten, When er die Anmeldung absendet, Then bleibt er abgemeldet und erhält eine verständliche Fehlermeldung. |
-| Offene Punkte | Konkretes Anmeldeverfahren: E-Mail/Passwort ist naheliegend; OAuth bleibt nach P1 möglich, aber nicht final festgelegt. |
+| Offene Punkte | Keine. Das Anmeldeverfahren ist festgelegt: E-Mail und Passwort ohne OAuth, ohne E-Mail-Bestätigung und ohne Passwort-Zurücksetzen (siehe [S1.3](S1-nachbarsysteme.md#s13-nb-02--supabase-auth)). |
 
 ### UC-02 — Session suchen
 
@@ -349,7 +349,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Court-Auswahl und einfache Erfassungsmaske; siehe B1. |
 | Bezug zu NFR / Qualität | Datenqualität, einfache Bedienbarkeit, Fallback ohne Karte. |
 | Akzeptanzkriterien | Given ein vorhandener Court, When ein Organisator ihn auswählt, Then kann die Session mit diesem Court erstellt werden. Given gültige neue Court-Daten, When der Organisator sie erfasst, Then ist der Court für die Session auswählbar. |
-| Offene Punkte | Dublettenprüfung und Geocoding-Genauigkeit sind später zu konkretisieren. |
+| Offene Punkte | Dublettenprüfung ist später zu konkretisieren. Ein Geocoding-Dienst wird nicht eingesetzt: Koordinaten entstehen durch das Setzen eines Kartenpins, Ort und Adressangabe sind freie Eingaben (siehe [S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)). |
 
 ### UC-11 — Session-Historie ansehen
 
@@ -465,5 +465,5 @@ Die stabilen IDs UC-01 bis UC-12 müssen später in Architektur, Tests und Code 
 |---|---|
 | Werkzeug | Codex / ChatGPT |
 | Verwendung | Entwurf, Strukturierung, Formulierung prüfbarer Akzeptanzkriterien und Konsistenzprüfung. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Angleichung an S1 (2026-07-26, Claude Sonnet 5): offene Punkte in UC-01 (Anmeldeverfahren) und UC-10 (Geocoding) geschlossen. |
 | Fachliche Verantwortung | Bleibt beim Team. |

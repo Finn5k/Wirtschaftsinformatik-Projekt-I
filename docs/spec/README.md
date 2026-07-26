@@ -43,7 +43,7 @@ Beschreibt aus Anwendungssicht, wie sich LocalCourt in seine Umgebung einbettet:
 - 3 kritische Datenflüsse: Session erstellen, Session entdecken/beitreten, Check-in
 - Bewusste Ausschlüsse (KI-APIs, Payment, E-Mail-Services, Message Queues)
 
-**Hinweis**: Interne Komponentenarchitektur, React-Komponenten, API-Struktur, Laufzeitsichten, Deployment-Details und Architekturentscheidungen gehören nicht in P2, sondern in die Architekturdokumentation nach arc42 unter [../arch/](../arch/).
+**Hinweis**: Interne Komponentenarchitektur, React-Komponenten, API-Struktur, Laufzeitsichten, Deployment-Details und Architekturentscheidungen gehören nicht in P2, sondern in die Architekturdokumentation nach arc42 unter `docs/arch/`.
 
 ---
 
@@ -160,11 +160,21 @@ LocalCourt sieht keine Druckausgaben vor; der QR-Code für den Check-in wird aus
 
 ---
 
-### **S1 — Nachbarsysteme (Schnittstellen)** 🔄 (in Arbeit)
-**Status**: 🔄 Vorhanden, Detaillierung ausstehend
+### **S1 — Nachbarsysteme (Schnittstellen)** ✅ (fertig)
+**Status**: ✅ Fertig
 **Datei**: [S1-nachbarsysteme.md](S1-nachbarsysteme.md)
 
-Detaillierte Schnittstellen-Contracts je Nachbarsystem (Browser, Supabase Auth, Supabase PostgREST, OpenStreetMap/Leaflet). Inventar liegt in P2.
+Schnittstellen-Contracts je Nachbarsystem: die Operationen, die LocalCourt gegen ein Nachbarsystem auslöst, mit Ein-/Ausgaben, Semantik und Fehlerbehandlung. Das Inventar der Nachbarsysteme liegt in P2.
+
+**Inhalte**:
+- S1.1 Konventionen (synchron, Fehlerpropagierung, Degradation, Authentifizierung, Beschreibungsebene)
+- NB-01 Browser als Nutzerkanal (Contract ist B1), inkl. Deep-Link-Einstieg für den Check-in
+- NB-02 Supabase Auth: fünf Operationen, nur E-Mail+Passwort, automatische Profilanlage, Tokenablage
+- NB-03 Supabase PostgREST: Leseoperationen je Use Case, drei atomare Schreiboperationen (`create_session`, `join_session`, `check_in`), einfache Schreibzugriffe
+- NB-04 OpenStreetMap-Kachel-Dienst: Kartenanzeige und Pin-Setzen ohne Geocoding, Attribution und Nutzungsrichtlinie, Ausfallpfad
+- S1.6 bewusst nicht genutzte Schnittstellen (Realtime, Storage, Passwort-Reset, OAuth, Kamera, Geolocation, Geocoding-Dienste)
+
+**Ebene:** S1 benennt Operationen und Semantik; konkrete Endpunkt-URLs und Payload-Feldnamen gehören in die Architekturdokumentation (`docs/arch/`).
 
 ---
 
@@ -195,13 +205,17 @@ LocalCourt ist ein Greenfield-Projekt (siehe NG-09); es gibt keine Altdaten und 
 
 ---
 
-### **N2 — Querschnittskonzepte / Umsetzung** 🔄 (geplant)
-**Status**: 🔄 Ausstehend
-**Geplante Inhalte**:
-- Technische Umsetzung der N1-Anforderungen (Constraints, Tests, Monitoring, Sicherheitsmaßnahmen)
-- Technische Typzuordnung, Schlüssel, Constraints, Indizes
+### **N2 — Querschnittskonzepte / Umsetzung** ✅ (fertig)
+**Status**: ✅ Fertig
+**Datei**: [N2-querschnittskonzepte.md](N2-querschnittskonzepte.md)
+
+Technische Umsetzung der in D1, D2 und F3 bewusst offengelassenen Fragen auf dem Technologie-Stack aus P1/P2.
+
+**Inhalte**:
+- Technische Typzuordnung (D2 → PostgreSQL), Schlüssel, Constraints, Indizes
 - Atomarität des Beitritts, Statuspersistenz, Zählstrategie (offene Punkte aus D1/F3)
-- PIN-Speicherung, Zeittoleranz beim Check-in, Testing, Monitoring
+- PIN-Erzeugung und -Speicherung, QR-Inhalt, Identifier-Strategie
+- Row-Level-Security, Fehler-Mapping der Ergebniscodes auf HTTP, Testing und Monitoring
 
 ---
 
@@ -228,10 +242,10 @@ LocalCourt ist ein Greenfield-Projekt (siehe NG-09); es gibt keine Altdaten und 
 2. **F1/F2/F3 prüfen und pflegen** (✅ vorhanden): Geschäftsprozesse, Anwendungsfälle, Anwendungsfunktionen aktuell halten
 3. **D1/D2 prüfen und pflegen** (✅ vorhanden): Datenmodell und Datentypenverzeichnis aktuell halten
 4. **B1 prüfen und pflegen** (✅ vorhanden): Dialogspezifikation aktuell halten
-5. **S1 prüfen / vervollständigen**: Schnittstellen der Nachbarsysteme detaillieren
+5. **S1/N2 prüfen und pflegen** (✅ vorhanden): Schnittstellen der Nachbarsysteme und Querschnittskonzepte aktuell halten
 6. **B2/B3/S2** (✅ als nicht anwendbar dokumentiert)
-7. **S3/N2/E1/E2 ergänzen**: Inbetriebnahme, Querschnittskonzepte, Leseanleitung, Glossar schreiben
-8. **Architektur nach arc42 erstellen**: Interne Architektur unter [../arch/](../arch/) dokumentieren
+7. **S3/E1/E2 ergänzen**: Inbetriebnahme, Leseanleitung, Glossar schreiben
+8. **Architektur nach arc42 erstellen**: Interne Architektur unter `docs/arch/` dokumentieren
 9. **Anforderungen umsetzen**: Anforderungen aus P1/F1–F3/D1–D2/N1 nachvollziehbar in Architektur, Code und Tests umsetzen
 
 ---
@@ -240,7 +254,7 @@ LocalCourt ist ein Greenfield-Projekt (siehe NG-09); es gibt keine Altdaten und 
 
 - **Projekt-Root**: [../../README.md](../../README.md)
 - **Team & Rollen**: [../../TEAMINFO.md](../../TEAMINFO.md)
-- **Architektur**: [../arch/](../arch/)
+- **Architektur**: `docs/arch/`
 - **Herold-Referenz**: [Herold P1 Example](https://github.com/carstenlucke/herold/blob/main/docs/spec/P1-ziele-rahmenbedingungen.md)
 
 ---
@@ -263,6 +277,7 @@ LocalCourt ist ein Greenfield-Projekt (siehe NG-09); es gibt keine Altdaten und 
 | 2026-07-14 | Afrem Aydin, mit KI-Unterstützung | N1 Nichtfunktionale Anforderungen ergänzt |
 | 2026-07-14 | Afrem Aydin, mit Claude-Code-/ChatGPT-Unterstützung | Spezifikationsindex aktualisiert: B2/B3/S2/S3/E1 ergänzt, N1-Status korrigiert, veraltete Verweise entfernt |
 | 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | Konsistenz-Fixes: toter Link in F3.1, P1.4-Widersprüche zu Scope (Bearbeiten/Löschen, Teilnehmerlimit, Profil-Sichtbarkeit) aufgelöst, Terminologie-Nit in F1, B2/B3/S2 final als nicht anwendbar dokumentiert |
+| 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | S1 Nachbarsysteme vollständig ausgearbeitet; N2-Status im Index nachgetragen; tote Anker in D1/N2 korrigiert |
 
 ---
 

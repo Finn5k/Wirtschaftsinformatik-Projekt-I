@@ -6,7 +6,7 @@ Dieser Baustein schließt die technischen Fragen, die in [D1](D1-datenmodell.md)
 
 N2 ist ein **Querschnittsbaustein**: Er betrifft nicht einen einzelnen Anwendungsfall oder eine einzelne Entität, sondern technische Konzepte, die über das gesamte System hinweg gelten (Concurrency, Sicherheit, Fehlerbehandlung, Betrieb). Nach Siedersleben gehört die *fachliche* Entscheidung (ob eine Regel gilt) in P1/F3/D1/D2; die *technische* Umsetzung dieser Regel gehört hierher.
 
-**Abgrenzung:** N2 trifft keine neuen fachlichen Festlegungen und erweitert das MVP nicht. Jede hier getroffene Entscheidung muss eine bereits in P1/P2/F1–F3/D1/D2/B1 beschriebene fachliche Anforderung technisch erfüllen — nicht mehr und nicht weniger. Wo eine technische Entscheidung eine nichtfunktionale Bewertung voraussetzt, die noch nicht vorliegt (N1 ist laut [README](README.md) noch ausstehend), wird dies als offener Punkt markiert statt spekulativ vorwegzunehmen.
+**Abgrenzung:** N2 trifft keine neuen fachlichen Festlegungen und erweitert das MVP nicht. Jede hier getroffene Entscheidung muss eine bereits in P1/P2/F1–F3/D1/D2/B1 beschriebene fachliche Anforderung technisch erfüllen — nicht mehr und nicht weniger. Wo eine technische Entscheidung eine nichtfunktionale Bewertung voraussetzt, die [N1](N1-nichtfunktionale-anforderungen.md) bewusst nicht festlegt (siehe N1.7), wird dies als offener Punkt markiert statt spekulativ vorwegzunehmen.
 
 Die Benennung von Tabellen, Spalten und Funktionen folgt **englischem `snake_case`**, konsistent mit D1/D2/F3 und den Datenflüssen in P2.
 
@@ -23,7 +23,7 @@ Zuordnung der fachlichen Datentypen aus [D2](D2-datentypen.md) zu PostgreSQL-Spa
 | `Timestamp` | `timestamptz` | UTC-normalisiert (D2.1), konsistent mit AF-03-Zeitvergleichen. |
 | `Url` | `text` | Keine eigene Datenbank-Validierung der URL-Syntax im MVP; Prüfung liegt beim Frontend (B1). |
 | `SessionStatus` ([D2.3](D2-datentypen.md#d23-sessionstatus)) | *kein gespeichertes Feld* | Abgeleiteter Wert, siehe [N2.6](#n26-statuspersistenz-af-03). |
-| `Pin` ([D2.4](D2-datentypen.md#d24-pin)) | `char(4)` | Nur Ziffern; Erzwingung über `CHECK (pin ~ '^[0-9]{4}$')`. Speicherform (Klartext) siehe [N2.7](#n27-pin-erzeugung-und-speicherung-af-04). |
+| `Pin` ([D2.4](D2-datentypen.md#d24-pin)) | `char(4)` | Nur Ziffern; Erzwingung über `CHECK (pin ~ '^[0-9]{4}$')`. Speicherform (Klartext) siehe [N2.7](#n27-pin-erzeugung-und--speicherung-af-04). |
 | `ParticipantStatus` ([D2.5](D2-datentypen.md#d25-participantstatus)) | `text` mit `CHECK (status IN ('confirmed','checked_in'))` | Kein natives PostgreSQL-`enum` (einfachere Erweiterbarkeit ohne `ALTER TYPE`); fachlich gleichwertig zur Enum-Definition in D2.5. |
 | `Duration` ([D2.6](D2-datentypen.md#d26-duration)) | `integer` | Minuten, `CHECK (duration_min >= 1)`. |
 | `GeoCoordinate` ([D2.7](D2-datentypen.md#d27-geocoordinate)) | `double precision` | Für `latitude`/`longitude`; `CHECK`-Constraints für die Wertebereiche (±90/±180) sowie eine kombinierte Prüfung, dass beide Felder gemeinsam gesetzt oder gemeinsam leer sind (D1.4-Invariante). |
@@ -31,7 +31,7 @@ Zuordnung der fachlichen Datentypen aus [D2](D2-datentypen.md) zu PostgreSQL-Spa
 
 ## N2.3 Schlüssel, Constraints und Indizes
 
-Technische Realisierung der Entitäten aus [D1.4](D1-datenmodell.md#d14-entitätstypen) und ihrer Beziehungen ([D1.5](D1-datenmodell.md#d15-beziehungen)).
+Technische Realisierung der Entitäten aus [D1.4](D1-datenmodell.md#d14-entitätstypen-im-detail) und ihrer Beziehungen ([D1.5](D1-datenmodell.md#d15-beziehungen)).
 
 | Entität | Primärschlüssel | Fremdschlüssel | Zusätzliche Constraints |
 |---|---|---|---|
@@ -143,12 +143,12 @@ Die Check-in-Prüfung (AF-02 Regel 4) wird serverseitig als Teil einer weiteren 
 
 ## N2.11 Row-Level-Security (RLS)
 
-Konkretisiert die in [S1.4](S1-nachbarsysteme.md#s14--nb-03--supabase-postgrest-api) als „zu dokumentieren" offengelassenen RLS-Policies für NB-03, auf Basis der fachlichen Regeln aus F3 und der Sichtbarkeits-Hinweise aus D1.4/B1.
+Konkretisiert die Zugriffsregeln für NB-03 ([S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)), auf Basis der fachlichen Regeln aus F3 und der Sichtbarkeits-Hinweise aus D1.4/B1.
 
 | Tabelle | Policy (fachliche Wirkung) | Bezug |
 |---|---|---|
 | `session` | Lesbar für alle angemeldeten Nutzer (Discovery, UC-02); kein Schreibzugriff außer über die Erstellungs-RPC. | UC-02, UC-06 |
-| `session.pin` (Spalten-Ebene) | Nur für `organizer_id = auth.uid()` oder Nutzer mit `participant`-Eintrag (`status ∈ {confirmed, checked_in}`) für diese Session sichtbar. | AF-02, AF-04, [N2.7](#n27-pin-erzeugung-und-speicherung-af-04) |
+| `session.pin` (Spalten-Ebene) | Nur für `organizer_id = auth.uid()` oder Nutzer mit `participant`-Eintrag (`status ∈ {confirmed, checked_in}`) für diese Session sichtbar. | AF-02, AF-04, [N2.7](#n27-pin-erzeugung-und--speicherung-af-04) |
 | `participant` | Lesbar für `organizer_id` der zugehörigen Session (Teilnehmerliste, UC-07) und für den Nutzer selbst (`user_id = auth.uid()`, UC-05, UC-11). Schreibzugriff ausschließlich über die `join_session`/`check_in`-RPCs, nicht über direkte `INSERT`/`UPDATE`. | AF-01, AF-02, UC-04, UC-07, UC-08, UC-09 |
 | `profile` | Basisfelder (`display_name`, `avatar_url`) für alle angemeldeten Nutzer lesbar (Teilnehmerliste, UC-03/UC-07); Schreibzugriff nur für `user_id = auth.uid()`. | UC-12, D1.4 „Datenschutz" |
 | `court`, `sport`, `sport_preference` | `court`/`sport` lesbar für alle; `court`-Erstellung durch angemeldete Nutzer (UC-10, `created_by = auth.uid()`); `sport_preference` nur für den eigenen `user_id` schreibbar. | UC-10, UC-12 |
@@ -188,7 +188,7 @@ Im Rahmen des Free-Tier-Budgets (CON-T-02, CON-T-05) und ohne eigene Backend-Sch
 | [P2](P2-architekturueberblick.md) | Deployment-Topologie und Sequenzdiagramme sind die Grundlage für RPC-Endpoints und Fehler-Mapping ([N2.12](#n212-fehler-mapping-ergebniscodes--http)). |
 | [F3](F3-anwendungsfunktionen.md) | Jede N2-Entscheidung setzt eine fachliche Regel aus AF-01–AF-04 technisch um; N2 fügt keine neuen Regeln hinzu. |
 | [D1](D1-datenmodell.md) | Grundlage für Schema, Schlüssel und Invarianten ([N2.3](#n23-schlüssel-constraints-und-indizes)). |
-| [D2](D2-datentypen.md) | Grundlage für die Typzuordnung ([N2.2](#n22-technische-typzuordnung)) und PIN-Sicherheitsabwägung ([N2.7](#n27-pin-erzeugung-und-speicherung-af-04)). |
+| [D2](D2-datentypen.md) | Grundlage für die Typzuordnung ([N2.2](#n22-technische-typzuordnung)) und PIN-Sicherheitsabwägung ([N2.7](#n27-pin-erzeugung-und--speicherung-af-04)). |
 | [S1](S1-nachbarsysteme.md) | N2.11 konkretisiert die dort als offen markierten RLS-Policies für NB-03. |
 | [B1](B1-dialogspezifikation.md) | Sichtbarkeitsregeln für Felder (z. B. PIN, Profildaten) spiegeln sich in den RLS-Policies wider. |
 | N1 | Liefert die nichtfunktionalen Bewertungsgrößen (Zeittoleranz, Feldlängen, Sicherheitsniveau), auf die mehrere N2-Abschnitte verweisen, sobald N1 vorliegt. |
@@ -211,4 +211,4 @@ Im Rahmen des Free-Tier-Budgets (CON-T-02, CON-T-05) und ohne eigene Backend-Sch
 |---|---|
 | Werkzeug | Claude (Claude Sonnet 5) |
 | Verwendung | Entwurf des N2-Bausteins: Auflösung der in D1, D2 und F3 explizit an N2 verwiesenen offenen Punkte (Typzuordnung, Schlüssel/Constraints, Atomarität des Beitritts, Statuspersistenz, PIN-Speicherung, QR-Inhalt, Identifier-Strategie, RLS, Fehler-Mapping) auf Basis des bestehenden Tech-Stacks (P1 CON-T-01–CON-T-03, P2). |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md) und [S1](S1-nachbarsysteme.md) geprüft; keine über das MVP hinausgehenden Funktionen wurden eingeführt. Mit dem Team abzustimmen, insbesondere die Entscheidungen zur PIN-Klartextspeicherung ([N2.7](#n27-pin-erzeugung-und-speicherung-af-04)) und zur berechneten Statuspersistenz ([N2.6](#n26-statuspersistenz-af-03)). |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md) und [S1](S1-nachbarsysteme.md) geprüft; keine über das MVP hinausgehenden Funktionen wurden eingeführt. Mit dem Team abzustimmen, insbesondere die Entscheidungen zur PIN-Klartextspeicherung ([N2.7](#n27-pin-erzeugung-und--speicherung-af-04)) und zur berechneten Statuspersistenz ([N2.6](#n26-statuspersistenz-af-03)). Nachtrag (2026-07-26, Claude Sonnet 5): tote Anker korrigiert, veralteter Hinweis auf ein noch fehlendes N1 entfernt; der in N2.11 unbenannte Erstellungsaufruf ist in [S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) als `create_session` benannt. |
