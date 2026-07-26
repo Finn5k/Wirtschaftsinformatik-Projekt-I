@@ -106,7 +106,7 @@ Teilnahmezustand eines `participant`.
 
 **Verwendung:** Dient ausschließlich der Kartendarstellung über OpenStreetMap/Leaflet ([NB-04](P2-architekturueberblick.md#p22-nachbarsysteme)). Fehlen die Koordinaten, bleibt die Session über `court.city`/`name` weiterhin auffindbar (Graceful Degradation, UC-02).
 
-**Validierung:** Werte außerhalb der genannten Bereiche sind ungültig. Genauigkeit und Geocoding-Verfahren (Adresse → Koordinaten) sind in S1/N2 zu präzisieren.
+**Validierung:** Werte außerhalb der genannten Bereiche sind ungültig. Koordinaten entstehen ausschließlich durch das Setzen eines Kartenpins; eine Umrechnung zwischen Adresse und Koordinaten (Geocoding) findet in keiner Richtung statt ([S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)).
 
 ## D2.8 QrContent
 
@@ -141,7 +141,7 @@ Attribut- und Entitätsnamen sind in **englischem `snake_case`** gehalten (konsi
 | [D1](D1-datenmodell.md) | Verwendet die hier definierten Typen für alle Attribute; jede Typreferenz in D1 wird hier aufgelöst. |
 | [F3](F3-anwendungsfunktionen.md) | Definiert die Regeln über den Werten: `SessionStatus` (AF-03), `Pin`/`QrContent` (AF-02, AF-04), `ParticipantStatus` (AF-01, AF-02). |
 | [P1](P1-ziele-rahmenbedingungen.md) | Scope-Grenzen prägen die Wertebereiche (kein `waiting`, NG-10; DSGVO CON-D-01). |
-| [S1](S1-nachbarsysteme.md) | `Identifier` (`user_id`) und Geocoding stammen aus Nachbarsystemen. |
+| [S1](S1-nachbarsysteme.md) | `Identifier` (`user_id`) stammt aus Supabase Auth (NB-02); `GeoCoordinate` entsteht über die Kartenansicht (NB-04), nicht über einen Geocoding-Dienst. |
 | N1 / N2 | Feldlängen, Obergrenzen, technische Typzuordnung, Constraints, PIN-Speicherung, Zeittoleranz beim Check-in. |
 | B1 | Ein-/Ausgabeformate und Feldvalidierung in den Dialogen. |
 | E2 | Glossar: konsistente Begriffe zu den Typwerten. |
@@ -152,9 +152,15 @@ Attribut- und Entitätsnamen sind in **englischem `snake_case`** gehalten (konsi
 |---|---|---|
 | Feldlängen | Konkrete Längen-/Formatgrenzen für `Text`-Felder (`title`, `display_name`, `description`). | N1 / B1 |
 | Maximale Session-Dauer | Fachliche Obergrenze für `Duration`. | N1 / UC-06 |
-| PIN-Speicherung | Klartext vs. gehasht; Zeittoleranz beim Check-in-Fenster. | N2 |
-| QR-Kodierung | Konkretes URL-Format und Ablage des QR-Bilds. | S1 / N2 |
-| Identifier-Strategie | UUID vs. Sequenz; referenzielle Integrität. | N2 |
+| Zeittoleranz beim Check-in-Fenster | Ob am Rand des `active`-Fensters eine technische Toleranz eingeräumt wird. | N1 / N2 |
+
+Bereits entschieden und daher nicht mehr offen:
+
+| Punkt | Entscheidung |
+|---|---|
+| PIN-Speicherung | Klartext, bewusste Sicherheitsabwägung ([N2.7](N2-querschnittskonzepte.md#n27-pin-erzeugung-und--speicherung-af-04)). |
+| QR-Kodierung | Deep-Link aus `session_id` und `pin`, clientseitig erzeugt, kein gespeichertes Bild ([N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04), [S1.2](S1-nachbarsysteme.md#s12-nb-01--browser-nutzerkanal)). |
+| Identifier-Strategie | UUID v4 für system-vergebene Schlüssel, `profile.user_id` aus Supabase Auth ([N2.9](N2-querschnittskonzepte.md#n29-identifier-strategie)). |
 
 ## D2.12 Eingesetzte KI-Werkzeuge
 
@@ -162,4 +168,4 @@ Attribut- und Entitätsnamen sind in **englischem `snake_case`** gehalten (konsi
 |---|---|
 | Werkzeug | Claude Code (Opus 4.8) |
 | Verwendung | Entwurf des D2-Datentypenverzeichnisses: Katalogisierung der trivialen und nicht-trivialen Typen, Definition von Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. |
-| Prüfung | Inhalte wurden gegen [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md) und die Herold-Referenz geprüft und mit dem Team abzustimmen. |
+| Prüfung | Inhalte wurden gegen [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md) und die Herold-Referenz geprüft und mit dem Team abzustimmen. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Herkunft der Koordinaten in D2.7 festgelegt (Kartenpin statt Geocoding); in D2.11 die inzwischen entschiedenen Punkte (PIN-Speicherung, QR-Kodierung, Identifier-Strategie) von den weiterhin offenen getrennt. |

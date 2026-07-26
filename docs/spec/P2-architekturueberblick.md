@@ -4,7 +4,7 @@ Beschreibt aus Anwendungssicht, wie sich LocalCourt in seine Umgebung einbettet:
 
 Nach Siedersleben Section 4.2: Das Ziel dieses Bausteins ist die **vollständige Aufzählung aller Nachbarsysteme** und die Datenflussbeschreibung zwischen ihnen.
 
-**Hinweis**: Interne Architektur (Komponenten-Zerlegung, Layering, Sequence Diagrams, Deployment-Details) ist **außer Scope** und wird in M1–M2 (Fachliche & Technische Architektur) beschrieben.
+**Hinweis**: Interne Architektur (Komponenten-Zerlegung, Layering, Laufzeitsichten, Deployment-Details) ist **außer Scope** und wird in der Architekturdokumentation unter `docs/arch/` beschrieben.
 
 ---
 
@@ -28,7 +28,7 @@ flowchart TB
         db[("PostgreSQL")]
     end
 
-    osm["OpenStreetMap / Leaflet<br/>Kartendaten, Geocoding (optional)"]
+    osm["OpenStreetMap / Leaflet<br/>Kartenkacheln (Anzeige, Pin-Setzen)"]
 
     user -->|"HTTPS, Interaktion"| ui
     ui -->|"Login / JWT"| auth
@@ -39,10 +39,10 @@ flowchart TB
 
 ### Kommunikations-Kanäle
 
-- **Inbound**: Browser-User → React-Frontend (synchrone, WebSocket optional für Echtzeit-Updates)
+- **Inbound**: Browser-User → React-Frontend (synchron, Request-Response; kein Echtzeit-Kanal, siehe [S1.6](S1-nachbarsysteme.md#s16-nicht-genutzte-schnittstellen-und-abgrenzung))
 - **Frontend → Supabase Auth**: Authentifizierung, Session-Management (synchron, HTTPS)
-- **Frontend → Supabase PostgREST API**: CRUD-Operationen auf Sessions, Courts, Participants, Profiles (synchron, REST)
-- **Frontend → OpenStreetMap**: Kartendaten-Rendering, optional Geocoding (asynchron, Client-Side)
+- **Frontend → Supabase PostgREST API**: Lesezugriffe sowie die atomaren Schreiboperationen auf Sessions, Courts, Participants, Profiles (synchron, REST)
+- **Frontend → OpenStreetMap**: Kartenkacheln zur Darstellung und zum Setzen eines Pins (kein Geocoding, Client-Side)
 
 **Zusammenfassung**: Greenfield-System ohne Legacy-Integration. Alle Nachbarsysteme sind Cloud-Services via HTTPS-APIs.
 
@@ -54,10 +54,10 @@ Vollständige Aufzählung aller Systeme, mit denen LocalCourt kommuniziert:
 
 | ID | System | Rolle | Richtung | Koppelung | Häufigkeit | Owner |
 |----|--------|-------|----------|-----------|-----------|-------|
-| **NB-01** | **Browser / React-Frontend** ([S1.2](S1-nachbarsysteme.md#s12--nb-01--browser-frontend)) | Einziger Nutzer-Kontaktpunkt; Session-Verwaltung, Entdeckung, Check-In | Inbound | Tight (Synchron, Request-Response) | Kontinuierlich | Nutzer |
-| **NB-02** | **Supabase Authentication** ([S1.3](S1-nachbarsysteme.md#s13--nb-02--supabase-authentication)) | Nutzer-Anmeldung, Session-Verwaltung, Token-basierte Auth | Bidirektional (Request: Credentials; Response: JWT) | Tight (Synchron) | Per Login/Logout/Token-Refresh | Supabase (Third-Party) |
-| **NB-03** | **Supabase PostgREST API** ([S1.4](S1-nachbarsysteme.md#s14--nb-03--supabase-postgrest-api)) | CRUD auf Sessions, Courts, Participants, Profiles, Check-ins | Bidirektional (Request: JSON Payload; Response: JSON Result) | Tight (Synchron, aber batching möglich) | Per Action (create, read, filter, update, delete) | Supabase (Third-Party) |
-| **NB-04** | **OpenStreetMap / Leaflet** ([S1.5](S1-nachbarsysteme.md#s15--nb-04--openstreetmap-leaflet)) | Kartendarstellung, Visualisierung von Court-Positionen, ggf. Geocoding (Stadt → Koordinaten) | Outbound (Response nur für Rendering) | Loose (Asynchron, UI-only) | Per Map-Rendering, City-Input | OpenStreetMap Foundation (Third-Party) |
+| **NB-01** | **Browser / React-Frontend** ([S1.2](S1-nachbarsysteme.md#s12-nb-01--browser-nutzerkanal)) | Einziger Nutzer-Kontaktpunkt; Session-Verwaltung, Entdeckung, Check-In | Inbound | Tight (Synchron, Request-Response) | Kontinuierlich | Nutzer |
+| **NB-02** | **Supabase Authentication** ([S1.3](S1-nachbarsysteme.md#s13-nb-02--supabase-auth)) | Nutzer-Anmeldung, Session-Verwaltung, Token-basierte Auth | Bidirektional (Request: Credentials; Response: JWT) | Tight (Synchron) | Per Login/Logout/Token-Refresh | Supabase (Third-Party) |
+| **NB-03** | **Supabase PostgREST API** ([S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)) | CRUD auf Sessions, Courts, Participants, Profiles, Check-ins | Bidirektional (Request: JSON Payload; Response: JSON Result) | Tight (Synchron, aber batching möglich) | Per Action (create, read, filter, update, delete) | Supabase (Third-Party) |
+| **NB-04** | **OpenStreetMap / Leaflet** ([S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)) | Kartendarstellung, Visualisierung von Court-Positionen, Setzen eines Pins bei der Court-Erfassung (kein Geocoding) | Outbound (Response nur für Rendering) | Loose (Asynchron, UI-only) | Per Map-Rendering | OpenStreetMap Foundation (Third-Party) |
 
 ---
 
@@ -67,7 +67,7 @@ Detaillierte Interface-Contracts (Endpoints, Payloads, Error Handling) sind ausg
 
 | NB-ID | System | Protokoll | Format | Auth | Fehlerbehandlung | Status |
 |-------|--------|-----------|--------|------|------------------|--------|
-| NB-01 | Browser | HTTP(S) / WebSocket | HTML, JSON | Browser-Session | User Feedback (Modal/Toast) | ✅ |
+| NB-01 | Browser | HTTP(S) | HTML, JSON | Browser-Session | User Feedback (Modal/Toast) | ✅ |
 | NB-02 | Supabase Auth | HTTPS/REST | JSON | JWT Token | 401/403 Unauthorized, Server-Error Propagation | ✅ |
 | NB-03 | Supabase PostgREST | HTTPS/REST | JSON | Bearer Token (JWT) | 400/401/403/404/500, Business-Logic Error Messages | ✅ |
 | NB-04 | OpenStreetMap | HTTPS/REST | GeoJSON, Tiles | (keine) | Graceful Degradation (Fallback zu Fallback-Map oder Text) | ✅ |
@@ -134,12 +134,13 @@ sequenceDiagram
 
     O->>FE: (1) Formular: title, sport, start_at, court, max_participants
     FE->>FE: (2) Frontend-Validierung
-    FE->>API: (3) POST /rest/v1/sessions (Bearer JWT)
-    API->>DB: (4) INSERT session (status abgeleitet: scheduled)
-    API->>DB: (5) INSERT participant (Organisator, confirmed)
-    API-->>FE: (6) 201 Created { id, ... }
+    FE->>API: (3) rpc/create_session (Bearer JWT)
+    API->>DB: (4) atomar: INSERT session (PIN erzeugt, status abgeleitet: scheduled)<br/>+ INSERT participant (Organisator, confirmed)
+    API-->>FE: (5) 200 OK { session_id, ... }
     FE-->>O: Redirect Session-Detail + "Session erstellt"
 ```
+
+Session und Organisator-Teilnahme entstehen gemeinsam in einer atomaren serverseitigen Funktion ([S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest), [N2.11](N2-querschnittskonzepte.md#n211-row-level-security-rls)); ein direkter Schreibzugriff auf `session` ist nicht vorgesehen.
 
 **Fehlerbehandlung**:
 - 401 Unauthorized: JWT abgelaufen → Re-Login erforderlich
@@ -163,9 +164,9 @@ sequenceDiagram
     FE->>OSM: (4) Court-Positionen rendern
     OSM-->>FE: Tiles / Pins
     P->>FE: (5) Session wählen → "Beitreten"
-    FE->>API: (6) POST /rest/v1/participants { status: confirmed }
+    FE->>API: (6) rpc/join_session { session_id }
     alt (7a) Kapazität frei (AF-01, atomar)
-        API-->>FE: 201 { status: confirmed }
+        API-->>FE: 200 { status: confirmed }
         FE-->>P: "Beigetreten"
     else (7b) Session voll
         API-->>FE: 409 Conflict
@@ -193,8 +194,8 @@ sequenceDiagram
 
     Note over P,DB: Session ist active (AF-03), Teilnehmer ist confirmed
     P->>FE: (1) QR-Code scannen ODER PIN eingeben
-    FE->>API: (2) PATCH /participants/<id> { status: checked_in }
-    API->>DB: (3) UPDATE status=checked_in, checked_in_at=NOW()
+    FE->>API: (2) rpc/check_in { session_id, pin }
+    API->>DB: (3) atomar: Teilnahme, PIN und Zeitfenster prüfen,<br/>dann UPDATE status=checked_in, checked_in_at=NOW()
     API-->>FE: (4) 200 { status: checked_in }
     FE-->>P: (5) "✓ Check-in erfolgreich"
     Note over FE,DB: idempotent (AF-02); keine Statusrücknahme
@@ -248,8 +249,8 @@ Alle Nachbarsysteme sind **Cloud-Services** über HTTPS-APIs, ideal für Free-Ti
 ## Referenzen
 
 - **P1 — Ziele und Rahmenbedingungen**: `P1-ziele-rahmenbedingungen.md`
-- **S1 — Nachbarsysteme (Detailed Interfaces)**: `S1-nachbarsysteme.md` (zukünftig)
-- **M1 — Fachliche Architektur**: `M1-...-md` (zukünftig)
+- **S1 — Nachbarsysteme (Schnittstellen-Contracts)**: [S1-nachbarsysteme.md](S1-nachbarsysteme.md)
+- **Architekturdokumentation**: `docs/arch/` (in Arbeit)
 - **Herold P2 Reference** (English): [GitHub](https://github.com/carstenlucke/herold/blob/main/docs/spec/P2-architekturueberblick.md)
 - **Team & Rollen**: `../../TEAMINFO.md`
 
@@ -261,4 +262,4 @@ Alle Nachbarsysteme sind **Cloud-Services** über HTTPS-APIs, ideal für Free-Ti
 |---|---|
 | Werkzeug | GitHub Copilot, Claude (Claude Code) |
 | Verwendung | Entwurf des Architekturüberblicks: Systemkontext, Nachbarsysteme, Deployment-Topologie und kritische Datenflüsse. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Umstellung der Diagramme auf Mermaid, Entfernen überholter Waitlist-Datenflüsse gemäß NG-10) mit Claude Code (Opus 4.8). |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Umstellung der Diagramme auf Mermaid, Entfernen überholter Waitlist-Datenflüsse gemäß NG-10) mit Claude Code (Opus 4.8). Angleichung an S1 (2026-07-26, Claude Sonnet 5): Datenflüsse P2.5 auf die atomaren Schreiboperationen umgestellt, Geocoding- und WebSocket-Erwähnungen entfernt, veraltete M1/M2-Verweise ersetzt. |
