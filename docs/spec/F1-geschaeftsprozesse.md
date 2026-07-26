@@ -164,7 +164,7 @@ Zeitliche und logische Reihenfolge.
 | A14 | QR-Code-Scan führt zu Browser-Seite mit automatischem Check-In | Browser (Participant) | LocalCourt erkennt session_id & pin aus URL. POST /rest/v1/participants/<participant_id>/check_in { status: 'checked_in', checked_in_at: NOW() }. |
 | A15 | LocalCourt markiert Participant als "checked_in" | LocalCourt → PostgreSQL | UPDATE participants SET status='checked_in', checked_in_at=NOW() WHERE id=<>. |
 | A16 | Participant sieht Bestätigung "✓ Check-in erfolgreich!" | Browser (UI Feedback) | Toast oder Modal mit checked_in-Status. |
-| A17 | Organisator sieht in Participant-Liste: "X / Y Checked in" | Organizer, Browser | Real-time Update der Liste. Grüne Häkchen für checked_in, Grau für "joined aber nicht checked_in". |
+| A17 | Organisator sieht in Participant-Liste: "X / Y Checked in" | Organizer, Browser | Real-time Update der Liste. Grüne Häkchen für checked_in, Grau für "confirmed aber nicht checked_in". |
 | **Fallback: PIN-Eingabe (falls QR-Scan fehlschlägt)** | | | |
 | A18 | Teilnehmer kann alternativ 4-stellige PIN manuell eingeben | Participant, Browser | Form: "Check-In PIN" → LocalCourt verifiziert PIN. |
 | A19 | LocalCourt validiert PIN & markiert als checked_in | LocalCourt → PostgreSQL | SELECT sessions WHERE pin=<> AND status='active', dann CHECK-IN für Participant. |
@@ -347,4 +347,4 @@ Jeder Prozess besteht aus **Akteuren** (Mensch & IT), **Aktivitäten** (zeitlich
 |---|---|
 | Werkzeug | GitHub Copilot, Claude (Claude Code) |
 | Verwendung | Entwurf der Geschäftsprozesse (GP-01–GP-03), Aktivitäten, Dokumente, Daten-Stores und Ablaufdiagramme. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Ablaufdiagramme auf Mermaid, Korrektur halluzinierter Querverweise) mit Claude Code (Opus 4.8). |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Ablaufdiagramme auf Mermaid, Korrektur halluzinierter Querverweise) mit Claude Code (Opus 4.8). Terminologie-Fix (2026-07-26, Claude Sonnet 5): Teilnehmerstatus in A17 von "joined" auf "confirmed" korrigiert (konsistent mit D2.5/N2-Enum). |
