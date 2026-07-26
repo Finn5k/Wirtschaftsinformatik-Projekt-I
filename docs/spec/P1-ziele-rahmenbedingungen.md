@@ -40,11 +40,11 @@ LocalCourt löst das Problem der dezentralisierten Koordination: Heute brauchen 
 
 ### In-Scope
 
-- **Web-UI für Session-Verwaltung**: Erstellen, bearbeiten, löschen, anschauen, beitreten.
+- **Web-UI für Session-Verwaltung**: Erstellen, anschauen, beitreten (Bearbeiten und Löschen bestehender Sessions sind im MVP bewusst nicht vorgesehen, siehe [F2](F2-anwendungsfaelle.md#uc-06--session-erstellen)/[F3](F3-anwendungsfunktionen.md)).
 - **Court-/Sportplatz-Verzeichnis**: Erfassen, durchsuchen, filtern nach Sportart und Location.
-- **Teilnehmer-Verwaltung**: Check-In und Kapazitätsverwaltung (max. X Teilnehmer pro Session). Wartelisten sind bewusst ausgeschlossen (siehe NG-10).
+- **Teilnehmer-Verwaltung**: Check-In und Kapazitätsverwaltung (vom Organisator festgelegte maximale Teilnehmerzahl pro Session). Wartelisten sind bewusst ausgeschlossen (siehe NG-10).
 - **Session-Status-Management**: Status-Lifecycle (geplant, aktiv, abgeschlossen, storniert).
-- **Nutzer-Profile**: Basis-Informationen (Name, Profil-Bild, Sportarten-Interessen), Sichtbarkeit regulierbar.
+- **Nutzer-Profile**: Basis-Informationen (Name, Profil-Bild, Sportarten-Interessen) anzeigen und bearbeiten (siehe [B1 DLG-08](B1-dialogspezifikation.md#b148-dlg-08--profil)).
 - **Responsive Design**: Mobile & Desktop gleichwertig unterstützt.
 - **Authentifizierung**: Einfache Nutzer-Anmeldung (E-Mail + Passwort oder OAuth Third-Party).
 
@@ -131,5 +131,5 @@ Die Mission wird unter klaren Budget-, Technologie-, und zeitlichen Constraints 
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | GitHub Copilot / Claude Code |
-| Verwendung | Entwurf des P1-Bausteins: Mission, Geschäftsziele, Stakeholder, Scope, Rahmenbedingungen und Erfolgskriterien. |
+| Verwendung | Entwurf des P1-Bausteins: Mission, Geschäftsziele, Stakeholder, Scope, Rahmenbedingungen und Erfolgskriterien. Claude Code (Claude Sonnet 5) zudem für einen Konsistenz-Fix (2026-07-26): Scope-Widersprüche zu F2/F3/D1/B1 in P1.4 (Bearbeiten/Löschen, Teilnehmerlimit-Platzhalter, Profil-Sichtbarkeit) aufgelöst. |
 | Prüfung | Inhalte wurden gegen die Projektidee, [TEAMINFO](../../TEAMINFO.md), bestehende Spezifikationsbausteine, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. |

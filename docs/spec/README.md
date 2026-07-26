@@ -146,17 +146,17 @@ Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste)
 
 ---
 
-### **B2 — Batch** 🔍 (zu prüfen / ggf. nicht anwendbar)
-**Status**: 🔍 Zu prüfen
+### **B2 — Batch** ❌ (nicht anwendbar)
+**Status**: ❌ Nicht anwendbar
 
-Aktuell sind für LocalCourt keine klassischen Batchprozesse (zeitgesteuerte Massenverarbeitung) vorgesehen. Der Baustein wird bei Bedarf nachgezogen; andernfalls wird die Nicht-Anwendbarkeit hier dokumentiert.
+LocalCourt sieht keine klassischen Batchprozesse (zeitgesteuerte Massenverarbeitung) vor: Der Session-Status wird laut [N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03) bewusst bei jeder Abfrage berechnet statt per Scheduler/Cron gepflegt, gerade um eine zusätzliche Batch-Komponente im Free-Tier zu vermeiden (CON-T-02). Sollte sich dies ändern, wird B2 nachgezogen.
 
 ---
 
-### **B3 — Druckausgaben** 🔍 (zu prüfen / ggf. nicht anwendbar)
-**Status**: 🔍 Zu prüfen
+### **B3 — Druckausgaben** ❌ (nicht anwendbar)
+**Status**: ❌ Nicht anwendbar
 
-Aktuell sind keine Druckausgaben vorgesehen; der QR-Code für den Check-in wird ausschließlich am Bildschirm angezeigt und gescannt. Der Baustein wird bei Bedarf nachgezogen; andernfalls wird die Nicht-Anwendbarkeit hier dokumentiert.
+LocalCourt sieht keine Druckausgaben vor; der QR-Code für den Check-in wird ausschließlich am Bildschirm angezeigt und gescannt (F1 GP-02, [N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04)). Sollte sich dies ändern, wird B3 nachgezogen.
 
 ---
 
@@ -168,10 +168,10 @@ Detaillierte Schnittstellen-Contracts je Nachbarsystem (Browser, Supabase Auth, 
 
 ---
 
-### **S2 — Datenmigration** 🔍 (zu prüfen / ggf. nicht anwendbar)
-**Status**: 🔍 Zu prüfen
+### **S2 — Datenmigration** ❌ (nicht anwendbar)
+**Status**: ❌ Nicht anwendbar
 
-LocalCourt ist ein Greenfield-Projekt; aktuell ist keine Migration von Altdaten vorgesehen. Der Baustein wird bei Bedarf nachgezogen; andernfalls wird die Nicht-Anwendbarkeit hier dokumentiert.
+LocalCourt ist ein Greenfield-Projekt (siehe NG-09); es gibt keine Altdaten und damit keine Migration.
 
 ---
 
@@ -229,7 +229,7 @@ LocalCourt ist ein Greenfield-Projekt; aktuell ist keine Migration von Altdaten 
 3. **D1/D2 prüfen und pflegen** (✅ vorhanden): Datenmodell und Datentypenverzeichnis aktuell halten
 4. **B1 prüfen und pflegen** (✅ vorhanden): Dialogspezifikation aktuell halten
 5. **S1 prüfen / vervollständigen**: Schnittstellen der Nachbarsysteme detaillieren
-6. **B2/B3/S2 prüfen** und ggf. als nicht anwendbar dokumentieren
+6. **B2/B3/S2** (✅ als nicht anwendbar dokumentiert)
 7. **S3/N2/E1/E2 ergänzen**: Inbetriebnahme, Querschnittskonzepte, Leseanleitung, Glossar schreiben
 8. **Architektur nach arc42 erstellen**: Interne Architektur unter [../arch/](../arch/) dokumentieren
 9. **Anforderungen umsetzen**: Anforderungen aus P1/F1–F3/D1–D2/N1 nachvollziehbar in Architektur, Code und Tests umsetzen
@@ -262,6 +262,7 @@ LocalCourt ist ein Greenfield-Projekt; aktuell ist keine Migration von Altdaten 
 | 2026-07-14 | Afrem Aydin, mit KI-Unterstützung | F2 Use-Case-Diagramme und Verweise überarbeitet |
 | 2026-07-14 | Afrem Aydin, mit KI-Unterstützung | N1 Nichtfunktionale Anforderungen ergänzt |
 | 2026-07-14 | Afrem Aydin, mit Claude-Code-/ChatGPT-Unterstützung | Spezifikationsindex aktualisiert: B2/B3/S2/S3/E1 ergänzt, N1-Status korrigiert, veraltete Verweise entfernt |
+| 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | Konsistenz-Fixes: toter Link in F3.1, P1.4-Widersprüche zu Scope (Bearbeiten/Löschen, Teilnehmerlimit, Profil-Sichtbarkeit) aufgelöst, Terminologie-Nit in F1, B2/B3/S2 final als nicht anwendbar dokumentiert |
 
 ---
 

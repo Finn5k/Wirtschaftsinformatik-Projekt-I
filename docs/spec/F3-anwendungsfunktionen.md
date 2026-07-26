@@ -6,7 +6,7 @@ Anwendungsfälle ([F2](F2-anwendungsfaelle.md)) sind bewusst kurz, einfach und �
 
 Nach Siedersleben beschreibt man solche komplexen Regelwerke deshalb **außerhalb** des Anwendungsfalls als **Anwendungsfunktion**. Eine Anwendungsfunktion ist ein fachlicher Algorithmus aus Sicht des Anwenders (vergleichbar mit Bonitätsprüfung oder Check-in-Prioritätsregeln), nicht ein Informatik-Algorithmus. Such-, Sortier- oder Speicherverfahren gehören daher **nicht** hierher (siehe [F3.8](#f38-nicht-als-anwendungsfunktion-modelliert)).
 
-F3 legt die fachlichen Regeln fest: *unter welchen Bedingungen* eine Aktion zulässig ist, *welches Ergebnis* sie erzeugt und *welche Invarianten* dabei gelten. Die **technische** Umsetzung (Transaktionen, Datenbank-Constraints, Scheduler, Isolationsstufen) ist nicht Teil von F3, sondern von [D2](#), N2 und den Architekturbausteinen. F3 ist damit die fachliche Referenz, gegen die Architektur, Tests und Code später geprüft werden.
+F3 legt die fachlichen Regeln fest: *unter welchen Bedingungen* eine Aktion zulässig ist, *welches Ergebnis* sie erzeugt und *welche Invarianten* dabei gelten. Die **technische** Umsetzung (Transaktionen, Datenbank-Constraints, Scheduler, Isolationsstufen) ist nicht Teil von F3, sondern von [D2](D2-datentypen.md), N2 und den Architekturbausteinen. F3 ist damit die fachliche Referenz, gegen die Architektur, Tests und Code später geprüft werden.
 
 **Hinweis zur Gliederung:** Für Anwendungsfunktionen gibt es nach Siedersleben bewusst keine Standardgliederung, weil sie sich stark unterscheiden. Zur Lesbarkeit und für die durchgängige Nachverfolgbarkeit im Review verwenden wir hier dennoch ein einheitliches, schlankes Schema (Zweck, Eingaben, Ergebnis, Regeln, Entscheidungstabelle, Bezüge) und ergänzen Pseudocode nur dort, wo eine Regel sonst mehrdeutig bliebe.
 
@@ -266,4 +266,4 @@ Typische fachliche Kette einer organisierten Session:
 |---|---|
 | Werkzeug | Claude Code |
 | Verwendung | Entwurf des F3-Bausteins, Identifikation der Anwendungsfunktionen aus den offenen Punkten von F2, Formulierung der Regeln, Entscheidungstabellen und Pseudocode-Kerne. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md) und die Herold-Referenz geprüft und manuell abgestimmt; der Warteliste-Scope-Konflikt wurde in P1 (NG-10) aufgelöst und in F2 nachgezogen. |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md) und die Herold-Referenz geprüft und manuell abgestimmt; der Warteliste-Scope-Konflikt wurde in P1 (NG-10) aufgelöst und in F2 nachgezogen. Toter Querverweis auf D2 korrigiert (2026-07-26, Claude Sonnet 5). |
