@@ -4,8 +4,10 @@ import { useNavigate } from "react-router";
 import { getCurrentUser } from "../services/userService";
 import type { SportType } from "../types/session";
 
-// Profil gemäß B1 DLG-08 (UC-12): Anzeigename, Ort, E-Mail (read-only, Auth),
+// Profil gemäß B1 DLG-08 (UC-12): Anzeigename, E-Mail (read-only, Auth),
 // bevorzugte Sportarten. Zustände: Ansicht / Bearbeiten.
+// Das zusätzlich angezeigte Ortsfeld hat keine Entsprechung in D1/DLG-08
+// und ist als Prototyp-Abweichung in B1.6 ausgewiesen.
 // Level/XP/Rang, Streak, Abzeichen und Avatar-Items sind bewusst entfernt (NG-05).
 
 const allSports: SportType[] = [

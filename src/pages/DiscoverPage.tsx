@@ -109,15 +109,7 @@ export function DiscoverPage() {
               to={`/sessions/${featuredSession.id}`}
               className="block overflow-hidden rounded-[2rem] bg-white shadow-sm"
             >
-              <div className="relative h-44">
-                <img
-                  src={featuredSession.imageUrl}
-                  alt={featuredSession.title}
-                  className="h-full w-full object-cover"
-                />
-
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-
+              <div className="relative h-44 bg-gradient-to-br from-blue-600 to-blue-800">
                 <div className="absolute bottom-4 left-4 right-4 text-white">
                   <div className="mb-2 flex gap-2">
                     <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold backdrop-blur">

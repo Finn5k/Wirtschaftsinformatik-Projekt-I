@@ -14,7 +14,6 @@ export const mockSessions: SportSession[] = [
     timeLabel: "18:00",
     description:
       "Starte mit uns aktiv in den Abend. Lockere Laufrunde durch die Wieseckaue mit moderatem Tempo.",
-    meetingPoint: "Eingang Stadtpark Wieseckaue",
     durationMin: 60,
     participantsCount: 8,
     maxParticipants: 15,
@@ -22,8 +21,6 @@ export const mockSessions: SportSession[] = [
     organizerId: "current-user",
     organizerName: "Lena Aktiv",
     pin: "4821",
-    imageUrl:
-      "https://images.unsplash.com/photo-1502904550040-7534597429ae?auto=format&fit=crop&w=900&q=80",
     participants: [
       { id: "current-user", name: "Lena", status: "confirmed" },
       { id: "u2", name: "Max", status: "confirmed" },
@@ -43,7 +40,6 @@ export const mockSessions: SportSession[] = [
     timeLabel: "19:30",
     description:
       "Lockeres Kleinfeldspiel nach Uni oder Arbeit. Alle sind willkommen, Teams werden vor Ort gebildet.",
-    meetingPoint: "Kunstrasenplatz am Sportgelände",
     durationMin: 90,
     participantsCount: 10,
     maxParticipants: 16,
@@ -51,8 +47,6 @@ export const mockSessions: SportSession[] = [
     organizerId: "u4",
     organizerName: "Jonas",
     pin: "7302",
-    imageUrl:
-      "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=900&q=80",
     participants: [
       { id: "u4", name: "Jonas", status: "checked_in" },
       { id: "u5", name: "Mira", status: "confirmed" },
@@ -72,7 +66,6 @@ export const mockSessions: SportSession[] = [
     timeLabel: "17:00",
     description:
       "Entspannte Fahrradrunde entlang der Lahn zum Sonnenuntergang. Ideal für alle, die eine lockere Runde fahren möchten.",
-    meetingPoint: "Startpunkt an der Lahnbrücke",
     durationMin: 75,
     participantsCount: 6,
     maxParticipants: 12,
@@ -80,8 +73,6 @@ export const mockSessions: SportSession[] = [
     organizerId: "u6",
     organizerName: "Amir",
     pin: "1958",
-    imageUrl:
-      "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=900&q=80",
     participants: [
       { id: "u6", name: "Amir", status: "confirmed" },
       { id: "u7", name: "Noah", status: "confirmed" },
@@ -100,7 +91,6 @@ export const mockSessions: SportSession[] = [
     timeLabel: "20:00",
     description:
       "Schnelle 3v3 Basketball-Session auf dem Campus Court. Ideal für lockere Runs nach Uni oder Arbeit.",
-    meetingPoint: "Basketballplatz neben Gebäude A",
     durationMin: 90,
     participantsCount: 6,
     maxParticipants: 6,
@@ -108,8 +98,6 @@ export const mockSessions: SportSession[] = [
     organizerId: "u8",
     organizerName: "Chris",
     pin: "6440",
-    imageUrl:
-      "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=900&q=80",
     participants: [
       { id: "u8", name: "Chris", status: "confirmed" },
       { id: "u9", name: "David", status: "confirmed" },
@@ -129,7 +117,6 @@ export const mockSessions: SportSession[] = [
     timeLabel: "18:30",
     description:
       "Offene Badminton-Session für Einsteiger und Fortgeschrittene. Schläger bitte selbst mitbringen.",
-    meetingPoint: "Eingang THM Sporthalle",
     durationMin: 120,
     participantsCount: 4,
     maxParticipants: 12,
@@ -137,8 +124,6 @@ export const mockSessions: SportSession[] = [
     organizerId: "u11",
     organizerName: "Maya",
     pin: "2716",
-    imageUrl:
-      "https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=900&q=80",
     participants: [
       { id: "u11", name: "Maya", status: "confirmed" },
       { id: "u12", name: "Felix", status: "confirmed" },
@@ -157,7 +142,6 @@ export const mockSessions: SportSession[] = [
     timeLabel: "10:00",
     description:
       "Gemeinsame Schwimmeinheit mit Fokus auf Technik, ruhigem Tempo und sauberem Einstieg.",
-    meetingPoint: "Eingang Hallenbad",
     durationMin: 60,
     participantsCount: 5,
     maxParticipants: 10,
@@ -165,8 +149,6 @@ export const mockSessions: SportSession[] = [
     organizerId: "u13",
     organizerName: "Sophie",
     pin: "8135",
-    imageUrl:
-      "https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=900&q=80",
     participants: [
       { id: "u13", name: "Sophie", status: "confirmed" },
       { id: "u14", name: "Ben", status: "confirmed" },
@@ -185,7 +167,6 @@ export const mockSessions: SportSession[] = [
     timeLabel: "09:00",
     description:
       "Gemeinsame Laufrunde entlang der Lahn. Diese Session ist bereits abgeschlossen.",
-    meetingPoint: "Startpunkt an der Lahnbrücke",
     durationMin: 60,
     participantsCount: 7,
     maxParticipants: 12,
@@ -193,8 +174,6 @@ export const mockSessions: SportSession[] = [
     organizerId: "u6",
     organizerName: "Amir",
     pin: "5074",
-    imageUrl:
-      "https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=900&q=80",
     participants: [
       { id: "u6", name: "Amir", status: "checked_in" },
       { id: "current-user", name: "Lena", status: "checked_in" },
@@ -214,7 +193,6 @@ export const mockSessions: SportSession[] = [
     timeLabel: "18:00",
     description:
       "Die erste Ausgabe des Morning Run. Diese Session ist bereits abgeschlossen.",
-    meetingPoint: "Eingang Stadtpark Wieseckaue",
     durationMin: 60,
     participantsCount: 10,
     maxParticipants: 15,
@@ -222,8 +200,6 @@ export const mockSessions: SportSession[] = [
     organizerId: "current-user",
     organizerName: "Lena Aktiv",
     pin: "3390",
-    imageUrl:
-      "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=900&q=80",
     participants: [
       { id: "current-user", name: "Lena", status: "checked_in" },
       { id: "u2", name: "Max", status: "checked_in" },

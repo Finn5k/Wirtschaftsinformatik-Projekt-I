@@ -41,7 +41,6 @@ export interface SportSession {
   dateLabel: string;
   timeLabel: string;
   description: string;
-  meetingPoint: string;
   durationMin: number;
   participantsCount: number;
   maxParticipants: number;
@@ -49,7 +48,6 @@ export interface SportSession {
   organizerId: string;
   organizerName: string;
   pin: string;
-  imageUrl: string;
   participants: Participant[];
   latitude: number;
   longitude: number;

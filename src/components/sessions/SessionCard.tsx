@@ -19,14 +19,8 @@ export function SessionCard({ session }: SessionCardProps) {
 
   return (
     <article className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-sm">
-      <div className="flex gap-3 p-3">
-        <img
-          src={session.imageUrl}
-          alt={session.title}
-          className="h-28 w-28 rounded-3xl object-cover"
-        />
-
-        <div className="min-w-0 flex-1">
+      <div className="p-3">
+        <div className="min-w-0">
           <div className="mb-2 flex flex-wrap items-center gap-2">
             <StatusBadge status={session.status} />
             <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">
