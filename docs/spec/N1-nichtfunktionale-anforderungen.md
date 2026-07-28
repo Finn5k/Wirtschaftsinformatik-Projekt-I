@@ -258,7 +258,7 @@ Folgende Punkte sind bewusst **nicht** Teil der Qualitätsanforderungen von Loca
 | [D1](D1-datenmodell.md) | Datenschutzhinweis zu `profile` (D1.4) und offener Punkt „sichtbare Profilfelder" (D1.9) sind Grundlage von N1-QA-04. | Konsistent; kein neues Datenobjekt eingeführt. |
 | [D2](D2-datentypen.md) | PIN-Sicherheitsniveau (D2.4) und offene Punkte zu Feldlängen (D2.11) sind Grundlage von N1-QA-05 bzw. als offener Punkt referenziert. | Konsistent; Feldlängen bleiben bewusst offen (siehe D2.11, hier nicht neu festgelegt). |
 | [B1](B1-dialogspezifikation.md) | Standard-Fehler-/Ladezustände (B1.5.4) und offene Punkte zu Fehlertexten (B1.8) sind Grundlage von N1-QA-09; Responsive-Hinweis (B1.1) stützt N1-QA-02. | Konsistent; N1 verdoppelt B1.5 nicht, sondern bewertet es als Qualitätsanforderung. |
-| [S1](S1-nachbarsysteme.md) | Fehlerbehandlung der Nachbarsysteme (Rate-Limiting, Tile-Load-Timeout) stützt N1-QA-06/N1-QA-10. | Konsistent; S1 ist als Stub gekennzeichnet, N1 nimmt nur die bereits dokumentierten Fehlerfälle auf. |
+| [S1](S1-nachbarsysteme.md) | Fehlerbehandlung der Nachbarsysteme (Rate-Limiting, Tile-Load-Timeout) stützt N1-QA-06/N1-QA-10. | Konsistent; S1 nennt je Nachbarsystem einen Ausfallpfad und verweist für die kontrollierte Degradation auf N1-QA-06. |
 
 ## N1.9 Weiterverwendung in Architektur, Tests und Code
 
@@ -276,4 +276,4 @@ Im Review lässt sich damit für jede Qualitätsanforderung erklären: welcher U
 |---|---|
 | Werkzeug | Claude Code / ChatGPT |
 | Verwendung | Entwurf, Strukturierung, Formulierungsvorschläge, Konsistenzprüfung und Akzeptanzkriterien für den N1-Baustein, ausgehend von den bestehenden „Bezug zu NFR / Qualität"-Angaben und offenen Punkten in F2, F3, D1, D2 und B1. |
-| Prüfung | Inhalte wurden gegen P1, P2, F1, F2, F3, D1, D2, B1, S1, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Vor dem Merge erfolgt zusätzlich ein Team-Review. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. |
+| Prüfung | Inhalte wurden gegen P1, P2, F1, F2, F3, D1, D2, B1, S1, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Vor dem Merge erfolgt zusätzlich ein Team-Review. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. Nachtrag (2026-07-26, Claude Sonnet 5): veralteter Hinweis auf S1 als Stub in N1.8 korrigiert. |

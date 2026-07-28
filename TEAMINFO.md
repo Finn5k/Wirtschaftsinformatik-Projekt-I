@@ -19,15 +19,15 @@ LocalCourt ist eine Webanwendung zur Organisation spontaner Sport-Sessions auf l
 
 **Rollen-Empfehlung (frei änderbar):** Projektleiter:in, Software Architect, Spec/Requirements Lead, Implementation Lead, QA/Test Lead, DevOps/Build Lead.
 
-## Technologien (voraussichtlich)
+## Technologien
 
-- **Sprache(n):** TypeScript, JavaScript, HTML, CSS
-- **Frameworks:** React, Node.js, Express
-- **Persistenz:** PostgreSQL
-- **Build/Tooling:** Vite, npm
-- **Sonstiges:** Docker, REST-API, GitHub Actions
+- **Sprache(n):** TypeScript, HTML, CSS
+- **Frontend:** React, React Router, Tailwind CSS, Leaflet/react-leaflet
+- **Persistenz und Backend-Dienste:** Supabase (PostgreSQL, Auth, PostgREST) — kein eigener Anwendungsserver, das Frontend spricht direkt mit der REST-Schnittstelle (siehe [P2](docs/spec/P2-architekturueberblick.md))
+- **Build/Tooling:** Vite, npm, ESLint
+- **Hosting:** Vercel (Frontend), Supabase (Datenbank und Auth) — jeweils Free-Tier
 
-> Diese Liste ist eine Momentaufnahme — Änderungen im Projektverlauf sind erlaubt und in der Architekturbeschreibung (M2) endgültig festzulegen.
+> Die ursprüngliche Planung nannte Node.js/Express und Docker. Mit dem Architekturüberblick [P2](docs/spec/P2-architekturueberblick.md) ist entschieden, dass LocalCourt **keinen eigenen Anwendungsserver** betreibt; die serverseitige Logik liegt in der Datenbank (siehe [N2](docs/spec/N2-querschnittskonzepte.md)). Endgültig festgelegt wird der Stack in der Architekturdokumentation unter `docs/arch/`.
 
 ## Repository
 
