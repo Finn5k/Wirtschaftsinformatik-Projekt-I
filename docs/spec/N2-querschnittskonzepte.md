@@ -42,7 +42,7 @@ Technische Realisierung der Entitäten aus [D1.4](D1-datenmodell.md#d14-entität
 | `participant` | `participant_id` (`uuid`) | `session_id → session.session_id`, `user_id → profile.user_id` (beide `NOT NULL`, `ON DELETE CASCADE` auf `session_id`) | `UNIQUE (session_id, user_id)` — technische Umsetzung der D1.4-Invariante „höchstens eine Teilnahme je (session_id, user_id)" und Grundlage der Atomarität in [N2.4](#n24-atomarität-des-beitritts-af-01). `CHECK ((status = 'checked_in') = (checked_in_at IS NOT NULL))` setzt die Check-in-Kopplung aus D1.4 technisch um. |
 | `sport_preference` | zusammengesetzt: `PRIMARY KEY (user_id, sport_id)` | `user_id → profile.user_id`, `sport_id → sport.sport_id` (`ON DELETE CASCADE`) | Kein eigener `Identifier` nötig, da D1.4 die Identität bereits über `(user_id, sport_id)` definiert. |
 
-**Zu `participant_id` vs. zusammengesetzter Schlüssel (D1.9 offener Punkt):** Es wird ein eigener `participant_id` (`uuid`) als Primärschlüssel verwendet, zusätzlich zum `UNIQUE (session_id, user_id)`-Constraint. Begründung: PostgREST (NB-03) adressiert Ressourcen einfacher über einen einzelnen Identifier (`PATCH /participants/<id>`, wie in [P2.5 Szenario 3](P2-architekturueberblick.md#p25-kritische-datenflüsse) dargestellt), während die fachliche Eindeutigkeit weiterhin über den `UNIQUE`-Constraint erzwungen wird.
+**Zu `participant_id` vs. zusammengesetzter Schlüssel:** Die ursprünglich in [D1.9](D1-datenmodell.md#d19-offene-punkte) geführte Frage ist hier entschieden: Es wird ein eigener `participant_id` (`uuid`) als Primärschlüssel verwendet, zusätzlich zum `UNIQUE (session_id, user_id)`-Constraint. Begründung: PostgREST (NB-03) adressiert Ressourcen einfacher über einen einzelnen Identifier (`PATCH /participants/<id>`, wie in [P2.5 Szenario 3](P2-architekturueberblick.md#p25-kritische-datenflüsse) dargestellt), während die fachliche Eindeutigkeit weiterhin über den `UNIQUE`-Constraint erzwungen wird.
 
 ### Indizes
 
@@ -59,7 +59,7 @@ Die konkrete Indexwahl ist eine Performance-Optimierung ohne fachliche Auswirkun
 
 ## N2.4 Atomarität des Beitritts (AF-01)
 
-Löst den in [F3 AF-01 Regel 6](F3-anwendungsfunktionen.md#f33-af-01--beitritts--und-kapazitätsregel) und [D1.9](D1-datenmodell.md#d19-offene-punkte) offengelassenen Punkt.
+Entscheidet die ursprünglich in [F3 AF-01 Regel 6](F3-anwendungsfunktionen.md#f33-af-01--beitritts--und-kapazitätsregel) und [D1.9](D1-datenmodell.md#d19-offene-punkte) dokumentierte Umsetzungsfrage.
 
 **Entscheidung:** Prüfung freier Plätze und Anlegen der Teilnahme erfolgen in **einer einzigen atomaren PostgreSQL-Funktion** (`SECURITY DEFINER`), die über PostgREST als RPC-Endpoint (`POST /rest/v1/rpc/join_session`) aufgerufen wird, anstatt über ein direktes `INSERT` auf `/rest/v1/participants`. Die Funktion bildet den Pseudocode aus F3.3 exakt ab:
 
@@ -83,7 +83,7 @@ Das `SELECT ... FOR UPDATE` auf die Session-Zeile serialisiert konkurrierende Be
 
 ## N2.5 Zählstrategie `confirmed_count`
 
-Löst den in [D1.6](D1-datenmodell.md#d16-abgeleitete-merkmale) und [D1.9](D1-datenmodell.md#d19-offene-punkte) offengelassenen Punkt.
+Entscheidet die ursprünglich in [D1.6](D1-datenmodell.md#d16-abgeleitete-merkmale) und [D1.9](D1-datenmodell.md#d19-offene-punkte) dokumentierte Umsetzungsfrage.
 
 **Entscheidung:** `confirmed_count` wird **berechnet** (`COUNT(*) FROM participant WHERE session_id = … AND status IN ('confirmed','checked_in')`), nicht als eigenständig gepflegtes Feld geführt. Begründung:
 
@@ -95,7 +95,7 @@ Für die Anzeige (UC-02, UC-03, B1 DLG-04) wird `confirmed_count` über eine Vie
 
 ## N2.6 Statuspersistenz (AF-03)
 
-Löst den in [F3 AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge), [D1.6](D1-datenmodell.md#d16-abgeleitete-merkmale) und [D1.9](D1-datenmodell.md#d19-offene-punkte) offengelassenen Punkt.
+Entscheidet die ursprünglich in [F3 AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge), [D1.6](D1-datenmodell.md#d16-abgeleitete-merkmale) und [D1.9](D1-datenmodell.md#d19-offene-punkte) dokumentierte Umsetzungsfrage.
 
 **Entscheidung:** `session.status` wird **nicht** gespeichert, sondern bei jeder Abfrage aus `start_at`, `duration_min` und der aktuellen Serverzeit berechnet (SQL-Ausdruck bzw. View, die die Ableitungstabelle aus AF-03 nachbildet: `scheduled` wenn `now() < start_at`, `active` wenn `start_at ≤ now() < start_at + duration_min * interval '1 minute'`, sonst `completed`).
 
@@ -105,7 +105,7 @@ Das reservierte `cancelled`-Kennzeichen ([D2.3](D2-datentypen.md#d23-sessionstat
 
 ## N2.7 PIN-Erzeugung und -Speicherung (AF-04)
 
-Löst den in [F3 AF-04](F3-anwendungsfunktionen.md#f36-af-04--pin--und-qr-code-erzeugung) und [D2.4](D2-datentypen.md#d24-pin) offengelassenen Punkt.
+Entscheidet die ursprünglich in [F3 AF-04](F3-anwendungsfunktionen.md#f36-af-04--pin--und-qr-code-erzeugung) und [D2.4](D2-datentypen.md#d24-pin) dokumentierte Umsetzungsfrage.
 
 **Erzeugung:** Die PIN wird innerhalb derselben serverseitigen Funktion erzeugt, die eine Session anlegt (Erweiterung des in [P2.5 Szenario 1](P2-architekturueberblick.md#p25-kritische-datenflüsse) skizzierten `INSERT session`-Schritts), z. B. via `LPAD(FLOOR(random() * 10000)::text, 4, '0')`, damit führende Nullen erhalten bleiben (D2.4-Anforderung „Zeichenkette, kein Zahlwert"). Eine globale Eindeutigkeitsprüfung entfällt gemäß D2.4/AF-04 Regel 2.
 
@@ -119,7 +119,7 @@ Zugriff auf die `pin`-Spalte wird über Row-Level-Security ([N2.11](#n211-row-le
 
 ## N2.8 QR-Inhalt (AF-04)
 
-Löst den in [D2.8](D2-datentypen.md#d28-qrcontent) offengelassenen Punkt.
+Entscheidet die ursprünglich in [D2.8](D2-datentypen.md#d28-qrcontent) dokumentierte Umsetzungsfrage.
 
 **Entscheidung:** Der QR-Inhalt wird **nicht** als eigenständiges Feld materialisiert, sondern clientseitig aus `session_id` und `pin` gebildet, sobald die Session-Detailansicht (B1 DLG-04/DLG-05) geladen ist: `{FRONTEND_ORIGIN}/check-in?session=<session_id>&pin=<pin>` (konzeptionelles Format aus F3 AF-04 Regel 3). Die Bild-Erzeugung (Text → QR-Grafik) erfolgt im Frontend über eine clientseitige QR-Bibliothek (F1 GP-02 nennt eine „QR-Code-Library" als Akteur), ohne Server-Rundtrip.
 
@@ -127,7 +127,7 @@ Löst den in [D2.8](D2-datentypen.md#d28-qrcontent) offengelassenen Punkt.
 
 ## N2.9 Identifier-Strategie
 
-Löst den in [D2.2](D2-datentypen.md#d22-identifier) und [D2.11](D2-datentypen.md#d211-offene-punkte) offengelassenen Punkt.
+Entscheidet die ursprünglich in [D2.2](D2-datentypen.md#d22-identifier) und [D2.11](D2-datentypen.md#d211-offene-punkte) dokumentierte Umsetzungsfrage.
 
 **Entscheidung:** `uuid` (Version 4, `gen_random_uuid()`) für alle system-vergebenen Primärschlüssel (`sport_id`, `court_id`, `session_id`, `participant_id`). Begründung: PostgreSQL/Supabase unterstützt `gen_random_uuid()` nativ (`pgcrypto`), UUIDs sind kollisionssicher ohne zentrale Sequenz-Koordination und passen zu PostgREST, das Ressourcen über die Primärschlüssel-Spalte adressiert.
 
@@ -135,7 +135,7 @@ Löst den in [D2.2](D2-datentypen.md#d22-identifier) und [D2.11](D2-datentypen.m
 
 ## N2.10 Zeitfenster und Zeittoleranz beim Check-in (AF-02)
 
-Löst den in [F3 AF-02](F3-anwendungsfunktionen.md#f34-af-02--check-in-validierung) und [F3.10](F3-anwendungsfunktionen.md#f310-offene-punkte) offengelassenen Punkt teilweise.
+Entscheidet die ursprünglich in [F3 AF-02](F3-anwendungsfunktionen.md#f34-af-02--check-in-validierung) und [F3.10](F3-anwendungsfunktionen.md#f310-offene-punkte) dokumentierte Umsetzungsfrage.
 
 Die Check-in-Prüfung (AF-02 Regel 4) wird serverseitig als Teil einer weiteren atomaren Funktion (`check_in`, RPC analog zu [N2.4](#n24-atomarität-des-beitritts-af-01)) ausgeführt, die den Status **exakt** nach der Ableitungstabelle aus AF-03/[N2.6](#n26-statuspersistenz-af-03) prüft — d. h. `active` bedeutet `start_at ≤ now() < start_at + duration_min`. Eine Client-Zeit wird dabei nie als Vertrauensbasis verwendet; maßgeblich ist ausschließlich `now()` der Datenbank, um eine Manipulation über die Client-Uhr auszuschließen.
 
@@ -209,4 +209,4 @@ Nicht mehr hier geführt, weil andernorts entschieden: Feldlängen, maximale Ses
 |---|---|
 | Werkzeug | Claude (Claude Sonnet 5) |
 | Verwendung | Entwurf des N2-Bausteins: Auflösung der in D1, D2 und F3 explizit an N2 verwiesenen offenen Punkte (Typzuordnung, Schlüssel/Constraints, Atomarität des Beitritts, Statuspersistenz, PIN-Speicherung, QR-Inhalt, Identifier-Strategie, RLS, Fehler-Mapping) auf Basis des bestehenden Tech-Stacks (P1 CON-T-01–CON-T-03, P2). |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md) und [S1](S1-nachbarsysteme.md) geprüft; keine über das MVP hinausgehenden Funktionen wurden eingeführt. Die Entscheidungen zur PIN-Klartextspeicherung ([N2.7](#n27-pin-erzeugung-und--speicherung-af-04)) und zur berechneten Statuspersistenz ([N2.6](#n26-statuspersistenz-af-03)) sind dokumentiert. Nachtrag (2026-07-26, Claude Sonnet 5): tote Anker korrigiert, veralteter Hinweis auf ein noch fehlendes N1 entfernt; der in N2.11 unbenannte Erstellungsaufruf ist in [S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) als `create_session` benannt. Nachtrag (2026-07-26, Claude Sonnet 5): Verweis in N2.13 auf eine nicht existierende CI-Pipeline korrigiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): Dialogfragen an B1.8 abgegeben. Aktualisierung (2026-07-28, Codex): Veraltete Aussage zur Anzahl der verbleibenden technischen Punkte entfernt; N2.15 führt weiterhin Skalierung der Suche sowie Auskunft und Löschung. |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md) und [S1](S1-nachbarsysteme.md) geprüft; keine über das MVP hinausgehenden Funktionen wurden eingeführt. Die Entscheidungen zur PIN-Klartextspeicherung ([N2.7](#n27-pin-erzeugung-und--speicherung-af-04)) und zur berechneten Statuspersistenz ([N2.6](#n26-statuspersistenz-af-03)) sind dokumentiert. Nachtrag (2026-07-26, Claude Sonnet 5): tote Anker korrigiert, veralteter Hinweis auf ein noch fehlendes N1 entfernt; der in N2.11 unbenannte Erstellungsaufruf ist in [S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) als `create_session` benannt. Nachtrag (2026-07-26, Claude Sonnet 5): Verweis in N2.13 auf eine nicht existierende CI-Pipeline korrigiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): Dialogfragen an B1.8 abgegeben. Aktualisierung (2026-07-28, Codex): Veraltete Aussage zur Anzahl der verbleibenden technischen Punkte entfernt; N2.15 führt weiterhin Skalierung der Suche sowie Auskunft und Löschung. Konsistenzkorrektur (2026-07-28, Codex): Verweise auf inzwischen entschiedene D1-/D2-/F3-Fragen als ursprüngliche Umsetzungsfragen formuliert. |

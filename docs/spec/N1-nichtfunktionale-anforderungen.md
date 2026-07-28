@@ -82,7 +82,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Dialoge | DLG-02, DLG-04, DLG-05 |
 | Akzeptanzkriterien | Given ein angemeldeter Organisator mit allen nötigen Angaben, When er DLG-05 vollständig ausfüllt, Then ist die Session in unter zwei Minuten Bearbeitungszeit erstellbar (P1 SC-02). Given ein Teilnehmer mit einer Region, When er sucht, Then findet er passende Sessions ohne zusätzliche Erklärung der Bedienoberfläche (P1 SC-03). |
 | Prüfmethode | Manuelle Durchführung der drei Workflows im Browser, Zeitmessung durch das Team im Review. |
-| Offene Punkte | Formale Usability-Tests mit externen Testpersonen sind nicht vorgesehen (siehe [N1.7](#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)). |
+| Abgrenzung | Formale Usability-Tests mit externen Testpersonen sind nicht vorgesehen (siehe [N1.7](#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)). |
 
 ### N1-QA-04 — Datenschutz / DSGVO
 
@@ -113,7 +113,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Dialoge | DLG-01, DLG-04 (QR/PIN-Anzeige, nur Organisator-Zustand), DLG-06 |
 | Akzeptanzkriterien | Given ein nicht angemeldeter Nutzer, When er eine geschützte Aktion auslöst, Then wird er zu DLG-01 geleitet und die Aktion wird nicht ausgeführt (B1.5.2). Given eine falsche PIN oder ein QR-Code einer anderen Session, When ein Check-in versucht wird, Then bleibt der Teilnahmestatus unverändert (`INVALID_CREDENTIAL`, AF-02). Given das Repository, When es durchsucht wird, Then enthält es keine echten API-Keys, Tokens oder Passwörter. |
 | Prüfmethode | Code-Review der Zugriffsprüfungen gegen F3 AF-01/AF-02; Repository-Scan auf Secrets (z. B. Suche nach typischen Schlüsselmustern, `.env`-Dateien im Git-Verlauf); manuelle Prüfung, dass QR/PIN nur im Organisator-Zustand von DLG-04 sichtbar sind. |
-| Offene Punkte | Keine für die Speicherform: Die PIN wird im Klartext gespeichert ([N2.7](N2-querschnittskonzepte.md#n27-pin-erzeugung-und--speicherung-af-04)). Eine vollständige Security-Audit-Abdeckung ist nicht vorgesehen (siehe [N1.7](#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)). |
+| Festlegung / Abgrenzung | Die PIN wird im Klartext gespeichert ([N2.7](N2-querschnittskonzepte.md#n27-pin-erzeugung-und--speicherung-af-04)). Eine vollständige Security-Audit-Abdeckung ist nicht vorgesehen (siehe [N1.7](#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)). |
 
 ### N1-QA-06 — Zuverlässigkeit / Fehlerrobustheit
 
@@ -128,7 +128,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Dialoge | DLG-02, DLG-03 (Fehlerfall Karte), DLG-04, DLG-06 |
 | Akzeptanzkriterien | Given eine Session mit einem letzten freien Platz, When zwei Nutzer nahezu gleichzeitig beitreten, Then wird höchstens einer bestätigt und der andere erhält `SESSION_FULL` (AF-01 R6). Given ein nicht erreichbarer Kartendienst, When DLG-03 geöffnet wird, Then erscheint ein Hinweis mit Verweis auf DLG-02 statt eines Fehlerabbruchs. Given ein wiederholter gültiger Check-in-Versuch, When er erneut ausgeführt wird, Then bleibt der ursprüngliche Check-in-Zeitpunkt erhalten (`ALREADY_CHECKED_IN`, AF-02 R5). |
 | Prüfmethode | Code-Walkthrough der Atomaritäts-Umsetzung gegen den AF-01-Pseudocode; manueller Test der Kartenansicht mit deaktiviertem Kartendienst (z. B. Netzwerksperre in DevTools). |
-| Offene Punkte | Keine. Die technische Umsetzung der Atomarität ist in [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01) entschieden (unteilbare serverseitige Operation). |
+| Festlegung | Die technische Umsetzung der Atomarität ist in [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01) als unteilbare serverseitige Operation entschieden. |
 
 ### N1-QA-07 — Wartbarkeit
 
@@ -279,4 +279,4 @@ Im Review lässt sich damit für jede Qualitätsanforderung erklären: welcher U
 |---|---|
 | Werkzeug | Claude Code / ChatGPT |
 | Verwendung | Entwurf, Strukturierung, Formulierungsvorschläge, Konsistenzprüfung und Akzeptanzkriterien für den N1-Baustein, ausgehend von den bestehenden „Bezug zu NFR / Qualität"-Angaben und offenen Punkten in F2, F3, D1, D2 und B1. |
-| Prüfung | Inhalte wurden gegen P1, P2, F1, F2, F3, D1, D2, B1, S1, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Vor dem Merge erfolgt zusätzlich ein Team-Review. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. Nachtrag (2026-07-26, Claude Sonnet 5): veralteter Hinweis auf S1 als Stub in N1.8 korrigiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz in N1.7 als bewusst nicht festgelegt aufgenommen und begründet; damit endet der zirkuläre Verweis zwischen D2.11, N1.8 und N2.15. |
+| Prüfung | Inhalte wurden gegen P1, P2, F1, F2, F3, D1, D2, B1, S1, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Vor dem Merge erfolgt zusätzlich ein Team-Review. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. Nachtrag (2026-07-26, Claude Sonnet 5): veralteter Hinweis auf S1 als Stub in N1.8 korrigiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz in N1.7 als bewusst nicht festgelegt aufgenommen und begründet; damit endet der zirkuläre Verweis zwischen D2.11, N1.8 und N2.15. Aktualisierung (2026-07-28, Codex): Bereits entschiedene oder ausgeschlossene Aussagen in N1-QA-03, N1-QA-05 und N1-QA-06 korrekt als Festlegung beziehungsweise Abgrenzung bezeichnet. |
