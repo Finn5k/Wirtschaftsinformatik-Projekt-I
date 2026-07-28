@@ -78,7 +78,7 @@ funktion beitreten(nutzer, session):
 | Bezug zu F1 | GP-01 A9-A13 (Beitritt). |
 | Bezug zu Daten | Session (`max_participants`, Status), Participant (`session_id`, `user_id`, `status`); Datentypen in D1/D2. |
 | Bezug zu NFR | Konsistenz bei Parallelzugriff, verständliche Ablehnungsmeldungen, Performance der Kapazitätsprüfung. |
-| Offene Punkte | Konkrete technische Sperr-/Transaktionsstrategie in D2/N2; ob die aktuelle Teilnehmerzahl gezählt oder als Feld geführt wird, ist eine D2/N2-Entscheidung. |
+| Technische Umsetzung | Atomare PostgreSQL-Funktion gemäß [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01); die Teilnehmerzahl wird gemäß [N2.5](N2-querschnittskonzepte.md#n25-zählstrategie-confirmed_count) berechnet. |
 
 ## F3.4 AF-02 — Check-in-Validierung
 
@@ -118,7 +118,7 @@ Auswertung von oben nach unten; erste zutreffende Regel gewinnt.
 | Bezug zu F1 | GP-02 A12-A17 (QR-Check-in), A18-A19 (PIN-Fallback). |
 | Bezug zu Daten | Session (Status, PIN), Participant (Status, Check-in-Zeitpunkt); Datentypen in D1/D2. |
 | Bezug zu NFR | Schnelle mobile Bedienung, Schutz gegen falsche Session-Zuordnung, verständliche Fehlertexte. |
-| Offene Punkte | Ob das Zeitfenster serverseitig strikt oder mit kleiner Toleranz (Uhrdifferenz Client/Server) geprüft wird, ist in N1/N2 zu präzisieren; fachlich gilt exakt `active`. |
+| Technische Umsetzung | Serverseitige Prüfung ohne zusätzliche Toleranz gemäß [N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen) und [N2.10](N2-querschnittskonzepte.md#n210-zeitfenster-und-zeittoleranz-beim-check-in-af-02); fachlich gilt exakt `active`. |
 
 ## F3.5 AF-03 — Session-Lifecycle / Statusübergänge
 
@@ -173,7 +173,7 @@ Ableitung erlaubter Aktionen je Status:
 | Bezug zu F1 | GP-01 A15 (aktiv), A17 (Auto-Close); GP-02 A21 (Auto-Close). |
 | Bezug zu Daten | Session (Start, Dauer, Status/Storniert-Kennzeichen); Datentypen in D1/D2. |
 | Bezug zu NFR | Verlässliche Zeitbasis, Konsistenz zwischen angezeigtem und tatsächlichem Status. |
-| Offene Punkte | Ob der Status als abgeleiteter Wert bei jeder Abfrage berechnet oder durch einen zeitgesteuerten Mechanismus persistiert wird (Scheduler vs. berechnete Sicht), ist eine Umsetzungsfrage für N2/Architektur. |
+| Technische Umsetzung | Der Status wird gemäß [N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03) bei jeder Abfrage berechnet und nicht persistiert. |
 
 ## F3.6 AF-04 — PIN- und QR-Code-Erzeugung
 
@@ -206,7 +206,7 @@ Ableitung erlaubter Aktionen je Status:
 | Bezug zu F1 | GP-02 A8 (Erzeugung von QR-Code und PIN). |
 | Bezug zu Daten | Session (PIN, optional QR-Inhalt); Datentypen in D1/D2. |
 | Bezug zu NFR | Angemessenes Sicherheitsniveau (N1), einfache mobile Nutzung des QR-Wegs. |
-| Offene Punkte | Konkrete Kodierung des QR-Inhalts (URL-Format, Ablage des QR-Bilds) ist in S1/N2 zu präzisieren; ob die PIN gehasht gespeichert wird, ist eine N2-/Sicherheitsentscheidung. |
+| Technische Umsetzung | Der QR-Inhalt wird gemäß [N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04) als Deep-Link clientseitig erzeugt und nicht als Bild gespeichert; die PIN wird gemäß [N2.7](N2-querschnittskonzepte.md#n27-pin-erzeugung-und--speicherung-af-04) im Klartext gespeichert. |
 
 ## F3.7 Zusammenspiel der Anwendungsfunktionen
 
@@ -268,4 +268,4 @@ Keine. Die fachlichen Regeln in AF-01 bis AF-04 sind vollständig; die technisch
 |---|---|
 | Werkzeug | Claude Code |
 | Verwendung | Entwurf des F3-Bausteins, Identifikation der Anwendungsfunktionen aus den offenen Punkten von F2, Formulierung der Regeln, Entscheidungstabellen und Pseudocode-Kerne. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md) und die Herold-Referenz geprüft und manuell abgestimmt; der Warteliste-Scope-Konflikt wurde in P1 (NG-10) aufgelöst und in F2 nachgezogen. Toter Querverweis auf D2 korrigiert (2026-07-26, Claude Sonnet 5). Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): F3.10 aufgelöst, da alle fünf dort geführten Punkte inzwischen in N2 bzw. N1.7 entschieden sind. |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md) und die Herold-Referenz geprüft und manuell abgestimmt; der Warteliste-Scope-Konflikt wurde in P1 (NG-10) aufgelöst und in F2 nachgezogen. Toter Querverweis auf D2 korrigiert (2026-07-26, Claude Sonnet 5). Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): F3.10 aufgelöst, da alle fünf dort geführten Punkte inzwischen in N2 bzw. N1.7 entschieden sind. Aktualisierung (2026-07-28, Codex): Veraltete „Offene Punkte“-Zeilen in AF-01 bis AF-04 durch Verweise auf die bereits festgelegte technische Umsetzung in N1/N2 ersetzt. |

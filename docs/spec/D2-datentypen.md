@@ -34,7 +34,7 @@ Die folgenden Sektionen [D2.2–D2.8](#d22-identifier) definieren die **nicht-tr
 
 **Wertform:** Eine opake, systemweit eindeutige und über die Lebensdauer eines Objekts **stabile** Kennung. Fachlich wird der Identifier als undurchsichtiger Wert behandelt: Er trägt keine fachliche Bedeutung, wird nicht interpretiert und nicht aus anderen Attributen abgeleitet.
 
-**Erzeugung:** Wird bei der Anlage eines Objekts vergeben und danach nicht mehr verändert. Die konkrete Erzeugungsstrategie (z. B. UUID, datenbankseitige Sequenz) ist eine N2-Entscheidung.
+**Erzeugung:** Wird bei der Anlage eines Objekts vergeben und danach nicht mehr verändert. Technisch werden gemäß [N2.9](N2-querschnittskonzepte.md#n29-identifier-strategie) UUIDs der Version 4 verwendet.
 
 **Sonderfall `profile.user_id`:** Diese Kennung entspricht der **externen Auth-Kennung** aus Supabase Auth ([S1](S1-nachbarsysteme.md), NB-02). Sie wird nicht von LocalCourt vergeben, sondern übernommen; fachlich gelten dieselben Regeln (opak, stabil, eindeutig).
 
@@ -55,7 +55,7 @@ Fachlicher Status einer Session. Der Wert wird **abgeleitet** (siehe [D1.6](D1-d
 
 **Ableitung & Ordnung:** Solange `cancelled` nicht gilt, ergibt sich der Status allein aus der Zeit (Ableitungstabelle in AF-03). Die fachliche Reihenfolge ist **monoton vorwärts**: `scheduled → active → completed`. Rücksprünge sind unzulässig; ein Endzustand (`completed`, `cancelled`) wird nicht verlassen.
 
-**Handhabung:** Konsumenten (UI, Prüfungen in AF-01/AF-02) müssen den Status aus der aktuellen Zeit bestimmen bzw. den bereitgestellten abgeleiteten Wert verwenden. Ob der Status bei jeder Abfrage berechnet oder zeitgesteuert materialisiert wird, ist eine N2-Frage.
+**Handhabung:** Konsumenten (UI, Prüfungen in AF-01/AF-02) müssen den bereitgestellten abgeleiteten Wert verwenden. Der Status wird gemäß [N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03) bei jeder Abfrage berechnet und nicht zeitgesteuert materialisiert.
 
 **Validierung:** Nur die vier genannten Werte sind gültig. Ein direkter, fachlich unzulässiger Übergang (z. B. `completed → active`) ist ungültig und darf nicht auftreten.
 
@@ -71,7 +71,7 @@ Fachlicher Status einer Session. Der Wert wird **abgeleitet** (siehe [D1.6](D1-d
 
 **Validierung:** Eine Eingabe ist formal gültig, wenn sie aus genau vier Ziffern besteht; sie ist fachlich gültig, wenn sie mit der PIN der betreffenden Session übereinstimmt (AF-02). Formfehler (z. B. Buchstaben, falsche Länge) werden vor dem fachlichen Vergleich abgewiesen.
 
-**Sicherheitsniveau (bewusst):** 4 Stellen = 10 000 Möglichkeiten, geringe Entropie. Akzeptabel, weil Check-in zusätzlich Anmeldung und vorherigen Beitritt voraussetzt und die Auswirkung gering ist (reine Anwesenheitsmarkierung). Ob die PIN im Klartext oder gehasht gespeichert wird, ist eine N2-/Sicherheitsentscheidung.
+**Sicherheitsniveau (bewusst):** 4 Stellen = 10 000 Möglichkeiten, geringe Entropie. Akzeptabel, weil Check-in zusätzlich Anmeldung und vorherigen Beitritt voraussetzt und die Auswirkung gering ist (reine Anwesenheitsmarkierung). Die PIN wird gemäß [N2.7](N2-querschnittskonzepte.md#n27-pin-erzeugung-und--speicherung-af-04) im Klartext gespeichert.
 
 ## D2.5 ParticipantStatus
 
@@ -112,7 +112,7 @@ Teilnahmezustand eines `participant`.
 
 **Wertform:** Ein **abgeleiteter** Verweis (`Url`/`Text`), der auf die Check-in-Ansicht einer Session zeigt und `session_id` sowie `pin` kodiert (konzeptionell `…/check-in?session=<session_id>&pin=<pin>`, AF-04 R3).
 
-**Erzeugung & Stabilität:** Wird aus `session_id` und `pin` abgeleitet (nicht unabhängig gepflegt) und ist über die Lebensdauer der Session stabil, da beide Bestandteile unverändert bleiben (AF-04 R4). Ob der QR-Inhalt materialisiert (als Feld/Bild abgelegt) oder bei Bedarf erzeugt wird, ist eine N2/S1-Entscheidung ([D1.6](D1-datenmodell.md#d16-abgeleitete-merkmale)).
+**Erzeugung & Stabilität:** Wird aus `session_id` und `pin` abgeleitet (nicht unabhängig gepflegt) und ist über die Lebensdauer der Session stabil, da beide Bestandteile unverändert bleiben (AF-04 R4). Der QR-Inhalt wird gemäß [N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04) bei Bedarf clientseitig erzeugt und nicht als Feld oder Bild gespeichert.
 
 **Fachliche Gleichwertigkeit zu Pin:** Der QR-Inhalt trägt dieselbe PIN, die AF-02 prüft; QR-Scan (UC-08) und manuelle PIN-Eingabe (UC-09) sind daher fachlich gleichwertig.
 
@@ -170,4 +170,4 @@ Bereits entschieden und daher nicht mehr offen:
 |---|---|
 | Werkzeug | Claude Code (Opus 4.8) |
 | Verwendung | Entwurf des D2-Datentypenverzeichnisses: Katalogisierung der trivialen und nicht-trivialen Typen, Definition von Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. |
-| Prüfung | Inhalte wurden gegen [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md) und die Herold-Referenz geprüft und mit dem Team abzustimmen. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Herkunft der Koordinaten in D2.7 festgelegt (Kartenpin statt Geocoding); in D2.11 die inzwischen entschiedenen Punkte (PIN-Speicherung, QR-Kodierung, Identifier-Strategie) von den weiterhin offenen getrennt. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): D2.11 vollständig aufgelöst, da Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz in N1.7 als bewusst nicht festgelegt dokumentiert sind. |
+| Prüfung | Inhalte wurden gegen [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md) und die Herold-Referenz geprüft und mit dem Team abgestimmt. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Herkunft der Koordinaten in D2.7 festgelegt (Kartenpin statt Geocoding); in D2.11 die inzwischen entschiedenen Punkte (PIN-Speicherung, QR-Kodierung, Identifier-Strategie) von den weiterhin offenen getrennt. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): D2.11 vollständig aufgelöst, da Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz in N1.7 als bewusst nicht festgelegt dokumentiert sind. Aktualisierung (2026-07-28, Codex): Frühere N2-Entscheidungsmarker bei Identifiern, Status, PIN und QR-Inhalt durch Verweise auf die inzwischen getroffenen N2-Festlegungen ersetzt. |

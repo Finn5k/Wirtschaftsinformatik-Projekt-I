@@ -163,7 +163,7 @@ Profil → Bearbeiten → lokale Ansicht aktualisieren
 | Profil | Änderungen gelten nur bis zum Verlassen der Seite | persistente Profil- und Präferenzänderung; Umfang der Profilbildbearbeitung bleibt offen |
 | Karte | OSM-Karte ist real eingebunden | spezifizierte Graceful Degradation bei nicht erreichbarem Kartendienst fehlt |
 | Lade-/Netzwerkfehler | keine asynchronen Anfragen vorhanden | Ladeanzeigen, während laufender Anfragen deaktivierte Aktionen, verständliche Fehlermeldungen und Wiederholungsmöglichkeiten gemäß B1.5.4 |
-| Validierung | zentrale Formulare validieren ausgewählte Pflichtangaben | endgültige Feldlängen, Obergrenzen und Fehlertexte bleiben offene Spezifikationsentscheidungen |
+| Validierung | zentrale Formulare validieren ausgewählte Pflichtangaben | vollständige Umsetzung der Regeln aus D2/N1; endgültige Fehlertexte bleiben offen |
 | Tests | kein Testskript und keine automatisierten UI-Tests | Umfang und Werkzeugwahl sind noch nicht festgelegt |
 
 ## Offene fachliche und technische Entscheidungen
@@ -202,4 +202,4 @@ N1.7) sowie Atomarität, Statusführung und Persistenz (N2).
 |---|---|
 | Werkzeug | ChatGPT / Codex |
 | Verwendung | Abgleich der Frontend-Dokumentation mit den vorhandenen Routen, Seiten, Komponenten, Mockdaten und Services; Formulierung des aktuellen Realisierungsstands und der verbleibenden Abweichungen. |
-| Prüfung | Angaben wurden gegen `src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/` und die bestehenden Bausteine B1, F2, F3, D1, D2 und N1 geprüft. Es wurden keine fachlichen oder technischen Entscheidungen ergänzt. Nachtrag (2026-07-26, Claude Sonnet 5): zwei Abweichungszeilen korrigiert, die QR-Format und Statusführung noch als offen führten, obwohl sie in AF-04/N2.8 bzw. N2.6 entschieden sind. |
+| Prüfung | Angaben wurden gegen `src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/` und die bestehenden Bausteine B1, F2, F3, D1, D2 und N1 geprüft. Es wurden keine fachlichen oder technischen Entscheidungen ergänzt. Nachtrag (2026-07-26, Claude Sonnet 5): zwei Abweichungszeilen korrigiert, die QR-Format und Statusführung noch als offen führten, obwohl sie in AF-04/N2.8 bzw. N2.6 entschieden sind. Aktualisierung (2026-07-28, Codex): Validierungsbedarf an die bewussten Festlegungen und Nicht-Festlegungen aus D2/N1 angeglichen. |

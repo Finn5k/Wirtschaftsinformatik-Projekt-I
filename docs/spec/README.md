@@ -202,7 +202,7 @@ Installation, Umgebungseinrichtung, Betrieb auf Supabase/Vercel sowie Start- und
 **Inhalte**:
 - Performance, Skalierbarkeit im Free-Tier, Verfügbarkeit
 - Sicherheit (PIN-Niveau, DSGVO), Usability, Datenschutz
-- Feldlängen und fachliche Obergrenzen (offene Punkte aus D2)
+- begründete Nicht-Festlegungen zu Feldlängen und fachlichen Obergrenzen
 
 ---
 
@@ -214,7 +214,7 @@ Technische Umsetzung der in D1, D2 und F3 bewusst offengelassenen Fragen auf dem
 
 **Inhalte**:
 - Technische Typzuordnung (D2 → PostgreSQL), Schlüssel, Constraints, Indizes
-- Atomarität des Beitritts, Statuspersistenz, Zählstrategie (offene Punkte aus D1/F3)
+- Atomarität des Beitritts, Statuspersistenz und Zählstrategie
 - PIN-Erzeugung und -Speicherung, QR-Inhalt, Identifier-Strategie
 - Row-Level-Security, Fehler-Mapping der Ergebniscodes auf HTTP, Testing und Monitoring
 
@@ -297,6 +297,7 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 | 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | Konsistenz-Fixes: toter Link in F3.1, P1.4-Widersprüche zu Scope (Bearbeiten/Löschen, Teilnehmerlimit, Profil-Sichtbarkeit) aufgelöst, Terminologie-Nit in F1, B2/B3/S2 final als nicht anwendbar dokumentiert |
 | 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | S1 Nachbarsysteme vollständig ausgearbeitet; N2-Status im Index nachgetragen; tote Anker in D1/N2 korrigiert |
 | 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | F1 auf die fachliche Ebene umgestellt; offene Punkte über alle Bausteine konsolidiert; `profile.city` spezifiziert; E1/E2-Status im Index nachgetragen und S3 auf „nach der Implementierung" gesetzt |
+| 2026-07-28 | Chevron Rustler, mit Codex-Unterstützung | Veraltete Status- und Offenheitsformulierungen an bereits getroffene Entscheidungen in S1, N1 und N2 angeglichen |
 
 ---
 

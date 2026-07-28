@@ -101,7 +101,7 @@ Alle Diagramme in der Spezifikation sind als **Mermaid**-Codeblöcke eingebettet
 | ER-Diagramm | `erDiagram` | [D1.2](D1-datenmodell.md#d12-überblick-er-diagramm) | Entitätstypen und ihre Beziehungen. |
 | Dialoglandkarte | `flowchart` mit `subgraph` je Navigationsbereich | [B1.2](B1-dialogspezifikation.md#b12-dialoglandkarte) | Navigation zwischen Dialogen (DLG-nn). |
 | Entscheidungstabelle | Markdown-Tabelle statt Diagramm | [F3.3](F3-anwendungsfunktionen.md#entscheidungstabelle-af-01) ff. | Fallunterscheidung fachlicher Regeln, präziser als ein Diagramm. |
-| Architekturdiagramme nach arc42 | noch nicht festgelegt | `docs/arch/` (im Aufbau) | Komponenten-, Deployment- und Laufzeitsichten, die laut [P2](P2-architekturueberblick.md#p2--architekturüberblick) bewusst nicht in P2 gehören; werden ergänzt, sobald `docs/arch/` vorliegt. |
+| Architekturdiagramme nach arc42 | noch nicht festgelegt | `docs/arch/` (noch zu erstellen) | Komponenten-, Deployment- und Laufzeitsichten, die laut [P2](P2-architekturueberblick.md#p2--architekturüberblick) bewusst nicht in P2 gehören; werden ergänzt, sobald die Architekturdokumentation erstellt wird. |
 
 ---
 
@@ -117,12 +117,12 @@ P1 (Ziele, Scope, Constraints)
       → B1 (Dialoge)
       → S1 (Nachbarsystem-Schnittstellen)
       → N1 (nichtfunktionale Anforderungen) → N2 (technische Umsetzung)
-        → Architektur (docs/arch/, arc42 — im Aufbau)
+        → Architektur (docs/arch/, arc42 — noch zu erstellen)
           → Code
             → Tests
 ```
 
-Jeder Schritt in dieser Kette **verfeinert**, ohne den vorherigen Schritt zu widersprechen: F2 leitet Use Cases aus den Geschäftsprozessen in F1 ab; F3 löst die in F2 bewusst offen gelassenen fachlichen Regeln auf; D1/D2, B1, S1 und N1 konkretisieren F2/F3 aus Daten-, Dialog-, Schnittstellen- und Qualitätssicht; N2 setzt die dort offen gelassenen technischen Fragen auf dem konkreten Stack (P1 CON-T-01–CON-T-03, P2) um. Architektur, Code und Tests liegen außerhalb von `docs/spec/` und müssen dieselben IDs referenzieren; die Architekturdokumentation nach arc42 unter `docs/arch/` ist noch im Aufbau und wird nachgezogen, sobald sie vorliegt.
+Jeder Schritt in dieser Kette **verfeinert**, ohne den vorherigen Schritt zu widersprechen: F2 leitet Use Cases aus den Geschäftsprozessen in F1 ab; F3 löst die in F2 bewusst offen gelassenen fachlichen Regeln auf; D1/D2, B1, S1 und N1 konkretisieren F2/F3 aus Daten-, Dialog-, Schnittstellen- und Qualitätssicht; N2 setzt die dort offen gelassenen technischen Fragen auf dem konkreten Stack (P1 CON-T-01–CON-T-03, P2) um. Architektur, Code und Tests liegen außerhalb von `docs/spec/` und müssen dieselben IDs referenzieren; die Architekturdokumentation nach arc42 unter `docs/arch/` ist noch zu erstellen.
 
 **Konkretes Beispiel der Kette für UC-04 „Session beitreten":**
 
@@ -179,5 +179,5 @@ Für die gesamte Spezifikation gelten unabhängig vom einzelnen Baustein folgend
 |---|---|
 | Werkzeug | Claude Code |
 | Verwendung | Entwurf und redaktionelle Überarbeitung des E1-Bausteins, insbesondere Zielgruppen, Lesereihenfolge, ID-Konventionen, Diagrammübersicht und Traceability-Kette. |
-| Prüfung | Inhalte wurden gegen README, P1, P2, F1, F2, F3, D1, D2, B1, S1, N1 und N2 geprüft. Relative Links, Abschnittsanker, IDs und Statusangaben wurden mit den vorhandenen Dateien abgeglichen und manuell überarbeitet. Nachtrag (2026-07-26, Claude Sonnet 5): Statusangaben aus E1.4 und E1.8 entfernt, die E2 noch als geplant führten und damit gegen die eigene Konsistenzregel „Ein Ort für den Status" verstießen; S3 als bewusst zurückgestellt eingeordnet. |
+| Prüfung | Inhalte wurden gegen README, P1, P2, F1, F2, F3, D1, D2, B1, S1, N1 und N2 geprüft. Relative Links, Abschnittsanker, IDs und Statusangaben wurden mit den vorhandenen Dateien abgeglichen und manuell überarbeitet. Nachtrag (2026-07-26, Claude Sonnet 5): Statusangaben aus E1.4 und E1.8 entfernt, die E2 noch als geplant führten und damit gegen die eigene Konsistenzregel „Ein Ort für den Status" verstießen; S3 als bewusst zurückgestellt eingeordnet. Aktualisierung (2026-07-28, Codex): Status von `docs/arch/` von „im Aufbau" auf „noch zu erstellen" berichtigt. |
 | Fachliche Verantwortung | Bleibt beim Team. |

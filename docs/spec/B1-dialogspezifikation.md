@@ -443,13 +443,13 @@ Der aktuelle UI-Prototyp bildet alle Dialoge DLG-01 bis DLG-08 ab. Die nachfolge
 | Schutz personenbezogener Aktionen | Erstellen, Meine Sessions, Profil und Check-in sind direkt aufrufbar | Weiterleitung und Rückkehr gemäß [B1.5.2](#b152-weiterleitung-nicht-angemeldeter-nutzer) fehlen |
 | Atomarer Beitritt | Schaltfläche setzt lokalen Zustand | AF-01, gemeinsame Aktualisierung von Belegung und DLG-07 sowie fachliche Ergebniscodes fehlen |
 | Session-Erstellung | lokale Erfolgsvorschau mit zufälliger PIN | persistente Session, Court und Organisator-Teilnahme sowie Wechsel zur neuen DLG-04 fehlen |
-| QR-Verarbeitung | QR-Symbol als Platzhalter | echte QR-Erzeugung, Scan beziehungsweise Deep-Link und konkretes Format bleiben offen |
+| QR-Verarbeitung | QR-Symbol als Platzhalter | echte QR-Erzeugung und Deep-Link-Einstieg im festgelegten Format aus [N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04) fehlen |
 | Check-in | PIN wird lokal gegen Mockdaten geprüft; QR-Weg bestätigt direkt | Teilnahmeprüfung, Idempotenz, Persistenz und vollständige AF-02-Ergebniscodes fehlen |
-| Session-Lifecycle | Statuswerte sind statische Mockdaten | Umsetzung der Statusableitung nach AF-03 fehlt; technische Ausgestaltung bleibt offen |
+| Session-Lifecycle | Statuswerte sind statische Mockdaten | Umsetzung der in [N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03) festgelegten Statusberechnung nach AF-03 fehlt |
 | Kartenfehler | echte OSM-Karte ist eingebunden | Graceful Degradation zu DLG-02 bei Ausfall fehlt |
 | Lade- und Netzwerkzustände | keine asynchronen Backend-Anfragen | Muster aus [B1.5.4](#b154-fehler--und-ladezustände) sind noch nicht demonstriert |
 | Profil | Bearbeitung wirkt nur im lokalen Seitenzustand | Persistenz fehlt; Profilbild-Umfang und weitere sichtbare Profildaten bleiben offene Punkte ([B1.8](#b18-offene-punkte)) |
-| Validierungsgrenzen | ausgewählte Pflichtfelder werden geprüft | endgültige Feldlängen, Obergrenzen und Fehlertexte bleiben offen |
+| Validierungsgrenzen | ausgewählte Pflichtfelder werden geprüft | die in D2/N1 festgelegten Validierungsregeln sind noch nicht vollständig umgesetzt; endgültige Fehlertexte bleiben offen |
 
 Im aktuellen Prototyp sind keine früher dokumentierten Gamification-, Events-/Challenges-, Benachrichtigungs-, Rang-, Sichtbarkeits-, Merken- oder Teilen-Funktionen mehr vorhanden.
 
@@ -463,7 +463,7 @@ Im aktuellen Prototyp sind keine früher dokumentierten Gamification-, Events-/C
 | [D1](D1-datenmodell.md) / [D2](D2-datentypen.md) | Feldlisten referenzieren Entitäten/Attribute (D1) und Datentypen inkl. Prüfregeln (D2). |
 | [S1](S1-nachbarsysteme.md) | Auth-Dialog (NB-02), Kartendarstellung (NB-04) werden durch Nachbarsysteme erbracht. |
 | [N1](N1-nichtfunktionale-anforderungen.md) | Qualitätsanforderungen an Performance, mobile Nutzbarkeit, Fehlertexte, Datenschutz und Robustheit. |
-| E2 (geplant) | Einheitliche Begriffe in Beschriftungen (Session, Teilnahme, Check-in, Court). |
+| [E2](E2-glossar.md) | Einheitliche Begriffe in Beschriftungen (Session, Teilnahme, Check-in, Court). |
 
 ## B1.8 Offene Punkte
 
@@ -483,4 +483,4 @@ B1 ist der zuständige Baustein für alle Fragen des Dialogverhaltens — Feldli
 |---|---|
 | Werkzeug | Claude Code (Fable 5, Claude Sonnet 5), ChatGPT / Codex |
 | Verwendung | Entwurf des B1-Bausteins: Ableitung der Dialoglandkarte und der Feld-/Aktionslisten aus F2/F3/D1/D2 und dem UI-Prototyp; systematischer Abgleich Prototyp ↔ MVP-Scope (B1.6). Späterer Abgleich des Prototypstatus mit den vorhandenen Routen, Seiten, Komponenten, Mockdaten und Services; Aktualisierung des Dialogindex und der Abweichungsanalyse; Einbettung der Prototyp-Screenshots. |
-| Prüfung | Inhalte wurden gegen [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [N1](N1-nichtfunktionale-anforderungen.md), [`../frontend.md`](../frontend.md), den aktuellen Prototyp-Code (`src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/`) und die Herold-Referenz geprüft; Richtungsentscheidungen (Soll-Dialoge, UC-05/UC-11 als ein Dialog, normative Feldlisten) wurden vorab vom Team bestätigt. Beim Prototyp-Abgleich wurden keine neuen fachlichen oder technischen Entscheidungen getroffen; ungeklärte Punkte bleiben als offene Punkte markiert. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Erfassung der Court-Koordinaten in DLG-05 als Kartenpin präzisiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): B1.8 auf je einen zuständigen Baustein umgestellt und um bereits entschiedene Zeilen bereinigt; `profile.city` als Feld in DLG-08 und als Vorbelegung der Ortssuche in DLG-02 aufgenommen; separate Versionshistorie zugunsten der zentralen Historie im Spezifikationsindex entfernt. |
+| Prüfung | Inhalte wurden gegen [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [N1](N1-nichtfunktionale-anforderungen.md), [`../frontend.md`](../frontend.md), den aktuellen Prototyp-Code (`src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/`) und die Herold-Referenz geprüft; Richtungsentscheidungen (Soll-Dialoge, UC-05/UC-11 als ein Dialog, normative Feldlisten) wurden vorab vom Team bestätigt. Beim Prototyp-Abgleich wurden keine neuen fachlichen oder technischen Entscheidungen getroffen; ungeklärte Punkte bleiben als offene Punkte markiert. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Erfassung der Court-Koordinaten in DLG-05 als Kartenpin präzisiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): B1.8 auf je einen zuständigen Baustein umgestellt und um bereits entschiedene Zeilen bereinigt; `profile.city` als Feld in DLG-08 und als Vorbelegung der Ortssuche in DLG-02 aufgenommen; separate Versionshistorie zugunsten der zentralen Historie im Spezifikationsindex entfernt. Aktualisierung (2026-07-28, Codex): Veraltete Offenheitsformulierungen zu QR-Format, Statusberechnung und Validierungsgrenzen an N1/N2 angeglichen und E2 als vorhandenen Baustein verlinkt. |

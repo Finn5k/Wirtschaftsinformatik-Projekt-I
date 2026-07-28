@@ -27,14 +27,20 @@ LocalCourt ist eine Webanwendung zur Organisation spontaner Sport-Sessions auf l
 - **Build/Tooling:** Vite, npm, ESLint
 - **Hosting:** Vercel (Frontend), Supabase (Datenbank und Auth) — jeweils Free-Tier
 
-> Die ursprüngliche Planung nannte Node.js/Express und Docker. Mit dem Architekturüberblick [P2](docs/spec/P2-architekturueberblick.md) ist entschieden, dass LocalCourt **keinen eigenen Anwendungsserver** betreibt; die serverseitige Logik liegt in der Datenbank (siehe [N2](docs/spec/N2-querschnittskonzepte.md)). Endgültig festgelegt wird der Stack in der Architekturdokumentation unter `docs/arch/`.
+> Die ursprüngliche Planung nannte Node.js/Express und Docker. Mit dem
+> Architekturüberblick [P2](docs/spec/P2-architekturueberblick.md) und den
+> Querschnittskonzepten [N2](docs/spec/N2-querschnittskonzepte.md) ist
+> entschieden, dass LocalCourt **keinen eigenen Anwendungsserver** betreibt;
+> die serverseitige Logik liegt in der Datenbank. Die spätere
+> Architekturdokumentation unter `docs/arch/` konkretisiert diesen festgelegten
+> Stack, ohne ihn erneut fachlich festzulegen.
 
 ## Repository
 
 - **URL:** <https://github.com/Finn5k/Wirtschaftsinformatik-Projekt-I>
 - **Sichtbarkeit:** öffentlich
 
-## Eingesetzte KI-Werkzeuge (vorläufige Planung)
+## Eingesetzte KI-Werkzeuge
 
 - ChatGPT / Codex für Dokumentationsentwürfe, Architekturideen und Refactoring
 - GitHub Copilot für Code-Vervollständigung in der Implementierung
