@@ -156,10 +156,10 @@ Profil → Bearbeiten → lokale Ansicht aktualisieren
 | Session-Beitritt | lokaler Zustand in der Detailseite | persistenter, atomarer Beitritt nach AF-01; Teilnehmerzahl und „Meine Sessions“ müssen gemeinsam aktualisiert werden |
 | Session-Erstellung | Erfolgsvorschau ohne neuen Datensatz | persistente Session samt Court, Organisator-Teilnahme und anschließender Navigation zur neuen Detailansicht |
 | Court-Neuerfassung | nur Bestandteil des Formularzustands, ohne Kartenpin | persistente Erfassung und Kartenpin für die Koordinaten (S1.5); Dublettenverhalten bleibt offen |
-| QR-Code | Symbol beziehungsweise Platzhalter | echte QR-Erzeugung und festzulegendes Deep-Link-Format |
+| QR-Code | Symbol beziehungsweise Platzhalter | echte QR-Erzeugung im festgelegten Deep-Link-Format (AF-04, N2.8) |
 | QR-Check-in | Schaltfläche bestätigt ohne Scan oder Merkmalsprüfung | tatsächlicher QR-Einstieg und dieselbe fachliche Prüfung wie beim PIN-Weg |
 | PIN-Check-in | prüft lokal gegen die PIN der Mock-Session | Prüfung von Anmeldung, bestehender Teilnahme, Zeitfenster, Idempotenz und Persistenz nach AF-02 |
-| Session-Lifecycle | Status ist fest in den Mockdaten hinterlegt | automatische oder abgeleitete Statusführung gemäß AF-03; technische Entscheidung bleibt offen |
+| Session-Lifecycle | Status ist fest in den Mockdaten hinterlegt | abgeleitete Statusführung gemäß AF-03, bei jeder Abfrage berechnet (N2.6) |
 | Profil | Änderungen gelten nur bis zum Verlassen der Seite | persistente Profil- und Präferenzänderung; Umfang der Profilbildbearbeitung bleibt offen |
 | Karte | OSM-Karte ist real eingebunden | spezifizierte Graceful Degradation bei nicht erreichbarem Kartendienst fehlt |
 | Lade-/Netzwerkfehler | keine asynchronen Anfragen vorhanden | Ladeanzeigen, während laufender Anfragen deaktivierte Aktionen, verständliche Fehlermeldungen und Wiederholungsmöglichkeiten gemäß B1.5.4 |
@@ -168,20 +168,18 @@ Profil → Bearbeiten → lokale Ansicht aktualisieren
 
 ## Offene fachliche und technische Entscheidungen
 
-Diese Dokumentation trifft keine neuen Entscheidungen. Aus der bestehenden
-Spezifikation bleiben insbesondere offen:
-
-- sichtbare Profildaten in Teilnehmerlisten
-- Profilbild-Umfang im MVP
-- Sortierung und Gruppierung der Session-Listen
-- endgültige Fehlertexte
-- Court-Dubletten
-- Feldlängen und fachliche Obergrenzen
+Diese Dokumentation trifft keine neuen Entscheidungen und führt auch keine
+eigene Liste offener Punkte. Die Fragen, die das Frontend betreffen —
+sichtbare Profildaten in Teilnehmerlisten, Profilbild-Umfang, Sortierung
+und Gruppierung der Session-Listen, endgültige Fehlertexte und das
+Verhalten bei Court-Dubletten — stehen gesammelt in
+[B1.8](spec/B1-dialogspezifikation.md#b18-offene-punkte).
 
 Inzwischen entschieden und daher nicht mehr offen: Authentifizierung
 (E-Mail und Passwort, siehe S1.3), Koordinatenerfassung über einen
 Kartenpin statt eines Geocoding-Dienstes (S1.5), QR-Kodierung als
-Deep-Link (N2.8) sowie Atomarität, Statusführung und Persistenz (N2).
+Deep-Link (N2.8), Feldlängen und Session-Dauer (bewusst ohne Obergrenze,
+N1.7) sowie Atomarität, Statusführung und Persistenz (N2).
 
 ## Referenzen
 
@@ -204,4 +202,4 @@ Deep-Link (N2.8) sowie Atomarität, Statusführung und Persistenz (N2).
 |---|---|
 | Werkzeug | ChatGPT / Codex |
 | Verwendung | Abgleich der Frontend-Dokumentation mit den vorhandenen Routen, Seiten, Komponenten, Mockdaten und Services; Formulierung des aktuellen Realisierungsstands und der verbleibenden Abweichungen. |
-| Prüfung | Angaben wurden gegen `src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/` und die bestehenden Bausteine B1, F2, F3, D1, D2 und N1 geprüft. Es wurden keine fachlichen oder technischen Entscheidungen ergänzt. |
+| Prüfung | Angaben wurden gegen `src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/` und die bestehenden Bausteine B1, F2, F3, D1, D2 und N1 geprüft. Es wurden keine fachlichen oder technischen Entscheidungen ergänzt. Nachtrag (2026-07-26, Claude Sonnet 5): zwei Abweichungszeilen korrigiert, die QR-Format und Statusführung noch als offen führten, obwohl sie in AF-04/N2.8 bzw. N2.6 entschieden sind. |

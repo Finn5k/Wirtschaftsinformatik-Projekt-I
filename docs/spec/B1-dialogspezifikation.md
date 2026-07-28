@@ -130,7 +130,7 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 
 | Feld | Art | Datentyp | Bezug Datenmodell | Vorbelegung | Prüfung / Hinweise |
 |---|---|---|---|---|---|
-| Ort / Region | Eingabe (Kann) | Text | `court.city` (Filterkriterium) | letzter Suchort, sonst leer | leer = keine Ortseinschränkung |
+| Ort / Region | Eingabe (Kann) | Text | `court.city` (Filterkriterium) | `profile.city`, sonst letzter Suchort, sonst leer | leer = keine Ortseinschränkung |
 | Sportart-Filter | Eingabe (Kann) | Auswahl | `sport` (Katalog) | „Alle" | Werteliste aus `sport`-Katalog + „Alle" (GP-03) |
 | Ergebnisliste | Anzeige | Liste | `session` (title, sport, start_at, status), `court` (name, city), abgeleitet `confirmed_count`/`max_participants` | — | nur Sessions mit Status `scheduled`/`active` (AF-03); abgeschlossene nur in DLG-07 |
 | Leerer Zustand | Anzeige | Text | — | — | erscheint bei 0 Treffern ([B1.5.5](#b155-leere-zustände)) |
@@ -363,7 +363,7 @@ Der Dialog hat zwei Zustände (Tabs): *Bevorstehend* (UC-05, Status `scheduled`/
 |---|---|
 | Identifier | DLG-08 |
 | Realisiert | [UC-12](F2-anwendungsfaelle.md#uc-12--profil-und-sportpräferenzen-verwalten) |
-| Zweck | Nutzer verwalten MVP-relevante Basisdaten: Anzeigename, optionales Profilbild, bevorzugte Sportarten. |
+| Zweck | Nutzer verwalten MVP-relevante Basisdaten: Anzeigename, Heimatort, optionales Profilbild, bevorzugte Sportarten. |
 | Einstiegspunkte | Hauptnavigation „Profil". Nicht angemeldet → DLG-01. |
 | Ergebnis | Gespeicherte Änderungen; bei Abbruch/Fehler bleibt der vorherige Stand erhalten (UC-12). |
 
@@ -374,6 +374,7 @@ Zwei Zustände: *Ansicht* und *Bearbeiten*.
 | Feld | Art | Datentyp | Bezug Datenmodell | Vorbelegung | Prüfung / Hinweise |
 |---|---|---|---|---|---|
 | Anzeigename | Anzeige / Eingabe (Muss im Zustand *Bearbeiten*) | Text | `profile.display_name` | aktueller Wert | nicht leer |
+| Ort | Anzeige / Eingabe (Kann) | Text | `profile.city` | aktueller Wert | leer möglich; dient der Vorbelegung der Ortssuche in [DLG-02](#b142-dlg-02--session-entdecken-liste) und ist für andere Nutzer nicht sichtbar |
 | Profilbild | Anzeige / Eingabe (Kann) | `Url` | `profile.avatar_url` | aktueller Wert | MVP-Umfang offen ([D1.9](D1-datenmodell.md#d19-offene-punkte)) |
 | E-Mail | Anzeige | Text | — (Supabase Auth) | aktueller Wert | read-only; Änderung ist Auth-Funktion, nicht MVP |
 | Bevorzugte Sportarten | Anzeige / Eingabe (Kann) | Mehrfachauswahl | `sport_preference` → `sport` | aktuelle Auswahl | jede Sportart höchstens einmal (D1) |
@@ -447,7 +448,7 @@ Der aktuelle UI-Prototyp bildet alle Dialoge DLG-01 bis DLG-08 ab. Die nachfolge
 | Session-Lifecycle | Statuswerte sind statische Mockdaten | Umsetzung der Statusableitung nach AF-03 fehlt; technische Ausgestaltung bleibt offen |
 | Kartenfehler | echte OSM-Karte ist eingebunden | Graceful Degradation zu DLG-02 bei Ausfall fehlt |
 | Lade- und Netzwerkzustände | keine asynchronen Backend-Anfragen | Muster aus [B1.5.4](#b154-fehler--und-ladezustände) sind noch nicht demonstriert |
-| Profil | Bearbeitung lokal; Ort wird zusätzlich angezeigt und bearbeitet | Persistenz fehlt; Profilbild-Umfang und weitere sichtbare Profildaten bleiben offene Punkte |
+| Profil | Bearbeitung wirkt nur im lokalen Seitenzustand | Persistenz fehlt; Profilbild-Umfang und weitere sichtbare Profildaten bleiben offene Punkte ([B1.8](#b18-offene-punkte)) |
 | Validierungsgrenzen | ausgewählte Pflichtfelder werden geprüft | endgültige Feldlängen, Obergrenzen und Fehlertexte bleiben offen |
 
 Im aktuellen Prototyp sind keine früher dokumentierten Gamification-, Events-/Challenges-, Benachrichtigungs-, Rang-, Sichtbarkeits-, Merken- oder Teilen-Funktionen mehr vorhanden.
@@ -466,27 +467,20 @@ Im aktuellen Prototyp sind keine früher dokumentierten Gamification-, Events-/C
 
 ## B1.8 Offene Punkte
 
-| Punkt | Beschreibung | Zuständiger Baustein |
+B1 ist der zuständige Baustein für alle Fragen des Dialogverhaltens — Feldlisten, Anzeigeumfang, Reihenfolge und Texte. Andere Bausteine verweisen hierher, statt eigene Kopien dieser Punkte zu führen.
+
+| Punkt | Beschreibung | Zuständig |
 |---|---|---|
-| Sichtbare Profildaten in Teilnehmerlisten | Welche Felder anderer Nutzer DLG-04 zeigt (offen aus UC-03/07, D1.9). | N1 / Team |
-| Sortierung/Gruppierung der Listen | DLG-02 (Reihenfolge der Treffer), DLG-07 (Sortierung je Tab). | Team / Frontend |
-| Konkrete Fehlertexte | Endgültige Formulierungen je Ergebniscode (AF-01/AF-02). | N1 / E2 |
-| Profilbild-Umfang | Ob `avatar_url` im MVP editierbar ist (D1.9). | Team |
-| Court-Dubletten in der Auswahl | UI-Verhalten bei offensichtlichen Dubletten (UC-10). | N1 / N2 |
-| Profil-Ort | Der Prototyp zeigt und bearbeitet einen Ort, während Umfang und Datenmodellbezug in den bestehenden Bausteinen nicht abschließend geklärt sind. | Team / Spezifikation |
-| Angleichung des Prototyps | Umsetzung der weiterhin bestehenden Abweichungen aus [B1.6](#b16-abweichungen-des-prototyps). | Frontend / Backend |
+| Sichtbare Profildaten in Teilnehmerlisten | Ob DLG-04 über die in [N2.11](N2-querschnittskonzepte.md#n211-row-level-security-rls) freigegebenen Basisfelder (`display_name`, `avatar_url`) hinaus weitere Felder zeigt. Die Basisfelder selbst sind entschieden. | B1 |
+| Sortierung/Gruppierung der Listen | DLG-02 (Reihenfolge der Treffer), DLG-07 (Sortierung je Tab). | B1 |
+| Konkrete Fehlertexte | Endgültige Formulierungen je Ergebniscode (AF-01/AF-02); die sinngemäßen Texte stehen bereits in DLG-04 und DLG-06. | B1 |
+| Profilbild-Umfang | Ob `avatar_url` im MVP editierbar ist oder nur angezeigt wird (D1.9). | B1 |
+| Court-Dubletten in der Auswahl | Verhalten von DLG-05, wenn ein offensichtlich bereits vorhandener Sportort neu erfasst wird (UC-10). | B1 |
 
-## B1.9 Versionshistorie
-
-| Datum | Autor | Änderung |
-|---|---|---|
-| 2026-07-12 | Claude Code (Fable 5) | B1 mit Dialoglandkarte, DLG-01 bis DLG-08 und initialem Prototyp-Abgleich erstellt |
-| 2026-07-16 | ChatGPT / Codex | Dialogrouten und Prototyp-Abgleich an den aktuellen UI-Stand angepasst; verbleibende Abweichungen und offene Punkte aktualisiert |
-
-## B1.10 Eingesetzte KI-Werkzeuge
+## B1.9 Eingesetzte KI-Werkzeuge
 
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Claude Code (Fable 5, Claude Sonnet 5), ChatGPT / Codex |
 | Verwendung | Entwurf des B1-Bausteins: Ableitung der Dialoglandkarte und der Feld-/Aktionslisten aus F2/F3/D1/D2 und dem UI-Prototyp; systematischer Abgleich Prototyp ↔ MVP-Scope (B1.6). Späterer Abgleich des Prototypstatus mit den vorhandenen Routen, Seiten, Komponenten, Mockdaten und Services; Aktualisierung des Dialogindex und der Abweichungsanalyse; Einbettung der Prototyp-Screenshots. |
-| Prüfung | Inhalte wurden gegen [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [N1](N1-nichtfunktionale-anforderungen.md), [`../frontend.md`](../frontend.md), den aktuellen Prototyp-Code (`src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/`) und die Herold-Referenz geprüft; Richtungsentscheidungen (Soll-Dialoge, UC-05/UC-11 als ein Dialog, normative Feldlisten) wurden vorab vom Team bestätigt. Beim Prototyp-Abgleich wurden keine neuen fachlichen oder technischen Entscheidungen getroffen; ungeklärte Punkte bleiben als offene Punkte markiert. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Erfassung der Court-Koordinaten in DLG-05 als Kartenpin präzisiert. |
+| Prüfung | Inhalte wurden gegen [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [N1](N1-nichtfunktionale-anforderungen.md), [`../frontend.md`](../frontend.md), den aktuellen Prototyp-Code (`src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/`) und die Herold-Referenz geprüft; Richtungsentscheidungen (Soll-Dialoge, UC-05/UC-11 als ein Dialog, normative Feldlisten) wurden vorab vom Team bestätigt. Beim Prototyp-Abgleich wurden keine neuen fachlichen oder technischen Entscheidungen getroffen; ungeklärte Punkte bleiben als offene Punkte markiert. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Erfassung der Court-Koordinaten in DLG-05 als Kartenpin präzisiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): B1.8 auf je einen zuständigen Baustein umgestellt und um bereits entschiedene Zeilen bereinigt; `profile.city` als Feld in DLG-08 und als Vorbelegung der Ortssuche in DLG-02 aufgenommen; separate Versionshistorie zugunsten der zentralen Historie im Spezifikationsindex entfernt. |

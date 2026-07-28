@@ -220,7 +220,7 @@ sequenceDiagram
 | **Email-Service** (SendGrid, Mailgun) | MVP: Keine Email-Notifikationen. Optional später für Session-Reminders. |
 | **Push-Notifications** (Firebase Cloud Messaging) | MVP: Keine mobilen Push-Notifications. Web-Notifications später optional. |
 | **Message Queue** (RabbitMQ, Kafka) | Synchrone REST-API genügt für MVP; asynchrone Background-Jobs nicht nötig. |
-| **Backend Agent / Webhook-Consumer** | LocalCourt ist Consumer von lokalen AI-Agenten nicht (im Gegensatz zu Herold); Agenten greifen über Frontend-Manual-Tasks ein. |
+| **Webhooks / eingehende Schnittstellen** | LocalCourt wird von keinem externen System aufgerufen. Alle Abläufe starten in der Benutzeroberfläche (F1); es gibt keine eingehende Integration, die zu bedienen wäre. |
 | **Social-Media Integration** (OAuth Social, Sharing) | MVP nur Email+Password Auth. Social-Auth optional später. |
 
 ### Optionale Future Integrations
@@ -262,4 +262,4 @@ Alle Nachbarsysteme sind **Cloud-Services** über HTTPS-APIs, ideal für Free-Ti
 |---|---|
 | Werkzeug | GitHub Copilot, Claude (Claude Code) |
 | Verwendung | Entwurf des Architekturüberblicks: Systemkontext, Nachbarsysteme, Deployment-Topologie und kritische Datenflüsse. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Umstellung der Diagramme auf Mermaid, Entfernen überholter Waitlist-Datenflüsse gemäß NG-10) mit Claude Code (Opus 4.8). Angleichung an S1 (2026-07-26, Claude Sonnet 5): Datenflüsse P2.5 auf die atomaren Schreiboperationen umgestellt, Geocoding- und WebSocket-Erwähnungen entfernt, veraltete M1/M2-Verweise ersetzt. |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Umstellung der Diagramme auf Mermaid, Entfernen überholter Waitlist-Datenflüsse gemäß NG-10) mit Claude Code (Opus 4.8). Angleichung an S1 (2026-07-26, Claude Sonnet 5): Datenflüsse P2.5 auf die atomaren Schreiboperationen umgestellt, Geocoding- und WebSocket-Erwähnungen entfernt, veraltete M1/M2-Verweise ersetzt; unverständlicher Ausschluss-Eintrag mit Verweis auf das Referenzprojekt durch eine für LocalCourt zutreffende Formulierung ersetzt. |

@@ -163,9 +163,10 @@ Ebenfalls **nicht** Gegenstand von S1:
 
 | Punkt | Beschreibung | Zuständig |
 |---|---|---|
-| Seitengröße der Ergebnislisten | Konkrete Blockgröße beim seitenweisen Abruf in `sessionsSuchen`. | ARCH / N1 |
-| Dublettenprüfung bei Sportorten | Verhalten bei offensichtlich doppelt erfassten Courts; in UC-10 und [N2.15](N2-querschnittskonzepte.md#n215-offene-punkte) offen, betrifft keine Schnittstelle. | B1 / N1 |
+| Seitengröße der Ergebnislisten | Konkrete Blockgröße beim seitenweisen Abruf in `sessionsSuchen`. | ARCH |
 | Wiederholverhalten | Ob und wie oft ein fehlgeschlagener Aufruf automatisch wiederholt wird, statt den Nutzer erneut auslösen zu lassen. | ARCH |
+
+Das Verhalten bei offensichtlichen Court-Dubletten ist eine Frage des Dialogverhaltens und liegt bei [B1.8](B1-dialogspezifikation.md#b18-offene-punkte); es berührt keine Schnittstelle.
 
 ## S1.9 Eingesetzte KI-Werkzeuge
 

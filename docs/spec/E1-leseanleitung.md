@@ -14,7 +14,7 @@ E1 richtet sich an alle, die die LocalCourt-Spezifikation lesen, prüfen oder da
 - **Wie hängen die Bausteine zusammen?** Die Siedersleben-Bausteine sind keine unabhängigen Dokumente, sondern eine Kette aus Verfeinerungsschritten (siehe [E1.4](#e14-überblick-der-bausteingruppen) und [E1.7](#e17-querverweise-und-traceability)).
 - **Woran erkenne ich Konsistenz?** IDs, Benennungen und Statusangaben folgen festen Regeln, die ein Review nachvollziehbar machen (siehe [E1.5](#e15-namens--und-id-konventionen) und [E1.9](#e19-konsistenzregeln)).
 
-E1 ersetzt nicht das Glossar (E2, geplant, siehe [README](README.md#e2--glossar--geplant)) und nicht den Spezifikationsindex ([README.md](README.md)), sondern ergänzt beide um die Lesereihenfolge und die Begründung der Struktur.
+E1 ersetzt nicht das Glossar ([E2](E2-glossar.md)) und nicht den Spezifikationsindex ([README.md](README.md)), sondern ergänzt beide um die Lesereihenfolge und die Begründung der Struktur.
 
 ---
 
@@ -48,15 +48,15 @@ E1 ersetzt nicht das Glossar (E2, geplant, siehe [README](README.md#e2--glossar-
 
 Die Siedersleben-Bausteine sind in sieben Gruppen organisiert, die von der strategischen Ebene bis zur Umsetzung verfeinern:
 
-| Gruppe | Leitfrage | Bausteine in LocalCourt | Status |
-|---|---|---|---|
-| **P — Projektgrundlagen** | Warum wird das System gebaut, für wen, und in welche Umgebung ist es eingebettet? | [P1](P1-ziele-rahmenbedingungen.md) Ziele und Rahmenbedingungen, [P2](P2-architekturueberblick.md) Architekturüberblick | Fertig |
-| **F — Abläufe und Funktionen** | Welche realen Geschäftsprozesse gibt es, welche davon werden durch Use Cases systemunterstützt, und welche fachlichen Regeln stecken dahinter? | [F1](F1-geschaeftsprozesse.md) Geschäftsprozesse, [F2](F2-anwendungsfaelle.md) Anwendungsfälle, [F3](F3-anwendungsfunktionen.md) Anwendungsfunktionen | Fertig |
-| **D — Daten** | Welche Entitäten und Datentypen gibt es fachlich, unabhängig von der technischen Umsetzung? | [D1](D1-datenmodell.md) Datenmodell, [D2](D2-datentypen.md) Datentypenverzeichnis | Fertig |
-| **B — Benutzerschnittstelle** | Welche Dialoge zeigt das System, mit welchen Feldern und Zustandsübergängen? | [B1](B1-dialogspezifikation.md) Dialogspezifikation; B2 Batch und B3 Druckausgaben sind nicht anwendbar (siehe [E1.8](#e18-umgang-mit-offenen-und-nicht-anwendbaren-bausteinen)) | B1 fertig; B2/B3 nicht anwendbar |
-| **S — Schnittstellen** | Mit welchen Nachbarsystemen kommuniziert LocalCourt, über welche Operationen, und mit welcher Fehlersemantik? | [S1](S1-nachbarsysteme.md) Nachbarsysteme; S2 Datenmigration ist nicht anwendbar, S3 Inbetriebnahme ist geplant (siehe [E1.8](#e18-umgang-mit-offenen-und-nicht-anwendbaren-bausteinen)) | S1 fertig; S2 nicht anwendbar; S3 geplant |
-| **N — Übergreifende Anforderungen und Konzepte** | Welche Qualitätsanforderungen gelten übergreifend, und wie werden fachlich offen gelassene Punkte technisch umgesetzt? | [N1](N1-nichtfunktionale-anforderungen.md) Nichtfunktionale Anforderungen, [N2](N2-querschnittskonzepte.md) Querschnittskonzepte | Fertig |
-| **E — Ergänzende Bausteine** | Wie liest man die Spezifikation, und welche Begriffe werden dabei einheitlich verwendet? | E1 Leseanleitung (dieser Baustein), E2 Glossar (geplant) | E1 in Bearbeitung; E2 geplant |
+| Gruppe | Leitfrage | Bausteine in LocalCourt |
+|---|---|---|
+| **P — Projektgrundlagen** | Warum wird das System gebaut, für wen, und in welche Umgebung ist es eingebettet? | [P1](P1-ziele-rahmenbedingungen.md) Ziele und Rahmenbedingungen, [P2](P2-architekturueberblick.md) Architekturüberblick |
+| **F — Abläufe und Funktionen** | Welche realen Geschäftsprozesse gibt es, welche davon werden durch Use Cases systemunterstützt, und welche fachlichen Regeln stecken dahinter? | [F1](F1-geschaeftsprozesse.md) Geschäftsprozesse, [F2](F2-anwendungsfaelle.md) Anwendungsfälle, [F3](F3-anwendungsfunktionen.md) Anwendungsfunktionen |
+| **D — Daten** | Welche Entitäten und Datentypen gibt es fachlich, unabhängig von der technischen Umsetzung? | [D1](D1-datenmodell.md) Datenmodell, [D2](D2-datentypen.md) Datentypenverzeichnis |
+| **B — Benutzerschnittstelle** | Welche Dialoge zeigt das System, mit welchen Feldern und Zustandsübergängen? | [B1](B1-dialogspezifikation.md) Dialogspezifikation; B2 Batch und B3 Druckausgaben sind nicht anwendbar (siehe [E1.8](#e18-umgang-mit-offenen-und-nicht-anwendbaren-bausteinen)) |
+| **S — Schnittstellen** | Mit welchen Nachbarsystemen kommuniziert LocalCourt, über welche Operationen, und mit welcher Fehlersemantik? | [S1](S1-nachbarsysteme.md) Nachbarsysteme; S2 Datenmigration ist nicht anwendbar, S3 Inbetriebnahme wird nach der Implementierung gepflegt (siehe [E1.8](#e18-umgang-mit-offenen-und-nicht-anwendbaren-bausteinen)) |
+| **N — Übergreifende Anforderungen und Konzepte** | Welche Qualitätsanforderungen gelten übergreifend, und wie werden fachlich offen gelassene Punkte technisch umgesetzt? | [N1](N1-nichtfunktionale-anforderungen.md) Nichtfunktionale Anforderungen, [N2](N2-querschnittskonzepte.md) Querschnittskonzepte |
+| **E — Ergänzende Bausteine** | Wie liest man die Spezifikation, und welche Begriffe werden dabei einheitlich verwendet? | E1 Leseanleitung (dieser Baustein), [E2](E2-glossar.md) Glossar |
 
 Der aktuelle Bearbeitungsstand jedes Bausteins ist im [Spezifikationsindex](README.md#bausteine-der-spezifikation) verbindlich gepflegt; E1 wiederholt ihn hier nur zur Einordnung der Gruppen und verweist für Details dorthin.
 
@@ -67,7 +67,7 @@ Der aktuelle Bearbeitungsstand jedes Bausteins ist im [Spezifikationsindex](READ
 Zentrale spezifizierte Elemente wie Ziele, Geschäftsprozesse, Use Cases, Anwendungsfunktionen, Dialoge und Qualitätsanforderungen tragen stabile IDs. Diese IDs werden nicht wiederverwendet oder umnummeriert, auch wenn sich ihr Inhalt später ändert.
 
 | Präfix | Bedeutung | Definiert in | Beispiel |
-|---|---|---|---|
+|---|---|---|
 | `G-nn` | Geschäftsziel | [P1.2](P1-ziele-rahmenbedingungen.md#p12-geschäftsziele) | `G-03` Niedrige Einstiegshürde |
 | `NG-nn` | Nicht-Ziel (Out of Scope) | [P1.4](P1-ziele-rahmenbedingungen.md#p14-scope) | `NG-10` Wartelisten bei vollen Sessions |
 | `CON-T-nn`, `CON-O-nn`, `CON-D-nn` | Rahmenbedingung (technisch / organisatorisch / Datenschutz) | [P1.5](P1-ziele-rahmenbedingungen.md#p15-rahmenbedingungen-constraints) | `CON-T-01` Datenbank: PostgreSQL nur |
@@ -93,7 +93,7 @@ Beim Verweis auf einen Baustein wird immer die Baustein-Kurzform verwendet (`P1`
 Alle Diagramme in der Spezifikation sind als **Mermaid**-Codeblöcke eingebettet, damit sie auf GitHub direkt gerendert werden und im Diff versionierbar bleiben. Es gibt kein Diagramm als Bilddatei.
 
 | Diagrammtyp | Mermaid-Notation | Verwendet in | Zweck |
-|---|---|---|---|
+|---|---|---|
 | Aktivitätsdiagramm mit Swimlanes | `flowchart` mit `subgraph` je Akteur | [F1.1.5](F1-geschaeftsprozesse.md#f115-ablaufdiagramm-mermaid), [F1.2.5](F1-geschaeftsprozesse.md#f125-ablaufdiagramm-mermaid) | Ablauf eines Geschäftsprozesses je Akteur. |
 | Use-Case-Diagramm | `flowchart` mit Akteur-Knoten und Ovalen (`((...))`) | [F2.3](F2-anwendungsfaelle.md#f23-use-case-diagramm) | Zuordnung Use Cases ↔ Akteure. |
 | Systemkontext- / Deployment-Diagramm | `flowchart` mit `subgraph` je Tier/System | [P2.1](P2-architekturueberblick.md#p21-systemkontext), [P2.4](P2-architekturueberblick.md#p24-deployment--architektur-topologie) | Nachbarsysteme und Deployment-Topologie. |
@@ -154,14 +154,9 @@ In LocalCourt betrifft das aktuell:
 | **B3 — Druckausgaben** | ❌ Nicht anwendbar | Der Check-in-QR-Code wird ausschließlich am Bildschirm angezeigt und gescannt, keine Druckausgabe vorgesehen (siehe [README](README.md#b3--druckausgaben--nicht-anwendbar)). |
 | **S2 — Datenmigration** | ❌ Nicht anwendbar | Greenfield-Projekt ohne Altdaten (NG-09, siehe [README](README.md#s2--datenmigration--nicht-anwendbar)). |
 
-Davon zu unterscheiden sind Bausteine, die **grundsätzlich relevant, aber noch nicht bearbeitet** sind:
+Davon zu unterscheiden sind Bausteine, die **grundsätzlich relevant, aber bewusst zurückgestellt** sind: **S3 — Inbetriebnahme** wird erst nach der Implementierung gepflegt, weil sich Installation und Betriebsablauf vorher nicht belastbar beschreiben lassen.
 
-| Baustein | Status | Einordnung |
-|---|---|---|
-| **S3 — Inbetriebnahme** | 🔄 Geplant | Installation, Betrieb und Deployment-Ablauf; noch ausstehend, aber fachlich relevant. |
-| **E2 — Glossar** | 🔄 Geplant | Einheitliche Begriffe; noch ausstehend. |
-
-Ein fehlender Eintrag im Index wäre also ein Fehler, keine bewusste Auslassung: Jeder Baustein trägt genau einen der drei Status mit Begründung.
+Ein fehlender Eintrag im Index wäre also ein Fehler, keine bewusste Auslassung: Jeder Baustein trägt genau einen der drei Status mit Begründung. Welcher das jeweils ist, steht ausschließlich im [Spezifikationsindex](README.md#bausteine-der-spezifikation) — die Tabelle oben nennt bewusst nur die Begründungen, nicht den Bearbeitungsstand (siehe [E1.9](#e19-konsistenzregeln)).
 
 ---
 
@@ -184,5 +179,5 @@ Für die gesamte Spezifikation gelten unabhängig vom einzelnen Baustein folgend
 |---|---|
 | Werkzeug | Claude Code |
 | Verwendung | Entwurf und redaktionelle Überarbeitung des E1-Bausteins, insbesondere Zielgruppen, Lesereihenfolge, ID-Konventionen, Diagrammübersicht und Traceability-Kette. |
-| Prüfung | Inhalte wurden gegen README, P1, P2, F1, F2, F3, D1, D2, B1, S1, N1 und N2 geprüft. Relative Links, Abschnittsanker, IDs und Statusangaben wurden mit den vorhandenen Dateien abgeglichen und manuell überarbeitet. |
+| Prüfung | Inhalte wurden gegen README, P1, P2, F1, F2, F3, D1, D2, B1, S1, N1 und N2 geprüft. Relative Links, Abschnittsanker, IDs und Statusangaben wurden mit den vorhandenen Dateien abgeglichen und manuell überarbeitet. Nachtrag (2026-07-26, Claude Sonnet 5): Statusangaben aus E1.4 und E1.8 entfernt, die E2 noch als geplant führten und damit gegen die eigene Konsistenzregel „Ein Ort für den Status" verstießen; S3 als bewusst zurückgestellt eingeordnet. |
 | Fachliche Verantwortung | Bleibt beim Team. |

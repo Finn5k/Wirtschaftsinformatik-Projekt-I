@@ -56,10 +56,3 @@ export interface SportSession {
 export function isSessionFull(session: SportSession): boolean {
   return session.participantsCount >= session.maxParticipants;
 }
-
-export function isSessionJoinable(session: SportSession): boolean {
-  return (
-    (session.status === "scheduled" || session.status === "active") &&
-    !isSessionFull(session)
-  );
-}

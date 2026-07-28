@@ -36,47 +36,45 @@ Zeitliche und logische Reihenfolge. Die **Support**-Spalte benennt, wer die Akti
 | A1 | Teilnehmer hat Lust auf Sport, öffnet LocalCourt | Participant, Browser | Pre-IT: Nutzer-Entscheidung, keine System-Unterstützung. |
 | A2 | Teilnehmer gibt Stadt/Region ein oder wählt aktuelle Position | Browser + Participant | Nutzer-Input: Textfeld oder Geo-Lookup. Keine automatische Geolocation (Datenschutz). |
 | A3 | Teilnehmer filtert nach Sportart (optional) | Browser + Participant | Dropdown-Auswahl oder Multi-Select. |
-| A4 | Frontend sendet Query an LocalCourt | Browser → LocalCourt | GET /rest/v1/sessions?city=<>&sport=<> (Supabase PostgREST API). |
-| A5 | Supabase filtert und gibt Session-Liste zurück | Supabase PostgREST | Filter: WHERE city=... AND sport=... AND datetime > NOW() (Nur zukünftige Sessions). |
+| A4 | Frontend fragt passende Sessions an | Browser → LocalCourt | Suchkriterien: Ort und optional Sportart (UC-02). |
+| A5 | LocalCourt liefert die gefilterte Session-Liste | LocalCourt, Supabase PostgREST | Nur bevorstehende und laufende Sessions, je Session Sportort, Sportart, Status und bestätigte Teilnehmerzahl (S1.4). |
 | A6 | LocalCourt lädt Court-Positionen und rendert Kartendarstellung | LocalCourt, OpenStreetMap, Browser | Leaflet-Karte mit Pins für jeden Court. Asynchrone Karte-Rendering. |
 | A7 | Teilnehmer sieht Session-Liste & Karte | Browser (UI Rendering) | List View (Title, DateTime, Participants/Max, Location) + Map View. |
 | A8 | Teilnehmer wählt interessante Session aus (Click) | Participant, Browser | Zeigt Session-Detail-View (Beschreibung, Organisator, Teilnehmer-Liste). |
 | A9 | Teilnehmer klickt "Beitreten" | Participant, Browser | UI-Button-Click oder auto-join. |
-| A10 | Frontend sendet Join-Request an LocalCourt | Browser → LocalCourt | POST /rest/v1/participants { session_id, user_id, status: "confirmed" }. |
-| A11 | LocalCourt speichert Participant-Record | LocalCourt → PostgreSQL | INSERT INTO participants (session_id, user_id, joined_at, status). |
+| A10 | Frontend löst den Beitritt aus | Browser → LocalCourt | Beitrittswunsch zur gewählten Session (UC-04). |
+| A11 | LocalCourt prüft Kapazität und legt die Teilnahme an | LocalCourt → PostgreSQL | Prüfung und Anlage erfolgen unteilbar, damit die Kapazität auch bei gleichzeitigen Beitritten eingehalten wird ([AF-01](F3-anwendungsfunktionen.md#f33-af-01--beitritts--und-kapazitätsregel), S1.4). Ist die Session voll, wird abgelehnt — keine Warteliste (NG-10). |
 | A12 | Teilnehmer sieht Bestätigung "Du bist dabei!" | Browser (UI Feedback) | Toast-Nachricht oder Modal mit Session-Details. |
 | A13 | Session wird in "Meine Sessions" angezeigt | Browser (UI) | Frontend-State aktualisiert, Participant-Count erhöht sich. |
 | A14 | Teilnehmer navigiert zur Session-Detail & wartet auf Start | Participant, LocalCourt | Session-Timeline, Organisator-Infos, andere Teilnehmer-Namen sichtbar. |
-| A15 | Zum Startzeitpunkt: Session wird "aktiv" | LocalCourt (Background Job?) | Status-Transition: "scheduled" → "active". (Später: Reminder an Teilnehmer?) |
+| A15 | Zum Startzeitpunkt: Session gilt als "aktiv" | LocalCourt | Statusübergang `scheduled` → `active`, zeitbasiert abgeleitet ([AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge)); kein Scheduler und keine Benachrichtigung (N2.6, F1.4). |
 | A16 | Teilnehmer erscheint zum Event und beteiligt sich physisch | Participant (Real-World) | **Post-IT**: Sport findet statt, LocalCourt nicht mehr involviert. |
-| A17 | Nach Session-Ende: Session wird auto-geschlossen | LocalCourt (Auto-Timer?) | Status-Transition: "active" → "completed". Zeit-basiert (DateTime + Duration). |
-| A18 | Teilnehmer kann später Session-Historie anschauen | Participant, LocalCourt | Archivierte Session in "Vergangene Sessions", evtl. mit Stats. |
+| A17 | Nach Session-Ende: Session gilt als abgeschlossen | LocalCourt | Statusübergang `active` → `completed`, abgeleitet aus Startzeitpunkt + Dauer ([AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge)). |
+| A18 | Teilnehmer kann später Session-Historie anschauen | Participant, LocalCourt | Vergangene Sessions read-only in „Meine Sessions" (UC-11); keine Auswertungen oder Statistiken (F1.4). |
 
 ### F1.1.3 Dokumente
 
 Konkrete Artefakte, die durch den Prozess fließen.
 
-| Dokument | Erzeugt in | Format | Speicherort |
-|----------|-----------|--------|------------|
-| **Nutzer-Input (Ort, Sportart)** | A2–A3 | String, Enum | Browser Session State, nicht persistent |
-| **Session-Liste (API Response)** | A5 | JSON Array (Sessions) | PostgREST Response, Browser Memory |
-| **Karte (OSM Tiles + Pins)** | A6 | HTML Canvas + GeoJSON | Browser DOM (Leaflet Renderer) |
-| **Session-Detail** | A8 | JSON Object (1 Session + Participants) | PostgREST Response, Browser Memory |
-| **Join-Request Payload** | A10 | JSON { session_id, user_id } | HTTP Request Body |
-| **Participant-Record** | A11 | Row in PostgreSQL | participants Tabelle, Persistiert |
-| **Confirmation UI** | A12 | React Component | Browser DOM |
-| **Session-History** | A18 | SQL Query Result | PostgreSQL (sessions, participants gefiltert) |
+| Dokument | Erzeugt in | Inhalt |
+|----------|-----------|--------|
+| **Suchkriterien** | A2–A3 | Ort und optional Sportart; nur für die laufende Suche relevant, nicht dauerhaft aufbewahrt. |
+| **Session-Liste** | A5 | Die gefundenen Sessions mit den in [D1](D1-datenmodell.md) modellierten Merkmalen. |
+| **Kartenansicht** | A6 | Darstellung der Sportorte anhand ihrer Koordinaten (S1.5); nichts davon wird gespeichert. |
+| **Session-Detail** | A8 | Eine Session samt Sportort, Organisator und Teilnehmerliste. |
+| **Teilnahme** | A11 | Die angelegte Teilnahme des Nutzers an der Session (Entität `participant` in [D1](D1-datenmodell.md)). |
+| **Session-Historie** | A18 | Vergangene Sessions des Nutzers, read-only (UC-11). |
 
 ### F1.1.4 Daten-Stores (Information-/Datenspeicher)
 
+Die fachlichen Datenobjekte, die dieser Prozess liest und schreibt — `session`, `participant`, `court`, `profile`, `sport` —, sind vollständig in [D1](D1-datenmodell.md#d14-entitätstypen-im-detail) modelliert und werden hier nicht wiederholt. Die technische Ablage (Tabellen, Schlüssel, Constraints) steht in [N2.3](N2-querschnittskonzepte.md#n23-schlüssel-constraints-und-indizes).
+
+Außerhalb des eigenen Datenbestands berührt der Prozess:
+
 | Store | Besitzer | Inhalt |
 |-------|----------|--------|
-| **PostgreSQL: sessions** | LocalCourt | Session-Records: id, title, sport, city, court_id, organizer_id, datetime, duration, max_participants, status (scheduled, active, completed) |
-| **PostgreSQL: participants** | LocalCourt | Participant-Records: id, session_id, user_id, joined_at, status (confirmed) |
-| **PostgreSQL: courts** | LocalCourt | Court/Sportplatz-Verzeichnis: id, name, city, address, coordinates (lat/lon) |
-| **PostgreSQL: profiles** | LocalCourt | Nutzer-Profil: user_id, display_name, avatar_url. Sportpräferenzen separat (D1 `sport_preference`); E-Mail liegt in Supabase Auth. |
-| **Browser: sessionStorage / localStorage** | Browser | Recent Searches, User Preferences (Lieblings-Sportarten, zuletzt gesuchte Stadt) |
-| **OSM Tile Cache** | OpenStreetMap (Extern) | Kartenkacheln, Browser-seitig gecacht |
+| **Zugangstoken im Browser** | Browser | Sitzung des angemeldeten Nutzers (S1.3); einzige Ablage von LocalCourt-Daten im Browser. |
+| **Kartenkacheln** | OpenStreetMap (extern) | Vom Browser zwischengespeicherte Kacheln des Kachel-Dienstes (S1.5). |
 
 ### F1.1.5 Ablaufdiagramm (Mermaid)
 
@@ -150,10 +148,10 @@ Zeitliche und logische Reihenfolge.
 | **Session-Erstellung** | | | |
 | A3 | Organisator füllt Session-Form aus | Organizer, Browser | Felder: Title, Sport, Court, DateTime (Startzeitpunkt), Duration, Max Participants, Beschreibung. Validierung im Browser (Client-Side). |
 | A4 | Organisator klickt "Session erstellen" | Organizer | Form Submission. |
-| A5 | Frontend sendet Session-Data an LocalCourt | Browser → LocalCourt | POST /rest/v1/sessions { title, sport, court_id, datetime, duration, max_participants, organizer_id, description }. |
-| A6 | LocalCourt speichert Session in PostgreSQL | LocalCourt → PostgreSQL | INSERT INTO sessions (...). Auto-generated: id, created_at, status='scheduled'. |
-| A7 | LocalCourt auto-fügt Organisator als Participant hinzu | LocalCourt → PostgreSQL | INSERT INTO participants { session_id, user_id=organizer_id, status='confirmed', joined_at=NOW() }. |
-| A8 | Frontend zeigt QR-Code & PIN | Browser (UI) | QR-Code generiert im Frontend (qrcode.js) mit Format: "session_<id>_pin_<pin>". 4-stellige PIN (zufällig). |
+| A5 | Frontend übergibt die Session-Angaben an LocalCourt | Browser → LocalCourt | Sportart, Sportort, Titel, Beschreibung, Startzeitpunkt, Dauer und Teilnehmerlimit (UC-06). |
+| A6 | LocalCourt legt die Session an und erzeugt die PIN | LocalCourt → PostgreSQL | Status ergibt sich zeitbasiert als `scheduled` ([AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge)); die vierstellige PIN entsteht bei der Anlage ([AF-04](F3-anwendungsfunktionen.md#f36-af-04--pin--und-qr-code-erzeugung)). |
+| A7 | LocalCourt führt den Organisator als Teilnehmer | LocalCourt → PostgreSQL | Geschieht gemeinsam mit der Anlage aus A6, sodass keine Session ohne ihren Organisator entstehen kann (D1-Invariante, S1.4). Der Organisator belegt damit einen Platz (AF-01 R4). |
+| A8 | Frontend zeigt QR-Code & PIN | Browser (UI) | QR-Code wird clientseitig aus Session-Bezug und PIN erzeugt und trägt den Check-in-Deep-Link ([AF-04](F3-anwendungsfunktionen.md#f36-af-04--pin--und-qr-code-erzeugung), N2.8); er wird nicht als Bild gespeichert. |
 | A9 | Organisator hält QR-Code + PIN für den Treffpunkt bereit | Organizer | Anzeige am Bildschirm; es gibt keine Druckausgabe (siehe Spezifikationsindex, Baustein B3). |
 | **Vor Session-Start** | | | |
 | A10 | Potenzielle Teilnehmer öffnen LocalCourt (GP-01: Suche & Beitreten) | Participant, Browser, LocalCourt | Sessions sind für alle sichtbar (public discovery). Participants treten bei. |
@@ -162,7 +160,7 @@ Zeitliche und logische Reihenfolge.
 | A12 | Zum Startzeitpunkt: Organisator öffnet Check-In-Screen | Organizer, Browser, LocalCourt | Status sichtbar: "aktiv", QR-Code + PIN prominent angezeigt. |
 | A13 | Teilnehmer scannt QR-Code mit der Kamera-App des Geräts | Participant | QR-Code enkodiert: Redirect zu LocalCourt/check-in?session=<id>&pin=<pin>. LocalCourt selbst nutzt keine Kamera-Schnittstelle (S1.2). |
 | A14 | QR-Code-Scan führt zu Browser-Seite mit automatischem Check-In | Browser (Participant) | LocalCourt erkennt session_id & pin aus URL und ruft die atomare Check-in-Operation auf (S1.4, AF-02). |
-| A15 | LocalCourt markiert Participant als "checked_in" | LocalCourt → PostgreSQL | UPDATE participants SET status='checked_in', checked_in_at=NOW() WHERE id=<>. |
+| A15 | LocalCourt markiert die Teilnahme als `checked_in` | LocalCourt → PostgreSQL | Mit Zeitstempel; maßgeblich ist die Serverzeit, nicht die Uhr des Geräts ([AF-02](F3-anwendungsfunktionen.md#f34-af-02--check-in-validierung), N2.10). |
 | A16 | Participant sieht Bestätigung "✓ Check-in erfolgreich!" | Browser (UI Feedback) | Toast oder Modal mit checked_in-Status. |
 | A17 | Organisator sieht in Participant-Liste: "X / Y Checked in" | Organizer, Browser | Aktualisierung beim Aufruf bzw. Neuladen der Liste (kein Echtzeit-Kanal, S1.6). Grüne Häkchen für checked_in, Grau für "confirmed aber nicht checked_in". |
 | **Fallback: PIN-Eingabe (falls QR-Scan fehlschlägt)** | | | |
@@ -177,27 +175,26 @@ Zeitliche und logische Reihenfolge.
 
 ### F1.2.3 Dokumente
 
-| Dokument | Erzeugt in | Format | Speicherort |
-|----------|-----------|--------|------------|
-| **Session-Form-Input** | A3 | Form Data (Title, Sport, DateTime, etc.) | Browser State, nicht persistent |
-| **Session-Record** | A6 | Row in PostgreSQL | sessions Tabelle |
-| **QR-Code Image** | A8 | PNG / SVG (qrcode.js Output) | Browser Canvas / Memory, Optional: Supabase Storage (wenn Speicherung nötig) |
-| **PIN** | A8 | String (4 Digits) | SessionRecord (sessions.pin Feld) |
-| **Participant-List** | A11 | JSON Array | Browser Memory (fetched von Supabase) |
-| **Check-In-Record** | A15 | Row in PostgreSQL (participants.check_in_at) | participants Tabelle |
-| **Check-In-Bestätigung** | A16 | UI Toast/Modal | Browser DOM |
-| **PIN-Input-Form** | A18 | HTML Form | Browser DOM |
+| Dokument | Erzeugt in | Inhalt |
+|----------|-----------|--------|
+| **Session-Angaben** | A3 | Eingaben des Organisators; erst mit A6 dauerhaft. |
+| **Session** | A6 | Die angelegte Session (Entität `session` in [D1](D1-datenmodell.md)), inklusive PIN. |
+| **QR-Code** | A8 | Zur Anzeige erzeugter Code mit dem Check-in-Deep-Link; wird nicht gespeichert ([AF-04](F3-anwendungsfunktionen.md#f36-af-04--pin--und-qr-code-erzeugung), N2.8). |
+| **PIN** | A6 | Vierstelliges Check-in-Geheimnis, Bestandteil der Session ([D2.4](D2-datentypen.md#d24-pin)). |
+| **Teilnehmerliste** | A11 | Die Teilnahmen der Session mit ihrem jeweiligen Status. |
+| **Check-in** | A15 | Statuswechsel der Teilnahme auf `checked_in` mit Zeitstempel (`checked_in_at`). |
 | **Session-Ergebnis-Report** | A22 | JSON (Check-In Stats) | Browser Memory, Optional: Persistiert in reports-Tabelle (Out-of-Scope Admin-Feature) |
 
 ### F1.2.4 Daten-Stores
 
-| Store | Besitzer | Inhalt |
-|-------|----------|--------|
-| **PostgreSQL: sessions** | LocalCourt | Session-Records: id, title, sport, court_id, organizer_id, datetime, duration, max_participants, status, created_at, pin (4-digit string, nullable), qr_code (nullable) |
-| **PostgreSQL: participants** | LocalCourt | Participant-Records: id, session_id, user_id, joined_at, status (confirmed, checked_in), checked_in_at (nullable) |
-| **PostgreSQL: courts** | LocalCourt | Court-Verzeichnis: id, name, city, coordinates |
-| **PostgreSQL: profiles** | LocalCourt | Nutzer-Profil: user_id, display_name, avatar_url. **Keine** Rollenspalte — die Rolle ergibt sich aus der Aktion (Organisator = wer erstellt); vgl. D1 / UC-01. |
-| **Browser: sessionStorage** | Browser | Aktuelle Session-ID, Organizer-Mode Flag, aktuelle PIN (während Session aktiv) |
+Die berührten Datenobjekte (`session`, `participant`, `court`, `profile`) sind in [D1](D1-datenmodell.md#d14-entitätstypen-im-detail) modelliert; die technische Ablage steht in [N2.3](N2-querschnittskonzepte.md#n23-schlüssel-constraints-und-indizes).
+
+Zwei Punkte, die für diesen Prozess besonders sind:
+
+| Punkt | Inhalt |
+|---|---|
+| **Keine Rollenspalte** | Die Rolle ergibt sich aus der Aktion: Organisator ist, wer die Session erstellt hat (`session.organizer_id`, D1). Es gibt kein Rollenattribut am Profil. |
+| **Keine Ablage von PIN oder QR-Code im Browser** | Beide werden nur zur Anzeige aus den geladenen Session-Daten gebildet. Die einzige Browser-Ablage ist das Zugangstoken (S1.2, S1.3). |
 
 ### F1.2.5 Ablaufdiagramm (Mermaid)
 
@@ -347,4 +344,4 @@ Jeder Prozess besteht aus **Akteuren** (Mensch & IT), **Aktivitäten** (zeitlich
 |---|---|
 | Werkzeug | GitHub Copilot, Claude (Claude Code) |
 | Verwendung | Entwurf der Geschäftsprozesse (GP-01–GP-03), Aktivitäten, Dokumente, Daten-Stores und Ablaufdiagramme. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Ablaufdiagramme auf Mermaid, Korrektur halluzinierter Querverweise) mit Claude Code (Opus 4.8). Terminologie-Fix (2026-07-26, Claude Sonnet 5): Teilnehmerstatus in A17 von "joined" auf "confirmed" korrigiert (konsistent mit D2.5/N2-Enum). Angleichung an S1 (2026-07-26, Claude Sonnet 5): Check-in-Aufrufe in A14/A19 auf die atomare Operation umgestellt, QR-Scan auf die Kamera-App des Geräts eingegrenzt (A13), Echtzeit-Zusagen in A11/A17 zurückgenommen, OAuth in A2 entfernt. Nachtrag (2026-07-26, Claude Sonnet 5): Druckausgabe in A9 entfernt, da B3 als nicht anwendbar dokumentiert ist. |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Ablaufdiagramme auf Mermaid, Korrektur halluzinierter Querverweise) mit Claude Code (Opus 4.8). Terminologie-Fix (2026-07-26, Claude Sonnet 5): Teilnehmerstatus in A17 von "joined" auf "confirmed" korrigiert (konsistent mit D2.5/N2-Enum). Angleichung an S1 (2026-07-26, Claude Sonnet 5): Check-in-Aufrufe in A14/A19 auf die atomare Operation umgestellt, QR-Scan auf die Kamera-App des Geräts eingegrenzt (A13), Echtzeit-Zusagen in A11/A17 zurückgenommen, OAuth in A2 entfernt. Nachtrag (2026-07-26, Claude Sonnet 5): Druckausgabe in A9 entfernt, da B3 als nicht anwendbar dokumentiert ist. Überarbeitung (2026-07-26, Claude Sonnet 5): Notizen-Spalten von HTTP-Endpunkten und SQL auf die fachliche Ebene umgestellt (F1 ist laut Einleitung IT-unabhängig; die Technik steht in S1/N2); die Dokument- und Daten-Store-Tabellen, die D1 dupliziert und dabei veraltet waren, auf Verweise nach D1/N2 eingedampft; widersprüchliches QR-Format in A8 sowie Spekulationen zu Scheduler und Benachrichtigungen in A15/A17 entfernt. |
