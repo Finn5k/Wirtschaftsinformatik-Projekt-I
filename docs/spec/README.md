@@ -110,6 +110,7 @@ Fachliches, konzeptionelles Datenmodell nach Siedersleben: Entitätstypen, Attri
 **Inhalte**:
 - ER-Diagramm (Mermaid) über 6 Entitätstypen: `profile`, `sport`, `court`, `session`, `participant`, `sport_preference`
 - Attributtabellen je Entität (Typ, Multiplizität, Notiz) mit Verweisen auf D2
+- Initialer Sportarten-Katalog mit `key` und `display_name`
 - Beziehungstabelle B1–B7; Auflösung der n:m-Beziehungen (Teilnahme, Präferenz)
 - Abgeleitete Merkmale (`status`, `confirmed_count`, `qr_content`) statt gepflegter Felder
 - Invarianten (Organisator-als-Teilnehmer, Eindeutigkeit der Teilnahme, Check-in-Kopplung)
@@ -187,12 +188,10 @@ LocalCourt ist ein Greenfield-Projekt (siehe NG-09); es gibt keine Altdaten und 
 
 ---
 
-### **S3 — Inbetriebnahme** 🔄 (geplant)
-**Status**: 🔄 Ausstehend
-**Geplante Inhalte**:
-- Installation und Umgebungseinrichtung
-- Betrieb auf Supabase/Vercel
-- Start- und Betriebsablauf
+### **S3 — Inbetriebnahme** 🔄 (nach der Implementierung)
+**Status**: 🔄 Zurückgestellt bis nach der Implementierung
+
+Installation, Umgebungseinrichtung, Betrieb auf Supabase/Vercel sowie Start- und Betriebsablauf lassen sich erst beschreiben, wenn die Anwendung tatsächlich betrieben wird. S3 wird deshalb bewusst nach der Implementierungsphase gepflegt und ist konsequenterweise auch nicht Teil der in [P1](P1-ziele-rahmenbedingungen.md) CON-O-03 als verpflichtend genannten Bausteine.
 
 ---
 
@@ -221,20 +220,33 @@ Technische Umsetzung der in D1, D2 und F3 bewusst offengelassenen Fragen auf dem
 
 ---
 
-### **E1 — Leseanleitung** 🔄 (geplant)
-**Status**: 🔄 Ausstehend
-**Geplante Inhalte**:
-- Aufbau der Spezifikation und Beziehung der Bausteine zueinander
-- Erläuterung der ID-Schemata (GP-nn, UC-nn, AF-nn, G-nn, NG-nn, DLG-nn)
-- Konventionen für Querverweise
-- Empfohlene Lesereihenfolge je nach Zielgruppe
+### **E1 — Leseanleitung** ✅ (fertig)
+**Status**: ✅ Fertig
+**Datei**: [E1-leseanleitung.md](E1-leseanleitung.md)
+
+Einstieg in die Spezifikation: wie sie aufgebaut ist, in welcher Reihenfolge man sie liest und welche Konventionen durchgängig gelten.
+
+**Inhalte**:
+- Zielgruppen und empfohlene Lesereihenfolge je Zielgruppe
+- Überblick der Bausteingruppen (P, F, D, B, S, N, E) mit ihren Leitfragen
+- Namens- und ID-Konventionen (GP-nn, UC-nn, AF-nn, G-nn, NG-nn, DLG-nn, NB-nn, N1-QA-nn)
+- Diagramm- und Notationskonventionen
+- Querverweise und Traceability von der Anforderung bis zu Code und Test
+- Umgang mit offenen und nicht anwendbaren Bausteinen
+- Konsistenzregeln für die gesamte Spezifikation
 
 ---
 
-### **E2 — Glossar** 🔄 (geplant)
-**Status**: 🔄 Ausstehend
-**Geplante Inhalte**:
-- Einheitliche Begriffe (Session, Teilnahme/Participant, Court/Sportort, Profil, Sportart, Check-in)
+### **E2 — Glossar** ✅ (fertig)
+**Status**: ✅ Fertig
+**Datei**: [E2-glossar.md](E2-glossar.md)
+
+Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Definition, Abgrenzung und Fundstelle.
+
+**Inhalte**:
+- Begriffs- und Schreibkonventionen (deutsche Fachbegriffe, englische Feld- und ID-Namen)
+- Alphabetisches Glossar mit rund 45 Einträgen — fachliche Begriffe (Session, Teilnahme, Court/Sportort, Profil, Sportart, Check-in, Beitritt, Kapazitätsgrenze), Rollen (Teilnehmer, Organisator) und technische Begriffe aus N2/S1 (RPC, RLS, Atomarität, Deep-Link, Ergebniscode)
+- Bewusst abgegrenzte Begriffspaare (Court/Sportort, Use Case/Anwendungsfall, Sport/Sportart) und ausgeschlossene Konzepte (Warteliste)
 
 ---
 
@@ -245,10 +257,11 @@ Technische Umsetzung der in D1, D2 und F3 bewusst offengelassenen Fragen auf dem
 3. **D1/D2 prüfen und pflegen** (✅ vorhanden): Datenmodell und Datentypenverzeichnis aktuell halten
 4. **B1 prüfen und pflegen** (✅ vorhanden): Dialogspezifikation aktuell halten
 5. **S1/N2 prüfen und pflegen** (✅ vorhanden): Schnittstellen der Nachbarsysteme und Querschnittskonzepte aktuell halten
-6. **B2/B3/S2** (✅ als nicht anwendbar dokumentiert)
-7. **S3/E1/E2 ergänzen**: Inbetriebnahme, Leseanleitung, Glossar schreiben
-8. **Architektur nach arc42 erstellen**: Interne Architektur unter `docs/arch/` dokumentieren
+6. **E1/E2 prüfen und pflegen** (✅ vorhanden): Leseanleitung und Glossar aktuell halten
+7. **B2/B3/S2** (✅ als nicht anwendbar dokumentiert)
+8. **Architektur erstellen**: Interne Architektur unter `docs/arch/` dokumentieren
 9. **Anforderungen umsetzen**: Anforderungen aus P1/F1–F3/D1–D2/N1 nachvollziehbar in Architektur, Code und Tests umsetzen
+10. **S3 ergänzen**: Inbetriebnahme nach der Implementierung dokumentieren
 
 ---
 
@@ -283,6 +296,7 @@ Technische Umsetzung der in D1, D2 und F3 bewusst offengelassenen Fragen auf dem
 | 2026-07-19 | Finn Belk, mit Claude-Code-Unterstützung | Prototyp-Screenshots in B1 eingebettet |
 | 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | Konsistenz-Fixes: toter Link in F3.1, P1.4-Widersprüche zu Scope (Bearbeiten/Löschen, Teilnehmerlimit, Profil-Sichtbarkeit) aufgelöst, Terminologie-Nit in F1, B2/B3/S2 final als nicht anwendbar dokumentiert |
 | 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | S1 Nachbarsysteme vollständig ausgearbeitet; N2-Status im Index nachgetragen; tote Anker in D1/N2 korrigiert |
+| 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | F1 auf die fachliche Ebene umgestellt; offene Punkte über alle Bausteine konsolidiert; `profile.city` spezifiziert; E1/E2-Status im Index nachgetragen und S3 auf „nach der Implementierung" gesetzt |
 
 ---
 
