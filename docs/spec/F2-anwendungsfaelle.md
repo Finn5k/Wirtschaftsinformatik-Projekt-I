@@ -115,7 +115,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Anmelde- und Registrierungsansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Sicherheit, Datenschutz, einfache Bedienbarkeit, klare Fehlermeldungen. |
 | Akzeptanzkriterien | Given ein nicht angemeldeter Nutzer, When er gültige Zugangsdaten eingibt, Then ist er angemeldet. Given ungültige Zugangsdaten, When er die Anmeldung absendet, Then bleibt er abgemeldet und erhält eine verständliche Fehlermeldung. |
-| Offene Punkte | Keine. Das Anmeldeverfahren ist festgelegt: E-Mail und Passwort ohne OAuth, ohne E-Mail-Bestätigung und ohne Passwort-Zurücksetzen (siehe [S1.3](S1-nachbarsysteme.md#s13-nb-02--supabase-auth)). |
+| Festlegung | Das Anmeldeverfahren verwendet E-Mail und Passwort ohne OAuth, E-Mail-Bestätigung oder Passwort-Zurücksetzen (siehe [S1.3](S1-nachbarsysteme.md#s13-nb-02--supabase-auth)). |
 
 ### UC-02 — Session suchen
 
@@ -141,7 +141,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Suchformular, Filter, Ergebnisliste, Kartenansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Performance bei Suche, mobile Nutzbarkeit, Graceful Degradation der Karte. |
 | Akzeptanzkriterien | Given Sessions in einer Region, When der Teilnehmer nach dieser Region sucht, Then werden passende zukünftige Sessions angezeigt. Given keine Treffer, When die Suche abgeschlossen ist, Then erscheint eine leere Ergebnisansicht ohne Systemfehler. |
-| Offene Punkte | Keine. Die Ortssuche erfolgt über eine Eingabe des Nutzers, vorbelegt aus `profile.city`; eine automatische Standortermittlung wird bewusst nicht genutzt (S1.6). |
+| Festlegung | Die Ortssuche erfolgt über eine Eingabe des Nutzers, vorbelegt aus `profile.city`; eine automatische Standortermittlung wird bewusst nicht genutzt (S1.6). |
 
 ### UC-03 — Session-Detail ansehen
 
@@ -160,7 +160,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Nachbedingung bei Fehler | Nutzer bleibt in der vorherigen Ansicht oder sieht eine Fehlerseite ohne Änderung an Session-Daten. |
 | Hauptszenario | 1. Nutzer wählt eine Session. 2. LocalCourt lädt die fachlichen Details. 3. LocalCourt zeigt Zeit, Sportart, Court/Sportort, Beschreibung, Kapazität und Status. 4. LocalCourt zeigt abhängig vom Nutzerstatus mögliche Aktionen wie Beitreten oder Check-in. |
 | Alternative Szenarien | Organisator sieht zusätzliche Informationen wie Teilnehmerliste oder Check-in-Status. Abgeschlossene Sessions werden read-only angezeigt. |
-| Ausnahmefälle | Session wurde gelöscht, ist nicht sichtbar oder Daten können nicht geladen werden. |
+| Ausnahmefälle | Session existiert nicht, ist nicht zugreifbar oder Daten können nicht geladen werden. |
 | Fachliche Regeln | Detailansicht darf keine nicht benötigten privaten Profildaten anderer Nutzer anzeigen. Aktionen richten sich nach Status, Rolle und Teilnahmezustand. |
 | Bezug zu F1 | GP-01 A8, A14; GP-02 A11-A12. |
 | Bezug zu Daten | Session, Court, Participant, Profile |
@@ -193,7 +193,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Beitrittsaktion in der Session-Detailansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Konsistenz bei parallelen Beitritten, verständliche Fehler, Datenschutz. |
 | Akzeptanzkriterien | Given eine offene Session mit freier Kapazität, When ein angemeldeter Teilnehmer beitritt, Then ist er Teilnehmer der Session. Given eine volle Session, When ein Teilnehmer beitreten möchte, Then wird kein Beitritt gespeichert und die Session wird als voll erklärt. |
-| Offene Punkte | Keine. Das Verhalten bei gleichzeitigem Beitritt ist in [F3 AF-01](F3-anwendungsfunktionen.md#f33-af-01--beitritts--und-kapazitätsregel) fachlich präzisiert (wer zuerst kommt, keine Überbuchung) und in [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01) technisch umgesetzt. |
+| Festlegung | Das Verhalten bei gleichzeitigem Beitritt ist in [F3 AF-01](F3-anwendungsfunktionen.md#f33-af-01--beitritts--und-kapazitätsregel) fachlich präzisiert (wer zuerst kommt, keine Überbuchung) und in [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01) technisch umgesetzt. |
 
 ### UC-05 — Eigene Sessions anzeigen
 
@@ -245,7 +245,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Session-Erstellformular; siehe B1. |
 | Bezug zu NFR / Qualität | Erstellung soll mit niedriger Einstiegshürde möglich sein; P1 SC-02 nennt unter 2 Minuten als Ziel. |
 | Akzeptanzkriterien | Given ein angemeldeter Organisator mit gültigen Angaben, When er die Erstellung absendet, Then existiert eine geplante Session. Given fehlende Pflichtangaben, Then wird keine Session veröffentlicht und die Eingaben werden erklärt. |
-| Offene Punkte | Umgang mit Session-Serien und späterer Bearbeitung bleibt außerhalb des MVP. |
+| Abgrenzung | Session-Serien und spätere Bearbeitung liegen außerhalb des MVP. |
 
 ### UC-07 — Teilnehmerliste anzeigen
 
@@ -297,7 +297,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Check-in-Ansicht und Bestätigung; siehe B1. |
 | Bezug zu NFR / Qualität | Schnelle mobile Bedienbarkeit, Sicherheit gegen falsche Session-Zuordnung, verständliche Fehlermeldungen. |
 | Akzeptanzkriterien | Given ein beigetretener angemeldeter Teilnehmer und eine aktive Check-in-Phase, When er den gültigen QR-Code nutzt, Then ist er eingecheckt. Given ein ungültiger QR-Code, Then bleibt der Status unverändert und der Nutzer erhält eine Fehlermeldung. |
-| Offene Punkte | Exakter Zeitraum der Check-in-Fähigkeit ist in F3 AF-02/AF-03 festgelegt: Check-in ist nur möglich, solange die Session im Status active ist (Start bis Start + Dauer). |
+| Festlegung | Der Zeitraum der Check-in-Fähigkeit ist in F3 AF-02/AF-03 festgelegt: Check-in ist nur möglich, solange die Session im Status `active` ist (Start bis Start + Dauer). |
 
 ### UC-09 — Check-in per PIN durchführen
 
@@ -323,7 +323,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | PIN-Eingabe und Bestätigung; siehe B1. |
 | Bezug zu NFR / Qualität | Usability als Fallback, Sicherheit, klare Fehlertexte. |
 | Akzeptanzkriterien | Given ein beigetretener angemeldeter Teilnehmer und eine gültige PIN, When er die PIN eingibt, Then ist er eingecheckt. Given eine falsche PIN, Then bleibt der Teilnehmer nicht eingecheckt. |
-| Offene Punkte | Länge und Erzeugungsregel der PIN sind in F3 AF-04 festgelegt: 4-stellige numerische PIN, je Session zufällig erzeugt und pro Session eindeutig geprüft. |
+| Festlegung | Länge und Erzeugungsregel der PIN sind in F3 AF-04 festgelegt: vierstellige numerische PIN, je Session zufällig erzeugt und im Kontext der Session geprüft. |
 
 ### UC-10 — Court / Sportort erfassen oder auswählen
 
@@ -465,5 +465,5 @@ Die stabilen IDs UC-01 bis UC-12 müssen später in Architektur, Tests und Code 
 |---|---|
 | Werkzeug | Codex / ChatGPT |
 | Verwendung | Entwurf, Strukturierung, Formulierung prüfbarer Akzeptanzkriterien und Konsistenzprüfung. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Angleichung an S1 (2026-07-26, Claude Sonnet 5): offene Punkte in UC-01 (Anmeldeverfahren) und UC-10 (Geocoding) geschlossen. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): veraltete Zeilen in UC-02, UC-03, UC-05, UC-07, UC-10 und UC-12 auf den heutigen Stand gebracht und auf den jeweils zuständigen Baustein verwiesen. |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Angleichung an S1 (2026-07-26, Claude Sonnet 5): offene Punkte in UC-01 (Anmeldeverfahren) und UC-10 (Geocoding) geschlossen. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): veraltete Zeilen in UC-02, UC-03, UC-05, UC-07, UC-10 und UC-12 auf den heutigen Stand gebracht und auf den jeweils zuständigen Baustein verwiesen. Aktualisierung (2026-07-28, Codex): Bereits entschiedene oder ausgeschlossene Punkte in UC-01, UC-02, UC-04, UC-06, UC-08 und UC-09 korrekt als Festlegung beziehungsweise Abgrenzung bezeichnet; Löschverweis in UC-03 entfernt. |
 | Fachliche Verantwortung | Bleibt beim Team. |

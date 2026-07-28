@@ -298,6 +298,7 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 | 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | S1 Nachbarsysteme vollständig ausgearbeitet; N2-Status im Index nachgetragen; tote Anker in D1/N2 korrigiert |
 | 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | F1 auf die fachliche Ebene umgestellt; offene Punkte über alle Bausteine konsolidiert; `profile.city` spezifiziert; E1/E2-Status im Index nachgetragen und S3 auf „nach der Implementierung" gesetzt |
 | 2026-07-28 | Chevron Rustler, mit Codex-Unterstützung | Veraltete Status- und Offenheitsformulierungen an bereits getroffene Entscheidungen in S1, N1 und N2 angeglichen |
+| 2026-07-28 | Chevron Rustler, mit Codex-Unterstützung | Eindeutige Konsistenzfehler bei Geolocation, Beitrittsaktion, Löschverweis, F2-/N1-Statuszeilen und Verweisen auf bereits entschiedene Umsetzungsfragen bereinigt |
 
 ---
 

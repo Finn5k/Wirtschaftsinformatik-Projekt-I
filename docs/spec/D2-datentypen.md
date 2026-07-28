@@ -155,11 +155,6 @@ Keine. Alle zuvor hier geführten Punkte sind entschieden:
 | Feldlängen | Bewusst keine Obergrenze; begründet in [N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen). |
 | Maximale Session-Dauer | Bewusst keine Obergrenze, nur die Untergrenze `≥ 1` aus [D2.6](#d26-duration); begründet in [N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen). |
 | Zeittoleranz beim Check-in-Fenster | Keine Toleranz; maßgeblich ist die Serverzeit ([N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen), [N2.10](N2-querschnittskonzepte.md#n210-zeitfenster-und-zeittoleranz-beim-check-in-af-02)). |
-
-Bereits entschieden und daher nicht mehr offen:
-
-| Punkt | Entscheidung |
-|---|---|
 | PIN-Speicherung | Klartext, bewusste Sicherheitsabwägung ([N2.7](N2-querschnittskonzepte.md#n27-pin-erzeugung-und--speicherung-af-04)). |
 | QR-Kodierung | Deep-Link aus `session_id` und `pin`, clientseitig erzeugt, kein gespeichertes Bild ([N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04), [S1.2](S1-nachbarsysteme.md#s12-nb-01--browser-nutzerkanal)). |
 | Identifier-Strategie | UUID v4 für system-vergebene Schlüssel, `profile.user_id` aus Supabase Auth ([N2.9](N2-querschnittskonzepte.md#n29-identifier-strategie)). |
@@ -170,4 +165,4 @@ Bereits entschieden und daher nicht mehr offen:
 |---|---|
 | Werkzeug | Claude Code (Opus 4.8) |
 | Verwendung | Entwurf des D2-Datentypenverzeichnisses: Katalogisierung der trivialen und nicht-trivialen Typen, Definition von Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. |
-| Prüfung | Inhalte wurden gegen [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md) und die Herold-Referenz geprüft und mit dem Team abgestimmt. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Herkunft der Koordinaten in D2.7 festgelegt (Kartenpin statt Geocoding); in D2.11 die inzwischen entschiedenen Punkte (PIN-Speicherung, QR-Kodierung, Identifier-Strategie) von den weiterhin offenen getrennt. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): D2.11 vollständig aufgelöst, da Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz in N1.7 als bewusst nicht festgelegt dokumentiert sind. Aktualisierung (2026-07-28, Codex): Frühere N2-Entscheidungsmarker bei Identifiern, Status, PIN und QR-Inhalt durch Verweise auf die inzwischen getroffenen N2-Festlegungen ersetzt. |
+| Prüfung | Inhalte wurden gegen [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md) und die Herold-Referenz geprüft und mit dem Team abgestimmt. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Herkunft der Koordinaten in D2.7 festgelegt (Kartenpin statt Geocoding); in D2.11 die inzwischen entschiedenen Punkte (PIN-Speicherung, QR-Kodierung, Identifier-Strategie) von den weiterhin offenen getrennt. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): D2.11 vollständig aufgelöst, da Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz in N1.7 als bewusst nicht festgelegt dokumentiert sind. Aktualisierung (2026-07-28, Codex): Frühere N2-Entscheidungsmarker bei Identifiern, Status, PIN und QR-Inhalt durch Verweise auf die inzwischen getroffenen N2-Festlegungen ersetzt. Konsistenzkorrektur (2026-07-28, Codex): Die zwei redundanten Tabellen entschiedener Punkte in D2.11 zusammengeführt. |
