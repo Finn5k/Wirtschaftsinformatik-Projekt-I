@@ -169,17 +169,9 @@ Profil → Bearbeiten → lokale Ansicht aktualisieren
 ## Offene fachliche und technische Entscheidungen
 
 Diese Dokumentation trifft keine neuen Entscheidungen und führt auch keine
-eigene Liste offener Punkte. Die Fragen, die das Frontend betreffen —
-sichtbare Profildaten in Teilnehmerlisten, Profilbild-Umfang, Sortierung
-und Gruppierung der Session-Listen, endgültige Fehlertexte und das
-Verhalten bei Court-Dubletten — stehen gesammelt in
-[B1.8](spec/B1-dialogspezifikation.md#b18-offene-punkte).
-
-Inzwischen entschieden und daher nicht mehr offen: Authentifizierung
-(E-Mail und Passwort, siehe S1.3), Koordinatenerfassung über einen
-Kartenpin statt eines Geocoding-Dienstes (S1.5), QR-Kodierung als
-Deep-Link (N2.8), Feldlängen und Session-Dauer (bewusst ohne Obergrenze,
-N1.7) sowie Atomarität, Statusführung und Persistenz (N2).
+eigene Liste offener oder bereits entschiedener Punkte. Maßgeblich ist
+[B1.8](spec/B1-dialogspezifikation.md#b18-offene-punkte); technische
+Festlegungen stehen in den dort verlinkten Spezifikationsbausteinen.
 
 ## Referenzen
 
@@ -190,16 +182,10 @@ N1.7) sowie Atomarität, Statusführung und Persistenz (N2).
 - [D2 — Datentypen](spec/D2-datentypen.md)
 - [N1 — Nichtfunktionale Anforderungen](spec/N1-nichtfunktionale-anforderungen.md)
 
-## Versionshistorie
-
-| Datum | Autor | Änderung |
-|---|---|---|
-| 2026-07-16 | ChatGPT / Codex | Dokumentation an den aktuellen UI-Prototyp angeglichen; realisierte Dialoge, Mock-/Persistenzgrenze und verbleibende Abweichungen dokumentiert |
-
 ## Eingesetzte KI-Werkzeuge
 
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | ChatGPT / Codex |
 | Verwendung | Abgleich der Frontend-Dokumentation mit den vorhandenen Routen, Seiten, Komponenten, Mockdaten und Services; Formulierung des aktuellen Realisierungsstands und der verbleibenden Abweichungen. |
-| Prüfung | Angaben wurden gegen `src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/` und die bestehenden Bausteine B1, F2, F3, D1, D2 und N1 geprüft. Es wurden keine fachlichen oder technischen Entscheidungen ergänzt. Nachtrag (2026-07-26, Claude Sonnet 5): zwei Abweichungszeilen korrigiert, die QR-Format und Statusführung noch als offen führten, obwohl sie in AF-04/N2.8 bzw. N2.6 entschieden sind. Aktualisierung (2026-07-28, Codex): Validierungsbedarf an die bewussten Festlegungen und Nicht-Festlegungen aus D2/N1 angeglichen. |
+| Prüfung | Angaben wurden gegen `src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/` und die bestehenden Bausteine B1, F2, F3, D1, D2 und N1 geprüft. Es wurden keine fachlichen oder technischen Entscheidungen ergänzt. Nachtrag (2026-07-26, Claude Sonnet 5): zwei Abweichungszeilen korrigiert, die QR-Format und Statusführung noch als offen führten, obwohl sie in AF-04/N2.8 bzw. N2.6 entschieden sind. Aktualisierung (2026-07-28, Codex): Validierungsbedarf an die bewussten Festlegungen und Nicht-Festlegungen aus D2/N1 angeglichen. Redundanzkorrektur (2026-07-28, Codex): Wiederholung offener und bereits entschiedener Spezifikationspunkte durch einen Verweis auf B1.8 ersetzt. |

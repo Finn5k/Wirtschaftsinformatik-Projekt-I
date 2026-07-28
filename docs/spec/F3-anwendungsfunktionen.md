@@ -252,15 +252,11 @@ Typische fachliche Kette einer organisierten Session:
 
 ## F3.10 Offene Punkte
 
-Keine. Die fachlichen Regeln in AF-01 bis AF-04 sind vollständig; die technischen Fragen, die F3 an N2 verwiesen hatte, sind dort inzwischen entschieden:
-
-| Punkt | Entscheidung |
-|---|---|
-| Atomarität des Beitritts | Prüfung und Anlage in einer unteilbaren serverseitigen Operation ([N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01)). |
-| Zählung der Teilnehmerzahl | Berechnet statt geführt ([N2.5](N2-querschnittskonzepte.md#n25-zählstrategie-confirmed_count)). |
-| Statuspersistenz | Bei jeder Abfrage abgeleitet, kein Scheduler ([N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03)). |
-| PIN-Speicherung und QR-Format | PIN im Klartext ([N2.7](N2-querschnittskonzepte.md#n27-pin-erzeugung-und--speicherung-af-04)), QR-Inhalt als Deep-Link zur Laufzeit gebildet ([N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04)). |
-| Zeittoleranz beim Check-in | Fachlich gilt exakt die Grenze des `active`-Fensters; eine technische Toleranz wird bewusst nicht festgelegt ([N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)). |
+Keine. Die fachlichen Regeln in AF-01 bis AF-04 sind vollständig. Ihre
+technische Umsetzung ist in
+[N2.4–N2.10](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01)
+festgelegt; die Qualitätsabgrenzungen stehen in
+[N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen).
 
 ## F3.11 Eingesetzte KI-Werkzeuge
 
@@ -268,4 +264,4 @@ Keine. Die fachlichen Regeln in AF-01 bis AF-04 sind vollständig; die technisch
 |---|---|
 | Werkzeug | Claude Code |
 | Verwendung | Entwurf des F3-Bausteins, Identifikation der Anwendungsfunktionen aus den offenen Punkten von F2, Formulierung der Regeln, Entscheidungstabellen und Pseudocode-Kerne. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md) und die Herold-Referenz geprüft und manuell abgestimmt; der Warteliste-Scope-Konflikt wurde in P1 (NG-10) aufgelöst und in F2 nachgezogen. Toter Querverweis auf D2 korrigiert (2026-07-26, Claude Sonnet 5). Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): F3.10 aufgelöst, da alle fünf dort geführten Punkte inzwischen in N2 bzw. N1.7 entschieden sind. Aktualisierung (2026-07-28, Codex): Veraltete „Offene Punkte“-Zeilen in AF-01 bis AF-04 durch Verweise auf die bereits festgelegte technische Umsetzung in N1/N2 ersetzt. |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md) und die Herold-Referenz geprüft und manuell abgestimmt; der Warteliste-Scope-Konflikt wurde in P1 (NG-10) aufgelöst und in F2 nachgezogen. Toter Querverweis auf D2 korrigiert (2026-07-26, Claude Sonnet 5). Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): F3.10 aufgelöst, da alle fünf dort geführten Punkte inzwischen in N2 bzw. N1.7 entschieden sind. Aktualisierung (2026-07-28, Codex): Veraltete „Offene Punkte“-Zeilen in AF-01 bis AF-04 durch Verweise auf die bereits festgelegte technische Umsetzung in N1/N2 ersetzt. Redundanzkorrektur (2026-07-28, Codex): Wiederholung dieser technischen Festlegungen in F3.10 durch Verweise auf N1/N2 ersetzt. |

@@ -254,13 +254,9 @@ Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#
 
 Keine offenen Punkte am Datenmodell selbst. Zwei Fragen berühren `profile`-Attribute, sind aber Fragen des Dialogverhaltens und deshalb in [B1.8](B1-dialogspezifikation.md#b18-offene-punkte) geführt: der Umfang der in Teilnehmerlisten sichtbaren Profilfelder (UC-03, UC-07) und der MVP-Umfang von `avatar_url` (UC-12).
 
-Bereits entschieden und daher nicht mehr offen:
-
-| Punkt | Entscheidung |
-|---|---|
-| Zählung `confirmed_count` | Berechnet statt geführt ([N2.5](N2-querschnittskonzepte.md#n25-zählstrategie-confirmed_count)). |
-| Statuspersistenz | Bei jeder Abfrage abgeleitet, kein Scheduler ([N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03)). |
-| Identität `participant` | Eigener `participant_id` plus `UNIQUE (session_id, user_id)` ([N2.3](N2-querschnittskonzepte.md#n23-schlüssel-constraints-und-indizes)). |
+Die technischen Entscheidungen zu Schlüsseln, Zählstrategie und
+Statuspersistenz stehen ausschließlich in
+[N2.3–N2.6](N2-querschnittskonzepte.md#n23-schlüssel-constraints-und-indizes).
 
 ## D1.10 Eingesetzte KI-Werkzeuge
 
@@ -268,4 +264,4 @@ Bereits entschieden und daher nicht mehr offen:
 |---|---|
 | Werkzeug | Claude Code (Opus 4.8) |
 | Verwendung | Entwurf des D1-Bausteins: Ableitung der Entitätstypen, Attribute und Beziehungen aus den „Bezug zu Daten"-Angaben in F2/F3, Erstellung des ER-Diagramms und der Invarianten. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und die Herold-Referenz geprüft und mit dem Team abzustimmen. Richtungsentscheidungen (fachliche Abstraktion, Sportart als Katalog, englische Feldnamen, Mermaid-ER-Diagramm) wurden vorab bestätigt. Nachtrag (2026-07-26, Claude Sonnet 5): initialer Sportarten-Katalog dokumentiert, abgeglichen mit den im Prototyp verwendeten Werten. Nachtrag (2026-07-26, Claude Sonnet 5): `profile.city` als optionales Attribut aufgenommen (Heimatort, Vorbelegung der Ortssuche, für andere Nutzer nicht sichtbar). |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und die Herold-Referenz geprüft und mit dem Team abgestimmt. Richtungsentscheidungen (fachliche Abstraktion, Sportart als Katalog, englische Feldnamen, Mermaid-ER-Diagramm) wurden vorab bestätigt. Nachtrag (2026-07-26, Claude Sonnet 5): initialer Sportarten-Katalog dokumentiert, abgeglichen mit den im Prototyp verwendeten Werten. Nachtrag (2026-07-26, Claude Sonnet 5): `profile.city` als optionales Attribut aufgenommen (Heimatort, Vorbelegung der Ortssuche, für andere Nutzer nicht sichtbar). Redundanzkorrektur (2026-07-28, Codex): Wiederholte N2-Entscheidungen aus D1.9 entfernt und durch einen Verweis ersetzt. |
