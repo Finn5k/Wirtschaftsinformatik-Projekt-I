@@ -7,7 +7,6 @@ Dieser Ordner enthält die systematische Softwarespezifikation des LocalCourt-Pr
 ## Bausteine der Spezifikation
 
 ### **P1 — Ziele und Rahmenbedingungen** ✅ (fertig)
-**Status**: ✅ Fertig
 **Datei**: [P1-ziele-rahmenbedingungen.md](P1-ziele-rahmenbedingungen.md)
 
 Beantwortet die strategischen Fragen:
@@ -27,7 +26,6 @@ Beantwortet die strategischen Fragen:
 ---
 
 ### **P2 — Architekturüberblick** ✅ (fertig)
-**Status**: ✅ Fertig
 **Datei**: [P2-architekturueberblick.md](P2-architekturueberblick.md)
 **Verwandte Datei**: [S1-nachbarsysteme.md](S1-nachbarsysteme.md)
 
@@ -48,7 +46,6 @@ Beschreibt aus Anwendungssicht, wie sich LocalCourt in seine Umgebung einbettet:
 ---
 
 ### **F1 — Geschäftsprozesse** ✅ (fertig)
-**Status**: ✅ Fertig
 **Datei**: [F1-geschaeftsprozesse.md](F1-geschaeftsprozesse.md)
 
 Nach Siedersleben (Kapitel 4.3): Reale (IT-unabhängige) Workflows mit temporaler und logischer Folge von Aktivitäten, durchgeführt von Akteuren (Menschen & IT-Systeme).
@@ -80,7 +77,6 @@ Nach Siedersleben (Kapitel 4.3): Reale (IT-unabhängige) Workflows mit temporale
 ---
 
 ### **F2 — Anwendungsfälle** ✅ (fertig)
-**Status**: ✅ Fertig
 **Datei**: [F2-anwendungsfaelle.md](F2-anwendungsfaelle.md)
 
 Systemunterstützte Interaktionen als stabile Use Cases UC-01 bis UC-12 (Suchen, Detail, Beitreten, Erstellen, Teilnehmer, Check-in, Historie, Profil) mit Use-Case-Diagrammen, detaillierten Spezifikationen, Akzeptanzkriterien und Konsistenzprüfung gegen P1/P2/F1.
@@ -88,7 +84,6 @@ Systemunterstützte Interaktionen als stabile Use Cases UC-01 bis UC-12 (Suchen,
 ---
 
 ### **F3 — Anwendungsfunktionen** ✅ (fertig)
-**Status**: ✅ Fertig
 **Datei**: [F3-anwendungsfunktionen.md](F3-anwendungsfunktionen.md)
 
 Nach Siedersleben: komplexe fachliche Regelwerke außerhalb der Anwendungsfälle. Enthält vier Anwendungsfunktionen mit Regeln, Entscheidungstabellen und Pseudocode-Kernen:
@@ -102,7 +97,6 @@ Schließt die in F2 offen gelassenen Punkte und hält Informatik-Algorithmen (Su
 ---
 
 ### **D1 — Datenmodell** ✅ (fertig)
-**Status**: ✅ Fertig
 **Datei**: [D1-datenmodell.md](D1-datenmodell.md)
 
 Fachliches, konzeptionelles Datenmodell nach Siedersleben: Entitätstypen, Attribute und Beziehungen — unabhängig von der technischen Umsetzung.
@@ -119,7 +113,6 @@ Fachliches, konzeptionelles Datenmodell nach Siedersleben: Entitätstypen, Attri
 ---
 
 ### **D2 — Datentypen (Datentypenverzeichnis)** ✅ (fertig)
-**Status**: ✅ Fertig
 **Datei**: [D2-datentypen.md](D2-datentypen.md)
 
 Fachliches Datentypenverzeichnis: Wertebereiche, Aufzählungen und Validierungsregeln der in D1 verwendeten Typen. Technische Typzuordnung (PostgreSQL) bleibt in N2.
@@ -133,7 +126,6 @@ Fachliches Datentypenverzeichnis: Wertebereiche, Aufzählungen und Validierungsr
 ---
 
 ### **B1 — Dialogspezifikation** ✅ (fertig)
-**Status**: ✅ Fertig
 **Datei**: [B1-dialogspezifikation.md](B1-dialogspezifikation.md)
 
 Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste) und Dynamik (Aktionsliste, Zustände). Normativ für das MVP; der UI-Prototyp dient als Illustration.
@@ -150,21 +142,16 @@ Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste)
 ---
 
 ### **B2 — Batch** ❌ (nicht anwendbar)
-**Status**: ❌ Nicht anwendbar
-
 LocalCourt sieht keine klassischen Batchprozesse (zeitgesteuerte Massenverarbeitung) vor: Der Session-Status wird laut [N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03) bewusst bei jeder Abfrage berechnet statt per Scheduler/Cron gepflegt, gerade um eine zusätzliche Batch-Komponente im Free-Tier zu vermeiden (CON-T-02). Sollte sich dies ändern, wird B2 nachgezogen.
 
 ---
 
 ### **B3 — Druckausgaben** ❌ (nicht anwendbar)
-**Status**: ❌ Nicht anwendbar
-
 LocalCourt sieht keine Druckausgaben vor; der QR-Code für den Check-in wird ausschließlich am Bildschirm angezeigt und gescannt (F1 GP-02, [N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04)). Sollte sich dies ändern, wird B3 nachgezogen.
 
 ---
 
 ### **S1 — Nachbarsysteme (Schnittstellen)** ✅ (fertig)
-**Status**: ✅ Fertig
 **Datei**: [S1-nachbarsysteme.md](S1-nachbarsysteme.md)
 
 Schnittstellen-Contracts je Nachbarsystem: die Operationen, die LocalCourt gegen ein Nachbarsystem auslöst, mit Ein-/Ausgaben, Semantik und Fehlerbehandlung. Das Inventar der Nachbarsysteme liegt in P2.
@@ -182,21 +169,16 @@ Schnittstellen-Contracts je Nachbarsystem: die Operationen, die LocalCourt gegen
 ---
 
 ### **S2 — Datenmigration** ❌ (nicht anwendbar)
-**Status**: ❌ Nicht anwendbar
-
 LocalCourt ist ein Greenfield-Projekt (siehe NG-09); es gibt keine Altdaten und damit keine Migration.
 
 ---
 
 ### **S3 — Inbetriebnahme** 🔄 (nach der Implementierung)
-**Status**: 🔄 Zurückgestellt bis nach der Implementierung
-
 Installation, Umgebungseinrichtung, Betrieb auf Supabase/Vercel sowie Start- und Betriebsablauf lassen sich erst beschreiben, wenn die Anwendung tatsächlich betrieben wird. S3 wird deshalb bewusst nach der Implementierungsphase gepflegt und ist konsequenterweise auch nicht Teil der in [P1](P1-ziele-rahmenbedingungen.md) CON-O-03 als verpflichtend genannten Bausteine.
 
 ---
 
 ### **N1 — Nichtfunktionale Anforderungen** ✅ (fertig)
-**Status**: ✅ Fertig
 **Datei**: [N1-nichtfunktionale-anforderungen.md](N1-nichtfunktionale-anforderungen.md)
 
 **Inhalte**:
@@ -207,7 +189,6 @@ Installation, Umgebungseinrichtung, Betrieb auf Supabase/Vercel sowie Start- und
 ---
 
 ### **N2 — Querschnittskonzepte / Umsetzung** ✅ (fertig)
-**Status**: ✅ Fertig
 **Datei**: [N2-querschnittskonzepte.md](N2-querschnittskonzepte.md)
 
 Technische Umsetzung der in D1, D2 und F3 bewusst offengelassenen Fragen auf dem Technologie-Stack aus P1/P2.
@@ -221,7 +202,6 @@ Technische Umsetzung der in D1, D2 und F3 bewusst offengelassenen Fragen auf dem
 ---
 
 ### **E1 — Leseanleitung** ✅ (fertig)
-**Status**: ✅ Fertig
 **Datei**: [E1-leseanleitung.md](E1-leseanleitung.md)
 
 Einstieg in die Spezifikation: wie sie aufgebaut ist, in welcher Reihenfolge man sie liest und welche Konventionen durchgängig gelten.
@@ -238,7 +218,6 @@ Einstieg in die Spezifikation: wie sie aufgebaut ist, in welcher Reihenfolge man
 ---
 
 ### **E2 — Glossar** ✅ (fertig)
-**Status**: ✅ Fertig
 **Datei**: [E2-glossar.md](E2-glossar.md)
 
 Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Definition, Abgrenzung und Fundstelle.
@@ -299,6 +278,7 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 | 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | F1 auf die fachliche Ebene umgestellt; offene Punkte über alle Bausteine konsolidiert; `profile.city` spezifiziert; E1/E2-Status im Index nachgetragen und S3 auf „nach der Implementierung" gesetzt |
 | 2026-07-28 | Chevron Rustler, mit Codex-Unterstützung | Veraltete Status- und Offenheitsformulierungen an bereits getroffene Entscheidungen in S1, N1 und N2 angeglichen |
 | 2026-07-28 | Chevron Rustler, mit Codex-Unterstützung | Eindeutige Konsistenzfehler bei Geolocation, Beitrittsaktion, Löschverweis, F2-/N1-Statuszeilen und Verweisen auf bereits entschiedene Umsetzungsfragen bereinigt |
+| 2026-07-28 | Chevron Rustler, mit Codex-Unterstützung | Doppelte Statusangaben, Entscheidungstabellen, Frontend-Offenpunktlisten und dezentrale Versionshistorie durch Verweise auf die jeweils maßgeblichen Stellen ersetzt |
 
 ---
 
@@ -317,4 +297,4 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 |---|---|
 | Werkzeug | GitHub Copilot, Claude Code, ChatGPT — soweit im jeweiligen Bearbeitungsschritt verwendet |
 | Verwendung | Strukturierung, Formulierungsvorschläge, Konsistenzprüfung und Pflege des Spezifikationsindex |
-| Prüfung | Inhalte wurden gegen die vorhandenen Spezifikationsbausteine, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Die fachliche Verantwortung bleibt beim Team. Jeder Baustein weist die konkrete KI-Nutzung zusätzlich im eigenen Abschnitt „Eingesetzte KI-Werkzeuge" aus. |
+| Prüfung | Inhalte wurden gegen die vorhandenen Spezifikationsbausteine, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Die fachliche Verantwortung bleibt beim Team. Jeder Baustein weist die konkrete KI-Nutzung zusätzlich im eigenen Abschnitt „Eingesetzte KI-Werkzeuge" aus. Redundanzkorrektur (2026-07-28, Codex): Status im Index nur noch in den Überschriften geführt; wiederholte Entscheidungen und dezentrale Status-/Historienangaben auf ihre maßgeblichen Fundstellen reduziert. |

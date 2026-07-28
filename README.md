@@ -70,15 +70,9 @@ npm run preview  # Produktionsbuild lokal ansehen
 
 ## Dokumentation
 
-Die Spezifikation folgt dem **Siedersleben-Schema**. Einstieg und Baustein-
-Übersicht: [`docs/spec/README.md`](docs/spec/README.md). Fertige Bausteine:
-Ziele & Rahmenbedingungen (P1), Architekturüberblick (P2), Geschäftsprozesse
-(F1), Anwendungsfälle (F2), Anwendungsfunktionen (F3), Datenmodell (D1),
-Datentypenverzeichnis (D2), Dialogspezifikation (B1), Nachbarsysteme (S1),
-nichtfunktionale Anforderungen (N1) und Querschnittskonzepte (N2). Batch (B2),
-Druckausgaben (B3) und Datenmigration (S2) sind als nicht anwendbar
-dokumentiert. Leseanleitung (E1) und Glossar (E2) sind ebenfalls fertig;
-Inbetriebnahme (S3) ist bis nach der Implementierung zurückgestellt.
+Die Spezifikation folgt dem **Siedersleben-Schema**. Der
+[`Spezifikationsindex`](docs/spec/README.md) ist die zentrale Übersicht über
+alle Bausteine und deren aktuellen Bearbeitungsstand.
 
 ## Konventionen
 
