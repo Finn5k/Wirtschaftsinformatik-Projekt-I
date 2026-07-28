@@ -98,7 +98,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Dialoge | DLG-04 (Teilnehmerliste), DLG-07 (Rollenanzeige), DLG-08 (Profil) |
 | Akzeptanzkriterien | Given eine Teilnehmerliste (DLG-04) oder ein Profil (DLG-08), When sie angezeigt werden, Then erscheinen ausschließlich die in D1 definierten Profilfelder und keine Auth-internen Daten (Passwort, Token). Given ein Nutzer verlangt Löschung, When die Anfrage bearbeitet wird, Then werden die zugehörigen `profile`- und `participant`-Daten entfernt oder anonymisiert (Umsetzung: N2). |
 | Prüfmethode | Review der angezeigten Felder je Dialog gegen die Attributliste in D1; Prüfung, dass keine Auth-Rohdaten im Frontend-Code oder in Antworten sichtbar sind. |
-| Offene Punkte | Konkreter Prozess für Recht auf Löschung/Auskunft ist in N2 zu spezifizieren; genauer Umfang sichtbarer Profilfelder in Teilnehmerlisten bleibt laut D1.9/B1.8 offen. |
+| Offene Punkte | Der konkrete Ablauf für Auskunft und Löschung ist in [N2.15](N2-querschnittskonzepte.md#n215-offene-punkte) als offener Punkt geführt. Der Umfang sichtbarer Profilfelder in Teilnehmerlisten liegt bei [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). |
 
 ### N1-QA-05 — Sicherheit
 
@@ -113,7 +113,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Dialoge | DLG-01, DLG-04 (QR/PIN-Anzeige, nur Organisator-Zustand), DLG-06 |
 | Akzeptanzkriterien | Given ein nicht angemeldeter Nutzer, When er eine geschützte Aktion auslöst, Then wird er zu DLG-01 geleitet und die Aktion wird nicht ausgeführt (B1.5.2). Given eine falsche PIN oder ein QR-Code einer anderen Session, When ein Check-in versucht wird, Then bleibt der Teilnahmestatus unverändert (`INVALID_CREDENTIAL`, AF-02). Given das Repository, When es durchsucht wird, Then enthält es keine echten API-Keys, Tokens oder Passwörter. |
 | Prüfmethode | Code-Review der Zugriffsprüfungen gegen F3 AF-01/AF-02; Repository-Scan auf Secrets (z. B. Suche nach typischen Schlüsselmustern, `.env`-Dateien im Git-Verlauf); manuelle Prüfung, dass QR/PIN nur im Organisator-Zustand von DLG-04 sichtbar sind. |
-| Offene Punkte | Ob die PIN gehasht oder im Klartext gespeichert wird, ist laut F3/D2 eine N2-Entscheidung; eine vollständige Security-Audit-Abdeckung ist nicht vorgesehen (siehe [N1.7](#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)). |
+| Offene Punkte | Keine für die Speicherform: Die PIN wird im Klartext gespeichert ([N2.7](N2-querschnittskonzepte.md#n27-pin-erzeugung-und--speicherung-af-04)). Eine vollständige Security-Audit-Abdeckung ist nicht vorgesehen (siehe [N1.7](#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)). |
 
 ### N1-QA-06 — Zuverlässigkeit / Fehlerrobustheit
 
@@ -128,7 +128,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Dialoge | DLG-02, DLG-03 (Fehlerfall Karte), DLG-04, DLG-06 |
 | Akzeptanzkriterien | Given eine Session mit einem letzten freien Platz, When zwei Nutzer nahezu gleichzeitig beitreten, Then wird höchstens einer bestätigt und der andere erhält `SESSION_FULL` (AF-01 R6). Given ein nicht erreichbarer Kartendienst, When DLG-03 geöffnet wird, Then erscheint ein Hinweis mit Verweis auf DLG-02 statt eines Fehlerabbruchs. Given ein wiederholter gültiger Check-in-Versuch, When er erneut ausgeführt wird, Then bleibt der ursprüngliche Check-in-Zeitpunkt erhalten (`ALREADY_CHECKED_IN`, AF-02 R5). |
 | Prüfmethode | Code-Walkthrough der Atomaritäts-Umsetzung gegen den AF-01-Pseudocode; manueller Test der Kartenansicht mit deaktiviertem Kartendienst (z. B. Netzwerksperre in DevTools). |
-| Offene Punkte | Konkrete technische Umsetzung der Atomarität (Transaktion, Constraint) ist laut F3.10 eine N2-Entscheidung und hier nicht vorweggenommen. |
+| Offene Punkte | Keine. Die technische Umsetzung der Atomarität ist in [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01) entschieden (unteilbare serverseitige Operation). |
 
 ### N1-QA-07 — Wartbarkeit
 
@@ -173,7 +173,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Dialoge | DLG-01, DLG-04, DLG-05, DLG-06 |
 | Akzeptanzkriterien | Given ein fachlicher oder technischer Fehler, When er dem Nutzer angezeigt wird, Then enthält der Text keine Stacktraces, SQL-Fehlermeldungen oder interne Kennungen. Given einen Ergebniscode aus AF-01/AF-02 (z. B. `SESSION_FULL`, `OUTSIDE_WINDOW`), When er auftritt, Then zeigt der Dialog den in B1 (DLG-04, DLG-06) hinterlegten verständlichen Text. |
 | Prüfmethode | Manuelle Prüfung der Fehlertexte je Ausnahmefall aus F2 im Browser; Stichprobe der Konsolen-/Serverlogs auf personenbezogene Daten. |
-| Offene Punkte | Endgültige Formulierungen einzelner Fehlertexte sind laut B1.8 noch mit N1/E2 abzustimmen. |
+| Offene Punkte | Endgültige Formulierungen einzelner Fehlertexte liegen bei [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). |
 
 ### N1-QA-10 — Betrieb im Free-/Student-Tier
 
@@ -245,6 +245,9 @@ Folgende Punkte sind bewusst **nicht** Teil der Qualitätsanforderungen von Loca
 | Vollständige Security-Audit-Abdeckung | Kein Budget/Zeitrahmen für ein externes Audit im Hochschulprojekt (P1 CON-O-02); N1-QA-05 beschränkt sich auf grundlegende Zugriffs- und Secret-Prüfung. |
 | Professionelle Monitoring-/Alerting-Pflichten | P2 nennt Monitoring nur als optionale zukünftige Integration (P2.6); im MVP genügen die Provider-eigenen Logs (Supabase, Vercel). |
 | Payment- oder Benachrichtigungsanforderungen | In P1 ausdrücklich ausgeschlossen (NG-01, NG-02); daher auch keine zugehörigen Qualitätsanforderungen (z. B. Zustellzuverlässigkeit von E-Mails). |
+| Feldlängen für `title`, `display_name`, `description` | Es gibt keinen fachlichen Grenzwert, der sich begründen ließe; die Felder werden von Nutzern für Nutzer gefüllt, und eine zu knappe Grenze schadet mehr als sie nützt. Die Datenbank speichert sie ohne feste Längenbegrenzung ([N2.2](N2-querschnittskonzepte.md#n22-technische-typzuordnung)). Sollte sich im Betrieb Missbrauch zeigen, ist eine Obergrenze nachträglich ohne Datenmigration ergänzbar. |
+| Maximale Session-Dauer | Eine Obergrenze hätte im MVP keinen Schutzzweck: Sessions legen Menschen für sich selbst an, eine unrealistische Dauer schadet niemandem außer dem Ersteller. Die Untergrenze `≥ 1` aus [D2.6](D2-datentypen.md#d26-duration) verhindert widersprüchliche Zeitfenster und genügt damit. |
+| Technische Zeittoleranz beim Check-in | Am Rand des `active`-Fensters wird **keine** zusätzliche Toleranz eingeräumt; maßgeblich ist ausschließlich die Serverzeit ([N2.10](N2-querschnittskonzepte.md#n210-zeitfenster-und-zeittoleranz-beim-check-in-af-02)). Eine Toleranz von Sekunden würde die Nutzbarkeit nicht messbar verbessern, aber die Regel aus AF-02 aufweichen. |
 
 ## N1.8 Konsistenzprüfung mit anderen Bausteinen
 
@@ -256,7 +259,7 @@ Folgende Punkte sind bewusst **nicht** Teil der Qualitätsanforderungen von Loca
 | [F2](F2-anwendungsfaelle.md) | „Bezug zu NFR / Qualität" je Use Case ist die direkte Grundlage der Mapping-Tabelle in N1.4. | Konsistent; alle in F2 genannten NFR-Stichworte sind in N1.2/N1.3 aufgegriffen. |
 | [F3](F3-anwendungsfunktionen.md) | Offene Punkte zu Sicherheitsniveau (PIN), Konsistenz bei Parallelzugriff und Zeittoleranz sind direkte Grundlage von N1-QA-05/N1-QA-06. | Konsistent; F3.10-Punkte werden in N1 bewertet, technische Lösung bleibt N2 vorbehalten. |
 | [D1](D1-datenmodell.md) | Datenschutzhinweis zu `profile` (D1.4) und offener Punkt „sichtbare Profilfelder" (D1.9) sind Grundlage von N1-QA-04. | Konsistent; kein neues Datenobjekt eingeführt. |
-| [D2](D2-datentypen.md) | PIN-Sicherheitsniveau (D2.4) und offene Punkte zu Feldlängen (D2.11) sind Grundlage von N1-QA-05 bzw. als offener Punkt referenziert. | Konsistent; Feldlängen bleiben bewusst offen (siehe D2.11, hier nicht neu festgelegt). |
+| [D2](D2-datentypen.md) | PIN-Sicherheitsniveau (D2.4) ist Grundlage von N1-QA-05. | Konsistent; Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz sind in [N1.7](#n17-bewusst-nicht-festgelegte-qualitätsanforderungen) als bewusst nicht festgelegt dokumentiert und damit nicht mehr offen. |
 | [B1](B1-dialogspezifikation.md) | Standard-Fehler-/Ladezustände (B1.5.4) und offene Punkte zu Fehlertexten (B1.8) sind Grundlage von N1-QA-09; Responsive-Hinweis (B1.1) stützt N1-QA-02. | Konsistent; N1 verdoppelt B1.5 nicht, sondern bewertet es als Qualitätsanforderung. |
 | [S1](S1-nachbarsysteme.md) | Fehlerbehandlung der Nachbarsysteme (Rate-Limiting, Tile-Load-Timeout) stützt N1-QA-06/N1-QA-10. | Konsistent; S1 nennt je Nachbarsystem einen Ausfallpfad und verweist für die kontrollierte Degradation auf N1-QA-06. |
 
@@ -276,4 +279,4 @@ Im Review lässt sich damit für jede Qualitätsanforderung erklären: welcher U
 |---|---|
 | Werkzeug | Claude Code / ChatGPT |
 | Verwendung | Entwurf, Strukturierung, Formulierungsvorschläge, Konsistenzprüfung und Akzeptanzkriterien für den N1-Baustein, ausgehend von den bestehenden „Bezug zu NFR / Qualität"-Angaben und offenen Punkten in F2, F3, D1, D2 und B1. |
-| Prüfung | Inhalte wurden gegen P1, P2, F1, F2, F3, D1, D2, B1, S1, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Vor dem Merge erfolgt zusätzlich ein Team-Review. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. Nachtrag (2026-07-26, Claude Sonnet 5): veralteter Hinweis auf S1 als Stub in N1.8 korrigiert. |
+| Prüfung | Inhalte wurden gegen P1, P2, F1, F2, F3, D1, D2, B1, S1, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Vor dem Merge erfolgt zusätzlich ein Team-Review. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. Nachtrag (2026-07-26, Claude Sonnet 5): veralteter Hinweis auf S1 als Stub in N1.8 korrigiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz in N1.7 als bewusst nicht festgelegt aufgenommen und begründet; damit endet der zirkuläre Verweis zwischen D2.11, N1.8 und N2.15. |

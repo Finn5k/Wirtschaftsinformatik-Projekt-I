@@ -148,11 +148,13 @@ Attribut- und Entitätsnamen sind in **englischem `snake_case`** gehalten (konsi
 
 ## D2.11 Offene Punkte
 
-| Punkt | Beschreibung | Zuständiger Baustein |
-|---|---|---|
-| Feldlängen | Konkrete Längen-/Formatgrenzen für `Text`-Felder (`title`, `display_name`, `description`). | N1 / B1 |
-| Maximale Session-Dauer | Fachliche Obergrenze für `Duration`. | N1 / UC-06 |
-| Zeittoleranz beim Check-in-Fenster | Ob am Rand des `active`-Fensters eine technische Toleranz eingeräumt wird. | N1 / N2 |
+Keine. Alle zuvor hier geführten Punkte sind entschieden:
+
+| Punkt | Entscheidung |
+|---|---|
+| Feldlängen | Bewusst keine Obergrenze; begründet in [N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen). |
+| Maximale Session-Dauer | Bewusst keine Obergrenze, nur die Untergrenze `≥ 1` aus [D2.6](#d26-duration); begründet in [N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen). |
+| Zeittoleranz beim Check-in-Fenster | Keine Toleranz; maßgeblich ist die Serverzeit ([N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen), [N2.10](N2-querschnittskonzepte.md#n210-zeitfenster-und-zeittoleranz-beim-check-in-af-02)). |
 
 Bereits entschieden und daher nicht mehr offen:
 
@@ -168,4 +170,4 @@ Bereits entschieden und daher nicht mehr offen:
 |---|---|
 | Werkzeug | Claude Code (Opus 4.8) |
 | Verwendung | Entwurf des D2-Datentypenverzeichnisses: Katalogisierung der trivialen und nicht-trivialen Typen, Definition von Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. |
-| Prüfung | Inhalte wurden gegen [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md) und die Herold-Referenz geprüft und mit dem Team abzustimmen. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Herkunft der Koordinaten in D2.7 festgelegt (Kartenpin statt Geocoding); in D2.11 die inzwischen entschiedenen Punkte (PIN-Speicherung, QR-Kodierung, Identifier-Strategie) von den weiterhin offenen getrennt. |
+| Prüfung | Inhalte wurden gegen [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md) und die Herold-Referenz geprüft und mit dem Team abzustimmen. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Herkunft der Koordinaten in D2.7 festgelegt (Kartenpin statt Geocoding); in D2.11 die inzwischen entschiedenen Punkte (PIN-Speicherung, QR-Kodierung, Identifier-Strategie) von den weiterhin offenen getrennt. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): D2.11 vollständig aufgelöst, da Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz in N1.7 als bewusst nicht festgelegt dokumentiert sind. |

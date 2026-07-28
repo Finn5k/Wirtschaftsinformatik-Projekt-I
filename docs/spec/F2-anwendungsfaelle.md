@@ -141,7 +141,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Suchformular, Filter, Ergebnisliste, Kartenansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Performance bei Suche, mobile Nutzbarkeit, Graceful Degradation der Karte. |
 | Akzeptanzkriterien | Given Sessions in einer Region, When der Teilnehmer nach dieser Region sucht, Then werden passende zukünftige Sessions angezeigt. Given keine Treffer, When die Suche abgeschlossen ist, Then erscheint eine leere Ergebnisansicht ohne Systemfehler. |
-| Offene Punkte | Automatische Standortermittlung bleibt datenschutzsensibel und ist nicht als Pflichtfunktion modelliert. |
+| Offene Punkte | Keine. Die Ortssuche erfolgt über eine Eingabe des Nutzers, vorbelegt aus `profile.city`; eine automatische Standortermittlung wird bewusst nicht genutzt (S1.6). |
 
 ### UC-03 — Session-Detail ansehen
 
@@ -167,7 +167,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Session-Detailansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Datenschutz, Verständlichkeit, mobile Bedienbarkeit. |
 | Akzeptanzkriterien | Given eine sichtbare Session, When der Nutzer sie öffnet, Then werden die Kerndaten angezeigt. Given eine abgeschlossene Session, When sie geöffnet wird, Then sind keine Beitritts- oder Check-in-Aktionen verfügbar. |
-| Offene Punkte | Umfang der sichtbaren Profilinformationen anderer Teilnehmer ist in D1/D2 und B1 zu konkretisieren. |
+| Offene Punkte | Umfang der sichtbaren Profilinformationen anderer Teilnehmer über die freigegebenen Basisfelder hinaus — siehe [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). |
 
 ### UC-04 — Session beitreten
 
@@ -193,7 +193,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Beitrittsaktion in der Session-Detailansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Konsistenz bei parallelen Beitritten, verständliche Fehler, Datenschutz. |
 | Akzeptanzkriterien | Given eine offene Session mit freier Kapazität, When ein angemeldeter Teilnehmer beitritt, Then ist er Teilnehmer der Session. Given eine volle Session, When ein Teilnehmer beitreten möchte, Then wird kein Beitritt gespeichert und die Session wird als voll erklärt. |
-| Offene Punkte | Verhalten bei gleichzeitigem Beitritt mehrerer Nutzer ist in F3 AF-01 fachlich präzisiert (Wer-zuerst-kommt, keine Überbuchung); die technische Umsetzung der Atomarität folgt in D2/N2. |
+| Offene Punkte | Keine. Das Verhalten bei gleichzeitigem Beitritt ist in [F3 AF-01](F3-anwendungsfunktionen.md#f33-af-01--beitritts--und-kapazitätsregel) fachlich präzisiert (wer zuerst kommt, keine Überbuchung) und in [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01) technisch umgesetzt. |
 
 ### UC-05 — Eigene Sessions anzeigen
 
@@ -219,7 +219,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Übersicht "Meine Sessions"; siehe B1. |
 | Bezug zu NFR / Qualität | Übersichtlichkeit, mobile Nutzbarkeit, Performance. |
 | Akzeptanzkriterien | Given ein angemeldeter Nutzer mit beigetretenen Sessions, When er "Meine Sessions" öffnet, Then werden diese Sessions angezeigt. Given keine eigenen Sessions, Then wird ein leerer Zustand angezeigt. |
-| Offene Punkte | Konkrete Sortierung und Gruppierung sind in B1 festzulegen. |
+| Offene Punkte | Konkrete Sortierung und Gruppierung — siehe [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). |
 
 ### UC-06 — Session erstellen
 
@@ -271,7 +271,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Teilnehmerliste in der Session-Detail- oder Organisatoransicht; siehe B1. |
 | Bezug zu NFR / Qualität | Datenschutz, klare Statusanzeige, Aktualität. |
 | Akzeptanzkriterien | Given ein Organisator mit eigener Session, When er die Teilnehmerliste öffnet, Then sieht er die beigetretenen Teilnehmer. Given ein nicht berechtigter Nutzer, Then erhält er keine Teilnehmerliste mit geschützten Daten. |
-| Offene Punkte | Umfang der angezeigten Profildaten ist in D1/D2 und B1 festzulegen. |
+| Offene Punkte | Umfang der angezeigten Profildaten über die freigegebenen Basisfelder hinaus — siehe [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). |
 
 ### UC-08 — Check-in per QR-Code durchführen
 
@@ -349,7 +349,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Court-Auswahl und einfache Erfassungsmaske; siehe B1. |
 | Bezug zu NFR / Qualität | Datenqualität, einfache Bedienbarkeit, Fallback ohne Karte. |
 | Akzeptanzkriterien | Given ein vorhandener Court, When ein Organisator ihn auswählt, Then kann die Session mit diesem Court erstellt werden. Given gültige neue Court-Daten, When der Organisator sie erfasst, Then ist der Court für die Session auswählbar. |
-| Offene Punkte | Dublettenprüfung ist später zu konkretisieren. Ein Geocoding-Dienst wird nicht eingesetzt: Koordinaten entstehen durch das Setzen eines Kartenpins, Ort und Adressangabe sind freie Eingaben (siehe [S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)). |
+| Offene Punkte | Verhalten bei offensichtlichen Court-Dubletten — siehe [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). Ein Geocoding-Dienst wird nicht eingesetzt: Koordinaten entstehen durch das Setzen eines Kartenpins, Ort und Adressangabe sind freie Eingaben (siehe [S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)). |
 
 ### UC-11 — Session-Historie ansehen
 
@@ -401,7 +401,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Profileinstellungen; siehe B1. |
 | Bezug zu NFR / Qualität | Datenschutz, einfache Bedienbarkeit, Datenminimierung. |
 | Akzeptanzkriterien | Given ein angemeldeter Nutzer, When er gültige Profiländerungen speichert, Then werden diese beim erneuten Öffnen angezeigt. Given ungültige Angaben, Then bleibt das bestehende Profil erhalten und der Fehler wird erklärt. |
-| Offene Punkte | Profilbild ist in P1 erwähnt, aber für F1 nicht zentral; MVP-Umfang ist im Team zu bestätigen. |
+| Offene Punkte | MVP-Umfang der Profilbildbearbeitung — siehe [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). |
 
 ## F2.5 Konsistenzprüfung mit F1, P1 und P2
 
@@ -465,5 +465,5 @@ Die stabilen IDs UC-01 bis UC-12 müssen später in Architektur, Tests und Code 
 |---|---|
 | Werkzeug | Codex / ChatGPT |
 | Verwendung | Entwurf, Strukturierung, Formulierung prüfbarer Akzeptanzkriterien und Konsistenzprüfung. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Angleichung an S1 (2026-07-26, Claude Sonnet 5): offene Punkte in UC-01 (Anmeldeverfahren) und UC-10 (Geocoding) geschlossen. |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Angleichung an S1 (2026-07-26, Claude Sonnet 5): offene Punkte in UC-01 (Anmeldeverfahren) und UC-10 (Geocoding) geschlossen. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): veraltete Zeilen in UC-02, UC-03, UC-05, UC-07, UC-10 und UC-12 auf den heutigen Stand gebracht und auf den jeweils zuständigen Baustein verwiesen. |
 | Fachliche Verantwortung | Bleibt beim Team. |

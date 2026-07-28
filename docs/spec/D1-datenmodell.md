@@ -28,6 +28,7 @@ erDiagram
     PROFILE {
         Identifier user_id PK
         Text display_name
+        Text city "0..1"
         Url avatar_url "0..1"
         Timestamp created_at
     }
@@ -94,12 +95,13 @@ erDiagram
 |---|---|---|---|
 | `user_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Primärschlüssel. Entspricht der **externen Auth-Kennung** aus Supabase Auth ([NB-02](P2-architekturueberblick.md#p22-nachbarsysteme)). Der Auth-Nutzer selbst (E-Mail, Passwort, Tokens) gehört zum Nachbarsystem und ist **nicht** Teil dieses Modells. |
 | `display_name` | [`Text`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 1 | Anzeigename in Session-Detail und Teilnehmerliste (UC-03, UC-07). |
+| `city` | [`Text`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 0..1 | Heimatort des Nutzers. Dient als Vorbelegung der Ortssuche (UC-02, B1 DLG-02) und wird anderen Nutzern **nicht** angezeigt. |
 | `avatar_url` | [`Url`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 0..1 | Profilbild (P1 erwähnt, MVP-Umfang laut UC-12 offen). |
 | `created_at` | [`Timestamp`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 1 | Zeitpunkt der Anlage. |
 
 **Assoziationen:** organisiert 0..* `session` (als `organizer_id`); besitzt 0..* `participant` (als `user_id`); bevorzugt 0..* `sport` über `sport_preference`; erfasst optional 0..* `court` (als `created_by`).
 
-**Datenschutz:** Profildaten werden auf MVP-relevante Basisangaben begrenzt (UC-12, [P1](P1-ziele-rahmenbedingungen.md) CON-D-01). Welche Profilfelder anderen Nutzern in Teilnehmerlisten sichtbar sind, ist in UC-03/UC-07 als offener Punkt markiert und in B1 zu konkretisieren.
+**Datenschutz:** Profildaten werden auf MVP-relevante Basisangaben begrenzt (UC-12, [P1](P1-ziele-rahmenbedingungen.md) CON-D-01). Für andere Nutzer sichtbar sind ausschließlich `display_name` und `avatar_url` ([N2.11](N2-querschnittskonzepte.md#n211-row-level-security-rls)); `city` dient nur der eigenen Ortsvorbelegung. Ob darüber hinaus weitere Felder angezeigt werden, ist in [B1.8](B1-dialogspezifikation.md#b18-offene-punkte) offen.
 
 ### `sport` — Sportart (Katalog)
 
@@ -250,13 +252,15 @@ Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#
 
 ## D1.9 Offene Punkte
 
-| Punkt | Beschreibung | Zuständiger Baustein |
-|---|---|---|
-| Sichtbare Profilfelder | Welche `profile`-Attribute anderen Teilnehmern sichtbar sind (UC-03, UC-07). | B1 / N1 |
-| Zählung `confirmed_count` | Berechnet (COUNT) vs. geführtes Feld; beeinflusst AF-01. | N2 |
-| Statuspersistenz | `session.status` abgeleitet bei Abfrage vs. zeitgesteuert materialisiert. | N2 / Architektur |
-| Identität `participant` | Eigener `participant_id` vs. zusammengesetzter Schlüssel (`session_id`, `user_id`). | N2 |
-| Profilbild | MVP-Umfang von `avatar_url` (UC-12). | Team / B1 |
+Keine offenen Punkte am Datenmodell selbst. Zwei Fragen berühren `profile`-Attribute, sind aber Fragen des Dialogverhaltens und deshalb in [B1.8](B1-dialogspezifikation.md#b18-offene-punkte) geführt: der Umfang der in Teilnehmerlisten sichtbaren Profilfelder (UC-03, UC-07) und der MVP-Umfang von `avatar_url` (UC-12).
+
+Bereits entschieden und daher nicht mehr offen:
+
+| Punkt | Entscheidung |
+|---|---|
+| Zählung `confirmed_count` | Berechnet statt geführt ([N2.5](N2-querschnittskonzepte.md#n25-zählstrategie-confirmed_count)). |
+| Statuspersistenz | Bei jeder Abfrage abgeleitet, kein Scheduler ([N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03)). |
+| Identität `participant` | Eigener `participant_id` plus `UNIQUE (session_id, user_id)` ([N2.3](N2-querschnittskonzepte.md#n23-schlüssel-constraints-und-indizes)). |
 
 ## D1.10 Eingesetzte KI-Werkzeuge
 
@@ -264,4 +268,4 @@ Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#
 |---|---|
 | Werkzeug | Claude Code (Opus 4.8) |
 | Verwendung | Entwurf des D1-Bausteins: Ableitung der Entitätstypen, Attribute und Beziehungen aus den „Bezug zu Daten"-Angaben in F2/F3, Erstellung des ER-Diagramms und der Invarianten. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und die Herold-Referenz geprüft und mit dem Team abzustimmen. Richtungsentscheidungen (fachliche Abstraktion, Sportart als Katalog, englische Feldnamen, Mermaid-ER-Diagramm) wurden vorab bestätigt. Nachtrag (2026-07-26, Claude Sonnet 5): initialer Sportarten-Katalog dokumentiert, abgeglichen mit den im Prototyp verwendeten Werten. |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und die Herold-Referenz geprüft und mit dem Team abzustimmen. Richtungsentscheidungen (fachliche Abstraktion, Sportart als Katalog, englische Feldnamen, Mermaid-ER-Diagramm) wurden vorab bestätigt. Nachtrag (2026-07-26, Claude Sonnet 5): initialer Sportarten-Katalog dokumentiert, abgeglichen mit den im Prototyp verwendeten Werten. Nachtrag (2026-07-26, Claude Sonnet 5): `profile.city` als optionales Attribut aufgenommen (Heimatort, Vorbelegung der Ortssuche, für andere Nutzer nicht sichtbar). |

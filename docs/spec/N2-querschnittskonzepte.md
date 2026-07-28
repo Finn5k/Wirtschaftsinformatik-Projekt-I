@@ -17,7 +17,7 @@ Zuordnung der fachlichen Datentypen aus [D2](D2-datentypen.md) zu PostgreSQL-Spa
 | Fachlicher Typ (D2) | PostgreSQL-Typ | Anmerkung |
 |---|---|---|
 | `Identifier` ([D2.2](D2-datentypen.md#d22-identifier)) | `uuid`, Default `gen_random_uuid()` | Siehe [N2.9](#n29-identifier-strategie). `profile.user_id` erhält **keinen** Default, sondern übernimmt die Auth-Kennung aus Supabase Auth (NB-02, D1.4). |
-| `Text` | `text` | Ohne feste `varchar`-Längenbegrenzung im Schema; fachliche Obergrenzen (falls N1 sie festlegt) werden als `CHECK`-Constraint ergänzt, sobald N1 vorliegt (siehe [N2.15](#n215-offene-punkte)). |
+| `Text` | `text` | Ohne feste Längenbegrenzung. [N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen) legt bewusst keine Obergrenzen fest; eine `CHECK`-Beschränkung wäre bei Bedarf nachträglich ohne Datenmigration ergänzbar. |
 | `Integer` | `integer` | Für `max_participants`. |
 | `Boolean` | `boolean` | Aktuell nur intern für das reservierte `cancelled`-Kennzeichen relevant (siehe [N2.6](#n26-statuspersistenz-af-03)). |
 | `Timestamp` | `timestamptz` | UTC-normalisiert (D2.1), konsistent mit AF-03-Zeitvergleichen. |
@@ -191,19 +191,17 @@ Im Rahmen des Free-Tier-Budgets (CON-T-02, CON-T-05) und ohne eigene Backend-Sch
 | [D2](D2-datentypen.md) | Grundlage für die Typzuordnung ([N2.2](#n22-technische-typzuordnung)) und PIN-Sicherheitsabwägung ([N2.7](#n27-pin-erzeugung-und--speicherung-af-04)). |
 | [S1](S1-nachbarsysteme.md) | N2.11 konkretisiert die dort als offen markierten RLS-Policies für NB-03. |
 | [B1](B1-dialogspezifikation.md) | Sichtbarkeitsregeln für Felder (z. B. PIN, Profildaten) spiegeln sich in den RLS-Policies wider. |
-| N1 | Liefert die nichtfunktionalen Bewertungsgrößen (Zeittoleranz, Feldlängen, Sicherheitsniveau), auf die mehrere N2-Abschnitte verweisen, sobald N1 vorliegt. |
+| [N1](N1-nichtfunktionale-anforderungen.md) | Liefert das Sicherheitsniveau für N2.7 und dokumentiert in N1.7, dass Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz bewusst nicht festgelegt werden. |
 | E2 | Glossar: einheitliche Begriffe, insbesondere für die hier eingeführten technischen Begriffe (RPC, RLS, Atomarität). |
 
 ## N2.15 Offene Punkte
 
 | Punkt | Beschreibung | Zuständiger Baustein |
 |---|---|---|
-| Zeittoleranz beim Check-in | Ob und wie groß eine technische Toleranz am Rand des `active`-Fensters ist (F3.10). | N1 |
-| Feldlängen | Konkrete `CHECK`-Obergrenzen für `Text`-Felder (`title`, `display_name`, `description`), sobald N1 sie definiert (D2.11). | N1 |
-| Maximale Session-Dauer | Fachliche Obergrenze für `duration_min`, aktuell nur mit Untergrenze `≥ 1` abgesichert (D2.6). | N1 / UC-06 |
-| Court-Dubletten | UI-/Datenverhalten bei offensichtlich doppelt erfassten Courts (UC-10), technische Erkennung nicht Teil dieses Bausteins. | N1 / B1 |
-| Sichtbare Profilfelder | Feingranulare RLS-Regeln für einzelne `profile`-Attribute in Teilnehmerlisten, falls über die Basisfelder in N2.11 hinaus Bedarf entsteht (D1.9). | B1 / N1 |
-| Skalierung der Suche | Ob die in N2.3 vorgeschlagenen Indizes bei wachsender Nutzerzahl (SC-04) ausreichen. | N1 / Betrieb |
+| Skalierung der Suche | Ob die in [N2.3](#n23-schlüssel-constraints-und-indizes) vorgeschlagenen Indizes bei wachsender Nutzerzahl (SC-04) ausreichen. Erst im Betrieb mit echten Nutzungsdaten beurteilbar. | N2 |
+| Auskunft und Löschung (DSGVO) | Konkreter Ablauf, mit dem ein Nutzer Auskunft über seine Daten erhält oder deren Löschung verlangt, und welche Datensätze dabei entfernt oder anonymisiert werden. [N1-QA-04](N1-nichtfunktionale-anforderungen.md#n1-qa-04--datenschutz--dsgvo) fordert dies und verweist für die Umsetzung hierher; ein Ablauf ist bisher nicht festgelegt. | N2 |
+
+Nicht mehr hier geführt, weil andernorts entschieden: Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz sind in [N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen) als bewusst nicht festgelegt dokumentiert. Court-Dubletten und der Umfang sichtbarer Profilfelder sind Fragen des Dialogverhaltens und liegen bei [B1.8](B1-dialogspezifikation.md#b18-offene-punkte); die technische Freigabe der Profil-Basisfelder ist in [N2.11](#n211-row-level-security-rls) geregelt.
 
 ## N2.16 Eingesetzte KI-Werkzeuge
 
@@ -211,4 +209,4 @@ Im Rahmen des Free-Tier-Budgets (CON-T-02, CON-T-05) und ohne eigene Backend-Sch
 |---|---|
 | Werkzeug | Claude (Claude Sonnet 5) |
 | Verwendung | Entwurf des N2-Bausteins: Auflösung der in D1, D2 und F3 explizit an N2 verwiesenen offenen Punkte (Typzuordnung, Schlüssel/Constraints, Atomarität des Beitritts, Statuspersistenz, PIN-Speicherung, QR-Inhalt, Identifier-Strategie, RLS, Fehler-Mapping) auf Basis des bestehenden Tech-Stacks (P1 CON-T-01–CON-T-03, P2). |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md) und [S1](S1-nachbarsysteme.md) geprüft; keine über das MVP hinausgehenden Funktionen wurden eingeführt. Mit dem Team abzustimmen, insbesondere die Entscheidungen zur PIN-Klartextspeicherung ([N2.7](#n27-pin-erzeugung-und--speicherung-af-04)) und zur berechneten Statuspersistenz ([N2.6](#n26-statuspersistenz-af-03)). Nachtrag (2026-07-26, Claude Sonnet 5): tote Anker korrigiert, veralteter Hinweis auf ein noch fehlendes N1 entfernt; der in N2.11 unbenannte Erstellungsaufruf ist in [S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) als `create_session` benannt. Nachtrag (2026-07-26, Claude Sonnet 5): Verweis in N2.13 auf eine nicht existierende CI-Pipeline korrigiert. |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md) und [S1](S1-nachbarsysteme.md) geprüft; keine über das MVP hinausgehenden Funktionen wurden eingeführt. Mit dem Team abzustimmen, insbesondere die Entscheidungen zur PIN-Klartextspeicherung ([N2.7](#n27-pin-erzeugung-und--speicherung-af-04)) und zur berechneten Statuspersistenz ([N2.6](#n26-statuspersistenz-af-03)). Nachtrag (2026-07-26, Claude Sonnet 5): tote Anker korrigiert, veralteter Hinweis auf ein noch fehlendes N1 entfernt; der in N2.11 unbenannte Erstellungsaufruf ist in [S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) als `create_session` benannt. Nachtrag (2026-07-26, Claude Sonnet 5): Verweis in N2.13 auf eine nicht existierende CI-Pipeline korrigiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): N2.15 auf den einen verbliebenen technischen Punkt reduziert; Dialogfragen an B1.8 abgegeben. |
