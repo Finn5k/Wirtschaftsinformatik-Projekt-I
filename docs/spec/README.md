@@ -142,7 +142,9 @@ Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste)
 - 8 Dialoge: Anmelden, Entdecken (Liste), Karte, Session-Detail (zustandsabhängig), Session erstellen, Check-in (QR/PIN-Zustände), Meine Sessions (bevorstehend/vergangen), Profil
 - Feldlisten mit Datentyp (D2), Datenmodell-Bezug (D1), Vorbelegung, Muss/Kann, Prüfung
 - Standard-Benutzeraktionen (Navigation, Validierung, Fehler-/Leerzustände) einmal zentral
-- Abweichungen des Prototyps: Nicht-MVP-Elemente (XP/Level, Events, Skins) und fehlende MVP-Dialoge
+- Prototyp-Screenshots je Dialog (illustrativ, nicht bindend für das visuelle Design)
+- Abgleich mit dem aktuellen Frontend: alle acht Dialoge sind im UI-Prototyp realisiert, aber noch ohne Backend beziehungsweise Persistenz
+- Verbleibende Abweichungen, insbesondere Authentifizierung, Zugriffsschutz, Persistenz, echte QR-Verarbeitung und API-Fehlerzustände
 
 ---
 
@@ -254,6 +256,7 @@ Technische Umsetzung der in D1, D2 und F3 bewusst offengelassenen Fragen auf dem
 
 - **Projekt-Root**: [../../README.md](../../README.md)
 - **Team & Rollen**: [../../TEAMINFO.md](../../TEAMINFO.md)
+- **Frontend-Prototyp**: [../frontend.md](../frontend.md)
 - **Architektur**: `docs/arch/`
 - **Herold-Referenz**: [Herold P1 Example](https://github.com/carstenlucke/herold/blob/main/docs/spec/P1-ziele-rahmenbedingungen.md)
 
@@ -276,6 +279,8 @@ Technische Umsetzung der in D1, D2 und F3 bewusst offengelassenen Fragen auf dem
 | 2026-07-14 | Afrem Aydin, mit KI-Unterstützung | F2 Use-Case-Diagramme und Verweise überarbeitet |
 | 2026-07-14 | Afrem Aydin, mit KI-Unterstützung | N1 Nichtfunktionale Anforderungen ergänzt |
 | 2026-07-14 | Afrem Aydin, mit Claude-Code-/ChatGPT-Unterstützung | Spezifikationsindex aktualisiert: B2/B3/S2/S3/E1 ergänzt, N1-Status korrigiert, veraltete Verweise entfernt |
+| 2026-07-16 | Chevron Rustler, mit Codex-Unterstützung | B1 mit dem Frontend-Prototyp abgeglichen, `docs/frontend.md` überarbeitet, AGENTS.md ergänzt |
+| 2026-07-19 | Finn Belk, mit Claude-Code-Unterstützung | Prototyp-Screenshots in B1 eingebettet |
 | 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | Konsistenz-Fixes: toter Link in F3.1, P1.4-Widersprüche zu Scope (Bearbeiten/Löschen, Teilnehmerlimit, Profil-Sichtbarkeit) aufgelöst, Terminologie-Nit in F1, B2/B3/S2 final als nicht anwendbar dokumentiert |
 | 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | S1 Nachbarsysteme vollständig ausgearbeitet; N2-Status im Index nachgetragen; tote Anker in D1/N2 korrigiert |
 
