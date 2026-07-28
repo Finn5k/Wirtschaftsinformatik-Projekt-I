@@ -77,8 +77,8 @@ Ziele & Rahmenbedingungen (P1), Architekturüberblick (P2), Geschäftsprozesse
 Datentypenverzeichnis (D2), Dialogspezifikation (B1), Nachbarsysteme (S1),
 nichtfunktionale Anforderungen (N1) und Querschnittskonzepte (N2). Batch (B2),
 Druckausgaben (B3) und Datenmigration (S2) sind als nicht anwendbar
-dokumentiert; offen sind Inbetriebnahme (S3), Leseanleitung (E1) und
-Glossar (E2).
+dokumentiert. Leseanleitung (E1) und Glossar (E2) sind ebenfalls fertig;
+Inbetriebnahme (S3) ist bis nach der Implementierung zurückgestellt.
 
 ## Konventionen
 
