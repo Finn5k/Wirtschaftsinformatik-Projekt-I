@@ -4,13 +4,13 @@
 
 Dieser Baustein ist das **Datentypenverzeichnis** von LocalCourt. Er definiert die fachlichen Datentypen, mit denen die Attribute aus [D1](D1-datenmodell.md) belegt sind: ihre Wertform, ihre Wertebereiche, Aufzählungswerte, Gleichheits-/Ordnungssemantik und die fachlichen Validierungsregeln.
 
-Nach Siedersleben beschreibt D2 die Datentypen **fachlich**, nicht technisch. Die Zuordnung zu konkreten PostgreSQL-Spaltentypen (`uuid`, `timestamptz`, `text`, `smallint`, …), zu Constraints, Indizes oder Speicherformaten (z. B. ob eine PIN gehasht abgelegt wird) ist Sache von [N2](#) und der Architektur. D2 legt fest, *welche Werte fachlich gültig sind* und *wie mit ihnen umzugehen ist*; die technische Erzwingung dieser Regeln erfolgt später.
+Nach Siedersleben beschreibt D2 die Datentypen **fachlich**, nicht technisch. Die Zuordnung zu konkreten PostgreSQL-Spaltentypen (`uuid`, `timestamptz`, `text`, `smallint`, …), zu Constraints, Indizes oder Speicherformaten ist Sache von [N2](N2-querschnittskonzepte.md) und der Architektur. D2 legt fest, *welche Werte fachlich gültig sind* und *wie mit ihnen umzugehen ist*; die technische Erzwingung dieser Regeln beschreibt N2.
 
 **Triviale Typen** werden ohne eigene Detailsektion direkt verwendet:
 
 | Typ | Bedeutung | Fachliche Form |
 |---|---|---|
-| `Text` | Zeichenkette | Nicht-leerer, UTF-8-Text mit fachlich begrenzter Länge (Grenzen je Feld in N1/B1). |
+| `Text` | Zeichenkette | Nicht-leerer UTF-8-Text; im MVP gelten keine festen fachlichen Maximallängen ([N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)). |
 | `Integer` | Ganzzahl | Vorzeichenbehaftete Ganzzahl; feldspezifische Wertebereiche siehe unten. |
 | `Boolean` | Wahrheitswert | `true` / `false`. |
 | `Timestamp` | Zeitpunkt | Datum + Uhrzeit mit Zeitzonenbezug (UTC-normalisiert). Grundlage von Zeitvergleichen (AF-03). |
@@ -92,7 +92,7 @@ Teilnahmezustand eines `participant`.
 
 **Wertform:** Eine Zeitspanne als **positive Ganzzahl in Minuten** (`Integer`, Einheit Minuten). Die Einheit ist fachlich fixiert (Minuten), damit `start_at + duration_min` das Session-Ende eindeutig bestimmt (AF-03).
 
-**Wertebereich:** ≥ 1 Minute. Eine fachliche Obergrenze (z. B. maximale Session-Dauer) wird in N1/UC-06 präzisiert und hier nicht festgelegt.
+**Wertebereich:** ≥ 1 Minute. Eine fachliche Obergrenze ist für das MVP bewusst nicht festgelegt ([N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)).
 
 **Gleichheit & Ordnung:** Numerischer Vergleich; kleinere Werte bedeuten kürzere Sessions.
 
@@ -157,6 +157,6 @@ die technischen Entscheidungen zu PIN, QR-Inhalt und Identifiern in
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | Claude Code (Opus 4.8) |
-| Verwendung | Entwurf des D2-Datentypenverzeichnisses: Katalogisierung der trivialen und nicht-trivialen Typen, Definition von Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. |
+| Werkzeug | Claude Code (Opus 4.8) / Codex |
+| Verwendung | Entwurf des D2-Datentypenverzeichnisses: Katalogisierung der trivialen und nicht-trivialen Typen, Definition von Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. Codex glich am 2026-07-28 die Beschreibungen von Textlängen und Sessiondauer an die bereits getroffenen Festlegungen in N1 an und korrigierte den N2-Verweis. |
 | Prüfung | Inhalte wurden gegen [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md) und die Herold-Referenz geprüft und mit dem Team abgestimmt. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Herkunft der Koordinaten in D2.7 festgelegt (Kartenpin statt Geocoding). Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): D2.11 vollständig aufgelöst, da Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz in N1.7 als bewusst nicht festgelegt dokumentiert sind. Aktualisierung (2026-07-28, Codex): Frühere N2-Entscheidungsmarker bei Identifiern, Status, PIN und QR-Inhalt durch Verweise auf die inzwischen getroffenen N2-Festlegungen ersetzt. Redundanzkorrektur (2026-07-28, Codex): Wiederholung der Festlegungen aus N1/N2 in D2.11 durch maßgebliche Verweise ersetzt. |

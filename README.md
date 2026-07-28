@@ -40,7 +40,8 @@ Wartelisten, Ratings, Zahlungen, native Apps. Details in
 | Tooling | ESLint, npm |
 
 > Backend/Persistenz sind spezifiziert, aber noch nicht im Code verdrahtet.
-> Verbindlich festgelegt wird der Stack in der Architekturbeschreibung.
+> Der verbindliche Stack ist in
+> [P2 — Architekturüberblick](docs/spec/P2-architekturueberblick.md) beschrieben.
 
 ## Schnellstart
 

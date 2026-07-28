@@ -134,8 +134,8 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Nachbedingung bei Fehler | Keine Suchergebnisse werden als gültig übernommen; Nutzer erhält eine Fehlermeldung oder eine textuelle Fallback-Ansicht. |
 | Hauptszenario | 1. Teilnehmer öffnet die Suche. 2. Teilnehmer gibt Ort/Region ein. 3. Teilnehmer wählt optional eine Sportart oder "Alle Sportarten". 4. LocalCourt zeigt passende zukünftige Sessions. 5. LocalCourt zeigt, soweit möglich, Court-Positionen auf einer Karte. |
 | Alternative Szenarien | Ohne Sportartfilter werden Sessions mehrerer Sportarten angezeigt. Bei fehlender Karte bleibt die Listenansicht nutzbar. |
-| Ausnahmefälle | Ort nicht gefunden, keine Sessions vorhanden, Kartendienst nicht verfügbar oder Netzwerkfehler. |
-| Fachliche Regeln | Standardmäßig werden nur zukünftige oder aktive, öffentlich auffindbare Sessions angezeigt. Abgeschlossene Sessions gehören in UC-11. |
+| Ausnahmefälle | Keine passenden Sessions vorhanden, Kartendienst nicht verfügbar oder Netzwerkfehler. |
+| Fachliche Regeln | Standardmäßig werden nur zukünftige oder aktive Sessions angezeigt. Abgeschlossene Sessions gehören in UC-11. |
 | Bezug zu F1 | GP-01 A2-A7; GP-03 A1-A7. |
 | Bezug zu Daten | Session, Court, Sportart, Participant-Zählung |
 | Bezug zu Benutzerschnittstelle | Suchformular, Filter, Ergebnisliste, Kartenansicht; siehe B1. |
@@ -448,8 +448,8 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | [B1](B1-dialogspezifikation.md) | Konkretisiert die Dialoge für Suche, Detailansicht, Erstellung, Check-in, Profil und Historie. |
 | [S1](S1-nachbarsysteme.md) | Nachbarsysteme und Schnittstellendetails zu Browser, Supabase Auth, Supabase PostgREST und OpenStreetMap/Leaflet. |
 | [N1](N1-nichtfunktionale-anforderungen.md) | Konkretisiert Qualitätsanforderungen wie Usability, Datenschutz, Performance, Sicherheit und Free-/Student-Tier-Betrieb. |
-| N2 | Geplant: technische Umsetzung der nichtfunktionalen Anforderungen, Tests, Monitoring und Sicherheitsmaßnahmen. |
-| E2 | Geplant: Glossar und Begriffsklärungen, insbesondere konsistente Begriffe wie Session, Court/Sportort, Participant/Teilnehmer, Profile/Profil und Check-in. |
+| [N2](N2-querschnittskonzepte.md) | Technische Umsetzung der nichtfunktionalen Anforderungen, Tests, Monitoring und Sicherheitsmaßnahmen. |
+| [E2](E2-glossar.md) | Glossar und Begriffsklärungen, insbesondere konsistente Begriffe wie Session, Court/Sportort, Participant/Teilnehmer, Profile/Profil und Check-in. |
 
 ## F2.8 Zusammenfassung
 
@@ -464,6 +464,6 @@ Die stabilen IDs UC-01 bis UC-12 müssen später in Architektur, Tests und Code 
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Codex / ChatGPT |
-| Verwendung | Entwurf, Strukturierung, Formulierung prüfbarer Akzeptanzkriterien und Konsistenzprüfung. |
+| Verwendung | Entwurf, Strukturierung, Formulierung prüfbarer Akzeptanzkriterien und Konsistenzprüfung; Codex korrigierte am 2026-07-28 veraltete Suchbegriffe und Querverweisstatus. |
 | Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Angleichung an S1 (2026-07-26, Claude Sonnet 5): offene Punkte in UC-01 (Anmeldeverfahren) und UC-10 (Geocoding) geschlossen. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): veraltete Zeilen in UC-02, UC-03, UC-05, UC-07, UC-10 und UC-12 auf den heutigen Stand gebracht und auf den jeweils zuständigen Baustein verwiesen. Aktualisierung (2026-07-28, Codex): Bereits entschiedene oder ausgeschlossene Punkte in UC-01, UC-02, UC-04, UC-06, UC-08 und UC-09 korrekt als Festlegung beziehungsweise Abgrenzung bezeichnet; Löschverweis in UC-03 entfernt. |
 | Fachliche Verantwortung | Bleibt beim Team. |

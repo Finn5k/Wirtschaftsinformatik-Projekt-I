@@ -51,7 +51,7 @@ Indizes dienen ausschließlich der Unterstützung der in [F1](F1-geschaeftsproze
 | Index | Zweck |
 |---|---|
 | `session (court_id, sport_id, start_at)` | Unterstützt die Such-/Filterabfrage aus UC-02 (Ort, Sportart, zukünftige Sessions). |
-| `participant (session_id)` | Unterstützt die Zählung `confirmed_count` ([N2.5](#n25-zählstrategie-confirmed_count)) und die Teilnehmerlisten-Abfrage (UC-03, UC-07). |
+| `participant (session_id)` | Unterstützt die Zählung `confirmed_count` ([N2.5](#n25-zählstrategie-confirmedcount)) und die Teilnehmerlisten-Abfrage (UC-03, UC-07). |
 | `participant (user_id)` | Unterstützt „Meine Sessions" (UC-05, UC-11). |
 | `court (city)` | Unterstützt die Ortssuche, wenn keine Koordinaten vorliegen (Graceful Degradation, D2.7). |
 
@@ -61,13 +61,15 @@ Die konkrete Indexwahl ist eine Performance-Optimierung ohne fachliche Auswirkun
 
 Entscheidet die ursprünglich in [F3 AF-01 Regel 6](F3-anwendungsfunktionen.md#f33-af-01--beitritts--und-kapazitätsregel) und [D1.9](D1-datenmodell.md#d19-offene-punkte) dokumentierte Umsetzungsfrage.
 
-**Entscheidung:** Prüfung freier Plätze und Anlegen der Teilnahme erfolgen in **einer einzigen atomaren PostgreSQL-Funktion** (`SECURITY DEFINER`), die über PostgREST als RPC-Endpoint (`POST /rest/v1/rpc/join_session`) aufgerufen wird, anstatt über ein direktes `INSERT` auf `/rest/v1/participants`. Die Funktion bildet den Pseudocode aus F3.3 exakt ab:
+**Entscheidung:** Prüfung freier Plätze und Anlegen der Teilnahme erfolgen in **einer einzigen atomaren PostgreSQL-Funktion** (`SECURITY DEFINER`), die über PostgREST als RPC-Endpoint (`POST /rest/v1/rpc/join_session`) aufgerufen wird, anstatt über ein direktes `INSERT` auf `/rest/v1/participants`. Der Aufrufer übergibt ausschließlich die Session-ID; die Nutzer-ID wird innerhalb der Funktion aus dem verifizierten JWT über `auth.uid()` bestimmt. Die Funktion bildet den Pseudocode aus F3.3 exakt ab:
 
 ```
-Funktion join_session(p_session_id, p_user_id):
+Funktion join_session(p_session_id):
   innerhalb einer Transaktion (Isolationsstufe: Standard READ COMMITTED
   reicht, da die Kapazitätsprüfung durch Row-Locking auf die Session-Zeile
   serialisiert wird):
+    user_id := auth.uid()
+    wenn user_id fehlt: Aufruf als nicht authentifiziert abbrechen
     session_zeile sperren (SELECT ... FOR UPDATE auf session_id)
     wenn status(session) nicht in {scheduled, active}: gib SESSION_NOT_JOINABLE zurück
     wenn existiert (session_id, user_id) in participant: gib ALREADY_JOINED zurück
@@ -78,6 +80,10 @@ Funktion join_session(p_session_id, p_user_id):
 ```
 
 Das `SELECT ... FOR UPDATE` auf die Session-Zeile serialisiert konkurrierende Beitritte zur selben Session (Regel 6, „wer zuerst kommt"), ohne die `UNIQUE (session_id, user_id)`-Constraint zu ersetzen — diese bleibt als zweite Sicherung gegen Regel 3 (kein Doppelbeitritt) bestehen, falls die Funktion parallel zu einem direkten Insert umgangen würde.
+
+Die Ableitung über `auth.uid()` ist für eine `SECURITY DEFINER`-Funktion zwingend:
+Eine vom Client übergebene Nutzer-ID würde sonst ermöglichen, eine Teilnahme im
+Namen eines anderen Nutzers anzulegen.
 
 **Warum eine DB-Funktion statt Anwendungslogik im Frontend:** Da LocalCourt laut P2 keinen eigenen Anwendungs-Server betreibt (Frontend spricht direkt mit PostgREST), kann die Atomaritätsprüfung nicht in einer Backend-Schicht liegen. Die Alternative — Prüfung im Frontend vor einem `INSERT` — würde die Concurrency-Garantie aus AF-01 Regel 6 nicht erfüllen (Race Condition zwischen Prüfung und Insert). Die PostgreSQL-Funktion ist damit die einzige Stelle, an der Prüfung und Schreiben atomar zusammenfallen.
 
@@ -123,7 +129,7 @@ Entscheidet die ursprünglich in [D2.8](D2-datentypen.md#d28-qrcontent) dokument
 
 **Entscheidung:** Der QR-Inhalt wird **nicht** als eigenständiges Feld materialisiert, sondern clientseitig aus `session_id` und `pin` gebildet, sobald die Session-Detailansicht (B1 DLG-04/DLG-05) geladen ist: `{FRONTEND_ORIGIN}/check-in?session=<session_id>&pin=<pin>` (konzeptionelles Format aus F3 AF-04 Regel 3). Die Bild-Erzeugung (Text → QR-Grafik) erfolgt im Frontend über eine clientseitige QR-Bibliothek (F1 GP-02 nennt eine „QR-Code-Library" als Akteur), ohne Server-Rundtrip.
 
-**Begründung:** Da QR-Inhalt und PIN gemäß AF-04 Regel 4 über die Lebensdauer der Session stabil sind und deterministisch aus zwei bereits vorhandenen Feldern folgen, entfällt der Bedarf, sie redundant zu speichern (vermeidet Inkonsistenz-Risiko, analog zu [N2.5](#n25-zählstrategie-confirmed_count)). Die konkrete Codierung (Query-Parameter-Namen, Basis-URL) ist bewusst minimal gehalten und kann bei Bedarf ohne Datenmigration angepasst werden, da nichts davon persistiert ist.
+**Begründung:** Da QR-Inhalt und PIN gemäß AF-04 Regel 4 über die Lebensdauer der Session stabil sind und deterministisch aus zwei bereits vorhandenen Feldern folgen, entfällt der Bedarf, sie redundant zu speichern (vermeidet Inkonsistenz-Risiko, analog zu [N2.5](#n25-zählstrategie-confirmedcount)). Die konkrete Codierung (Query-Parameter-Namen, Basis-URL) ist bewusst minimal gehalten und kann bei Bedarf ohne Datenmigration angepasst werden, da nichts davon persistiert ist.
 
 ## N2.9 Identifier-Strategie
 
@@ -189,7 +195,7 @@ Im Rahmen des Free-Tier-Budgets (CON-T-02, CON-T-05) und ohne eigene Backend-Sch
 | [F3](F3-anwendungsfunktionen.md) | Jede N2-Entscheidung setzt eine fachliche Regel aus AF-01–AF-04 technisch um; N2 fügt keine neuen Regeln hinzu. |
 | [D1](D1-datenmodell.md) | Grundlage für Schema, Schlüssel und Invarianten ([N2.3](#n23-schlüssel-constraints-und-indizes)). |
 | [D2](D2-datentypen.md) | Grundlage für die Typzuordnung ([N2.2](#n22-technische-typzuordnung)) und PIN-Sicherheitsabwägung ([N2.7](#n27-pin-erzeugung-und--speicherung-af-04)). |
-| [S1](S1-nachbarsysteme.md) | N2.11 konkretisiert die dort als offen markierten RLS-Policies für NB-03. |
+| [S1](S1-nachbarsysteme.md) | N2.11 konkretisiert die Zugriffsregeln und RLS-Policies für NB-03. |
 | [B1](B1-dialogspezifikation.md) | Sichtbarkeitsregeln für Felder (z. B. PIN, Profildaten) spiegeln sich in den RLS-Policies wider. |
 | [N1](N1-nichtfunktionale-anforderungen.md) | Liefert das Sicherheitsniveau für N2.7 und dokumentiert in N1.7, dass Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz bewusst nicht festgelegt werden. |
 | E2 | Glossar: einheitliche Begriffe, insbesondere für die hier eingeführten technischen Begriffe (RPC, RLS, Atomarität). |
@@ -207,6 +213,6 @@ Nicht mehr hier geführt, weil andernorts entschieden: Feldlängen, maximale Ses
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | Claude (Claude Sonnet 5) |
-| Verwendung | Entwurf des N2-Bausteins: Auflösung der in D1, D2 und F3 explizit an N2 verwiesenen offenen Punkte (Typzuordnung, Schlüssel/Constraints, Atomarität des Beitritts, Statuspersistenz, PIN-Speicherung, QR-Inhalt, Identifier-Strategie, RLS, Fehler-Mapping) auf Basis des bestehenden Tech-Stacks (P1 CON-T-01–CON-T-03, P2). |
+| Werkzeug | Claude (Claude Sonnet 5) / Codex |
+| Verwendung | Entwurf des N2-Bausteins: Auflösung der in D1, D2 und F3 explizit an N2 verwiesenen offenen Punkte (Typzuordnung, Schlüssel/Constraints, Atomarität des Beitritts, Statuspersistenz, PIN-Speicherung, QR-Inhalt, Identifier-Strategie, RLS, Fehler-Mapping) auf Basis des bestehenden Tech-Stacks (P1 CON-T-01–CON-T-03, P2). Codex korrigierte am 2026-07-28 defekte interne Sprunglinks, einen veralteten RLS-Statusverweis und die Identitätsableitung der `SECURITY DEFINER`-Funktion. |
 | Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md) und [S1](S1-nachbarsysteme.md) geprüft; keine über das MVP hinausgehenden Funktionen wurden eingeführt. Die Entscheidungen zur PIN-Klartextspeicherung ([N2.7](#n27-pin-erzeugung-und--speicherung-af-04)) und zur berechneten Statuspersistenz ([N2.6](#n26-statuspersistenz-af-03)) sind dokumentiert. Nachtrag (2026-07-26, Claude Sonnet 5): tote Anker korrigiert, veralteter Hinweis auf ein noch fehlendes N1 entfernt; der in N2.11 unbenannte Erstellungsaufruf ist in [S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) als `create_session` benannt. Nachtrag (2026-07-26, Claude Sonnet 5): Verweis in N2.13 auf eine nicht existierende CI-Pipeline korrigiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): Dialogfragen an B1.8 abgegeben. Aktualisierung (2026-07-28, Codex): Veraltete Aussage zur Anzahl der verbleibenden technischen Punkte entfernt; N2.15 führt weiterhin Skalierung der Suche sowie Auskunft und Löschung. Konsistenzkorrektur (2026-07-28, Codex): Verweise auf inzwischen entschiedene D1-/D2-/F3-Fragen als ursprüngliche Umsetzungsfragen formuliert. |
