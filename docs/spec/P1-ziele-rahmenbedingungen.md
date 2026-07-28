@@ -105,7 +105,7 @@ LocalCourt löst das Problem der dezentralisierten Koordination: Heute brauchen 
 | **SC-04** | **System Stability** | System läuft ohne ungeplante Ausfälle im Free-Tier-Budget und hält Last von ~100–500 aktiven Nutzern aus (je nach Provider-Plan). |
 | **SC-05** | **Mobile Usability** | Viewport ≤ 768px: Alle Kernworkflows (Session finden, beitreten, Profile sehen) sind intuitiv und ohne Brüche nutzbar. |
 | **SC-06** | **Team-Acceptance** | Spec, Implementation, QA, und Frontend signalisieren Zufriedenheit mit Feature-Vollständigkeit und Codequalität. |
-| **SC-07** | **Deployment Automation** | Deployment auf Production erfolgt automatisiert via GitHub Actions / CI-Pipeline. Manuelle SSH-Steps nicht erforderlich. |
+| **SC-07** | **Deployment Automation** | Deployment auf Production erfolgt automatisiert über die Git-Integration von Vercel: Ein Push auf `main` löst Build und Veröffentlichung aus, reine Dokumentationsänderungen werden übersprungen. Keine manuellen Deployment-Schritte. Eine darüber hinausgehende CI-Pipeline für Lint und Tests ist im MVP nicht eingerichtet. |
 
 ---
 
@@ -131,5 +131,5 @@ Die Mission wird unter klaren Budget-, Technologie-, und zeitlichen Constraints 
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | GitHub Copilot / Claude Code |
-| Verwendung | Entwurf des P1-Bausteins: Mission, Geschäftsziele, Stakeholder, Scope, Rahmenbedingungen und Erfolgskriterien. Claude Code (Claude Sonnet 5) zudem für zwei Konsistenz-Durchgänge (2026-07-26): Scope-Widersprüche zu F2/F3/D1/B1 in P1.4 (Bearbeiten/Löschen, Teilnehmerlimit-Platzhalter, Profil-Sichtbarkeit) aufgelöst; Authentifizierung auf E-Mail und Passwort festgelegt (OAuth aus dem MVP-Scope und aus CON-D-03 entfernt, siehe S1.3). |
+| Verwendung | Entwurf des P1-Bausteins: Mission, Geschäftsziele, Stakeholder, Scope, Rahmenbedingungen und Erfolgskriterien. Claude Code (Claude Sonnet 5) zudem für zwei Konsistenz-Durchgänge (2026-07-26): Scope-Widersprüche zu F2/F3/D1/B1 in P1.4 (Bearbeiten/Löschen, Teilnehmerlimit-Platzhalter, Profil-Sichtbarkeit) aufgelöst; Authentifizierung auf E-Mail und Passwort festgelegt (OAuth aus dem MVP-Scope und aus CON-D-03 entfernt, siehe S1.3); SC-07 auf das tatsächlich eingesetzte Deployment über die Git-Integration von Vercel korrigiert. |
 | Prüfung | Inhalte wurden gegen die Projektidee, [TEAMINFO](../../TEAMINFO.md), bestehende Spezifikationsbausteine, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. |

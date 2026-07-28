@@ -154,7 +154,7 @@ Zeitliche und logische Reihenfolge.
 | A6 | LocalCourt speichert Session in PostgreSQL | LocalCourt → PostgreSQL | INSERT INTO sessions (...). Auto-generated: id, created_at, status='scheduled'. |
 | A7 | LocalCourt auto-fügt Organisator als Participant hinzu | LocalCourt → PostgreSQL | INSERT INTO participants { session_id, user_id=organizer_id, status='confirmed', joined_at=NOW() }. |
 | A8 | Frontend zeigt QR-Code & PIN | Browser (UI) | QR-Code generiert im Frontend (qrcode.js) mit Format: "session_<id>_pin_<pin>". 4-stellige PIN (zufällig). |
-| A9 | Organisator speichert / druckt QR-Code + PIN | Organizer | Kann für physisches Sharing genutzt werden (ausdrucken für Treffpunkt). |
+| A9 | Organisator hält QR-Code + PIN für den Treffpunkt bereit | Organizer | Anzeige am Bildschirm; es gibt keine Druckausgabe (siehe Spezifikationsindex, Baustein B3). |
 | **Vor Session-Start** | | | |
 | A10 | Potenzielle Teilnehmer öffnen LocalCourt (GP-01: Suche & Beitreten) | Participant, Browser, LocalCourt | Sessions sind für alle sichtbar (public discovery). Participants treten bei. |
 | A11 | Organisator sieht die wachsende Teilnehmer-Liste | Organizer, Browser → LocalCourt | Teilnehmerliste wird beim Aufruf bzw. Neuladen gelesen (kein Echtzeit-Kanal, S1.6). |
@@ -347,4 +347,4 @@ Jeder Prozess besteht aus **Akteuren** (Mensch & IT), **Aktivitäten** (zeitlich
 |---|---|
 | Werkzeug | GitHub Copilot, Claude (Claude Code) |
 | Verwendung | Entwurf der Geschäftsprozesse (GP-01–GP-03), Aktivitäten, Dokumente, Daten-Stores und Ablaufdiagramme. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Ablaufdiagramme auf Mermaid, Korrektur halluzinierter Querverweise) mit Claude Code (Opus 4.8). Terminologie-Fix (2026-07-26, Claude Sonnet 5): Teilnehmerstatus in A17 von "joined" auf "confirmed" korrigiert (konsistent mit D2.5/N2-Enum). Angleichung an S1 (2026-07-26, Claude Sonnet 5): Check-in-Aufrufe in A14/A19 auf die atomare Operation umgestellt, QR-Scan auf die Kamera-App des Geräts eingegrenzt (A13), Echtzeit-Zusagen in A11/A17 zurückgenommen, OAuth in A2 entfernt. |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Ablaufdiagramme auf Mermaid, Korrektur halluzinierter Querverweise) mit Claude Code (Opus 4.8). Terminologie-Fix (2026-07-26, Claude Sonnet 5): Teilnehmerstatus in A17 von "joined" auf "confirmed" korrigiert (konsistent mit D2.5/N2-Enum). Angleichung an S1 (2026-07-26, Claude Sonnet 5): Check-in-Aufrufe in A14/A19 auf die atomare Operation umgestellt, QR-Scan auf die Kamera-App des Geräts eingegrenzt (A13), Echtzeit-Zusagen in A11/A17 zurückgenommen, OAuth in A2 entfernt. Nachtrag (2026-07-26, Claude Sonnet 5): Druckausgabe in A9 entfernt, da B3 als nicht anwendbar dokumentiert ist. |

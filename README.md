@@ -63,6 +63,7 @@ npm run preview  # Produktionsbuild lokal ansehen
 │   ├── spec/            # Spezifikation nach Siedersleben (P1, P2, F1–F3, D1, D2, S1, …)
 │   └── frontend.md      # Frontend-Notizen
 ├── CLAUDE.md            # Projektkonventionen (Commits, Branches, Spec-Schema)
+├── AGENTS.md            # Verweis auf CLAUDE.md für weitere KI-Werkzeuge
 ├── TEAMINFO.md          # Team, Rollen, Projektidee
 └── README.md
 ```
@@ -72,8 +73,12 @@ npm run preview  # Produktionsbuild lokal ansehen
 Die Spezifikation folgt dem **Siedersleben-Schema**. Einstieg und Baustein-
 Übersicht: [`docs/spec/README.md`](docs/spec/README.md). Fertige Bausteine:
 Ziele & Rahmenbedingungen (P1), Architekturüberblick (P2), Geschäftsprozesse
-(F1), Anwendungsfälle (F2), Anwendungsfunktionen (F3), Datenmodell (D1) und
-Datentypenverzeichnis (D2).
+(F1), Anwendungsfälle (F2), Anwendungsfunktionen (F3), Datenmodell (D1),
+Datentypenverzeichnis (D2), Dialogspezifikation (B1), Nachbarsysteme (S1),
+nichtfunktionale Anforderungen (N1) und Querschnittskonzepte (N2). Batch (B2),
+Druckausgaben (B3) und Datenmigration (S2) sind als nicht anwendbar
+dokumentiert; offen sind Inbetriebnahme (S3), Leseanleitung (E1) und
+Glossar (E2).
 
 ## Konventionen
 
@@ -96,7 +101,7 @@ Im Projekt werden KI-Werkzeuge zur Unterstützung eingesetzt und offengelegt:
 
 - **ChatGPT / Codex** — Dokumentations- und Spezifikationsentwürfe, Recherche
 - **Claude (Claude Code)** — Spezifikationsentwürfe, Konsistenzprüfung, Recherche
-- **GitHub Copilot** — Dokumentations- und Spezifikationsentwürfe, Code-Vervollständigung in der Implementierung (vorraussichtlich), Recherche
+- **GitHub Copilot** — Dokumentations- und Spezifikationsentwürfe, Code-Vervollständigung in der Implementierung (voraussichtlich), Recherche
 
 Auch das Frontend wird in der Implementierung mit Codex und GitHub Copilot
 umgesetzt.

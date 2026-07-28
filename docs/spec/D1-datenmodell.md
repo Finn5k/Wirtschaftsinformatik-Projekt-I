@@ -113,6 +113,20 @@ erDiagram
 
 **Charakter:** `sport` ist **Referenz-/Stammdaten** (vordefinierter Katalog). Sportarten werden im MVP nicht durch Endnutzer angelegt; die Pflege des Katalogs ist Betrieb/Datenpflege. Diese Modellierung ermöglicht verlässliche Filterung (UC-02) und Präferenzen (UC-12) mit Referenzintegrität.
 
+**Initialer Katalog (MVP):** Der Katalog startet mit sieben Einträgen; er ist erweiterbar, ohne dass sich das Modell ändert.
+
+| `key` | `display_name` |
+|---|---|
+| `running` | Laufen |
+| `cycling` | Radfahren |
+| `football` | Fußball |
+| `basketball` | Basketball |
+| `badminton` | Badminton |
+| `swimming` | Schwimmen |
+| `other` | Sonstiges |
+
+`other` fängt Sportarten ab, die (noch) keinen eigenen Eintrag haben, und hält die Erfassung einer Session damit auch für Randsportarten möglich. In der Suche (UC-02) verhält sich der Eintrag wie jede andere Sportart.
+
 ### `court` — Sportort
 
 | Attribut | Typ | Mult. | Notiz |
@@ -250,4 +264,4 @@ Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#
 |---|---|
 | Werkzeug | Claude Code (Opus 4.8) |
 | Verwendung | Entwurf des D1-Bausteins: Ableitung der Entitätstypen, Attribute und Beziehungen aus den „Bezug zu Daten"-Angaben in F2/F3, Erstellung des ER-Diagramms und der Invarianten. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und die Herold-Referenz geprüft und mit dem Team abzustimmen. Richtungsentscheidungen (fachliche Abstraktion, Sportart als Katalog, englische Feldnamen, Mermaid-ER-Diagramm) wurden vorab bestätigt. |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und die Herold-Referenz geprüft und mit dem Team abzustimmen. Richtungsentscheidungen (fachliche Abstraktion, Sportart als Katalog, englische Feldnamen, Mermaid-ER-Diagramm) wurden vorab bestätigt. Nachtrag (2026-07-26, Claude Sonnet 5): initialer Sportarten-Katalog dokumentiert, abgeglichen mit den im Prototyp verwendeten Werten. |
