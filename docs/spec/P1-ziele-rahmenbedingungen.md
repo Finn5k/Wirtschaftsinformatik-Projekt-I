@@ -71,11 +71,11 @@ LocalCourt löst das Problem der dezentralisierten Koordination: Heute brauchen 
 
 | ID | Constraint | Rationale |
 |----|-----------|-----------|
-| **CON-T-01** | **Datenbank: PostgreSQL nur** | Etabliertes, Free-Tier-fähiges Relationensystem (z.B. Render, Railway, Supabase free tier). Verteilte NoSQL-Systeme nicht im Budget. |
-| **CON-T-02** | **Hosting im Free/Student-Tier** | Budget = 0 EUR. Deployment nur auf kostenlosen Plattformen (Vercel, Render, Railway, Firebase, etc.). Impliziert: Keine Dedicated Server, keine Custom Infra. |
-| **CON-T-03** | **Tech Stack: React, Node.js, TypeScript** | Team hat TypeScript-Kenntnis. Stack ist Free-Tier-kompatibel und hat breite Verfügbarkeit in Student Services. |
+| **CON-T-01** | **Datenbank: PostgreSQL über Supabase** | Etabliertes, Free-Tier-fähiges Relationensystem; verteilte NoSQL-Systeme liegen außerhalb des Budgets. |
+| **CON-T-02** | **Hosting im Free/Student-Tier** | Budget = 0 EUR. Frontend-Deployment über Vercel und Backend-Dienste über Supabase im jeweiligen Free-Tier. Impliziert: keine dedizierten Server und keine eigene Infrastruktur. |
+| **CON-T-03** | **Tech Stack: React und TypeScript; Node.js als Werkzeuglaufzeit** | Das Team verfügt über TypeScript-Kenntnisse. Node.js wird für Build- und Entwicklungswerkzeuge verwendet; eine eigene Node.js-Backend-Schicht ist nicht vorgesehen ([P2](P2-architekturueberblick.md)). |
 | **CON-T-04** | **Responsive Web-UI, kein Native App** | Spart Bundle-Size, Build-Time, App-Store-Approval-Overhead. Ein Codebase für alle Geräte (Desktop, Tablet, Smartphone). |
-| **CON-T-05** | **Maximale Nutzerzahl durch Free-Tier limitiert** | Konkrete Limit je nach Provider (z.B. Supabase: ~500 aktive Nutzer im free plan, Render: ~100 Dyno-Stunden/Monat). System muss diese Grenzen achten und transparent kommunizieren. |
+| **CON-T-05** | **Maximale Nutzerzahl durch Free-Tier limitiert** | Konkrete Grenzen richten sich nach den Free-Tier-Kontingenten von Supabase und Vercel. Das System muss diese Grenzen beachten und transparent kommunizieren. |
 
 ### Organisatorische Constraints
 
@@ -130,6 +130,6 @@ Die Mission wird unter klaren Budget-, Technologie-, und zeitlichen Constraints 
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | GitHub Copilot / Claude Code |
-| Verwendung | Entwurf des P1-Bausteins: Mission, Geschäftsziele, Stakeholder, Scope, Rahmenbedingungen und Erfolgskriterien. Claude Code (Claude Sonnet 5) zudem für zwei Konsistenz-Durchgänge (2026-07-26): Scope-Widersprüche zu F2/F3/D1/B1 in P1.4 (Bearbeiten/Löschen, Teilnehmerlimit-Platzhalter, Profil-Sichtbarkeit) aufgelöst; Authentifizierung auf E-Mail und Passwort festgelegt (OAuth aus dem MVP-Scope und aus CON-D-03 entfernt, siehe S1.3); SC-07 auf das tatsächlich eingesetzte Deployment über die Git-Integration von Vercel korrigiert. |
-| Prüfung | Inhalte wurden gegen die Projektidee, [TEAMINFO](../../TEAMINFO.md), bestehende Spezifikationsbausteine, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. |
+| Werkzeug | GitHub Copilot / Claude Code / Codex |
+| Verwendung | Entwurf des P1-Bausteins: Mission, Geschäftsziele, Stakeholder, Scope, Rahmenbedingungen und Erfolgskriterien. Claude Code (Claude Sonnet 5) zudem für zwei Konsistenz-Durchgänge (2026-07-26): Scope-Widersprüche zu F2/F3/D1/B1 in P1.4 (Bearbeiten/Löschen, Teilnehmerlimit-Platzhalter, Profil-Sichtbarkeit) aufgelöst; Authentifizierung auf E-Mail und Passwort festgelegt (OAuth aus dem MVP-Scope und aus CON-D-03 entfernt, siehe S1.3); SC-07 auf das tatsächlich eingesetzte Deployment über die Git-Integration von Vercel korrigiert. Codex glich am 2026-07-28 die technischen Constraints an den bereits in P2 festgelegten Stack an. |
+| Prüfung | Inhalte wurden gegen die Projektidee, [TEAMINFO](../../TEAMINFO.md), bestehende Spezifikationsbausteine, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Die Stack-Angaben wurden insbesondere mit P2 und der Root-README abgeglichen. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. |

@@ -4,7 +4,7 @@
 
 Dieser Baustein beschreibt das **fachliche Datenmodell** von LocalCourt: die fachlichen Objekte (Entitätstypen), ihre Attribute und ihre Beziehungen zueinander. Er beantwortet die Frage, *welche Daten* das System kennt und *wie sie fachlich zusammenhängen* — unabhängig von der konkreten technischen Umsetzung.
 
-Nach Siedersleben ist D1 ein **fachliches, konzeptionelles Modell**. Es legt Entitätstypen, Attribute und Assoziationen fest, jedoch **nicht** die technische Realisierung. Konkrete Datenbanktabellen, PostgreSQL-Spaltentypen, Primär-/Fremdschlüssel, Indizes, Sperr- und Transaktionsstrategien gehören in [N2](#) und die Architekturbausteine. Die formale Definition der verwendeten **Datentypen und Wertebereiche** erfolgt im zugehörigen Baustein [D2 — Datentypen](D2-datentypen.md).
+Nach Siedersleben ist D1 ein **fachliches, konzeptionelles Modell**. Es legt Entitätstypen, Attribute und Assoziationen fest, jedoch **nicht** die technische Realisierung. Konkrete Datenbanktabellen, PostgreSQL-Spaltentypen, Primär-/Fremdschlüssel, Indizes, Sperr- und Transaktionsstrategien gehören in [N2](N2-querschnittskonzepte.md) und die Architekturbausteine. Die formale Definition der verwendeten **Datentypen und Wertebereiche** erfolgt im zugehörigen Baustein [D2 — Datentypen](D2-datentypen.md).
 
 D1 ist die gemeinsame Referenz für die Datenobjekte, die in [F2](F2-anwendungsfaelle.md) („Bezug zu Daten") und [F3](F3-anwendungsfunktionen.md) („Bezug zu Daten") bereits genannt, aber dort nicht formal definiert wurden. Die Benennung der Entitäten und Attribute erfolgt in **englischem `snake_case`** (konsistent mit den Pseudocode-Kernen in F3 und den Datenflüssen in [P2](P2-architekturueberblick.md)); die Beschreibung bleibt deutsch.
 
@@ -262,6 +262,6 @@ Statuspersistenz stehen ausschließlich in
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | Claude Code (Opus 4.8) |
-| Verwendung | Entwurf des D1-Bausteins: Ableitung der Entitätstypen, Attribute und Beziehungen aus den „Bezug zu Daten"-Angaben in F2/F3, Erstellung des ER-Diagramms und der Invarianten. |
+| Werkzeug | Claude Code (Opus 4.8) / Codex |
+| Verwendung | Entwurf des D1-Bausteins: Ableitung der Entitätstypen, Attribute und Beziehungen aus den „Bezug zu Daten"-Angaben in F2/F3, Erstellung des ER-Diagramms und der Invarianten. Codex korrigierte am 2026-07-28 den veralteten Platzhalterverweis auf N2. |
 | Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und die Herold-Referenz geprüft und mit dem Team abgestimmt. Richtungsentscheidungen (fachliche Abstraktion, Sportart als Katalog, englische Feldnamen, Mermaid-ER-Diagramm) wurden vorab bestätigt. Nachtrag (2026-07-26, Claude Sonnet 5): initialer Sportarten-Katalog dokumentiert, abgeglichen mit den im Prototyp verwendeten Werten. Nachtrag (2026-07-26, Claude Sonnet 5): `profile.city` als optionales Attribut aufgenommen (Heimatort, Vorbelegung der Ortssuche, für andere Nutzer nicht sichtbar). Redundanzkorrektur (2026-07-28, Codex): Wiederholte N2-Entscheidungen aus D1.9 entfernt und durch einen Verweis ersetzt. |
