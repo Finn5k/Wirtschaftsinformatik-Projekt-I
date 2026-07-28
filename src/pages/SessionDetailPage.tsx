@@ -67,13 +67,7 @@ export function SessionDetailPage() {
 
   return (
     <div className="min-h-[780px] bg-white">
-      <div className="relative">
-        <img
-          src={session.imageUrl}
-          alt={session.title}
-          className="h-64 w-full object-cover"
-        />
-
+      <div className="relative h-64 bg-gradient-to-br from-blue-600 to-blue-800">
         <div className="absolute inset-x-0 top-0 p-4">
           <button
             type="button"
@@ -126,7 +120,7 @@ export function SessionDetailPage() {
           </p>
         </section>
 
-        <section className="grid grid-cols-2 gap-3">
+        <section className="grid grid-cols-3 gap-3">
           <InfoCard
             icon={<Calendar size={18} />}
             label="Datum"
@@ -141,11 +135,6 @@ export function SessionDetailPage() {
             icon={<Timer size={18} />}
             label="Dauer"
             value={`${session.durationMin} Min.`}
-          />
-          <InfoCard
-            icon={<MapPin size={18} />}
-            label="Treffpunkt"
-            value={session.meetingPoint}
           />
         </section>
 
