@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { StatusBadge } from "../components/sessions/StatusBadge";
+import { sportTypes } from "../data/sports";
 import { getSessionsBySportType } from "../services/sessionService";
 import type { SportSession, SportType } from "../types/session";
 
@@ -11,12 +12,7 @@ type SessionFilter = "Alle" | SportType;
 
 const filters: SessionFilter[] = [
   "Alle",
-  "Laufen",
-  "Radfahren",
-  "Fußball",
-  "Basketball",
-  "Badminton",
-  "Schwimmen",
+  ...sportTypes,
 ];
 
 const defaultCenter: [number, number] = [50.5841, 8.6784];

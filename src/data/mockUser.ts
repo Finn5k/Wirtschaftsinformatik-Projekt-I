@@ -3,7 +3,7 @@ import type { UserProfile } from "../types/user";
 export const mockUser: UserProfile = {
   id: "current-user",
   name: "Lena Aktiv",
-  city: "Gießen, Deutschland",
+  city: "Gießen",
   email: "lena.aktiv@example.com",
   preferredSports: ["Laufen", "Radfahren", "Fußball"],
   avatarUrl:

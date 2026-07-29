@@ -16,20 +16,13 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 import { Link } from "react-router";
 import { mockCourts } from "../../data/mockCourts";
+import { sportTypes } from "../../data/sports";
+import { getCurrentUser } from "../../services/userService";
 import type { SportType } from "../../types/session";
 
 // Feldliste gemäß B1 DLG-05 (normativ): Sportart, Titel, Beschreibung (Kann),
 // Datum, Uhrzeit, Dauer, Court (Auswahl oder Neuerfassung, UC-10), Teilnehmerlimit.
 // "Empfohlener Rang" und "Sichtbarkeit" sind bewusst entfernt (B1.6, NG-05).
-
-const sports: SportType[] = [
-  "Laufen",
-  "Radfahren",
-  "Fußball",
-  "Basketball",
-  "Badminton",
-  "Schwimmen",
-];
 
 const NEW_COURT_VALUE = "__new__";
 
@@ -52,13 +45,14 @@ function generatePin(): string {
 }
 
 export function CreateSessionForm() {
+  const currentUser = getCurrentUser();
   const [participantLimit, setParticipantLimit] = useState(10);
   const [durationMin, setDurationMin] = useState(60);
   const [createdPin, setCreatedPin] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
 
   const [form, setForm] = useState<FormState>({
-    sportType: "Laufen",
+    sportType: currentUser.preferredSports[0] ?? sportTypes[0],
     title: "",
     description: "",
     date: "",
@@ -84,11 +78,11 @@ export function CreateSessionForm() {
   }
 
   function changeLimit(delta: number) {
-    setParticipantLimit((current) => Math.min(99, Math.max(1, current + delta)));
+    setParticipantLimit((current) => Math.max(1, current + delta));
   }
 
   function changeDuration(delta: number) {
-    setDurationMin((current) => Math.min(480, Math.max(15, current + delta)));
+    setDurationMin((current) => Math.max(1, current + delta));
   }
 
   function validateForm() {
@@ -231,7 +225,7 @@ export function CreateSessionForm() {
         icon={<Zap size={18} />}
         label="Sportart"
         value={form.sportType}
-        options={sports.map((sport) => ({ value: sport, label: sport }))}
+        options={sportTypes.map((sport) => ({ value: sport, label: sport }))}
         onChange={(value) => updateForm("sportType", value)}
       />
 
