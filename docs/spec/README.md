@@ -161,8 +161,9 @@ Schnittstellen-Contracts je Nachbarsystem: die Operationen, die LocalCourt gegen
 - NB-01 Browser als Nutzerkanal (Contract ist B1), inkl. Deep-Link-Einstieg für den Check-in
 - NB-02 Supabase Auth: fünf Operationen, nur E-Mail+Passwort, automatische Profilanlage, Tokenablage
 - NB-03 Supabase PostgREST: Leseoperationen je Use Case, drei atomare Schreiboperationen (`create_session`, `join_session`, `check_in`), einfache Schreibzugriffe
-- NB-04 OpenStreetMap-Kachel-Dienst: Kartenanzeige und Pin-Setzen ohne Geocoding, Attribution und Nutzungsrichtlinie, Ausfallpfad
-- S1.6 bewusst nicht genutzte Schnittstellen (Realtime, Storage, Passwort-Reset, OAuth, Kamera, Geolocation, Geocoding-Dienste)
+- NB-04 OpenStreetMap-Kachel-Dienst: Kartenanzeige und Pin-Setzen, Attribution und Nutzungsrichtlinie, Ausfallpfad
+- NB-05 Nominatim: Reverse-Geocoding des gesetzten Court-Pins zu Ort und optionaler Adresse
+- S1.7 bewusst nicht genutzte Schnittstellen (Realtime, Storage, Passwort-Reset, OAuth, Kamera, Geolocation)
 
 **Ebene:** S1 benennt Operationen und Semantik; konkrete Endpunkt-URLs und Payload-Feldnamen gehören in die Architekturdokumentation (`docs/arch/`).
 
@@ -279,6 +280,7 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 | 2026-07-28 | Chevron Rustler, mit Codex-Unterstützung | Veraltete Status- und Offenheitsformulierungen an bereits getroffene Entscheidungen in S1, N1 und N2 angeglichen |
 | 2026-07-28 | Chevron Rustler, mit Codex-Unterstützung | Eindeutige Konsistenzfehler bei Geolocation, Beitrittsaktion, Löschverweis, F2-/N1-Statuszeilen und Verweisen auf bereits entschiedene Umsetzungsfragen bereinigt |
 | 2026-07-28 | Chevron Rustler, mit Codex-Unterstützung | Doppelte Statusangaben, Entscheidungstabellen, Frontend-Offenpunktlisten und dezentrale Versionshistorie durch Verweise auf die jeweils maßgeblichen Stellen ersetzt |
+| 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Beschlossene MVP-Abgrenzungen zu Session-Änderungen und Profilbildern eingearbeitet, `cancelled` entfernt, Nominatim-Reverse-Geocoding spezifiziert und Check-in-Deep-Link im Prototyp angeglichen |
 
 ---
 

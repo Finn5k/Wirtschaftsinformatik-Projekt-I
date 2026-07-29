@@ -1,6 +1,6 @@
 import { CheckCircle2, Clock, KeyRound, QrCode, XCircle } from "lucide-react";
 import { useState } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { getSessionById } from "../services/sessionService";
 
 // Check-in gemäß B1 DLG-06 (UC-08 QR / UC-09 PIN, Regeln in F3 AF-02).
@@ -8,11 +8,15 @@ import { getSessionById } from "../services/sessionService";
 type CheckInView = "scan" | "pin" | "success";
 
 export function CheckInPage() {
-  const { sessionId } = useParams();
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get("session") ?? undefined;
+  const deepLinkPin = searchParams.get("pin") ?? "";
   const session = getSessionById(sessionId);
 
-  const [view, setView] = useState<CheckInView>("scan");
-  const [pinInput, setPinInput] = useState("");
+  const [view, setView] = useState<CheckInView>(
+    deepLinkPin ? "pin" : "scan",
+  );
+  const [pinInput, setPinInput] = useState(deepLinkPin);
   const [pinError, setPinError] = useState<string | null>(null);
 
   if (!session) {

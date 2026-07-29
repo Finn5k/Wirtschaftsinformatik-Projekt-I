@@ -19,14 +19,13 @@ Zuordnung der fachlichen Datentypen aus [D2](D2-datentypen.md) zu PostgreSQL-Spa
 | `Identifier` ([D2.2](D2-datentypen.md#d22-identifier)) | `uuid`, Default `gen_random_uuid()` | Siehe [N2.9](#n29-identifier-strategie). `profile.user_id` erhält **keinen** Default, sondern übernimmt die Auth-Kennung aus Supabase Auth (NB-02, D1.4). |
 | `Text` | `text` | Ohne feste Längenbegrenzung. [N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen) legt bewusst keine Obergrenzen fest; eine `CHECK`-Beschränkung wäre bei Bedarf nachträglich ohne Datenmigration ergänzbar. |
 | `Integer` | `integer` | Für `max_participants`. |
-| `Boolean` | `boolean` | Aktuell nur intern für das reservierte `cancelled`-Kennzeichen relevant (siehe [N2.6](#n26-statuspersistenz-af-03)). |
 | `Timestamp` | `timestamptz` | UTC-normalisiert (D2.1), konsistent mit AF-03-Zeitvergleichen. |
 | `Url` | `text` | Keine eigene Datenbank-Validierung der URL-Syntax im MVP; Prüfung liegt beim Frontend (B1). |
 | `SessionStatus` ([D2.3](D2-datentypen.md#d23-sessionstatus)) | *kein gespeichertes Feld* | Abgeleiteter Wert, siehe [N2.6](#n26-statuspersistenz-af-03). |
 | `Pin` ([D2.4](D2-datentypen.md#d24-pin)) | `char(4)` | Nur Ziffern; Erzwingung über `CHECK (pin ~ '^[0-9]{4}$')`. Speicherform (Klartext) siehe [N2.7](#n27-pin-erzeugung-und--speicherung-af-04). |
 | `ParticipantStatus` ([D2.5](D2-datentypen.md#d25-participantstatus)) | `text` mit `CHECK (status IN ('confirmed','checked_in'))` | Kein natives PostgreSQL-`enum` (einfachere Erweiterbarkeit ohne `ALTER TYPE`); fachlich gleichwertig zur Enum-Definition in D2.5. |
 | `Duration` ([D2.6](D2-datentypen.md#d26-duration)) | `integer` | Minuten, `CHECK (duration_min >= 1)`. |
-| `GeoCoordinate` ([D2.7](D2-datentypen.md#d27-geocoordinate)) | `double precision` | Für `latitude`/`longitude`; `CHECK`-Constraints für die Wertebereiche (±90/±180) sowie eine kombinierte Prüfung, dass beide Felder gemeinsam gesetzt oder gemeinsam leer sind (D1.4-Invariante). |
+| `GeoCoordinate` ([D2.7](D2-datentypen.md#d27-geocoordinate)) | `double precision` | Für `latitude`/`longitude`; beide `NOT NULL`, mit `CHECK`-Constraints für die Wertebereiche (±90/±180). |
 | `QrContent` ([D2.8](D2-datentypen.md#d28-qrcontent)) | *kein gespeichertes Feld* | Wird aus `session_id` + `pin` zur Laufzeit gebildet, siehe [N2.8](#n28-qr-inhalt-af-04). |
 
 ## N2.3 Schlüssel, Constraints und Indizes
@@ -37,10 +36,16 @@ Technische Realisierung der Entitäten aus [D1.4](D1-datenmodell.md#d14-entität
 |---|---|---|---|
 | `profile` | `user_id` (`uuid`, referenziert Supabase-Auth-Nutzer, kein eigener Default) | — | `display_name` `NOT NULL`. |
 | `sport` | `sport_id` (`uuid`) | — | `key` `UNIQUE, NOT NULL` (Referenzdaten-Katalog, D1.3). |
-| `court` | `court_id` (`uuid`) | `created_by → profile.user_id` (nullable, `ON DELETE SET NULL`) | Kombiniertes `CHECK`: `(latitude IS NULL) = (longitude IS NULL)` (D2.7-Invariante). |
+| `court` | `court_id` (`uuid`) | `created_by → profile.user_id` (nullable, `ON DELETE SET NULL`) | `name`, `city`, `latitude` und `longitude` `NOT NULL`; Wertebereichs-Constraints gemäß D2.7. |
 | `session` | `session_id` (`uuid`) | `organizer_id → profile.user_id`, `sport_id → sport.sport_id`, `court_id → court.court_id` (alle `NOT NULL`, `ON DELETE RESTRICT`) | `CHECK (duration_min >= 1)`, `CHECK (pin ~ '^[0-9]{4}$')`, `CHECK (max_participants >= 1)`. `ON DELETE RESTRICT` verhindert das Löschen referenzierter Sportarten/Courts/Profile, solange Sessions bestehen — im MVP gibt es ohnehin keine Lösch-Funktion für diese Entitäten (F1–F3 kennen keine entsprechenden Anwendungsfälle). |
 | `participant` | `participant_id` (`uuid`) | `session_id → session.session_id`, `user_id → profile.user_id` (beide `NOT NULL`, `ON DELETE CASCADE` auf `session_id`) | `UNIQUE (session_id, user_id)` — technische Umsetzung der D1.4-Invariante „höchstens eine Teilnahme je (session_id, user_id)" und Grundlage der Atomarität in [N2.4](#n24-atomarität-des-beitritts-af-01). `CHECK ((status = 'checked_in') = (checked_in_at IS NOT NULL))` setzt die Check-in-Kopplung aus D1.4 technisch um. |
 | `sport_preference` | zusammengesetzt: `PRIMARY KEY (user_id, sport_id)` | `user_id → profile.user_id`, `sport_id → sport.sport_id` (`ON DELETE CASCADE`) | Kein eigener `Identifier` nötig, da D1.4 die Identität bereits über `(user_id, sport_id)` definiert. |
+
+Bei der Court-Erfassung werden `name`, `city`, `latitude`, `longitude` und die
+optionale `address` erst nach erfolgreichem Reverse-Geocoding gemeinsam an
+`courtAnlegen` übergeben. Dadurch kann auch bei einem Abbruch zwischen Kartenpin
+und Ortsauflösung kein Court mit fehlenden oder widersprüchlichen Ortsdaten
+persistiert werden.
 
 **Zu `participant_id` vs. zusammengesetzter Schlüssel:** Die ursprünglich in [D1.9](D1-datenmodell.md#d19-offene-punkte) geführte Frage ist hier entschieden: Es wird ein eigener `participant_id` (`uuid`) als Primärschlüssel verwendet, zusätzlich zum `UNIQUE (session_id, user_id)`-Constraint. Begründung: PostgREST (NB-03) adressiert Ressourcen einfacher über einen einzelnen Identifier (`PATCH /participants/<id>`, wie in [P2.5 Szenario 3](P2-architekturueberblick.md#p25-kritische-datenflüsse) dargestellt), während die fachliche Eindeutigkeit weiterhin über den `UNIQUE`-Constraint erzwungen wird.
 
@@ -107,8 +112,6 @@ Entscheidet die ursprünglich in [F3 AF-03](F3-anwendungsfunktionen.md#f35-af-03
 
 **Begründung gegen einen zeitgesteuerten Mechanismus (Scheduler/Cron, in F1 A21 als Alternative genannt):** LocalCourt betreibt laut [P2.6](P2-architekturueberblick.md#p26-fehlende--zukünftige-systeme) bewusst keine Message Queue oder Background-Job-Infrastruktur, und ein Cron-gesteuertes Auto-Close würde eine zusätzliche, im Free-Tier zu betreibende Komponente erfordern (CON-T-02). Ein berechneter Status erreicht dieselbe fachliche Wirkung (monotoner, zeitbasierter Übergang, AF-03 Regel 1–3) ohne zusätzliche Infrastruktur und ohne Verzögerung zwischen Zeitablauf und sichtbarem Statuswechsel.
 
-Das reservierte `cancelled`-Kennzeichen ([D2.3](D2-datentypen.md#d23-sessionstatus)) wird als `boolean`-Spalte `is_cancelled` (Default `false`) vorgesehen, obwohl im MVP keine Aktion sie setzt (AF-03 Regel 4) — die Spalte liegt bereit, ohne den Ableitungsausdruck zu verkomplizieren: Ist sie `true`, liefert die Ableitung `cancelled`; sonst gilt die Zeittabelle.
-
 ## N2.7 PIN-Erzeugung und -Speicherung (AF-04)
 
 Entscheidet die ursprünglich in [F3 AF-04](F3-anwendungsfunktionen.md#f36-af-04--pin--und-qr-code-erzeugung) und [D2.4](D2-datentypen.md#d24-pin) dokumentierte Umsetzungsfrage.
@@ -145,7 +148,7 @@ Entscheidet die ursprünglich in [F3 AF-02](F3-anwendungsfunktionen.md#f34-af-02
 
 Die Check-in-Prüfung (AF-02 Regel 4) wird serverseitig als Teil einer weiteren atomaren Funktion (`check_in`, RPC analog zu [N2.4](#n24-atomarität-des-beitritts-af-01)) ausgeführt, die den Status **exakt** nach der Ableitungstabelle aus AF-03/[N2.6](#n26-statuspersistenz-af-03) prüft — d. h. `active` bedeutet `start_at ≤ now() < start_at + duration_min`. Eine Client-Zeit wird dabei nie als Vertrauensbasis verwendet; maßgeblich ist ausschließlich `now()` der Datenbank, um eine Manipulation über die Client-Uhr auszuschließen.
 
-**Offen:** Ob am Rand dieses Fensters eine kleine technische Toleranz (z. B. wenige Sekunden) eingeräumt wird, um Netzwerklatenz zwischen Klick und Server-Zeitstempel abzufedern, ist eine nichtfunktionale Abwägung, die erst mit N1 sinnvoll beziffert werden kann (siehe [N2.15](#n215-offene-punkte)). Fachlich gilt bis dahin exakt die Grenze `active`, wie in F3 AF-02 festgelegt.
+Am Rand dieses Fensters wird keine zusätzliche technische Toleranz eingeräumt. Damit entspricht die Umsetzung der Festlegung aus [N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen): Fachlich und technisch gilt exakt die Grenze `active`.
 
 ## N2.11 Row-Level-Security (RLS)
 
@@ -156,7 +159,7 @@ Konkretisiert die Zugriffsregeln für NB-03 ([S1.4](S1-nachbarsysteme.md#s14-nb-
 | `session` | Lesbar für alle angemeldeten Nutzer (Discovery, UC-02); kein Schreibzugriff außer über die Erstellungs-RPC. | UC-02, UC-06 |
 | `session.pin` (Spalten-Ebene) | Nur für `organizer_id = auth.uid()` oder Nutzer mit `participant`-Eintrag (`status ∈ {confirmed, checked_in}`) für diese Session sichtbar. | AF-02, AF-04, [N2.7](#n27-pin-erzeugung-und--speicherung-af-04) |
 | `participant` | Lesbar für `organizer_id` der zugehörigen Session (Teilnehmerliste, UC-07) und für den Nutzer selbst (`user_id = auth.uid()`, UC-05, UC-11). Schreibzugriff ausschließlich über die `join_session`/`check_in`-RPCs, nicht über direkte `INSERT`/`UPDATE`. | AF-01, AF-02, UC-04, UC-07, UC-08, UC-09 |
-| `profile` | Basisfelder (`display_name`, `avatar_url`) für alle angemeldeten Nutzer lesbar (Teilnehmerliste, UC-03/UC-07); Schreibzugriff nur für `user_id = auth.uid()`. | UC-12, D1.4 „Datenschutz" |
+| `profile` | Basisfelder (`display_name`, `avatar_url`) für alle angemeldeten Nutzer lesbar (Teilnehmerliste, UC-03/UC-07); `display_name` und `city` nur für `user_id = auth.uid()` schreibbar. `avatar_url` bleibt im MVP unverändert. | UC-12, D1.4 „Datenschutz" |
 | `court`, `sport`, `sport_preference` | `court`/`sport` lesbar für alle; `court`-Erstellung durch angemeldete Nutzer (UC-10, `created_by = auth.uid()`); `sport_preference` nur für den eigenen `user_id` schreibbar. | UC-10, UC-12 |
 
 Diese Policies setzen die in P2.3 bereits skizzierten Fehlercodes (401/403) technisch um: Ein `403 Forbidden` aus P2.5 Szenario 2 (RLS-Verletzung) entsteht genau dann, wenn eine dieser Bedingungen nicht erfüllt ist.
@@ -214,5 +217,5 @@ Nicht mehr hier geführt, weil andernorts entschieden: Feldlängen, maximale Ses
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Claude (Claude Sonnet 5) / Codex |
-| Verwendung | Entwurf des N2-Bausteins: Auflösung der in D1, D2 und F3 explizit an N2 verwiesenen offenen Punkte (Typzuordnung, Schlüssel/Constraints, Atomarität des Beitritts, Statuspersistenz, PIN-Speicherung, QR-Inhalt, Identifier-Strategie, RLS, Fehler-Mapping) auf Basis des bestehenden Tech-Stacks (P1 CON-T-01–CON-T-03, P2). Codex korrigierte am 2026-07-28 defekte interne Sprunglinks, einen veralteten RLS-Statusverweis und die Identitätsableitung der `SECURITY DEFINER`-Funktion. |
+| Verwendung | Entwurf des N2-Bausteins: Auflösung der in D1, D2 und F3 explizit an N2 verwiesenen offenen Punkte (Typzuordnung, Schlüssel/Constraints, Atomarität des Beitritts, Statuspersistenz, PIN-Speicherung, QR-Inhalt, Identifier-Strategie, RLS, Fehler-Mapping) auf Basis des bestehenden Tech-Stacks (P1 CON-T-01–CON-T-03, P2). Codex entfernte am 2026-07-29 das nicht zum MVP gehörende `is_cancelled`-Feld, glich die Check-in-Zeittoleranz an N1 an und ergänzte die atomare Court-Erfassung nach erfolgreichem Reverse-Geocoding. |
 | Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md) und [S1](S1-nachbarsysteme.md) geprüft; keine über das MVP hinausgehenden Funktionen wurden eingeführt. Die Entscheidungen zur PIN-Klartextspeicherung ([N2.7](#n27-pin-erzeugung-und--speicherung-af-04)) und zur berechneten Statuspersistenz ([N2.6](#n26-statuspersistenz-af-03)) sind dokumentiert. Nachtrag (2026-07-26, Claude Sonnet 5): tote Anker korrigiert, veralteter Hinweis auf ein noch fehlendes N1 entfernt; der in N2.11 unbenannte Erstellungsaufruf ist in [S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) als `create_session` benannt. Nachtrag (2026-07-26, Claude Sonnet 5): Verweis in N2.13 auf eine nicht existierende CI-Pipeline korrigiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): Dialogfragen an B1.8 abgegeben. Aktualisierung (2026-07-28, Codex): Veraltete Aussage zur Anzahl der verbleibenden technischen Punkte entfernt; N2.15 führt weiterhin Skalierung der Suche sowie Auskunft und Löschung. Konsistenzkorrektur (2026-07-28, Codex): Verweise auf inzwischen entschiedene D1-/D2-/F3-Fragen als ursprüngliche Umsetzungsfragen formuliert. |

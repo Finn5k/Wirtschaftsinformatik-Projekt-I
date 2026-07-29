@@ -22,7 +22,7 @@ export default function App() {
         <Route path="/sessions/new" element={<CreateSessionPage />} />
         <Route path="/sessions/:sessionId" element={<SessionDetailPage />} />
         <Route path="/my-sessions" element={<MySessionsPage />} />
-        <Route path="/check-in/:sessionId" element={<CheckInPage />} />
+        <Route path="/check-in" element={<CheckInPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="*" element={<Navigate to="/discover" replace />} />
       </Route>

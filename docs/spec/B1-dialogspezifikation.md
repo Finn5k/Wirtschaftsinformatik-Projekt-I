@@ -55,7 +55,7 @@ Suche und Detailansicht (DLG-02, DLG-03, DLG-04) sind ohne Anmeldung nutzbar (UC
 | [DLG-03](#b143-dlg-03--session-karte) | Session-Karte | UC-02 | AF-03 (Sichtbarkeit) | `/map` |
 | [DLG-04](#b144-dlg-04--session-detail) | Session-Detail | UC-03, UC-04, UC-07 | AF-01, AF-03 | `/sessions/:sessionId` |
 | [DLG-05](#b145-dlg-05--session-erstellen) | Session erstellen | UC-06, UC-10 | AF-03, AF-04 | `/sessions/new` |
-| [DLG-06](#b146-dlg-06--check-in) | Check-in | UC-08, UC-09 | AF-02, AF-03, AF-04 | `/check-in/:sessionId` |
+| [DLG-06](#b146-dlg-06--check-in) | Check-in | UC-08, UC-09 | AF-02, AF-03, AF-04 | `/check-in?session=<id>&pin=<pin>` |
 | [DLG-07](#b147-dlg-07--meine-sessions) | Meine Sessions | UC-05, UC-11 | AF-03 | `/my-sessions` |
 | [DLG-08](#b148-dlg-08--profil) | Profil | UC-12 | — | `/profile` |
 
@@ -221,7 +221,7 @@ Der Zustand ergibt sich aus Anmeldung, Rolle, Teilnahme und Session-Status (AF-0
 | *Offen* | angemeldet, nicht beigetreten, `scheduled`/`active` | ja (AF-01) | nein | nein | nein |
 | *Beigetreten* | Teilnahme `confirmed`, `scheduled`/`active` | nein (bereits Teilnehmer) | ja, bei `active` | nein | nein |
 | *Organisator* | Nutzer = `organizer_id` | nein (zählt bereits, AF-01 R3) | nein | ja | ja (UC-07) |
-| *Read-only* | `completed` (oder `cancelled`) | nein | nein | nein | ja für Organisator (UC-11) |
+| *Read-only* | `completed` | nein | nein | nein | ja für Organisator (UC-11) |
 
 **Dynamik**
 
@@ -254,7 +254,7 @@ Der Zustand ergibt sich aus Anmeldung, Rolle, Teilnahme und Session-Status (AF-0
 | Datum | Eingabe (Muss) | Datum | `session.start_at` (Datumsteil) | leer | zusammen mit Uhrzeit: in der Zukunft (UC-06) |
 | Uhrzeit | Eingabe (Muss) | Uhrzeit | `session.start_at` (Zeitteil) | leer | s. o. |
 | Dauer (Minuten) | Eingabe (Muss) | `Duration` | `session.duration_min` | 60 | ≥ 1; bestimmt Ende und Auto-Close (AF-03) |
-| Court / Sportort | Eingabe (Muss) | Auswahl oder Neuerfassung | `session.court_id` → `court` | leer | Auswahl aus Verzeichnis **oder** Neuerfassung (UC-10): `name` (Muss), `city` (Muss), `address` (Kann, freie Angabe), Kartenpin (Kann) → `latitude`/`longitude` |
+| Court / Sportort | Eingabe (Muss) | Auswahl oder Neuerfassung | `session.court_id` → `court` | leer | Auswahl aus Verzeichnis **oder** Neuerfassung (UC-10): `name` (Muss), Kartenpin (Muss) → `latitude`/`longitude`; `city` (Muss) und `address` (Kann) werden per Reverse-Geocoding ermittelt |
 | Teilnehmerlimit | Eingabe (Muss) | Integer | `session.max_participants` | 10 | ≥ 1; Hinweis im Dialog: Organisator belegt einen Platz (AF-01 R4) |
 
 Frühere Prototyp-Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht** Teil dieser Feldliste und im aktuellen Prototyp nicht mehr vorhanden.
@@ -264,7 +264,7 @@ Frühere Prototyp-Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht*
 | Aktion | Auslöser | Vorbedingung | Wirkung |
 |---|---|---|---|
 | Court auswählen | Auswahlfeld / Suche im Court-Verzeichnis | — | *UC-10*: bestehenden Court übernehmen |
-| Court neu erfassen | Schaltfläche „Neuen Sportort anlegen" | kein passender Court | *UC-10*: Erfassungsmaske (`name`, `city`, `address`) mit Kartenausschnitt; ein optional gesetzter Pin liefert die Koordinaten ([S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)) — es wird keine Adresse aus dem Pin abgeleitet und keine Adresse gegen einen Dienst geprüft. Nach Speichern ausgewählt |
+| Court neu erfassen | Schaltfläche „Neuen Sportort anlegen" | kein passender Court | *UC-10*: Name erfassen und verpflichtenden Pin auf der Karte setzen ([S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)); LocalCourt ermittelt daraus Ort und optionale Adresse per Reverse-Geocoding ([S1.6](S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)) und zeigt die Werte vor dem Speichern an. Nach Speichern ausgewählt |
 | Session erstellen | Schaltfläche „Session erstellen" | alle Muss-Felder gültig | *UC-06*: Session anlegen (`scheduled`, AF-03); PIN/QR erzeugen (AF-04); Organisator als `participant` `confirmed`; Wechsel zu DLG-04 (*Organisator*) mit Bestätigung |
 | Abbrechen | Zurück-Navigation | — | *Dialog*: keine Session wird gespeichert (UC-06 Alternativszenario) |
 
@@ -363,7 +363,7 @@ Der Dialog hat zwei Zustände (Tabs): *Bevorstehend* (UC-05, Status `scheduled`/
 |---|---|
 | Identifier | DLG-08 |
 | Realisiert | [UC-12](F2-anwendungsfaelle.md#uc-12--profil-und-sportpräferenzen-verwalten) |
-| Zweck | Nutzer verwalten MVP-relevante Basisdaten: Anzeigename, Heimatort, optionales Profilbild, bevorzugte Sportarten. |
+| Zweck | Nutzer verwalten MVP-relevante Basisdaten: Anzeigename, Heimatort und bevorzugte Sportarten. Ein vorhandenes Profilbild wird angezeigt, aber nicht bearbeitet. |
 | Einstiegspunkte | Hauptnavigation „Profil". Nicht angemeldet → DLG-01. |
 | Ergebnis | Gespeicherte Änderungen; bei Abbruch/Fehler bleibt der vorherige Stand erhalten (UC-12). |
 
@@ -375,7 +375,7 @@ Zwei Zustände: *Ansicht* und *Bearbeiten*.
 |---|---|---|---|---|---|
 | Anzeigename | Anzeige / Eingabe (Muss im Zustand *Bearbeiten*) | Text | `profile.display_name` | aktueller Wert | nicht leer |
 | Ort | Anzeige / Eingabe (Kann) | Text | `profile.city` | aktueller Wert | leer möglich; dient der Vorbelegung der Ortssuche in [DLG-02](#b142-dlg-02--session-entdecken-liste) und ist für andere Nutzer nicht sichtbar |
-| Profilbild | Anzeige / Eingabe (Kann) | `Url` | `profile.avatar_url` | aktueller Wert | MVP-Umfang offen ([D1.9](D1-datenmodell.md#d19-offene-punkte)) |
+| Profilbild | Anzeige (Kann) | `Url` | `profile.avatar_url` | aktueller Wert | read-only; Upload und Bearbeitung sind nicht Teil des MVP |
 | E-Mail | Anzeige | Text | — (Supabase Auth) | aktueller Wert | read-only; Änderung ist Auth-Funktion, nicht MVP |
 | Bevorzugte Sportarten | Anzeige / Eingabe (Kann) | Mehrfachauswahl | `sport_preference` → `sport` | aktuelle Auswahl | jede Sportart höchstens einmal (D1) |
 
@@ -428,8 +428,8 @@ Der aktuelle UI-Prototyp bildet alle Dialoge DLG-01 bis DLG-08 ab. Die nachfolge
 | DLG-02 Entdecken | Textsuche, Sportartenfilter, Ergebnis- und Leerzustand | Filterung ausschließlich über Mockdaten |
 | DLG-03 Karte | Leaflet-/OpenStreetMap-Karte, Marker, Filter und Vorschau | keine API-Daten und kein Fehler-Fallback |
 | DLG-04 Session-Detail | Kerndaten, Belegung, Teilnehmerliste, Organisator-, Beitritts-, Check-in- und Read-only-Darstellung | Rolle, Teilnahme und Status stammen aus Mockdaten; Beitritt bleibt lokal |
-| DLG-05 Session erstellen | vollständige aktuelle Feldgruppe einschließlich Dauer und Court-Auswahl/-Neuerfassung, Validierung und Erfolgsvorschau | keine Session- oder Court-Persistenz; keine neue Detailseite; Court-Neuerfassung noch ohne Kartenpin, daher ohne Koordinaten ([S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)) |
-| DLG-06 Check-in | QR-Platzhalter, PIN-Eingabe, lokale PIN-Prüfung, Zeitfensterdarstellung und Erfolg | kein QR-Scan/Deep-Link und kein persistenter Check-in |
+| DLG-05 Session erstellen | vollständige aktuelle Feldgruppe einschließlich Dauer und Court-Auswahl/-Neuerfassung, Validierung und Erfolgsvorschau | keine Session- oder Court-Persistenz; keine neue Detailseite; Court-Neuerfassung noch ohne Kartenpin und Reverse-Geocoding |
+| DLG-06 Check-in | Deep-Link-Route mit Session-/PIN-Parametern, QR-Platzhalter, PIN-Eingabe, lokale PIN-Prüfung, Zeitfensterdarstellung und Erfolg | keine echte QR-Erzeugung und kein persistenter Check-in |
 | DLG-07 Meine Sessions | bevorstehende und vergangene Sessions, Rollen- und Check-in-Anzeige, Leerzustände | ausschließlich aus Mockdaten abgeleitet |
 | DLG-08 Profil | Ansicht und Bearbeitung von Anzeigename, Ort und Sportpräferenzen | Änderungen nur im lokalen Seitenzustand; Profilbild nicht editierbar |
 | Hauptnavigation | fünf spezifizierte Navigationsziele | geschützte Ziele sind ohne Auth-Prüfung direkt erreichbar |
@@ -443,12 +443,12 @@ Der aktuelle UI-Prototyp bildet alle Dialoge DLG-01 bis DLG-08 ab. Die nachfolge
 | Schutz personenbezogener Aktionen | Erstellen, Meine Sessions, Profil und Check-in sind direkt aufrufbar | Weiterleitung und Rückkehr gemäß [B1.5.2](#b152-weiterleitung-nicht-angemeldeter-nutzer) fehlen |
 | Atomarer Beitritt | Schaltfläche setzt lokalen Zustand | AF-01, gemeinsame Aktualisierung von Belegung und DLG-07 sowie fachliche Ergebniscodes fehlen |
 | Session-Erstellung | lokale Erfolgsvorschau mit zufälliger PIN | persistente Session, Court und Organisator-Teilnahme sowie Wechsel zur neuen DLG-04 fehlen |
-| QR-Verarbeitung | QR-Symbol als Platzhalter | echte QR-Erzeugung und Deep-Link-Einstieg im festgelegten Format aus [N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04) fehlen |
+| QR-Verarbeitung | Deep-Link-Einstieg und Vorbelegung der PIN sind umgesetzt; QR-Symbol bleibt Platzhalter | echte QR-Erzeugung aus dem festgelegten Format in [N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04) fehlt |
 | Check-in | PIN wird lokal gegen Mockdaten geprüft; QR-Weg bestätigt direkt | Teilnahmeprüfung, Idempotenz, Persistenz und vollständige AF-02-Ergebniscodes fehlen |
 | Session-Lifecycle | Statuswerte sind statische Mockdaten | Umsetzung der in [N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03) festgelegten Statusberechnung nach AF-03 fehlt |
 | Kartenfehler | echte OSM-Karte ist eingebunden | Graceful Degradation zu DLG-02 bei Ausfall fehlt |
 | Lade- und Netzwerkzustände | keine asynchronen Backend-Anfragen | Muster aus [B1.5.4](#b154-fehler--und-ladezustände) sind noch nicht demonstriert |
-| Profil | Bearbeitung wirkt nur im lokalen Seitenzustand | Persistenz fehlt; Profilbild-Umfang und weitere sichtbare Profildaten bleiben offene Punkte ([B1.8](#b18-offene-punkte)) |
+| Profil | Bearbeitung wirkt nur im lokalen Seitenzustand; Profilbild wird ausschließlich angezeigt | Persistenz von Anzeigename, Ort und Präferenzen fehlt; weitere sichtbare Profildaten bleiben offen ([B1.8](#b18-offene-punkte)) |
 | Validierungsgrenzen | ausgewählte Pflichtfelder werden geprüft | die in D2/N1 festgelegten Validierungsregeln sind noch nicht vollständig umgesetzt; endgültige Fehlertexte bleiben offen |
 
 Im aktuellen Prototyp sind keine früher dokumentierten Gamification-, Events-/Challenges-, Benachrichtigungs-, Rang-, Sichtbarkeits-, Merken- oder Teilen-Funktionen mehr vorhanden.
@@ -474,7 +474,6 @@ B1 ist der zuständige Baustein für alle Fragen des Dialogverhaltens — Feldli
 | Sichtbare Profildaten in Teilnehmerlisten | Ob DLG-04 über die in [N2.11](N2-querschnittskonzepte.md#n211-row-level-security-rls) freigegebenen Basisfelder (`display_name`, `avatar_url`) hinaus weitere Felder zeigt. Die Basisfelder selbst sind entschieden. | B1 |
 | Sortierung/Gruppierung der Listen | DLG-02 (Reihenfolge der Treffer), DLG-07 (Sortierung je Tab). | B1 |
 | Konkrete Fehlertexte | Endgültige Formulierungen je Ergebniscode (AF-01/AF-02); die sinngemäßen Texte stehen bereits in DLG-04 und DLG-06. | B1 |
-| Profilbild-Umfang | Ob `avatar_url` im MVP editierbar ist oder nur angezeigt wird (D1.9). | B1 |
 | Court-Dubletten in der Auswahl | Verhalten von DLG-05, wenn ein offensichtlich bereits vorhandener Sportort neu erfasst wird (UC-10). | B1 |
 
 ## B1.9 Eingesetzte KI-Werkzeuge
@@ -482,5 +481,5 @@ B1 ist der zuständige Baustein für alle Fragen des Dialogverhaltens — Feldli
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Claude Code (Fable 5, Claude Sonnet 5), ChatGPT / Codex |
-| Verwendung | Entwurf des B1-Bausteins: Ableitung der Dialoglandkarte und der Feld-/Aktionslisten aus F2/F3/D1/D2 und dem UI-Prototyp; systematischer Abgleich Prototyp ↔ MVP-Scope (B1.6). Späterer Abgleich des Prototypstatus mit den vorhandenen Routen, Seiten, Komponenten, Mockdaten und Services; Aktualisierung des Dialogindex und der Abweichungsanalyse; Einbettung der Prototyp-Screenshots. |
+| Verwendung | Entwurf des B1-Bausteins: Ableitung der Dialoglandkarte und der Feld-/Aktionslisten aus F2/F3/D1/D2 und dem UI-Prototyp; systematischer Abgleich Prototyp ↔ MVP-Scope (B1.6). Codex aktualisierte am 2026-07-29 Court-Erfassung, Profilbildabgrenzung, Sessionstatus und den umgesetzten Check-in-Deep-Link. |
 | Prüfung | Inhalte wurden gegen [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [N1](N1-nichtfunktionale-anforderungen.md), [`../frontend.md`](../frontend.md), den aktuellen Prototyp-Code (`src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/`) und die Herold-Referenz geprüft; Richtungsentscheidungen (Soll-Dialoge, UC-05/UC-11 als ein Dialog, normative Feldlisten) wurden vorab vom Team bestätigt. Beim Prototyp-Abgleich wurden keine neuen fachlichen oder technischen Entscheidungen getroffen; ungeklärte Punkte bleiben als offene Punkte markiert. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Erfassung der Court-Koordinaten in DLG-05 als Kartenpin präzisiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): B1.8 auf je einen zuständigen Baustein umgestellt und um bereits entschiedene Zeilen bereinigt; `profile.city` als Feld in DLG-08 und als Vorbelegung der Ortssuche in DLG-02 aufgenommen; separate Versionshistorie zugunsten der zentralen Historie im Spezifikationsindex entfernt. Aktualisierung (2026-07-28, Codex): Veraltete Offenheitsformulierungen zu QR-Format, Statusberechnung und Validierungsgrenzen an N1/N2 angeglichen und E2 als vorhandenen Baustein verlinkt. |

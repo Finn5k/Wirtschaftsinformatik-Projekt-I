@@ -59,7 +59,7 @@ http://localhost:5173
 | DLG-03 Session-Karte | `/map` | echte Leaflet-/OpenStreetMap-Karte, Sportartenfilter, Session-Marker, Popup, Auswahlkarte und Navigation zum Detail |
 | DLG-04 Session-Detail | `/sessions/:sessionId` | Kerndaten, Status, Belegung, Teilnehmerliste, Organisatoransicht mit QR-/PIN-Platzhalter, Beitrittszustand, Check-in-Aktion und Read-only-Zustand |
 | DLG-05 Session erstellen | `/sessions/new` | Sportart, Titel, Beschreibung, Datum, Uhrzeit, Dauer, Court-Auswahl oder lokale Neuerfassung, Teilnehmerlimit, Validierung und Erfolgsvorschau mit lokal erzeugter PIN |
-| DLG-06 Check-in | `/check-in/:sessionId` | Statusprüfung, QR-Platzhalter, manuelle PIN-Eingabe, PIN-Validierung sowie Erfolgs- und Sperrzustände |
+| DLG-06 Check-in | `/check-in?session=<id>&pin=<pin>` | Statusprüfung, Deep-Link-Einstieg mit vorbelegter PIN, QR-Platzhalter, manuelle PIN-Eingabe, PIN-Validierung sowie Erfolgs- und Sperrzustände |
 | DLG-07 Meine Sessions | `/my-sessions` | Tabs für bevorstehende und vergangene Sessions, Rollenkennzeichnung, Check-in-Information und Leerzustände |
 | DLG-08 Profil | `/profile` | Profilansicht, lokaler Bearbeitungszustand für Anzeigename, Ort und Sportpräferenzen sowie Abmelden-Navigation |
 
@@ -67,7 +67,7 @@ http://localhost:5173
 
 - durchgängige Hauptnavigation mit Entdecken, Karte, Erstellen, Sessions und Profil
 - mobile-first Layout mit begrenzter Desktop-Darstellung
-- Statusdarstellung für `scheduled`, `active`, `completed` und `cancelled`
+- Statusdarstellung für `scheduled`, `active` und `completed`
 - harte Kapazitätsanzeige ohne Warteliste
 - Unterscheidung zwischen Organisator- und Teilnehmeransicht anhand der Mockdaten
 - erklärende Leer- und Nicht-gefunden-Zustände
@@ -155,12 +155,12 @@ Profil → Bearbeiten → lokale Ansicht aktualisieren
 | Zugriffsschutz | geschützte Routen sind direkt aufrufbar | Weiterleitung nicht angemeldeter Nutzer und Rückkehr zur ursprünglich gewünschten Funktion gemäß B1.5.2 |
 | Session-Beitritt | lokaler Zustand in der Detailseite | persistenter, atomarer Beitritt nach AF-01; Teilnehmerzahl und „Meine Sessions“ müssen gemeinsam aktualisiert werden |
 | Session-Erstellung | Erfolgsvorschau ohne neuen Datensatz | persistente Session samt Court, Organisator-Teilnahme und anschließender Navigation zur neuen Detailansicht |
-| Court-Neuerfassung | nur Bestandteil des Formularzustands, ohne Kartenpin | persistente Erfassung und Kartenpin für die Koordinaten (S1.5); Dublettenverhalten bleibt offen |
+| Court-Neuerfassung | nur Bestandteil des Formularzustands, ohne Kartenpin | persistente Erfassung mit verpflichtendem Kartenpin und Reverse-Geocoding für Ort/Adresse (S1.5/S1.6); Dublettenverhalten bleibt offen |
 | QR-Code | Symbol beziehungsweise Platzhalter | echte QR-Erzeugung im festgelegten Deep-Link-Format (AF-04, N2.8) |
 | QR-Check-in | Schaltfläche bestätigt ohne Scan oder Merkmalsprüfung | tatsächlicher QR-Einstieg und dieselbe fachliche Prüfung wie beim PIN-Weg |
 | PIN-Check-in | prüft lokal gegen die PIN der Mock-Session | Prüfung von Anmeldung, bestehender Teilnahme, Zeitfenster, Idempotenz und Persistenz nach AF-02 |
 | Session-Lifecycle | Status ist fest in den Mockdaten hinterlegt | abgeleitete Statusführung gemäß AF-03, bei jeder Abfrage berechnet (N2.6) |
-| Profil | Änderungen gelten nur bis zum Verlassen der Seite | persistente Profil- und Präferenzänderung; Umfang der Profilbildbearbeitung bleibt offen |
+| Profil | Änderungen gelten nur bis zum Verlassen der Seite; Profilbild ist read-only | persistente Änderung von Anzeigename, Ort und Präferenzen; Profilbild-Upload und -Bearbeitung sind kein MVP |
 | Karte | OSM-Karte ist real eingebunden | spezifizierte Graceful Degradation bei nicht erreichbarem Kartendienst fehlt |
 | Lade-/Netzwerkfehler | keine asynchronen Anfragen vorhanden | Ladeanzeigen, während laufender Anfragen deaktivierte Aktionen, verständliche Fehlermeldungen und Wiederholungsmöglichkeiten gemäß B1.5.4 |
 | Validierung | zentrale Formulare validieren ausgewählte Pflichtangaben | vollständige Umsetzung der Regeln aus D2/N1; endgültige Fehlertexte bleiben offen |
@@ -187,5 +187,5 @@ Festlegungen stehen in den dort verlinkten Spezifikationsbausteinen.
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | ChatGPT / Codex |
-| Verwendung | Abgleich der Frontend-Dokumentation mit den vorhandenen Routen, Seiten, Komponenten, Mockdaten und Services; Formulierung des aktuellen Realisierungsstands und der verbleibenden Abweichungen. |
+| Verwendung | Abgleich der Frontend-Dokumentation mit den vorhandenen Routen, Seiten, Komponenten, Mockdaten und Services; Codex aktualisierte am 2026-07-29 Statusumfang, Profilbildabgrenzung, Court-Reverse-Geocoding und die umgesetzte Check-in-Deep-Link-Route. |
 | Prüfung | Angaben wurden gegen `src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/` und die bestehenden Bausteine B1, F2, F3, D1, D2 und N1 geprüft. Es wurden keine fachlichen oder technischen Entscheidungen ergänzt. Nachtrag (2026-07-26, Claude Sonnet 5): zwei Abweichungszeilen korrigiert, die QR-Format und Statusführung noch als offen führten, obwohl sie in AF-04/N2.8 bzw. N2.6 entschieden sind. Aktualisierung (2026-07-28, Codex): Validierungsbedarf an die bewussten Festlegungen und Nicht-Festlegungen aus D2/N1 angeglichen. Redundanzkorrektur (2026-07-28, Codex): Wiederholung offener und bereits entschiedener Spezifikationspunkte durch einen Verweis auf B1.8 ersetzt. |

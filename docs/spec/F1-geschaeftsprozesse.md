@@ -34,7 +34,7 @@ Zeitliche und logische Reihenfolge. Die **Support**-Spalte benennt, wer die Akti
 | # | Aktivität | Support | Notizen |
 |---|-----------|---------|---------|
 | A1 | Teilnehmer hat Lust auf Sport, öffnet LocalCourt | Participant, Browser | Pre-IT: Nutzer-Entscheidung, keine System-Unterstützung. |
-| A2 | Teilnehmer gibt Stadt/Region ein | Browser + Participant | Nutzer-Input über ein Textfeld; vorbelegt aus `profile.city` (UC-02). Keine automatische Geolocation (S1.6). |
+| A2 | Teilnehmer gibt Stadt/Region ein | Browser + Participant | Nutzer-Input über ein Textfeld; vorbelegt aus `profile.city` (UC-02). Keine automatische Geolocation (S1.7). |
 | A3 | Teilnehmer filtert nach Sportart (optional) | Browser + Participant | Dropdown-Auswahl oder Multi-Select. |
 | A4 | Frontend fragt passende Sessions an | Browser → LocalCourt | Suchkriterien: Ort und optional Sportart (UC-02). |
 | A5 | LocalCourt liefert die gefilterte Session-Liste | LocalCourt, Supabase PostgREST | Nur bevorstehende und laufende Sessions, je Session Sportort, Sportart, Status und bestätigte Teilnehmerzahl (S1.4). |
@@ -133,6 +133,8 @@ Ein Organisator (z.B. Running-Club-Leiter) möchte regelmäßige Trainings-Sessi
 | **LocalCourt** | IT-System | Orchestriert Session-Erstellung, Check-In, Auto-Close. |
 | **Supabase PostgREST** | IT-System (Third Party) | CRUD für Sessions, Participants, Check-Ins. |
 | **Supabase Auth** | IT-System (Third Party) | Authentifizierung (Organisator-Login). |
+| **OpenStreetMap / Leaflet** | IT-System (Third Party) | Kartendarstellung und Setzen des Court-Pins. |
+| **Nominatim** | IT-System (Third Party) | Ermittelt Ort und optionale Adresse aus dem Court-Pin. |
 | **PostgreSQL Datenbank** | IT-System (Daten-Store) | Speichert Sessions, Participants, Check-In-Records. |
 | **QR-Code-Library** (z.B. qrcode.js) | IT-System (Client) | Generiert QR-Code auf Frontend. |
 
@@ -146,7 +148,7 @@ Zeitliche und logische Reihenfolge.
 | A1 | Organisator möchte Trainings-Session organisieren (z.B. jeden Mittwoch Fußball um 19:00) | Organizer | Geschäfts-Entscheidung, keine IT. |
 | A2 | Organisator öffnet LocalCourt & loggt sich ein | Organizer, Browser, Supabase Auth | Authentifizierung per E-Mail und Passwort (kein OAuth, S1.3). |
 | **Session-Erstellung** | | | |
-| A3 | Organisator füllt Session-Form aus | Organizer, Browser | Felder: Title, Sport, Court, DateTime (Startzeitpunkt), Duration, Max Participants, Beschreibung. Validierung im Browser (Client-Side). |
+| A3 | Organisator füllt Session-Form aus | Organizer, Browser, OpenStreetMap, Nominatim | Felder: Titel, Sportart, Court, Startzeitpunkt, Dauer, Teilnehmerlimit und Beschreibung. Bei einem neuen Court setzt er einen Kartenpin; LocalCourt übernimmt Ort und optionale Adresse aus dem Reverse-Geocoding (UC-10). |
 | A4 | Organisator klickt "Session erstellen" | Organizer | Form Submission. |
 | A5 | Frontend übergibt die Session-Angaben an LocalCourt | Browser → LocalCourt | Sportart, Sportort, Titel, Beschreibung, Startzeitpunkt, Dauer und Teilnehmerlimit (UC-06). |
 | A6 | LocalCourt legt die Session an und erzeugt die PIN | LocalCourt → PostgreSQL | Status ergibt sich zeitbasiert als `scheduled` ([AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge)); die vierstellige PIN entsteht bei der Anlage ([AF-04](F3-anwendungsfunktionen.md#f36-af-04--pin--und-qr-code-erzeugung)). |
@@ -155,14 +157,14 @@ Zeitliche und logische Reihenfolge.
 | A9 | Organisator hält QR-Code + PIN für den Treffpunkt bereit | Organizer | Anzeige am Bildschirm; es gibt keine Druckausgabe (siehe Spezifikationsindex, Baustein B3). |
 | **Vor Session-Start** | | | |
 | A10 | Potenzielle Teilnehmer öffnen LocalCourt (GP-01: Suche & Beitreten) | Participant, Browser, LocalCourt | Sessions sind für alle sichtbar (public discovery). Participants treten bei. |
-| A11 | Organisator sieht die wachsende Teilnehmer-Liste | Organizer, Browser → LocalCourt | Teilnehmerliste wird beim Aufruf bzw. Neuladen gelesen (kein Echtzeit-Kanal, S1.6). |
+| A11 | Organisator sieht die wachsende Teilnehmer-Liste | Organizer, Browser → LocalCourt | Teilnehmerliste wird beim Aufruf bzw. Neuladen gelesen (kein Echtzeit-Kanal, S1.7). |
 | **Session-Start (Check-In Phase)** | | | |
 | A12 | Zum Startzeitpunkt: Organisator öffnet Check-In-Screen | Organizer, Browser, LocalCourt | Status sichtbar: "aktiv", QR-Code + PIN prominent angezeigt. |
 | A13 | Teilnehmer scannt QR-Code mit der Kamera-App des Geräts | Participant | QR-Code enkodiert: Redirect zu LocalCourt/check-in?session=<id>&pin=<pin>. LocalCourt selbst nutzt keine Kamera-Schnittstelle (S1.2). |
 | A14 | QR-Code-Scan führt zu Browser-Seite mit automatischem Check-In | Browser (Participant) | LocalCourt erkennt session_id & pin aus URL und ruft die atomare Check-in-Operation auf (S1.4, AF-02). |
 | A15 | LocalCourt markiert die Teilnahme als `checked_in` | LocalCourt → PostgreSQL | Mit Zeitstempel; maßgeblich ist die Serverzeit, nicht die Uhr des Geräts ([AF-02](F3-anwendungsfunktionen.md#f34-af-02--check-in-validierung), N2.10). |
 | A16 | Participant sieht Bestätigung "✓ Check-in erfolgreich!" | Browser (UI Feedback) | Toast oder Modal mit checked_in-Status. |
-| A17 | Organisator sieht in Participant-Liste: "X / Y Checked in" | Organizer, Browser | Aktualisierung beim Aufruf bzw. Neuladen der Liste (kein Echtzeit-Kanal, S1.6). Grüne Häkchen für checked_in, Grau für "confirmed aber nicht checked_in". |
+| A17 | Organisator sieht in Participant-Liste: "X / Y Checked in" | Organizer, Browser | Aktualisierung beim Aufruf bzw. Neuladen der Liste (kein Echtzeit-Kanal, S1.7). Grüne Häkchen für checked_in, Grau für "confirmed aber nicht checked_in". |
 | **Fallback: PIN-Eingabe (falls QR-Scan fehlschlägt)** | | | |
 | A18 | Teilnehmer kann alternativ 4-stellige PIN manuell eingeben | Participant, Browser | Form: "Check-In PIN" → LocalCourt verifiziert PIN. |
 | A19 | LocalCourt validiert PIN & markiert als checked_in | LocalCourt → PostgreSQL | Dieselbe atomare Check-in-Operation wie beim QR-Weg (S1.4, AF-02): Teilnahme, PIN und Zeitfenster werden serverseitig geprüft. |
@@ -342,6 +344,6 @@ Jeder Prozess besteht aus **Akteuren** (Mensch & IT), **Aktivitäten** (zeitlich
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | GitHub Copilot, Claude (Claude Code) |
-| Verwendung | Entwurf der Geschäftsprozesse (GP-01–GP-03), Aktivitäten, Dokumente, Daten-Stores und Ablaufdiagramme. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Ablaufdiagramme auf Mermaid, Korrektur halluzinierter Querverweise) mit Claude Code (Opus 4.8). Terminologie-Fix (2026-07-26, Claude Sonnet 5): Teilnehmerstatus in A17 von "joined" auf "confirmed" korrigiert (konsistent mit D2.5/N2-Enum). Angleichung an S1 (2026-07-26, Claude Sonnet 5): Check-in-Aufrufe in A14/A19 auf die atomare Operation umgestellt, QR-Scan auf die Kamera-App des Geräts eingegrenzt (A13), Echtzeit-Zusagen in A11/A17 zurückgenommen, OAuth in A2 entfernt. Nachtrag (2026-07-26, Claude Sonnet 5): Druckausgabe in A9 entfernt, da B3 als nicht anwendbar dokumentiert ist. Überarbeitung (2026-07-26, Claude Sonnet 5): Notizen-Spalten von HTTP-Endpunkten und SQL auf die fachliche Ebene umgestellt (F1 ist laut Einleitung IT-unabhängig; die Technik steht in S1/N2); die Dokument- und Daten-Store-Tabellen, die D1 dupliziert und dabei veraltet waren, auf Verweise nach D1/N2 eingedampft; widersprüchliches QR-Format in A8 sowie Spekulationen zu Scheduler und Benachrichtigungen in A15/A17 entfernt. Aktualisierung (2026-07-28, Codex): Den widersprüchlichen Geolocation-Pfad aus GP-01 A2 entfernt und die manuelle, aus `profile.city` vorbelegte Ortseingabe an UC-02/S1.6 angeglichen. |
+| Werkzeug | GitHub Copilot, Claude (Claude Code), Codex |
+| Verwendung | Entwurf der Geschäftsprozesse (GP-01–GP-03), Aktivitäten, Dokumente, Daten-Stores und Ablaufdiagramme. Codex ergänzte am 2026-07-29 Nominatim und Reverse-Geocoding in der Court-Erfassung. |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitungen wurden zusätzlich gegen F2/F3 und D1/D2 geprüft. Check-in-Aufrufe, QR-Deep-Link, E-Mail-/Passwort-Authentifizierung, manuelle Ortssuche ohne Geräte-Geolocation und die Court-Erfassung mit Reverse-Geocoding entsprechen dem aktuellen Stand der maßgeblichen Bausteine. |

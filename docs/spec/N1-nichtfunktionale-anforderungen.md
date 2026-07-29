@@ -121,13 +121,13 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 |---|---|
 | ID | N1-QA-06 |
 | Name | Zuverlässigkeit / Fehlerrobustheit |
-| Beschreibung | Die Kapazitätsgrenze eines Beitritts (AF-01) und die Eindeutigkeit eines Check-ins (AF-02) müssen auch bei gleichzeitigen Zugriffen mehrerer Nutzer konsistent bleiben. Ist ein Nachbarsystem (insbesondere die Kartendarstellung) nicht erreichbar, degradiert die Anwendung kontrolliert, statt zu blockieren oder abzustürzen. |
-| Begründung | F3 AF-01 fordert Atomarität von Kapazitätsprüfung und Eintragserzeugung als fachliche Invariante (keine Überbuchung). P2 beschreibt für die Kartendarstellung ausdrücklich eine Graceful-Degradation-Strategie (Fallback zur Listenansicht), und UC-02/D2.7 verlangen, dass eine Session auch ohne Koordinaten über Ort/Name auffindbar bleibt. |
-| Betroffene Use Cases | UC-02, UC-04, UC-08, UC-09 |
+| Beschreibung | Die Kapazitätsgrenze eines Beitritts (AF-01) und die Eindeutigkeit eines Check-ins (AF-02) müssen auch bei gleichzeitigen Zugriffen mehrerer Nutzer konsistent bleiben. Ist ein Nachbarsystem nicht erreichbar, degradiert die Anwendung kontrolliert, statt abzustürzen oder unvollständige Daten zu speichern. |
+| Begründung | F3 AF-01 fordert Atomarität von Kapazitätsprüfung und Eintragserzeugung als fachliche Invariante (keine Überbuchung). P2 beschreibt für die Kartendarstellung einen Fallback zur Listenansicht. UC-10 verlangt zusätzlich, dass bei Ausfall von Karte oder Reverse-Geocoding kein unvollständiger Court gespeichert wird. |
+| Betroffene Use Cases | UC-02, UC-04, UC-08, UC-09, UC-10 |
 | Betroffene Datenobjekte / Datentypen | `session` (`max_participants`, abgeleitet `confirmed_count`), `participant` (`status`), `GeoCoordinate` (D2.7) |
-| Betroffene Dialoge | DLG-02, DLG-03 (Fehlerfall Karte), DLG-04, DLG-06 |
-| Akzeptanzkriterien | Given eine Session mit einem letzten freien Platz, When zwei Nutzer nahezu gleichzeitig beitreten, Then wird höchstens einer bestätigt und der andere erhält `SESSION_FULL` (AF-01 R6). Given ein nicht erreichbarer Kartendienst, When DLG-03 geöffnet wird, Then erscheint ein Hinweis mit Verweis auf DLG-02 statt eines Fehlerabbruchs. Given ein wiederholter gültiger Check-in-Versuch, When er erneut ausgeführt wird, Then bleibt der ursprüngliche Check-in-Zeitpunkt erhalten (`ALREADY_CHECKED_IN`, AF-02 R5). |
-| Prüfmethode | Code-Walkthrough der Atomaritäts-Umsetzung gegen den AF-01-Pseudocode; manueller Test der Kartenansicht mit deaktiviertem Kartendienst (z. B. Netzwerksperre in DevTools). |
+| Betroffene Dialoge | DLG-02, DLG-03 (Fehlerfall Karte), DLG-04, DLG-05 (Court-Erfassung), DLG-06 |
+| Akzeptanzkriterien | Given eine Session mit einem letzten freien Platz, When zwei Nutzer nahezu gleichzeitig beitreten, Then wird höchstens einer bestätigt und der andere erhält `SESSION_FULL` (AF-01 R6). Given ein nicht erreichbarer Kartendienst, When DLG-03 geöffnet wird, Then erscheint ein Hinweis mit Verweis auf DLG-02 statt eines Fehlerabbruchs. Given Karte oder Reverse-Geocoding sind bei der Court-Erfassung nicht verfügbar, When der Nutzer speichern möchte, Then wird kein Court angelegt und eine Wiederholmöglichkeit angezeigt. Given ein wiederholter gültiger Check-in-Versuch, When er erneut ausgeführt wird, Then bleibt der ursprüngliche Check-in-Zeitpunkt erhalten (`ALREADY_CHECKED_IN`, AF-02 R5). |
+| Prüfmethode | Code-Walkthrough der Atomaritäts-Umsetzung gegen den AF-01-Pseudocode; manuelle Tests mit deaktiviertem Karten- beziehungsweise Nominatim-Zugriff in den Browser-DevTools. |
 | Festlegung | Die technische Umsetzung der Atomarität ist in [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01) als unteilbare serverseitige Operation entschieden. |
 
 ### N1-QA-07 — Wartbarkeit
@@ -201,7 +201,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | UC-07 Teilnehmerliste anzeigen | N1-QA-01, N1-QA-04 | Teilnehmerliste zeigt personenbezogene Daten (Namen, Check-in-Status) nur dem berechtigten Organisator. | Feldabgleich gegen D1, Berechtigungstest |
 | UC-08 Check-in per QR-Code durchführen | N1-QA-01, N1-QA-02, N1-QA-05, N1-QA-06, N1-QA-09 | Check-in muss schnell, mobil und mit klaren Fehlermeldungen funktionieren; PIN/QR-Sicherheit ist bewusst dimensioniert (AF-04). | Mobiler Test des QR-Scans, Prüfung der Ablehnungstexte |
 | UC-09 Check-in per PIN durchführen | N1-QA-01, N1-QA-02, N1-QA-05, N1-QA-06, N1-QA-09 | Fallback zu UC-08 mit denselben Anforderungen an Konsistenz und verständliche Fehlertexte. | Test mit falscher PIN, Test außerhalb des Zeitfensters |
-| UC-10 Court / Sportort erfassen oder auswählen | N1-QA-03, N1-QA-06 | Erfassung soll einfach bleiben; fehlende Koordinaten dürfen die Nutzung nicht blockieren (Graceful Degradation). | Test der Erfassung ohne Koordinaten |
+| UC-10 Court / Sportort erfassen oder auswählen | N1-QA-03, N1-QA-06, N1-QA-10 | Erfassung soll einfach bleiben; Kartenpin und Reverse-Geocoding müssen konsistente Ortsdaten liefern und die Nutzungsgrenzen des öffentlichen Dienstes einhalten. | Test mit gültigem Pin sowie Test bei Karten-/Geocoding-Ausfall |
 | UC-12 Profil und Sportpräferenzen verwalten | N1-QA-02, N1-QA-04 | Profilverwaltung betrifft direkt personenbezogene Daten und muss auf allen Geräten bedienbar sein. | Feldabgleich gegen D1, Viewport-Test |
 
 ## N1.5 Abgrenzung zu Randbedingungen aus P1
@@ -278,5 +278,5 @@ Im Review lässt sich damit für jede Qualitätsanforderung erklären: welcher U
 | Punkt | Beschreibung |
 |---|---|
 | Werkzeug | Claude Code / ChatGPT |
-| Verwendung | Entwurf, Strukturierung, Formulierungsvorschläge, Konsistenzprüfung und Akzeptanzkriterien für den N1-Baustein, ausgehend von den bestehenden „Bezug zu NFR / Qualität"-Angaben und offenen Punkten in F2, F3, D1, D2 und B1. Codex korrigierte am 2026-07-28 die Profilfeldliste und veraltete Zukunftsformulierungen zu N2. |
+| Verwendung | Entwurf, Strukturierung, Formulierungsvorschläge, Konsistenzprüfung und Akzeptanzkriterien für den N1-Baustein, ausgehend von den bestehenden „Bezug zu NFR / Qualität"-Angaben und offenen Punkten in F2, F3, D1, D2 und B1. Codex ergänzte am 2026-07-29 die Robustheits- und Prüfkriterien für das beschlossene Reverse-Geocoding. |
 | Prüfung | Inhalte wurden gegen P1, P2, F1, F2, F3, D1, D2, B1, S1, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Vor dem Merge erfolgt zusätzlich ein Team-Review. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. Nachtrag (2026-07-26, Claude Sonnet 5): veralteter Hinweis auf S1 als Stub in N1.8 korrigiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz in N1.7 als bewusst nicht festgelegt aufgenommen und begründet; damit endet der zirkuläre Verweis zwischen D2.11, N1.8 und N2.15. Aktualisierung (2026-07-28, Codex): Bereits entschiedene oder ausgeschlossene Aussagen in N1-QA-03, N1-QA-05 und N1-QA-06 korrekt als Festlegung beziehungsweise Abgrenzung bezeichnet. |

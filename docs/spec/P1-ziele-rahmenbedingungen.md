@@ -40,11 +40,11 @@ LocalCourt löst das Problem der dezentralisierten Koordination: Heute brauchen 
 
 ### In-Scope
 
-- **Web-UI für Session-Verwaltung**: Erstellen, anschauen, beitreten (Bearbeiten und Löschen bestehender Sessions sind im MVP bewusst nicht vorgesehen, siehe [F2](F2-anwendungsfaelle.md#uc-06--session-erstellen)/[F3](F3-anwendungsfunktionen.md)).
-- **Court-/Sportplatz-Verzeichnis**: Erfassen, durchsuchen, filtern nach Sportart und Location.
+- **Web-UI für Session-Verwaltung**: Erstellen, anschauen, beitreten (Bearbeiten, Absagen und Löschen bestehender Sessions sind im MVP bewusst nicht vorgesehen, siehe [F2](F2-anwendungsfaelle.md#uc-06--session-erstellen)/[F3](F3-anwendungsfunktionen.md)).
+- **Court-/Sportplatz-Verzeichnis**: Erfassen über Kartenpin und Reverse-Geocoding, durchsuchen und nach Sportart und Ort filtern.
 - **Teilnehmer-Verwaltung**: Check-In und Kapazitätsverwaltung (vom Organisator festgelegte maximale Teilnehmerzahl pro Session). Wartelisten sind bewusst ausgeschlossen (siehe NG-10).
-- **Session-Status-Management**: Status-Lifecycle (geplant, aktiv, abgeschlossen, storniert).
-- **Nutzer-Profile**: Basis-Informationen (Name, Profil-Bild, Sportarten-Interessen) anzeigen und bearbeiten (siehe [B1 DLG-08](B1-dialogspezifikation.md#b148-dlg-08--profil)).
+- **Session-Status-Management**: Status-Lifecycle (geplant, aktiv, abgeschlossen), automatisch aus Startzeitpunkt und Dauer berechnet.
+- **Nutzer-Profile**: Basisinformationen (Name, Heimatort, Sportarten-Interessen) bearbeiten und ein vorhandenes Profilbild anzeigen. Upload und Bearbeitung des Profilbilds sind nicht Teil des MVP (siehe [B1 DLG-08](B1-dialogspezifikation.md#b148-dlg-08--profil)).
 - **Responsive Design**: Mobile & Desktop gleichwertig unterstützt.
 - **Authentifizierung**: Einfache Nutzer-Anmeldung mit E-Mail und Passwort. OAuth/Social-Login ist nicht Teil des MVP (siehe [S1.3](S1-nachbarsysteme.md#s13-nb-02--supabase-auth)).
 
@@ -62,6 +62,7 @@ LocalCourt löst das Problem der dezentralisierten Koordination: Heute brauchen 
 | **NG-08** | KI-Integration (z.B. Recommendation Engine) | Kein KI-Budget, keine speziellen Datenquellen verfügbar. Community-Discovery reicht. |
 | **NG-09** | Daten-Migration / Legacy-Import | Greenfield-Projekt, keine Vorgänger-Daten. |
 | **NG-10** | Wartelisten bei vollen Sessions | Eine Warteliste wäre nur mit einem Benachrichtigungskanal ("Platz frei") sinnvoll. Benachrichtigungen (E-Mail/SMS/Push) sind out of scope (NG-02, Free-Tier-Constraint CON-T-05) und in F1 ausgeschlossen. Ohne Rückkanal bringt eine Warteliste keinen fachlichen Nutzen. Kapazität ist daher eine harte Grenze (siehe F3, AF-01). Ursprünglich in P1 in-scope genannt; nach Abgleich mit F1/F2 bewusst zurückgezogen. |
+| **NG-11** | Bearbeiten, Absagen oder Löschen bestehender Sessions | Diese Aktionen würden zusätzliche Anwendungsfälle und Regeln für bereits beigetretene Teilnehmer erfordern. Im MVP bleiben erstellte Sessions unverändert und enden ausschließlich zeitbasiert. |
 
 ---
 
@@ -131,5 +132,5 @@ Die Mission wird unter klaren Budget-, Technologie-, und zeitlichen Constraints 
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | GitHub Copilot / Claude Code / Codex |
-| Verwendung | Entwurf des P1-Bausteins: Mission, Geschäftsziele, Stakeholder, Scope, Rahmenbedingungen und Erfolgskriterien. Claude Code (Claude Sonnet 5) zudem für zwei Konsistenz-Durchgänge (2026-07-26): Scope-Widersprüche zu F2/F3/D1/B1 in P1.4 (Bearbeiten/Löschen, Teilnehmerlimit-Platzhalter, Profil-Sichtbarkeit) aufgelöst; Authentifizierung auf E-Mail und Passwort festgelegt (OAuth aus dem MVP-Scope und aus CON-D-03 entfernt, siehe S1.3); SC-07 auf das tatsächlich eingesetzte Deployment über die Git-Integration von Vercel korrigiert. Codex glich am 2026-07-28 die technischen Constraints an den bereits in P2 festgelegten Stack an. |
+| Verwendung | Entwurf des P1-Bausteins: Mission, Geschäftsziele, Stakeholder, Scope, Rahmenbedingungen und Erfolgskriterien. Claude Code (Claude Sonnet 5) zudem für zwei Konsistenz-Durchgänge (2026-07-26): Scope-Widersprüche zu F2/F3/D1/B1 in P1.4 (Bearbeiten/Löschen, Teilnehmerlimit-Platzhalter, Profil-Sichtbarkeit) aufgelöst; Authentifizierung auf E-Mail und Passwort festgelegt. Codex grenzte am 2026-07-29 Bearbeiten, Absagen, Löschen und Profilbildbearbeitung als Nicht-MVP ab und nahm Reverse-Geocoding in den Scope auf. |
 | Prüfung | Inhalte wurden gegen die Projektidee, [TEAMINFO](../../TEAMINFO.md), bestehende Spezifikationsbausteine, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Die Stack-Angaben wurden insbesondere mit P2 und der Root-README abgeglichen. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. |
