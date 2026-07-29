@@ -96,9 +96,9 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Use Cases | UC-01, UC-03, UC-07, UC-12 |
 | Betroffene Datenobjekte / Datentypen | `profile` (D1: `display_name`, `city`, `avatar_url`); E-Mail/Passwort liegen bewusst außerhalb des Datenmodells beim Nachbarsystem Supabase Auth (D1.4, S1 NB-02). |
 | Betroffene Dialoge | DLG-04 (Teilnehmerliste), DLG-07 (Rollenanzeige), DLG-08 (Profil) |
-| Akzeptanzkriterien | Given eine Teilnehmerliste (DLG-04), When sie angezeigt wird, Then erscheinen als Profildaten ausschließlich `display_name` und optional `avatar_url` und keine Auth-internen Daten (Passwort, Token). Given ein Nutzer betrachtet oder bearbeitet sein eigenes Profil (DLG-08), Then bleiben die dort vorgesehenen eigenen Profilfelder verfügbar. Given ein Nutzer verlangt Löschung, When die Anfrage bearbeitet wird, Then werden die zugehörigen `profile`- und `participant`-Daten entfernt oder anonymisiert (Umsetzung: N2). |
+| Akzeptanzkriterien | Given eine Teilnehmerliste (DLG-04), When sie angezeigt wird, Then erscheinen als Profildaten ausschließlich `display_name` und optional `avatar_url` und keine Auth-internen Daten (Passwort, Token). Given ein Nutzer betrachtet oder bearbeitet sein eigenes Profil (DLG-08), Then bleiben die dort vorgesehenen eigenen Profilfelder verfügbar. Given eine bestätigte Löschanfrage, When ein Administrator das Auth-Konto entfernt, Then werden Profil, Präferenzen, Teilnahmen und organisierte Sessions gemäß N2.15 gelöscht. |
 | Prüfmethode | Review der in der Teilnehmerliste angezeigten Felder gegen D1/B1; Prüfung, dass `city` und Auth-Rohdaten weder dort noch in dafür bestimmten Antworten sichtbar sind. |
-| Offene Punkte | Der konkrete Ablauf für Auskunft und Löschung ist in [N2.15](N2-querschnittskonzepte.md#n215-offene-punkte) als offener Punkt geführt. |
+| Festlegung | Auskunfts- und Löschanfragen werden im MVP über die in der Datenschutzerklärung genannte Kontaktadresse nach Identitätsprüfung administrativ bearbeitet; Datenumfang und Löschwirkung sind in [N2.15](N2-querschnittskonzepte.md#n215-dsgvo-auskunft-und-löschung) festgelegt. |
 
 ### N1-QA-05 — Sicherheit
 
@@ -173,7 +173,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Dialoge | DLG-01, DLG-04, DLG-05, DLG-06 |
 | Akzeptanzkriterien | Given ein fachlicher oder technischer Fehler, When er dem Nutzer angezeigt wird, Then enthält der Text keine Stacktraces, SQL-Fehlermeldungen oder interne Kennungen. Given einen Ergebniscode aus AF-01/AF-02 (z. B. `SESSION_FULL`, `OUTSIDE_WINDOW`), When er auftritt, Then zeigt der Dialog den in B1 (DLG-04, DLG-06) hinterlegten verständlichen Text. |
 | Prüfmethode | Manuelle Prüfung der Fehlertexte je Ausnahmefall aus F2 im Browser; Stichprobe der Konsolen-/Serverlogs auf personenbezogene Daten. |
-| Offene Punkte | Endgültige Formulierungen einzelner Fehlertexte liegen bei [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). |
+| Festlegung | Die verbindlichen Texte für AF-01 und AF-02 sowie der technische Rückfalltext stehen in B1 DLG-04/DLG-06. |
 
 ### N1-QA-10 — Betrieb im Free-/Student-Tier
 
@@ -278,5 +278,5 @@ Im Review lässt sich damit für jede Qualitätsanforderung erklären: welcher U
 | Punkt | Beschreibung |
 |---|---|
 | Werkzeug | Claude Code / ChatGPT |
-| Verwendung | Entwurf, Strukturierung, Formulierungsvorschläge, Konsistenzprüfung und Akzeptanzkriterien für den N1-Baustein, ausgehend von den bestehenden „Bezug zu NFR / Qualität"-Angaben und offenen Punkten in F2, F3, D1, D2 und B1. Codex ergänzte am 2026-07-29 die Robustheits- und Prüfkriterien für das beschlossene Reverse-Geocoding und präzisierte die Datenschutzprüfung für die festgelegten sichtbaren Profilfelder. |
+| Verwendung | Entwurf, Strukturierung, Formulierungsvorschläge, Konsistenzprüfung und Akzeptanzkriterien für den N1-Baustein, ausgehend von den bestehenden „Bezug zu NFR / Qualität"-Angaben und offenen Punkten in F2, F3, D1, D2 und B1. Codex ergänzte am 2026-07-29 Robustheitskriterien, präzisierte die Datenschutzprüfung und arbeitete die bestätigten Abläufe für Fehlertexte sowie DSGVO-Auskunft und -Löschung ein. |
 | Prüfung | Inhalte wurden gegen P1, P2, F1, F2, F3, D1, D2, B1, S1, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Vor dem Merge erfolgt zusätzlich ein Team-Review. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. Nachtrag (2026-07-26, Claude Sonnet 5): veralteter Hinweis auf S1 als Stub in N1.8 korrigiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz in N1.7 als bewusst nicht festgelegt aufgenommen und begründet; damit endet der zirkuläre Verweis zwischen D2.11, N1.8 und N2.15. Aktualisierung (2026-07-28, Codex): Bereits entschiedene oder ausgeschlossene Aussagen in N1-QA-03, N1-QA-05 und N1-QA-06 korrekt als Festlegung beziehungsweise Abgrenzung bezeichnet. |

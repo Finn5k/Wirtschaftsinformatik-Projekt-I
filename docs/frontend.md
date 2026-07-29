@@ -155,7 +155,7 @@ Profil → Bearbeiten → lokale Ansicht aktualisieren
 | Zugriffsschutz | geschützte Routen sind direkt aufrufbar | Weiterleitung nicht angemeldeter Nutzer und Rückkehr zur ursprünglich gewünschten Funktion gemäß B1.5.2 |
 | Session-Beitritt | lokaler Zustand in der Detailseite | persistenter, atomarer Beitritt nach AF-01; Teilnehmerzahl und „Meine Sessions“ müssen gemeinsam aktualisiert werden |
 | Session-Erstellung | Erfolgsvorschau ohne neuen Datensatz | persistente Session samt Court, Organisator-Teilnahme und anschließender Navigation zur neuen Detailansicht |
-| Court-Neuerfassung | nur Bestandteil des Formularzustands, ohne Kartenpin | persistente Erfassung mit verpflichtendem Kartenpin und Reverse-Geocoding für Ort/Adresse (S1.5/S1.6); Dublettenverhalten bleibt offen |
+| Court-Neuerfassung | nur Bestandteil des Formularzustands, ohne Kartenpin | persistente Erfassung mit verpflichtendem Kartenpin und Reverse-Geocoding für Ort/Adresse (S1.5/S1.6); automatische Dublettenprüfung ist kein MVP |
 | QR-Code | Symbol beziehungsweise Platzhalter | echte QR-Erzeugung im festgelegten Deep-Link-Format (AF-04, N2.8) |
 | QR-Check-in | Schaltfläche bestätigt ohne Scan oder Merkmalsprüfung | tatsächlicher QR-Einstieg und dieselbe fachliche Prüfung wie beim PIN-Weg |
 | PIN-Check-in | prüft lokal gegen die PIN der Mock-Session | Prüfung von Anmeldung, bestehender Teilnahme, Zeitfenster, Idempotenz und Persistenz nach AF-02 |
@@ -163,7 +163,7 @@ Profil → Bearbeiten → lokale Ansicht aktualisieren
 | Profil | Änderungen gelten nur bis zum Verlassen der Seite; Profilbild ist read-only | persistente Änderung von Anzeigename, Ort und Präferenzen; Profilbild-Upload und -Bearbeitung sind kein MVP |
 | Karte | OSM-Karte ist real eingebunden | spezifizierte Graceful Degradation bei nicht erreichbarem Kartendienst fehlt |
 | Lade-/Netzwerkfehler | keine asynchronen Anfragen vorhanden | Ladeanzeigen, während laufender Anfragen deaktivierte Aktionen, verständliche Fehlermeldungen und Wiederholungsmöglichkeiten gemäß B1.5.4 |
-| Validierung | zentrale Formulare validieren ausgewählte Pflichtangaben | vollständige Umsetzung der Regeln aus D2/N1; endgültige Fehlertexte bleiben offen |
+| Validierung | zentrale Formulare validieren ausgewählte Pflichtangaben | vollständige Umsetzung der Regeln aus D2/N1 und der verbindlichen Fehlertexte aus B1 |
 | Tests | kein Testskript und keine automatisierten UI-Tests | Umfang und Werkzeugwahl sind noch nicht festgelegt |
 
 ## Offene fachliche und technische Entscheidungen
@@ -187,5 +187,5 @@ Festlegungen stehen in den dort verlinkten Spezifikationsbausteinen.
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | ChatGPT / Codex |
-| Verwendung | Abgleich der Frontend-Dokumentation mit den vorhandenen Routen, Seiten, Komponenten, Mockdaten und Services; Codex aktualisierte am 2026-07-29 Statusumfang, Profilbildabgrenzung, Court-Reverse-Geocoding und die umgesetzte Check-in-Deep-Link-Route. |
+| Verwendung | Abgleich der Frontend-Dokumentation mit den vorhandenen Routen, Seiten, Komponenten, Mockdaten und Services; Codex aktualisierte am 2026-07-29 Statusumfang, Profilbildabgrenzung, Court-Reverse-Geocoding, Check-in-Deep-Link sowie die bestätigten Festlegungen zu Court-Dubletten und Fehlertexten. |
 | Prüfung | Angaben wurden gegen `src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/` und die bestehenden Bausteine B1, F2, F3, D1, D2 und N1 geprüft. Es wurden keine fachlichen oder technischen Entscheidungen ergänzt. Nachtrag (2026-07-26, Claude Sonnet 5): zwei Abweichungszeilen korrigiert, die QR-Format und Statusführung noch als offen führten, obwohl sie in AF-04/N2.8 bzw. N2.6 entschieden sind. Aktualisierung (2026-07-28, Codex): Validierungsbedarf an die bewussten Festlegungen und Nicht-Festlegungen aus D2/N1 angeglichen. Redundanzkorrektur (2026-07-28, Codex): Wiederholung offener und bereits entschiedener Spezifikationspunkte durch einen Verweis auf B1.8 ersetzt. |

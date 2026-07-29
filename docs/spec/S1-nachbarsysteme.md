@@ -94,7 +94,7 @@ Hier genügt eine Berechtigungsprüfung ohne mehrschrittige fachliche Regel; die
 
 | Operation | Ausgelöst durch | Semantik |
 |---|---|---|
-| `courtAnlegen(name, ort, adresse?, koordinaten) → Court` | [UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen) | Jeder angemeldete Nutzer darf einen Sportort erfassen; er wird als Erfasser vermerkt. Name, Ort und Koordinaten sind Pflicht, die Adressangabe ist optional ([D1.4](D1-datenmodell.md#d14-entitätstypen-im-detail)). Koordinaten entstehen durch den Kartenpin ([S1.5](#s15-nb-04--openstreetmap-tiles)); Ort und Adresse stammen aus dem unmittelbar ausgelösten Reverse-Geocoding ([S1.6](#s16-nb-05--nominatim-reverse-geocoding)). Eine Dublettenprüfung ist nicht Teil des MVP (offener Punkt in UC-10). |
+| `courtAnlegen(name, ort, adresse?, koordinaten) → Court` | [UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen) | Jeder angemeldete Nutzer darf einen Sportort erfassen; er wird als Erfasser vermerkt. Name, Ort und Koordinaten sind Pflicht, die Adressangabe ist optional ([D1.4](D1-datenmodell.md#d14-entitätstypen-im-detail)). Koordinaten entstehen durch den Kartenpin ([S1.5](#s15-nb-04--openstreetmap-tiles)); Ort und Adresse stammen aus dem unmittelbar ausgelösten Reverse-Geocoding ([S1.6](#s16-nb-05--nominatim-reverse-geocoding)). Eine automatische Dublettenprüfung ist gemäß UC-10 bewusst nicht Teil des MVP. |
 | `profilAktualisieren(anzeigename, ort) → Profil` | [UC-12](F2-anwendungsfaelle.md#uc-12--profil-und-sportpräferenzen-verwalten) | Nur das eigene Profil ist änderbar. `avatar_url` wird im MVP nicht geändert. |
 | `sportpraeferenzSetzen(sportart)` / `sportpraeferenzEntfernen(sportart)` | [UC-12](F2-anwendungsfaelle.md#uc-12--profil-und-sportpräferenzen-verwalten) | Nur die eigenen Präferenzen sind änderbar; je Nutzer und Sportart höchstens ein Eintrag ([D1.4](D1-datenmodell.md#d14-entitätstypen-im-detail)). |
 
@@ -189,12 +189,12 @@ Ebenfalls **nicht** Gegenstand von S1:
 | Seitengröße der Ergebnislisten | Konkrete Blockgröße beim seitenweisen Abruf in `sessionsSuchen`. | ARCH |
 | Wiederholverhalten | Ob und wie oft ein fehlgeschlagener Aufruf automatisch wiederholt wird, statt den Nutzer erneut auslösen zu lassen. | ARCH |
 
-Das Verhalten bei offensichtlichen Court-Dubletten ist eine Frage des Dialogverhaltens und liegt bei [B1.8](B1-dialogspezifikation.md#b18-offene-punkte); es berührt keine Schnittstelle.
+Eine automatische Court-Dublettenprüfung ist gemäß [F2 UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen) nicht Teil des MVP und berührt daher keinen Schnittstellen-Contract.
 
 ## S1.10 Eingesetzte KI-Werkzeuge
 
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | GitHub Copilot (ursprüngliche Stub-Struktur), Claude Code (Claude Sonnet 5, Ausarbeitung), Codex |
-| Verwendung | Vollständige Ausarbeitung des Bausteins nach dem Vorbild der Referenz-Dokumentation (Herold S1): Operationen, Ein-/Ausgaben, Semantik und Fehlerbehandlung je Nachbarsystem; Auflösung der zuvor als „zu dokumentieren" markierten Abschnitte; Aufnahme der Teamentscheidungen zu Authentifizierungsverfahren, atomaren Schreiboperationen und QR-Scan über die Gerätekamera. Codex ergänzte am 2026-07-29 den Contract für das beschlossene Reverse-Geocoding über Nominatim, aktualisierte die betroffenen Abgrenzungen und glich den Teilnehmerlisten-Contract an die festgelegten sichtbaren Profilfelder an. |
+| Verwendung | Vollständige Ausarbeitung des Bausteins nach dem Vorbild der Referenz-Dokumentation (Herold S1): Operationen, Ein-/Ausgaben, Semantik und Fehlerbehandlung je Nachbarsystem. Codex ergänzte am 2026-07-29 Reverse-Geocoding und Profilsichtbarkeit und glich anschließend die bestätigte Nicht-MVP-Abgrenzung der Court-Dublettenprüfung ab. |
 | Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [N1](N1-nichtfunktionale-anforderungen.md) und [N2](N2-querschnittskonzepte.md). Die zuvor im Stub genannten Endpunkt-URLs wurden entfernt, weil sie teils nicht den tatsächlichen Schnittstellen entsprachen und die Endpunkt-Ebene laut Referenz-Vorbild in die Architekturdokumentation gehört. Aktualisierung (2026-07-28, Codex): Veraltete Kennzeichnung der in UC-02 bereits ausgeschlossenen Geolocation als offenen Punkt entfernt. Die fachliche Verantwortung bleibt beim Team. |
