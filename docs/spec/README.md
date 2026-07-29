@@ -260,10 +260,10 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 | Datum | Autor | Änderung |
 |-------|-------|----------|
 | 2026-06-19 | Finn Belk, mit Copilot-Unterstützung | P1 und P2 Spezifikationsdokumente erstellt |
-| 2026-06-30 | Finn Belk | F1 Geschäftsprozesse nach Siedersleben ergänzt |
+| 2026-06-30 | Finn Belk, mit Copilot-Unterstützung | F1 Geschäftsprozesse nach Siedersleben ergänzt |
 | 2026-07-09 | Afrem Aydin, mit KI-Unterstützung | F2 Anwendungsfälle erstellt |
-| 2026-07-10 | Finn Belk | F3 Anwendungsfunktionen ergänzt |
-| 2026-07-10 | Finn Belk | P1/F2 fachlich angepasst und Wartelisten aus dem Scope entfernt |
+| 2026-07-10 | Finn Belk, mit Copilot-Unterstützung | F3 Anwendungsfunktionen ergänzt |
+| 2026-07-10 | Finn Belk, mit Copilot-Unterstützung | P1/F2 fachlich angepasst und Wartelisten aus dem Scope entfernt |
 | 2026-07-11 | Finn Belk, mit Claude-Code-Unterstützung | D1 Datenmodell erstellt |
 | 2026-07-11 | Finn Belk, mit Claude-Code-Unterstützung | D2 Datentypenverzeichnis erstellt |
 | 2026-07-11 | Finn Belk, mit KI-Unterstützung | Spezifikationsindex für D1/D2 aktualisiert und KI-Disclosure ergänzt |
