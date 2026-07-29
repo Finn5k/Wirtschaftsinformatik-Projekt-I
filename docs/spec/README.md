@@ -41,7 +41,7 @@ Beschreibt aus Anwendungssicht, wie sich LocalCourt in seine Umgebung einbettet:
 - 3 kritische Datenflüsse: Session erstellen, Session entdecken/beitreten, Check-in
 - Bewusste Ausschlüsse (KI-APIs, Payment, E-Mail-Services, Message Queues)
 
-**Hinweis**: Interne Komponentenarchitektur, React-Komponenten, API-Struktur, Laufzeitsichten, Deployment-Details und Architekturentscheidungen gehören nicht in P2, sondern in die Architekturdokumentation nach arc42 unter `docs/arch/`.
+**Hinweis**: Interne Komponentenarchitektur, React-Komponenten, API-Struktur, Laufzeitsichten, Deployment-Details und Architekturentscheidungen stehen in der [Architekturdokumentation](../arch/README.md).
 
 ---
 
@@ -165,7 +165,7 @@ Schnittstellen-Contracts je Nachbarsystem: die Operationen, die LocalCourt gegen
 - NB-05 Nominatim: Reverse-Geocoding des gesetzten Court-Pins zu Ort und optionaler Adresse
 - S1.7 bewusst nicht genutzte Schnittstellen (Realtime, Storage, Passwort-Reset, OAuth, Kamera, Geolocation)
 
-**Ebene:** S1 benennt Operationen und Semantik; konkrete Endpunkt-URLs und Payload-Feldnamen gehören in die Architekturdokumentation (`docs/arch/`).
+**Ebene:** S1 benennt Operationen und Semantik; ihre Bindung an Bausteine und Laufzeitabläufe steht in der [Architekturdokumentation](../arch/README.md).
 
 ---
 
@@ -239,7 +239,7 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 5. **S1/N2 prüfen und pflegen** (✅ vorhanden): Schnittstellen der Nachbarsysteme und Querschnittskonzepte aktuell halten
 6. **E1/E2 prüfen und pflegen** (✅ vorhanden): Leseanleitung und Glossar aktuell halten
 7. **B2/B3/S2** (✅ als nicht anwendbar dokumentiert)
-8. **Architektur erstellen**: Interne Architektur unter `docs/arch/` dokumentieren
+8. **Architektur pflegen**: Interne Architektur in [docs/arch/README.md](../arch/README.md) mit der Spezifikation und Implementierung synchron halten
 9. **Anforderungen umsetzen**: Anforderungen aus P1/F1–F3/D1–D2/N1 nachvollziehbar in Architektur, Code und Tests umsetzen
 10. **S3 ergänzen**: Inbetriebnahme nach der Implementierung dokumentieren
 
@@ -250,7 +250,7 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 - **Projekt-Root**: [../../README.md](../../README.md)
 - **Team & Rollen**: [../../TEAMINFO.md](../../TEAMINFO.md)
 - **Frontend-Prototyp**: [../frontend.md](../frontend.md)
-- **Architektur**: `docs/arch/`
+- **Architektur**: [docs/arch/README.md](../arch/README.md)
 - **Herold-Referenz**: [Herold P1 Example](https://github.com/carstenlucke/herold/blob/main/docs/spec/P1-ziele-rahmenbedingungen.md)
 
 ---
@@ -283,6 +283,7 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 | 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Beschlossene MVP-Abgrenzungen zu Session-Änderungen und Profilbildern eingearbeitet, `cancelled` entfernt, Nominatim-Reverse-Geocoding spezifiziert und Check-in-Deep-Link im Prototyp angeglichen |
 | 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Bereits entschiedene Sichtbarkeit von Anzeigename und optionalem Profilbild in Teilnehmerlisten über B1, F2, D1, N1, N2 und S1 konsistent nachgezogen |
 | 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Teamentscheidungen zu Sortierung, Court-Dubletten, Organisator-Ergebnisdaten, Fehlertexten sowie DSGVO-Auskunft und -Löschung konsistent eingearbeitet |
+| 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Schlanke arc42-Architekturdokumentation mit Baustein-, Laufzeit- und Deployment-Sichten, Querschnittskonzepten, ADRs und Prototyp-Abgleich ergänzt |
 
 ---
 
@@ -300,5 +301,5 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | GitHub Copilot, Claude Code, ChatGPT — soweit im jeweiligen Bearbeitungsschritt verwendet |
-| Verwendung | Strukturierung, Formulierungsvorschläge, Konsistenzprüfung und Pflege des Spezifikationsindex |
+| Verwendung | Strukturierung, Formulierungsvorschläge, Konsistenzprüfung, Pflege des Spezifikationsindex und Verknüpfung der ergänzenden arc42-Architekturdokumentation |
 | Prüfung | Inhalte wurden gegen die vorhandenen Spezifikationsbausteine, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Die fachliche Verantwortung bleibt beim Team. Jeder Baustein weist die konkrete KI-Nutzung zusätzlich im eigenen Abschnitt „Eingesetzte KI-Werkzeuge" aus. Redundanzkorrektur (2026-07-28, Codex): Status im Index nur noch in den Überschriften geführt; wiederholte Entscheidungen und dezentrale Status-/Historienangaben auf ihre maßgeblichen Fundstellen reduziert. |

@@ -143,7 +143,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Dialoge | keine dialogspezifische Wirkung; betrifft die Code-Ebene hinter B1 |
 | Akzeptanzkriterien | Given ein Datenobjekt aus D1 (z. B. `session`, `participant`), When es im Code referenziert wird, Then trägt es denselben Namen wie in D1/D2. Given eine Architekturkomponente aus P2, When sie im Code gesucht wird, Then ist sie anhand vergleichbarer Modul-/Ordnernamen auffindbar. |
 | Prüfmethode | Code-Review: Stichprobenartiger Abgleich von Entitäts-/Feldnamen im Code gegen D1/D2; Abgleich von Modulnamen gegen P2. |
-| Offene Punkte | Konkrete Ordner-/Modulstruktur ist Sache der Architekturdokumentation nach arc42 und wird hier nicht vorweggenommen. |
+| Architekturbezug | Die konkrete Zuordnung zu App-Shell, Seiten, Komponenten, Services, Typen und Daten steht in der [Bausteinsicht](../arch/README.md#41-frontend). |
 
 ### N1-QA-08 — Testbarkeit
 
@@ -278,5 +278,5 @@ Im Review lässt sich damit für jede Qualitätsanforderung erklären: welcher U
 | Punkt | Beschreibung |
 |---|---|
 | Werkzeug | Claude Code / ChatGPT |
-| Verwendung | Entwurf, Strukturierung, Formulierungsvorschläge, Konsistenzprüfung und Akzeptanzkriterien für den N1-Baustein, ausgehend von den bestehenden „Bezug zu NFR / Qualität"-Angaben und offenen Punkten in F2, F3, D1, D2 und B1. Codex ergänzte am 2026-07-29 Robustheitskriterien, präzisierte die Datenschutzprüfung und arbeitete die bestätigten Abläufe für Fehlertexte sowie DSGVO-Auskunft und -Löschung ein. |
+| Verwendung | Entwurf, Strukturierung, Formulierungsvorschläge, Konsistenzprüfung und Akzeptanzkriterien für den N1-Baustein. Codex ergänzte am 2026-07-29 Robustheits-, Datenschutz- und Fehlerkriterien und verknüpfte die Wartbarkeitsanforderung mit der fertiggestellten Architektur-Bausteinsicht. |
 | Prüfung | Inhalte wurden gegen P1, P2, F1, F2, F3, D1, D2, B1, S1, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Vor dem Merge erfolgt zusätzlich ein Team-Review. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. Nachtrag (2026-07-26, Claude Sonnet 5): veralteter Hinweis auf S1 als Stub in N1.8 korrigiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz in N1.7 als bewusst nicht festgelegt aufgenommen und begründet; damit endet der zirkuläre Verweis zwischen D2.11, N1.8 und N2.15. Aktualisierung (2026-07-28, Codex): Bereits entschiedene oder ausgeschlossene Aussagen in N1-QA-03, N1-QA-05 und N1-QA-06 korrekt als Festlegung beziehungsweise Abgrenzung bezeichnet. |

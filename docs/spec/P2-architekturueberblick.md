@@ -4,7 +4,7 @@ Beschreibt aus Anwendungssicht, wie sich LocalCourt in seine Umgebung einbettet:
 
 Nach Siedersleben Section 4.2: Das Ziel dieses Bausteins ist die **vollständige Aufzählung aller Nachbarsysteme** und die Datenflussbeschreibung zwischen ihnen.
 
-**Hinweis**: Interne Architektur (Komponenten-Zerlegung, Layering, Laufzeitsichten, Deployment-Details) ist **außer Scope** und wird in der Architekturdokumentation unter `docs/arch/` beschrieben.
+**Hinweis**: Interne Architektur (Komponenten-Zerlegung, Layering, Laufzeitsichten, Deployment-Details) ist **außer Scope** und wird in der [Architekturdokumentation](../arch/README.md) beschrieben.
 
 ---
 
@@ -256,7 +256,7 @@ Alle Nachbarsysteme sind **Cloud-Services** über HTTPS-APIs, ideal für Free-Ti
 
 - **P1 — Ziele und Rahmenbedingungen**: `P1-ziele-rahmenbedingungen.md`
 - **S1 — Nachbarsysteme (Schnittstellen-Contracts)**: [S1-nachbarsysteme.md](S1-nachbarsysteme.md)
-- **Architekturdokumentation**: `docs/arch/` (in Arbeit)
+- **Architekturdokumentation**: [docs/arch/README.md](../arch/README.md)
 - **Herold P2 Reference** (English): [GitHub](https://github.com/carstenlucke/herold/blob/main/docs/spec/P2-architekturueberblick.md)
 - **Team & Rollen**: `../../TEAMINFO.md`
 
@@ -267,5 +267,5 @@ Alle Nachbarsysteme sind **Cloud-Services** über HTTPS-APIs, ideal für Free-Ti
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | GitHub Copilot, Claude (Claude Code), Codex |
-| Verwendung | Entwurf des Architekturüberblicks: Systemkontext, Nachbarsysteme, Deployment-Topologie und kritische Datenflüsse. Codex ergänzte am 2026-07-29 Nominatim als beschlossenes fünftes Nachbarsystem für Reverse-Geocoding. |
+| Verwendung | Entwurf des Architekturüberblicks: Systemkontext, Nachbarsysteme, Deployment-Topologie und kritische Datenflüsse. Codex ergänzte am 2026-07-29 Nominatim und glich anschließend den Verweis auf die fertiggestellte arc42-Architekturdokumentation ab. |
 | Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md) und [S1](S1-nachbarsysteme.md). Systemkontext, Nachbarsysteminventar und Datenflüsse wurden nach der Teamentscheidung erneut geprüft; Nominatim ist als NB-05 aufgenommen und nicht mehr als zukünftige Erweiterung geführt. |
