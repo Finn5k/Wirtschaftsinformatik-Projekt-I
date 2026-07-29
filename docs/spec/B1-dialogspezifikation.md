@@ -208,7 +208,7 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 | Sportort | Anzeige | Text (+ Kartenausschnitt) | `court.name`, `city`; Karte nur bei Koordinaten | — | — |
 | Organisator | Anzeige | Text | `profile.display_name` via `organizer_id` | — | — |
 | Belegung | Anzeige | Text/Balken | abgeleitet `confirmed_count` / `max_participants` | — | — |
-| Teilnehmerliste | Anzeige | Liste | `participant` (→ `profile.display_name`, `status`) | — | Umfang sichtbarer Profildaten offen → [B1.8](#b18-offene-punkte); Check-in-Status nur für Organisator |
+| Teilnehmerliste | Anzeige | Liste | `participant` (→ `profile.display_name`, optional `profile.avatar_url`, `status`) | — | Für andere Nutzer sind ausschließlich Anzeigename und optionales Profilbild sichtbar; Check-in-Status nur für Organisator |
 | QR-Code + PIN | Anzeige | `QrContent`, `Pin` | abgeleitet `qr_content`, `session.pin` | — | **nur Organisator-Zustand** (AF-04) |
 
 **Zustände und verfügbare Aktionen**
@@ -448,7 +448,7 @@ Der aktuelle UI-Prototyp bildet alle Dialoge DLG-01 bis DLG-08 ab. Die nachfolge
 | Session-Lifecycle | Statuswerte sind statische Mockdaten | Umsetzung der in [N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03) festgelegten Statusberechnung nach AF-03 fehlt |
 | Kartenfehler | echte OSM-Karte ist eingebunden | Graceful Degradation zu DLG-02 bei Ausfall fehlt |
 | Lade- und Netzwerkzustände | keine asynchronen Backend-Anfragen | Muster aus [B1.5.4](#b154-fehler--und-ladezustände) sind noch nicht demonstriert |
-| Profil | Bearbeitung wirkt nur im lokalen Seitenzustand; Profilbild wird ausschließlich angezeigt | Persistenz von Anzeigename, Ort und Präferenzen fehlt; weitere sichtbare Profildaten bleiben offen ([B1.8](#b18-offene-punkte)) |
+| Profil | Bearbeitung wirkt nur im lokalen Seitenzustand; Profilbild wird ausschließlich angezeigt | Persistenz von Anzeigename, Ort und Präferenzen fehlt |
 | Validierungsgrenzen | ausgewählte Pflichtfelder werden geprüft | die in D2/N1 festgelegten Validierungsregeln sind noch nicht vollständig umgesetzt; endgültige Fehlertexte bleiben offen |
 
 Im aktuellen Prototyp sind keine früher dokumentierten Gamification-, Events-/Challenges-, Benachrichtigungs-, Rang-, Sichtbarkeits-, Merken- oder Teilen-Funktionen mehr vorhanden.
@@ -471,7 +471,6 @@ B1 ist der zuständige Baustein für alle Fragen des Dialogverhaltens — Feldli
 
 | Punkt | Beschreibung | Zuständig |
 |---|---|---|
-| Sichtbare Profildaten in Teilnehmerlisten | Ob DLG-04 über die in [N2.11](N2-querschnittskonzepte.md#n211-row-level-security-rls) freigegebenen Basisfelder (`display_name`, `avatar_url`) hinaus weitere Felder zeigt. Die Basisfelder selbst sind entschieden. | B1 |
 | Sortierung/Gruppierung der Listen | DLG-02 (Reihenfolge der Treffer), DLG-07 (Sortierung je Tab). | B1 |
 | Konkrete Fehlertexte | Endgültige Formulierungen je Ergebniscode (AF-01/AF-02); die sinngemäßen Texte stehen bereits in DLG-04 und DLG-06. | B1 |
 | Court-Dubletten in der Auswahl | Verhalten von DLG-05, wenn ein offensichtlich bereits vorhandener Sportort neu erfasst wird (UC-10). | B1 |
@@ -481,5 +480,5 @@ B1 ist der zuständige Baustein für alle Fragen des Dialogverhaltens — Feldli
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Claude Code (Fable 5, Claude Sonnet 5), ChatGPT / Codex |
-| Verwendung | Entwurf des B1-Bausteins: Ableitung der Dialoglandkarte und der Feld-/Aktionslisten aus F2/F3/D1/D2 und dem UI-Prototyp; systematischer Abgleich Prototyp ↔ MVP-Scope (B1.6). Codex aktualisierte am 2026-07-29 Court-Erfassung, Profilbildabgrenzung, Sessionstatus und den umgesetzten Check-in-Deep-Link. |
+| Verwendung | Entwurf des B1-Bausteins: Ableitung der Dialoglandkarte und der Feld-/Aktionslisten aus F2/F3/D1/D2 und dem UI-Prototyp; systematischer Abgleich Prototyp ↔ MVP-Scope (B1.6). Codex aktualisierte am 2026-07-29 Court-Erfassung, Profilbildabgrenzung, Sessionstatus und den umgesetzten Check-in-Deep-Link und glich die bereits entschiedene Sichtbarkeit von Anzeigename und optionalem Profilbild ab. |
 | Prüfung | Inhalte wurden gegen [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [N1](N1-nichtfunktionale-anforderungen.md), [`../frontend.md`](../frontend.md), den aktuellen Prototyp-Code (`src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/`) und die Herold-Referenz geprüft; Richtungsentscheidungen (Soll-Dialoge, UC-05/UC-11 als ein Dialog, normative Feldlisten) wurden vorab vom Team bestätigt. Beim Prototyp-Abgleich wurden keine neuen fachlichen oder technischen Entscheidungen getroffen; ungeklärte Punkte bleiben als offene Punkte markiert. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Erfassung der Court-Koordinaten in DLG-05 als Kartenpin präzisiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): B1.8 auf je einen zuständigen Baustein umgestellt und um bereits entschiedene Zeilen bereinigt; `profile.city` als Feld in DLG-08 und als Vorbelegung der Ortssuche in DLG-02 aufgenommen; separate Versionshistorie zugunsten der zentralen Historie im Spezifikationsindex entfernt. Aktualisierung (2026-07-28, Codex): Veraltete Offenheitsformulierungen zu QR-Format, Statusberechnung und Validierungsgrenzen an N1/N2 angeglichen und E2 als vorhandenen Baustein verlinkt. |

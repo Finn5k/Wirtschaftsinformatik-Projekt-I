@@ -281,6 +281,7 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 | 2026-07-28 | Chevron Rustler, mit Codex-Unterstützung | Eindeutige Konsistenzfehler bei Geolocation, Beitrittsaktion, Löschverweis, F2-/N1-Statuszeilen und Verweisen auf bereits entschiedene Umsetzungsfragen bereinigt |
 | 2026-07-28 | Chevron Rustler, mit Codex-Unterstützung | Doppelte Statusangaben, Entscheidungstabellen, Frontend-Offenpunktlisten und dezentrale Versionshistorie durch Verweise auf die jeweils maßgeblichen Stellen ersetzt |
 | 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Beschlossene MVP-Abgrenzungen zu Session-Änderungen und Profilbildern eingearbeitet, `cancelled` entfernt, Nominatim-Reverse-Geocoding spezifiziert und Check-in-Deep-Link im Prototyp angeglichen |
+| 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Bereits entschiedene Sichtbarkeit von Anzeigename und optionalem Profilbild in Teilnehmerlisten über B1, F2, D1, N1, N2 und S1 konsistent nachgezogen |
 
 ---
 

@@ -91,14 +91,14 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | ID | N1-QA-04 |
 | Name | Datenschutz / DSGVO |
 | Beschreibung | Personenbezogene Daten dürfen nur angezeigt werden, wenn sie für den jeweiligen Use Case erforderlich sind. Profildaten bleiben auf die in D1 definierten Basisangaben begrenzt. |
-| Begründung | P1 legt DSGVO-Compliance als Constraint fest (CON-D-01). D1 begrenzt `profile` bewusst auf MVP-relevante Felder (`display_name`, `city`, `avatar_url`) und markiert den sichtbaren Umfang in Teilnehmerlisten als offenen Punkt (D1.9, B1.8). |
+| Begründung | P1 legt DSGVO-Compliance als Constraint fest (CON-D-01). D1 begrenzt `profile` bewusst auf MVP-relevante Felder (`display_name`, `city`, `avatar_url`) und gibt für andere Nutzer ausschließlich `display_name` und optional `avatar_url` frei. |
 | Begründung (Fortsetzung) | UC-03 und UC-07 fordern ausdrücklich, dass keine nicht benötigten privaten Profildaten anderer Nutzer angezeigt werden. |
 | Betroffene Use Cases | UC-01, UC-03, UC-07, UC-12 |
 | Betroffene Datenobjekte / Datentypen | `profile` (D1: `display_name`, `city`, `avatar_url`); E-Mail/Passwort liegen bewusst außerhalb des Datenmodells beim Nachbarsystem Supabase Auth (D1.4, S1 NB-02). |
 | Betroffene Dialoge | DLG-04 (Teilnehmerliste), DLG-07 (Rollenanzeige), DLG-08 (Profil) |
-| Akzeptanzkriterien | Given eine Teilnehmerliste (DLG-04) oder ein Profil (DLG-08), When sie angezeigt werden, Then erscheinen ausschließlich die in D1 definierten Profilfelder und keine Auth-internen Daten (Passwort, Token). Given ein Nutzer verlangt Löschung, When die Anfrage bearbeitet wird, Then werden die zugehörigen `profile`- und `participant`-Daten entfernt oder anonymisiert (Umsetzung: N2). |
-| Prüfmethode | Review der angezeigten Felder je Dialog gegen die Attributliste in D1; Prüfung, dass keine Auth-Rohdaten im Frontend-Code oder in Antworten sichtbar sind. |
-| Offene Punkte | Der konkrete Ablauf für Auskunft und Löschung ist in [N2.15](N2-querschnittskonzepte.md#n215-offene-punkte) als offener Punkt geführt. Der Umfang sichtbarer Profilfelder in Teilnehmerlisten liegt bei [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). |
+| Akzeptanzkriterien | Given eine Teilnehmerliste (DLG-04), When sie angezeigt wird, Then erscheinen als Profildaten ausschließlich `display_name` und optional `avatar_url` und keine Auth-internen Daten (Passwort, Token). Given ein Nutzer betrachtet oder bearbeitet sein eigenes Profil (DLG-08), Then bleiben die dort vorgesehenen eigenen Profilfelder verfügbar. Given ein Nutzer verlangt Löschung, When die Anfrage bearbeitet wird, Then werden die zugehörigen `profile`- und `participant`-Daten entfernt oder anonymisiert (Umsetzung: N2). |
+| Prüfmethode | Review der in der Teilnehmerliste angezeigten Felder gegen D1/B1; Prüfung, dass `city` und Auth-Rohdaten weder dort noch in dafür bestimmten Antworten sichtbar sind. |
+| Offene Punkte | Der konkrete Ablauf für Auskunft und Löschung ist in [N2.15](N2-querschnittskonzepte.md#n215-offene-punkte) als offener Punkt geführt. |
 
 ### N1-QA-05 — Sicherheit
 
@@ -258,7 +258,7 @@ Folgende Punkte sind bewusst **nicht** Teil der Qualitätsanforderungen von Loca
 | [F1](F1-geschaeftsprozesse.md) | Mobile Nutzung des QR-Check-ins (GP-02 A13) stützt N1-QA-02; Ausschluss von Benachrichtigungen stützt N1.7. | Konsistent; keine Widersprüche zu den Geschäftsprozessen. |
 | [F2](F2-anwendungsfaelle.md) | „Bezug zu NFR / Qualität" je Use Case ist die direkte Grundlage der Mapping-Tabelle in N1.4. | Konsistent; alle in F2 genannten NFR-Stichworte sind in N1.2/N1.3 aufgegriffen. |
 | [F3](F3-anwendungsfunktionen.md) | Sicherheitsniveau der PIN, Konsistenz bei Parallelzugriff und Zeittoleranz sind direkte Grundlage von N1-QA-05/N1-QA-06. | Konsistent; die fachlichen Regeln aus F3 werden in N1 bewertet und in N2 technisch konkretisiert. |
-| [D1](D1-datenmodell.md) | Datenschutzhinweis zu `profile` (D1.4) und offener Punkt „sichtbare Profilfelder" (D1.9) sind Grundlage von N1-QA-04. | Konsistent; kein neues Datenobjekt eingeführt. |
+| [D1](D1-datenmodell.md) | Datenschutzhinweis und festgelegte Sichtbarkeit von `profile` (D1.4) sind Grundlage von N1-QA-04. | Konsistent; kein neues Datenobjekt eingeführt. |
 | [D2](D2-datentypen.md) | PIN-Sicherheitsniveau (D2.4) ist Grundlage von N1-QA-05. | Konsistent; Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz sind in [N1.7](#n17-bewusst-nicht-festgelegte-qualitätsanforderungen) als bewusst nicht festgelegt dokumentiert und damit nicht mehr offen. |
 | [B1](B1-dialogspezifikation.md) | Standard-Fehler-/Ladezustände (B1.5.4) und offene Punkte zu Fehlertexten (B1.8) sind Grundlage von N1-QA-09; Responsive-Hinweis (B1.1) stützt N1-QA-02. | Konsistent; N1 verdoppelt B1.5 nicht, sondern bewertet es als Qualitätsanforderung. |
 | [S1](S1-nachbarsysteme.md) | Fehlerbehandlung der Nachbarsysteme (Rate-Limiting, Tile-Load-Timeout) stützt N1-QA-06/N1-QA-10. | Konsistent; S1 nennt je Nachbarsystem einen Ausfallpfad und verweist für die kontrollierte Degradation auf N1-QA-06. |
@@ -278,5 +278,5 @@ Im Review lässt sich damit für jede Qualitätsanforderung erklären: welcher U
 | Punkt | Beschreibung |
 |---|---|
 | Werkzeug | Claude Code / ChatGPT |
-| Verwendung | Entwurf, Strukturierung, Formulierungsvorschläge, Konsistenzprüfung und Akzeptanzkriterien für den N1-Baustein, ausgehend von den bestehenden „Bezug zu NFR / Qualität"-Angaben und offenen Punkten in F2, F3, D1, D2 und B1. Codex ergänzte am 2026-07-29 die Robustheits- und Prüfkriterien für das beschlossene Reverse-Geocoding. |
+| Verwendung | Entwurf, Strukturierung, Formulierungsvorschläge, Konsistenzprüfung und Akzeptanzkriterien für den N1-Baustein, ausgehend von den bestehenden „Bezug zu NFR / Qualität"-Angaben und offenen Punkten in F2, F3, D1, D2 und B1. Codex ergänzte am 2026-07-29 die Robustheits- und Prüfkriterien für das beschlossene Reverse-Geocoding und präzisierte die Datenschutzprüfung für die festgelegten sichtbaren Profilfelder. |
 | Prüfung | Inhalte wurden gegen P1, P2, F1, F2, F3, D1, D2, B1, S1, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Vor dem Merge erfolgt zusätzlich ein Team-Review. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. Nachtrag (2026-07-26, Claude Sonnet 5): veralteter Hinweis auf S1 als Stub in N1.8 korrigiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz in N1.7 als bewusst nicht festgelegt aufgenommen und begründet; damit endet der zirkuläre Verweis zwischen D2.11, N1.8 und N2.15. Aktualisierung (2026-07-28, Codex): Bereits entschiedene oder ausgeschlossene Aussagen in N1-QA-03, N1-QA-05 und N1-QA-06 korrekt als Festlegung beziehungsweise Abgrenzung bezeichnet. |
