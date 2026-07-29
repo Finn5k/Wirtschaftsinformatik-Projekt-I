@@ -167,7 +167,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Session-Detailansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Datenschutz, Verständlichkeit, mobile Bedienbarkeit. |
 | Akzeptanzkriterien | Given eine sichtbare Session, When der Nutzer sie öffnet, Then werden die Kerndaten angezeigt. Given eine abgeschlossene Session, When sie geöffnet wird, Then sind keine Beitritts- oder Check-in-Aktionen verfügbar. |
-| Offene Punkte | Umfang der sichtbaren Profilinformationen anderer Teilnehmer über die freigegebenen Basisfelder hinaus — siehe [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). |
+| Festlegung | Von anderen Nutzern werden ausschließlich Anzeigename und optionales Profilbild angezeigt; weitere Profil- oder Authentifizierungsdaten bleiben verborgen. |
 
 ### UC-04 — Session beitreten
 
@@ -271,7 +271,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Teilnehmerliste in der Session-Detail- oder Organisatoransicht; siehe B1. |
 | Bezug zu NFR / Qualität | Datenschutz, klare Statusanzeige, Aktualität. |
 | Akzeptanzkriterien | Given ein Organisator mit eigener Session, When er die Teilnehmerliste öffnet, Then sieht er die beigetretenen Teilnehmer. Given ein nicht berechtigter Nutzer, Then erhält er keine Teilnehmerliste mit geschützten Daten. |
-| Offene Punkte | Umfang der angezeigten Profildaten über die freigegebenen Basisfelder hinaus — siehe [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). |
+| Festlegung | Die Teilnehmerliste zeigt als Profildaten ausschließlich Anzeigename und optionales Profilbild. Den Check-in-Status aller Teilnehmer sieht nur der Organisator. |
 
 ### UC-08 — Check-in per QR-Code durchführen
 
@@ -465,6 +465,6 @@ Die stabilen IDs UC-01 bis UC-12 müssen später in Architektur, Tests und Code 
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Codex / ChatGPT |
-| Verwendung | Entwurf, Strukturierung, Formulierung prüfbarer Akzeptanzkriterien und Konsistenzprüfung; Codex arbeitete am 2026-07-29 die Teamentscheidungen zu unveränderlichen Sessions, read-only Profilbildern und Reverse-Geocoding in UC-06, UC-10 und UC-12 ein. |
+| Verwendung | Entwurf, Strukturierung, Formulierung prüfbarer Akzeptanzkriterien und Konsistenzprüfung; Codex arbeitete am 2026-07-29 die Teamentscheidungen zu unveränderlichen Sessions, read-only Profilbildern, sichtbaren Profilfeldern und Reverse-Geocoding in UC-03, UC-06, UC-07, UC-10 und UC-12 ein. |
 | Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Angleichung an S1 (2026-07-26, Claude Sonnet 5): offene Punkte in UC-01 (Anmeldeverfahren) und UC-10 (Geocoding) geschlossen. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): veraltete Zeilen in UC-02, UC-03, UC-05, UC-07, UC-10 und UC-12 auf den heutigen Stand gebracht und auf den jeweils zuständigen Baustein verwiesen. Aktualisierung (2026-07-28, Codex): Bereits entschiedene oder ausgeschlossene Punkte in UC-01, UC-02, UC-04, UC-06, UC-08 und UC-09 korrekt als Festlegung beziehungsweise Abgrenzung bezeichnet; Löschverweis in UC-03 entfernt. |
 | Fachliche Verantwortung | Bleibt beim Team. |
