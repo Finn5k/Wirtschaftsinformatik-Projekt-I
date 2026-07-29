@@ -142,6 +142,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu NFR / Qualität | Performance bei Suche, mobile Nutzbarkeit, Graceful Degradation der Karte. |
 | Akzeptanzkriterien | Given Sessions in einer Region, When der Teilnehmer nach dieser Region sucht, Then werden passende zukünftige Sessions angezeigt. Given keine Treffer, When die Suche abgeschlossen ist, Then erscheint eine leere Ergebnisansicht ohne Systemfehler. |
 | Festlegung | Die Ortssuche erfolgt über eine Eingabe des Nutzers, vorbelegt aus `profile.city`; eine automatische Standortermittlung wird bewusst nicht genutzt (S1.7). |
+| Sortierung | Laufende Sessions werden vor bevorstehenden Sessions angezeigt. Innerhalb derselben Statusgruppe wird nach `start_at` aufsteigend und bei Gleichstand nach Titel sortiert. |
 
 ### UC-03 — Session-Detail ansehen
 
@@ -219,7 +220,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Übersicht "Meine Sessions"; siehe B1. |
 | Bezug zu NFR / Qualität | Übersichtlichkeit, mobile Nutzbarkeit, Performance. |
 | Akzeptanzkriterien | Given ein angemeldeter Nutzer mit beigetretenen Sessions, When er "Meine Sessions" öffnet, Then werden diese Sessions angezeigt. Given keine eigenen Sessions, Then wird ein leerer Zustand angezeigt. |
-| Offene Punkte | Konkrete Sortierung und Gruppierung — siehe [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). |
+| Sortierung | Bevorstehende eigene Sessions werden nach `start_at` aufsteigend angezeigt. Eine weitere Gruppierung nach Sportart, Ort oder Rolle erfolgt nicht. |
 
 ### UC-06 — Session erstellen
 
@@ -342,14 +343,14 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Nachbedingung bei Fehler | Es wird kein unvollständiger Court als Grundlage einer Session verwendet. |
 | Hauptszenario | 1. Organisator sucht oder öffnet die Court-Auswahl. 2. LocalCourt zeigt vorhandene passende Courts. 3. Organisator wählt einen Court aus. 4. LocalCourt übernimmt den Court in die Session-Erstellung. |
 | Alternative Szenarien | Organisator erfasst einen neuen Court: Er vergibt einen Namen, setzt einen Pin auf der Karte und LocalCourt ermittelt Ort und Adresse per Reverse-Geocoding. Danach steht der Court für die Session-Erstellung zur Verfügung. |
-| Ausnahmefälle | Name oder Kartenpin fehlen, Reverse-Geocoding liefert keine verwertbare Ortsangabe, Karte beziehungsweise Geocoding-Dienst ist nicht erreichbar oder ein Court existiert bereits offensichtlich doppelt. |
+| Ausnahmefälle | Name oder Kartenpin fehlen, Reverse-Geocoding liefert keine verwertbare Ortsangabe oder Karte beziehungsweise Geocoding-Dienst ist nicht erreichbar. |
 | Fachliche Regeln | Ein neu erfasster Court benötigt einen Namen, ein Koordinatenpaar und den daraus per Reverse-Geocoding bestimmten Ort. Die ermittelte Adresse wird gespeichert, sofern der Dienst eine liefert; Ort und Adresse werden nicht als widersprüchliche Freitexte erfasst. |
 | Bezug zu F1 | GP-02 A3; indirekt relevant für GP-01 A6-A8, weil Court-Daten dort zur Anzeige und Auffindbarkeit genutzt werden. |
 | Bezug zu Daten | Court, Sportart, Session |
 | Bezug zu Benutzerschnittstelle | Court-Auswahl und einfache Erfassungsmaske; siehe B1. |
 | Bezug zu NFR / Qualität | Datenqualität, einfache Bedienbarkeit, verständliche Fehlerbehandlung bei Karten- oder Geocoding-Ausfall. |
 | Akzeptanzkriterien | Given ein vorhandener Court, When ein Organisator ihn auswählt, Then kann die Session mit diesem Court erstellt werden. Given Name, Kartenpin und eine erfolgreiche Ortsauflösung, When der Organisator den neuen Court speichert, Then werden Koordinaten und ermittelte Ortsdaten gemeinsam gespeichert und der Court ist auswählbar. Given die Ortsauflösung schlägt fehl, Then wird kein unvollständiger Court gespeichert und der Nutzer kann den Aufruf wiederholen. |
-| Offene Punkte | Verhalten bei offensichtlichen Court-Dubletten — siehe [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). |
+| Festlegung | Im MVP findet keine automatische Dublettenprüfung statt. Vorhandene Courts werden vorrangig zur Auswahl angeboten; bei einer Neuerfassung können fachlich gleiche Courts mehrfach entstehen. Erkennung und Zusammenführung sind eine spätere Erweiterung. |
 
 ### UC-11 — Session-Historie ansehen
 
@@ -367,15 +368,15 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Nachbedingung bei Erfolg | Vergangene Sessions werden angezeigt oder ein leerer Zustand wird erklärt. |
 | Nachbedingung bei Fehler | Keine Daten werden verändert; Nutzer erhält Feedback. |
 | Hauptszenario | 1. Nutzer öffnet die Historie. 2. LocalCourt lädt vergangene Sessions mit Bezug zum Nutzer. 3. LocalCourt zeigt die Sessions in einer read-only Übersicht. 4. Nutzer kann eine Detailansicht öffnen. |
-| Alternative Szenarien | Organisator sieht einfache Check-in-Informationen zu eigenen vergangenen Sessions, sofern sie bereits in F1 vorgesehen sind. |
+| Alternative Szenarien | Organisator sieht bei eigenen vergangenen Sessions die Session-Kerndaten, bestätigte Teilnehmerzahl, Check-in-Anzahl und Teilnehmerliste mit Check-in-Status. |
 | Ausnahmefälle | Nutzer ist nicht angemeldet oder Daten können nicht geladen werden. |
-| Fachliche Regeln | Historie ist kein Admin-Report, kein Rating und keine Statistikplattform. |
+| Fachliche Regeln | Vergangene Sessions werden nach ihrem Ende absteigend sortiert. Die Historie ist kein Admin-Report, kein Rating und keine Statistikplattform; Diagramme, Exporte und sessionübergreifende Auswertungen sind ausgeschlossen. |
 | Bezug zu F1 | GP-01 A18; GP-02 A22-A23. |
 | Bezug zu Daten | Session, Participant, Check-in-Zeitpunkt |
 | Bezug zu Benutzerschnittstelle | Historienübersicht und read-only Detailansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Datenschutz, Übersichtlichkeit, Nachvollziehbarkeit. |
 | Akzeptanzkriterien | Given abgeschlossene eigene Sessions, When der Nutzer die Historie öffnet, Then werden diese angezeigt. Given keine Historie, Then erscheint ein leerer Zustand ohne Fehler. |
-| Offene Punkte | Umfang einfacher Organisator-Ergebnisdaten ist von Admin-Reports abzugrenzen. |
+| Festlegung | Organisatoren sehen Titel, Sportart, Court, Datum, Startzeit, Dauer, bestätigte Teilnehmerzahl, Check-in-Anzahl und die vorhandene Teilnehmerliste mit Check-in-Status. |
 
 ### UC-12 — Profil und Sportpräferenzen verwalten
 
@@ -465,6 +466,6 @@ Die stabilen IDs UC-01 bis UC-12 müssen später in Architektur, Tests und Code 
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Codex / ChatGPT |
-| Verwendung | Entwurf, Strukturierung, Formulierung prüfbarer Akzeptanzkriterien und Konsistenzprüfung; Codex arbeitete am 2026-07-29 die Teamentscheidungen zu unveränderlichen Sessions, read-only Profilbildern, sichtbaren Profilfeldern und Reverse-Geocoding in UC-03, UC-06, UC-07, UC-10 und UC-12 ein. |
+| Verwendung | Entwurf, Strukturierung, Formulierung prüfbarer Akzeptanzkriterien und Konsistenzprüfung; Codex arbeitete am 2026-07-29 die Teamentscheidungen zu unveränderlichen Sessions, read-only Profilbildern, sichtbaren Profilfeldern, Reverse-Geocoding, Listensortierung, Court-Dubletten und Organisator-Ergebnisdaten ein. |
 | Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Angleichung an S1 (2026-07-26, Claude Sonnet 5): offene Punkte in UC-01 (Anmeldeverfahren) und UC-10 (Geocoding) geschlossen. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): veraltete Zeilen in UC-02, UC-03, UC-05, UC-07, UC-10 und UC-12 auf den heutigen Stand gebracht und auf den jeweils zuständigen Baustein verwiesen. Aktualisierung (2026-07-28, Codex): Bereits entschiedene oder ausgeschlossene Punkte in UC-01, UC-02, UC-04, UC-06, UC-08 und UC-09 korrekt als Festlegung beziehungsweise Abgrenzung bezeichnet; Löschverweis in UC-03 entfernt. |
 | Fachliche Verantwortung | Bleibt beim Team. |

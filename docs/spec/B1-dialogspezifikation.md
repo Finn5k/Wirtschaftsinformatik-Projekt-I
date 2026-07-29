@@ -132,7 +132,7 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 |---|---|---|---|---|---|
 | Ort / Region | Eingabe (Kann) | Text | `court.city` (Filterkriterium) | `profile.city`, sonst letzter Suchort, sonst leer | leer = keine Ortseinschränkung |
 | Sportart-Filter | Eingabe (Kann) | Auswahl | `sport` (Katalog) | „Alle" | Werteliste aus `sport`-Katalog + „Alle" (GP-03) |
-| Ergebnisliste | Anzeige | Liste | `session` (title, sport, start_at, status), `court` (name, city), abgeleitet `confirmed_count`/`max_participants` | — | nur Sessions mit Status `scheduled`/`active` (AF-03); abgeschlossene nur in DLG-07 |
+| Ergebnisliste | Anzeige | Liste | `session` (title, sport, start_at, status), `court` (name, city), abgeleitet `confirmed_count`/`max_participants` | — | nur Sessions mit Status `scheduled`/`active` (AF-03); laufende vor bevorstehenden Sessions, je Gruppe `start_at` aufsteigend, bei Gleichstand Titel aufsteigend; abgeschlossene nur in DLG-07 |
 | Leerer Zustand | Anzeige | Text | — | — | erscheint bei 0 Treffern ([B1.5.5](#b155-leere-zustände)) |
 
 **Dynamik**
@@ -227,10 +227,20 @@ Der Zustand ergibt sich aus Anmeldung, Rolle, Teilnahme und Session-Status (AF-0
 
 | Aktion | Auslöser | Vorbedingung | Wirkung |
 |---|---|---|---|
-| Beitreten | Schaltfläche „Beitreten" | Zustand *Offen* | *UC-04 / AF-01*: atomare Prüfung; bei `OK` Teilnahme `confirmed`, Belegung aktualisiert; bei `SESSION_FULL` Meldung „Session ist voll" (keine Warteliste, NG-10); weitere Ergebniscodes gemäß AF-01 |
+| Beitreten | Schaltfläche „Beitreten" | Zustand *Offen* | *UC-04 / AF-01*: atomare Prüfung; bei `OK` Teilnahme `confirmed`, Belegung aktualisiert; Ergebnistexte gemäß nachfolgender Tabelle |
 | Zum Check-in | Schaltfläche „Zum Check-in" | Zustand *Beigetreten*, Status `active` | *Dialog*: Wechsel zu [DLG-06](#b146-dlg-06--check-in) |
 | QR/PIN anzeigen | Bereich in Organisator-Sicht | Zustand *Organisator*, Status `scheduled`/`active` | *Dialog*: QR-Code (AF-04) und PIN prominent anzeigen, für Teilnehmer-Check-in (UC-08/09) |
 | Teilnehmerliste aktualisieren | erneutes Laden / automatische Aktualisierung | Zustand *Organisator* | *UC-07*: aktuelle Teilnahme- und Check-in-Stände |
+
+**Ergebnistexte für den Beitritt (AF-01)**
+
+| Ergebniscode | Anzeigetext |
+|---|---|
+| `OK` | „Du bist der Session beigetreten.“ |
+| `NOT_AUTHENTICATED` | „Bitte melde dich an, um der Session beizutreten.“ |
+| `SESSION_NOT_JOINABLE` | „Dieser Session kannst du nicht mehr beitreten.“ |
+| `ALREADY_JOINED` | „Du bist dieser Session bereits beigetreten.“ |
+| `SESSION_FULL` | „Die Session ist bereits voll.“ |
 
 ### B1.4.5 DLG-05 — Session erstellen
 
@@ -264,7 +274,7 @@ Frühere Prototyp-Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht*
 | Aktion | Auslöser | Vorbedingung | Wirkung |
 |---|---|---|---|
 | Court auswählen | Auswahlfeld / Suche im Court-Verzeichnis | — | *UC-10*: bestehenden Court übernehmen |
-| Court neu erfassen | Schaltfläche „Neuen Sportort anlegen" | kein passender Court | *UC-10*: Name erfassen und verpflichtenden Pin auf der Karte setzen ([S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)); LocalCourt ermittelt daraus Ort und optionale Adresse per Reverse-Geocoding ([S1.6](S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)) und zeigt die Werte vor dem Speichern an. Nach Speichern ausgewählt |
+| Court neu erfassen | Schaltfläche „Neuen Sportort anlegen" | kein passender Court | *UC-10*: Name erfassen und verpflichtenden Pin auf der Karte setzen ([S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)); LocalCourt ermittelt daraus Ort und optionale Adresse per Reverse-Geocoding ([S1.6](S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)) und zeigt die Werte vor dem Speichern an. Nach Speichern ausgewählt; keine automatische Dublettenprüfung, mögliche Dubletten werden im MVP akzeptiert |
 | Session erstellen | Schaltfläche „Session erstellen" | alle Muss-Felder gültig | *UC-06*: Session anlegen (`scheduled`, AF-03); PIN/QR erzeugen (AF-04); Organisator als `participant` `confirmed`; Wechsel zu DLG-04 (*Organisator*) mit Bestätigung |
 | Abbrechen | Zurück-Navigation | — | *Dialog*: keine Session wird gespeichert (UC-06 Alternativszenario) |
 
@@ -306,14 +316,17 @@ Frühere Prototyp-Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht*
 | Code manuell eingeben | Schaltfläche „Code manuell eingeben" | — | *Dialog*: Wechsel in Zustand *PIN-Eingabe* (UC-09) |
 | Zurück zur Session | Link/Schaltfläche | — | *Dialog*: Wechsel zu DLG-04 |
 
-**Ablehnungen** (Zustand *Abgelehnt*, Ergebniscodes aus AF-02 mit verständlichem Text):
+**Ergebnisse** (Ergebniscodes aus AF-02 mit verbindlichem Text):
 
-| Ergebniscode | Anzeigetext (sinngemäß) |
+| Ergebniscode | Anzeigetext |
 |---|---|
+| `OK` | „Check-in erfolgreich.“ |
 | `NOT_JOINED` | „Du bist dieser Session nicht beigetreten." (Verweis auf DLG-04 / Beitreten) |
-| `INVALID_CREDENTIAL` | „Ungültiger Code für diese Session." |
-| `OUTSIDE_WINDOW` | „Check-in ist nur während der laufenden Session möglich." |
-| `ALREADY_CHECKED_IN` | Bestätigung ohne Änderung — wird wie *Erfolg* dargestellt (idempotent, AF-02 R5) |
+| `INVALID_CREDENTIAL` | „Der QR-Code oder die PIN ist für diese Session ungültig.“ |
+| `OUTSIDE_WINDOW` | „Der Check-in ist nur während der laufenden Session möglich.“ |
+| `ALREADY_CHECKED_IN` | „Du bist bereits eingecheckt.“ (Bestätigung ohne Änderung, AF-02 R5) |
+
+Kann eine Aktion wegen eines nicht näher bestimmbaren technischen Fehlers nicht ausgeführt werden, lautet der Rückfalltext: „Die Aktion konnte nicht ausgeführt werden. Bitte versuche es erneut.“ Technische Details, interne IDs und Datenbankmeldungen werden nicht angezeigt (N1-QA-09).
 
 ### B1.4.7 DLG-07 — Meine Sessions
 
@@ -339,8 +352,8 @@ Der Dialog hat zwei Zustände (Tabs): *Bevorstehend* (UC-05, Status `scheduled`/
 | Feld | Art | Datentyp | Bezug Datenmodell | Vorbelegung | Prüfung / Hinweise |
 |---|---|---|---|---|---|
 | Tab-Auswahl | Eingabe (Kann) | Umschalter | — | *Bevorstehend* | — |
-| Session-Liste | Anzeige | Liste | `session` (title, sport, start_at, `status`), Rolle (Organisator/Teilnehmer aus `organizer_id` bzw. `participant`) | — | nur Sessions mit eigener Teilnahme oder Organisatorrolle (UC-05); Rolle unterscheidbar |
-| Check-in-Info (nur *Vergangen*) | Anzeige | Text | `participant.checked_in_at` | — | einfache Anwesenheitsinfo, kein Reporting (UC-11) |
+| Session-Liste | Anzeige | Liste | `session` (title, sport, start_at, `status`), Rolle (Organisator/Teilnehmer aus `organizer_id` bzw. `participant`) | — | nur Sessions mit eigener Teilnahme oder Organisatorrolle (UC-05); Rolle unterscheidbar; *Bevorstehend*: `start_at` aufsteigend, *Vergangen*: Ende absteigend |
+| Ergebnisdaten (nur *Vergangen*, Organisator) | Anzeige | Text/Liste | Session-Kerndaten, abgeleitet `confirmed_count`, Anzahl `checked_in`, Teilnehmerliste | — | Titel, Sportart, Court, Datum, Startzeit, Dauer, bestätigte Teilnehmerzahl, Check-in-Anzahl sowie Teilnehmerliste mit Check-in-Status; keine Statistiken, Exporte oder sessionübergreifenden Auswertungen |
 | Leerer Zustand | Anzeige | Text | — | — | je Tab ([B1.5.5](#b155-leere-zustände)) |
 
 **Dynamik**
@@ -449,7 +462,7 @@ Der aktuelle UI-Prototyp bildet alle Dialoge DLG-01 bis DLG-08 ab. Die nachfolge
 | Kartenfehler | echte OSM-Karte ist eingebunden | Graceful Degradation zu DLG-02 bei Ausfall fehlt |
 | Lade- und Netzwerkzustände | keine asynchronen Backend-Anfragen | Muster aus [B1.5.4](#b154-fehler--und-ladezustände) sind noch nicht demonstriert |
 | Profil | Bearbeitung wirkt nur im lokalen Seitenzustand; Profilbild wird ausschließlich angezeigt | Persistenz von Anzeigename, Ort und Präferenzen fehlt |
-| Validierungsgrenzen | ausgewählte Pflichtfelder werden geprüft | die in D2/N1 festgelegten Validierungsregeln sind noch nicht vollständig umgesetzt; endgültige Fehlertexte bleiben offen |
+| Validierungsgrenzen | ausgewählte Pflichtfelder werden geprüft | die in D2/N1 festgelegten Validierungsregeln und verbindlichen Fehlertexte aus DLG-04/DLG-06 sind noch nicht vollständig umgesetzt |
 
 Im aktuellen Prototyp sind keine früher dokumentierten Gamification-, Events-/Challenges-, Benachrichtigungs-, Rang-, Sichtbarkeits-, Merken- oder Teilen-Funktionen mehr vorhanden.
 
@@ -469,16 +482,12 @@ Im aktuellen Prototyp sind keine früher dokumentierten Gamification-, Events-/C
 
 B1 ist der zuständige Baustein für alle Fragen des Dialogverhaltens — Feldlisten, Anzeigeumfang, Reihenfolge und Texte. Andere Bausteine verweisen hierher, statt eigene Kopien dieser Punkte zu führen.
 
-| Punkt | Beschreibung | Zuständig |
-|---|---|---|
-| Sortierung/Gruppierung der Listen | DLG-02 (Reihenfolge der Treffer), DLG-07 (Sortierung je Tab). | B1 |
-| Konkrete Fehlertexte | Endgültige Formulierungen je Ergebniscode (AF-01/AF-02); die sinngemäßen Texte stehen bereits in DLG-04 und DLG-06. | B1 |
-| Court-Dubletten in der Auswahl | Verhalten von DLG-05, wenn ein offensichtlich bereits vorhandener Sportort neu erfasst wird (UC-10). | B1 |
+Keine offenen Punkte zum Dialogverhalten. Sortierung, Fehlertexte und der bewusste Verzicht auf eine Court-Dublettenprüfung sind in den jeweiligen Dialogen festgelegt.
 
 ## B1.9 Eingesetzte KI-Werkzeuge
 
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Claude Code (Fable 5, Claude Sonnet 5), ChatGPT / Codex |
-| Verwendung | Entwurf des B1-Bausteins: Ableitung der Dialoglandkarte und der Feld-/Aktionslisten aus F2/F3/D1/D2 und dem UI-Prototyp; systematischer Abgleich Prototyp ↔ MVP-Scope (B1.6). Codex aktualisierte am 2026-07-29 Court-Erfassung, Profilbildabgrenzung, Sessionstatus und den umgesetzten Check-in-Deep-Link und glich die bereits entschiedene Sichtbarkeit von Anzeigename und optionalem Profilbild ab. |
+| Verwendung | Entwurf des B1-Bausteins: Ableitung der Dialoglandkarte und der Feld-/Aktionslisten aus F2/F3/D1/D2 und dem UI-Prototyp; systematischer Abgleich Prototyp ↔ MVP-Scope (B1.6). Codex aktualisierte am 2026-07-29 Court-Erfassung, Profilbildabgrenzung, Sessionstatus und den umgesetzten Check-in-Deep-Link, glich die Sichtbarkeit von Anzeigename und optionalem Profilbild ab und arbeitete die bestätigten Festlegungen zu Sortierung, Dubletten und Fehlertexten ein. |
 | Prüfung | Inhalte wurden gegen [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [N1](N1-nichtfunktionale-anforderungen.md), [`../frontend.md`](../frontend.md), den aktuellen Prototyp-Code (`src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/`) und die Herold-Referenz geprüft; Richtungsentscheidungen (Soll-Dialoge, UC-05/UC-11 als ein Dialog, normative Feldlisten) wurden vorab vom Team bestätigt. Beim Prototyp-Abgleich wurden keine neuen fachlichen oder technischen Entscheidungen getroffen; ungeklärte Punkte bleiben als offene Punkte markiert. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Erfassung der Court-Koordinaten in DLG-05 als Kartenpin präzisiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): B1.8 auf je einen zuständigen Baustein umgestellt und um bereits entschiedene Zeilen bereinigt; `profile.city` als Feld in DLG-08 und als Vorbelegung der Ortssuche in DLG-02 aufgenommen; separate Versionshistorie zugunsten der zentralen Historie im Spezifikationsindex entfernt. Aktualisierung (2026-07-28, Codex): Veraltete Offenheitsformulierungen zu QR-Format, Statusberechnung und Validierungsgrenzen an N1/N2 angeglichen und E2 als vorhandenen Baustein verlinkt. |
