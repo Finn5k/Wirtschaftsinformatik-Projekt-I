@@ -12,6 +12,7 @@ Das Systemkontext-Diagramm in [P2.1](P2-architekturueberblick.md#p21-systemkonte
 | NB-02 — Supabase Authentication | [S1.3](#s13-nb-02--supabase-auth) | Ja, fünf Operationen. |
 | NB-03 — Supabase PostgREST API | [S1.4](#s14-nb-03--supabase-postgrest) | Ja, Lese- und Schreiboperationen. |
 | NB-04 — OpenStreetMap / Leaflet | [S1.5](#s15-nb-04--openstreetmap-tiles) | Ja, eine Operation (Kartenkacheln); Leaflet selbst ist eine Client-Bibliothek ohne Netz-Contract. |
+| NB-05 — Nominatim | [S1.6](#s16-nb-05--nominatim-reverse-geocoding) | Ja, eine Operation für Reverse-Geocoding bei der Court-Erfassung. |
 
 ## S1.1 Konventionen
 
@@ -30,7 +31,7 @@ Der Browser ist der einzige Kontaktpunkt zum Menschen. Die Schnittstelle ist die
 | Aspekt | Inhalt |
 |---|---|
 | **Einstieg per Deep-Link** | Der Check-in-Dialog ist über einen Link mit Session-Bezug und PIN erreichbar (`…/check-in?session=<session_id>&pin=<pin>`, [F3 AF-04](F3-anwendungsfunktionen.md#f36-af-04--pin--und-qr-code-erzeugung), [N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04)). Der Browser muss diesen Aufruf auch aus einem fremden Kontext (Kamera-App, Nachricht) verarbeiten; ist der Nutzer nicht angemeldet, greift die Weiterleitung aus [B1.5.2](B1-dialogspezifikation.md#b152-weiterleitung-nicht-angemeldeter-nutzer). |
-| **Genutzte Plattformfähigkeiten** | Darstellung und Formulareingabe; Ablage des Zugangstokens im Browser (siehe [S1.3](#s13-nb-02--supabase-auth)); Öffnen von Deep-Links. LocalCourt nutzt **keine** Kamera-Schnittstelle und **keine** Standortermittlung des Geräts (siehe [S1.6](#s16-nicht-genutzte-schnittstellen-und-abgrenzung)). |
+| **Genutzte Plattformfähigkeiten** | Darstellung und Formulareingabe; Ablage des Zugangstokens im Browser (siehe [S1.3](#s13-nb-02--supabase-auth)); Öffnen von Deep-Links. LocalCourt nutzt **keine** Kamera-Schnittstelle und **keine** Standortermittlung des Geräts (siehe [S1.7](#s17-nicht-genutzte-schnittstellen-und-abgrenzung)). |
 
 Der Aufbau des Frontends selbst (Komponenten, Zustandsverwaltung, Routing) ist keine Schnittstelle zu einem Nachbarsystem, sondern innere Architektur, und gehört nach `docs/arch/`.
 
@@ -56,7 +57,7 @@ Anmeldung und Sitzungsverwaltung. Der Auth-Nutzer selbst (E-Mail, Passwort, Toke
 | **Semantik — Profilanlage** | Mit dem Auth-Nutzer entsteht **automatisch** der zugehörige `profile`-Datensatz; die Registrierung ist damit ein einziger fachlicher Vorgang und kann keinen Auth-Nutzer ohne Profil hinterlassen. Die technische Umsetzung (Trigger auf der Auth-Nutzertabelle) gehört nach [N2](N2-querschnittskonzepte.md). |
 | **Semantik — Tokenablage** | Das Zugangstoken wird im Browser gehalten, damit eine Sitzung einen Seitenwechsel oder Neuladen überlebt, und beim Abmelden verworfen. Es wird ausschließlich an NB-03 und NB-02 gesendet, nie an NB-04. Läuft es ab und lässt sich nicht erneuern, beantwortet NB-03 Aufrufe mit `401`; LocalCourt leitet dann gemäß [B1.5.2](B1-dialogspezifikation.md#b152-weiterleitung-nicht-angemeldeter-nutzer) zur Anmeldung. |
 | **Fehlerbehandlung** | Ungültige Zugangsdaten, bereits verwendete E-Mail-Adresse, zu schwaches Passwort und ein zu häufiger Anmeldeversuch (Rate-Limit des Dienstes) werden als Meldung im Dialog angezeigt, ohne dass eine Sitzung entsteht ([UC-01](F2-anwendungsfaelle.md#uc-01--registrieren--anmelden) Ausnahmefälle). Ist der Dienst nicht erreichbar, bleiben nur öffentlich lesbare Ansichten nutzbar; geschützte Aktionen werden abgelehnt statt ungeprüft ausgeführt. |
-| **Nicht genutzt** | Passwort-Zurücksetzen, E-Mail-Bestätigung, Magic Links, Telefon-/SMS-Anmeldung, Fremdanbieter-Anmeldung, Mehrfaktor-Authentifizierung (siehe [S1.6](#s16-nicht-genutzte-schnittstellen-und-abgrenzung)). |
+| **Nicht genutzt** | Passwort-Zurücksetzen, E-Mail-Bestätigung, Magic Links, Telefon-/SMS-Anmeldung, Fremdanbieter-Anmeldung, Mehrfaktor-Authentifizierung (siehe [S1.7](#s17-nicht-genutzte-schnittstellen-und-abgrenzung)). |
 
 ## S1.4 NB-03 — Supabase PostgREST
 
@@ -93,8 +94,8 @@ Hier genügt eine Berechtigungsprüfung ohne mehrschrittige fachliche Regel; die
 
 | Operation | Ausgelöst durch | Semantik |
 |---|---|---|
-| `courtAnlegen(name, ort, adresse?, koordinaten?) → Court` | [UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen) | Jeder angemeldete Nutzer darf einen Sportort erfassen; er wird als Erfasser vermerkt. Name und Ort sind Pflicht, Adressangabe und Koordinaten sind optional ([D1.4](D1-datenmodell.md#d14-entitätstypen-im-detail)). Koordinaten entstehen ausschließlich durch das Setzen eines Kartenpins (siehe [S1.5](#s15-nb-04--openstreetmap-tiles)); es findet **keine** Auflösung einer Adresse in Koordinaten statt. Eine Dublettenprüfung ist nicht Teil des MVP (offener Punkt in UC-10). |
-| `profilAktualisieren(anzeigename, profilbild?) → Profil` | [UC-12](F2-anwendungsfaelle.md#uc-12--profil-und-sportpräferenzen-verwalten) | Nur das eigene Profil ist änderbar. |
+| `courtAnlegen(name, ort, adresse?, koordinaten) → Court` | [UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen) | Jeder angemeldete Nutzer darf einen Sportort erfassen; er wird als Erfasser vermerkt. Name, Ort und Koordinaten sind Pflicht, die Adressangabe ist optional ([D1.4](D1-datenmodell.md#d14-entitätstypen-im-detail)). Koordinaten entstehen durch den Kartenpin ([S1.5](#s15-nb-04--openstreetmap-tiles)); Ort und Adresse stammen aus dem unmittelbar ausgelösten Reverse-Geocoding ([S1.6](#s16-nb-05--nominatim-reverse-geocoding)). Eine Dublettenprüfung ist nicht Teil des MVP (offener Punkt in UC-10). |
+| `profilAktualisieren(anzeigename, ort) → Profil` | [UC-12](F2-anwendungsfaelle.md#uc-12--profil-und-sportpräferenzen-verwalten) | Nur das eigene Profil ist änderbar. `avatar_url` wird im MVP nicht geändert. |
 | `sportpraeferenzSetzen(sportart)` / `sportpraeferenzEntfernen(sportart)` | [UC-12](F2-anwendungsfaelle.md#uc-12--profil-und-sportpräferenzen-verwalten) | Nur die eigenen Präferenzen sind änderbar; je Nutzer und Sportart höchstens ein Eintrag ([D1.4](D1-datenmodell.md#d14-entitätstypen-im-detail)). |
 
 ### Rahmenbedingungen von NB-03
@@ -117,11 +118,34 @@ Kartendarstellung der Sportorte. Zu trennen sind zwei Dinge: Der **Kachel-Dienst
 | **Eingaben** | Der aktuell sichtbare Kartenausschnitt und die Zoomstufe. Es werden **keine** personenbezogenen Daten und keine Nutzerkennung übertragen; insbesondere geht das Zugangstoken aus NB-02 nie an dieses System. |
 | **Ausgaben** | Kartenbilder zur Darstellung. Es werden keine Kartendaten persistiert ([D1.7](D1-datenmodell.md#d17-nicht-modellierte-datenobjekte)). |
 | **Ausgelöst durch** | [UC-02](F2-anwendungsfaelle.md#uc-02--session-suchen) und [UC-03](F2-anwendungsfaelle.md#uc-03--session-detail-ansehen) (Kartenansicht, [B1 DLG-03](B1-dialogspezifikation.md#b143-dlg-03--session-karte)) sowie [UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen) beim Setzen eines Pins. |
-| **Semantik — Koordinaten** | Die Karte dient der Anzeige vorhandener Sportorte und dem **Setzen eines Pins** bei der Neuerfassung. Ein gesetzter Pin liefert ausschließlich Breite und Länge ([D2.7](D2-datentypen.md#d27-geocoordinate)) — **keine** Adresse. Eine Umrechnung zwischen Adresse und Koordinaten (Geocoding) findet in keiner Richtung statt; Ort und optionale Adressangabe eines Courts sind Eingaben des Nutzers und werden nicht gegen einen Dienst geprüft. |
+| **Semantik — Koordinaten** | Die Karte dient der Anzeige vorhandener Sportorte und dem **Setzen eines Pins** bei der Neuerfassung. Ein gesetzter Pin liefert Breite und Länge ([D2.7](D2-datentypen.md#d27-geocoordinate)); dieses Koordinatenpaar wird anschließend an NB-05 übergeben, um Ort und optionale Adresse zu bestimmen. |
 | **Semantik — Nutzungsbedingungen** | Die Kacheln werden gemäß der Nutzungsrichtlinie von OpenStreetMap bezogen: sichtbare Quellenangabe in der Kartenansicht, sparsame Nutzung durch normales Kartenverhalten (kein flächiges Vorabladen, kein Massenabruf, kein Weiterverteilen der Kacheln). Die Quellenangabe ist verpflichtend und Teil der Dialogfläche. |
-| **Fehlerbehandlung** | Laden die Kacheln nicht oder ist der Dienst nicht erreichbar, bleibt die Anwendung nutzbar: Die Listenansicht ([DLG-02](B1-dialogspezifikation.md#b142-dlg-02--session-entdecken-liste)) und die Suche über den Ort funktionieren unabhängig von der Karte ([N1-QA-06](N1-nichtfunktionale-anforderungen.md#n12-qualitätsziele-im-überblick), Graceful Degradation nach [D2.7](D2-datentypen.md#d27-geocoordinate)). Die Kartenansicht zeigt in diesem Fall einen Hinweis statt einer leeren Fläche. Fehlen einem Sportort die Koordinaten, erscheint er nicht auf der Karte, bleibt aber über Ort und Name auffindbar. |
+| **Fehlerbehandlung** | Laden die Kacheln nicht oder ist der Dienst nicht erreichbar, bleiben Suche, Listen- und Detailansichten vorhandener Courts nutzbar. Die Neuerfassung eines Courts ist ohne Kartenpin jedoch nicht möglich; der Dialog zeigt einen Hinweis und eine Wiederholmöglichkeit. |
 
-## S1.6 Nicht genutzte Schnittstellen und Abgrenzung
+## S1.6 NB-05 — Nominatim Reverse-Geocoding
+
+Nominatim bestimmt bei der Neuerfassung eines Courts aus dem vom Nutzer gesetzten
+Kartenpin die nächstgelegenen strukturierten Orts- und Adressdaten. Der Dienst
+wird ausschließlich durch diese einzelne Nutzeraktion ausgelöst; es gibt keine
+Adresssuche, Autovervollständigung oder automatische Geräteortung.
+
+| Aspekt | Inhalt |
+|---|---|
+| **Operation** | `ortAufloesen(latitude, longitude) → { city, address? }` |
+| **Richtung** | Ausgehend; Koordinaten werden übertragen, Orts- und Adressdaten zurückgegeben. |
+| **Eingaben** | Das WGS84-Koordinatenpaar des in DLG-05 gesetzten Kartenpins. Keine Nutzerkennung, kein JWT und keine Profildaten. |
+| **Ausgaben** | Ein strukturierter Ort (`city`) und, sofern für das nächstgelegene geeignete OpenStreetMap-Objekt verfügbar, eine Adresse (`address`). |
+| **Ausgelöst durch** | [UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen), unmittelbar nach dem Setzen oder Verschieben des Kartenpins in DLG-05. |
+| **Semantik** | Das Ergebnis bezieht sich auf das nächstgelegene geeignete OpenStreetMap-Objekt und kann vom exakten Pin abweichen. Gespeichert werden der gesetzte Pin und die zu diesem Abruf gelieferten Ortsdaten gemeinsam. |
+| **Nutzungsbedingungen** | Nutzung der öffentlichen Instanz nur für das kleine Hochschul-MVP: höchstens eine Anfrage pro Sekunde anwendungsweit, identifizierbarer Referer beziehungsweise User-Agent, sichtbare Attribution und keine systematischen oder periodischen Abfragen. Wiederholte identische Anfragen werden vermieden; der Anbieter muss ohne fachliche Datenmigration austauschbar bleiben. |
+| **Fehlerbehandlung** | Liefert der Dienst keinen verwertbaren Ort, ist er nicht erreichbar oder begrenzt er den Zugriff, wird kein unvollständiger Court gespeichert. DLG-05 zeigt eine verständliche Meldung und eine manuell auslösbare Wiederholmöglichkeit. |
+
+Maßgeblich sind die
+[Nominatim Usage Policy](https://operations.osmfoundation.org/policies/nominatim/)
+und die
+[Dokumentation der Reverse-Operation](https://nominatim.org/release-docs/latest/api/Reverse/).
+
+## S1.7 Nicht genutzte Schnittstellen und Abgrenzung
 
 Bewusst **nicht** genutzte Fähigkeiten der bestehenden Nachbarsysteme — hier festgehalten, damit ihr Fehlen als Entscheidung erkennbar ist und nicht als Lücke:
 
@@ -134,7 +158,6 @@ Bewusst **nicht** genutzte Fähigkeiten der bestehenden Nachbarsysteme — hier 
 | Fremdanbieter-Anmeldung (OAuth / Social Login) | Im MVP nur E-Mail und Passwort ([P2.6](P2-architekturueberblick.md#p26-fehlende--zukünftige-systeme)). |
 | Kamera-Schnittstelle des Browsers | Der QR-Code wird mit der Kamera-App des Geräts gescannt, die den Deep-Link im Browser öffnet ([B1 DLG-06](B1-dialogspezifikation.md#b146-dlg-06--check-in)). LocalCourt braucht deshalb keinen eigenen Scanner, keine Kameraberechtigung und keine Scanner-Bibliothek. Steht keine Kamera zur Verfügung, greift die gleichwertige PIN-Eingabe ([UC-09](F2-anwendungsfaelle.md#uc-09--check-in-per-pin-durchführen)). |
 | Standortermittlung des Geräts (Geolocation) | Die Ortssuche erfolgt gemäß [F1](F1-geschaeftsprozesse.md) GP-01 A2 und [UC-02](F2-anwendungsfaelle.md#uc-02--session-suchen) über eine Eingabe des Nutzers, nicht über die Geräteposition — datenschutzseitig die zurückhaltendere Variante ([N1-QA-04](N1-nichtfunktionale-anforderungen.md#n1-qa-04--datenschutz--dsgvo)). |
-| Geocoding-Dienste (Nominatim, Photon, kommerzielle Anbieter) | Koordinaten entstehen durch einen Kartenpin, Ort und Adressangabe sind freie Eingaben. Damit entfällt ein fünftes Nachbarsystem samt Ratenbegrenzung, Attributionspflicht und Fehlerfall „Adresse nicht gefunden". Als spätere Erweiterung bleibt es in [P2.6](P2-architekturueberblick.md#p26-fehlende--zukünftige-systeme) vermerkt. |
 
 Ebenfalls **nicht** Gegenstand von S1:
 
@@ -143,23 +166,23 @@ Ebenfalls **nicht** Gegenstand von S1:
 - **Datenbankschema, Schlüssel, Zugriffsregeln im Detail** — siehe [N2](N2-querschnittskonzepte.md).
 - **Ablauf und Reihenfolge der Aufrufe** innerhalb eines Anwendungsfalls — siehe [F2](F2-anwendungsfaelle.md) und die Datenflüsse in [P2.5](P2-architekturueberblick.md#p25-kritische-datenflüsse).
 
-## S1.7 Konsistenz und Cross-References
+## S1.8 Konsistenz und Cross-References
 
 | Baustein | Bezug zu S1 |
 |---|---|
 | [P1](P1-ziele-rahmenbedingungen.md) | Die Free-Tier-Rahmenbedingungen (CON-T-01–CON-T-05) begrenzen die Auswahl der Nachbarsysteme; CON-D-03 („Authentifizierung ohne SMS") stützt das Verfahren in S1.3. |
 | [P2](P2-architekturueberblick.md) | P2.2 zählt die Nachbarsysteme auf; jeder dortige NB-Eintrag wird hier in genau einem Abschnitt detailliert. P2.5 zeigt die Aufrufreihenfolge, S1 die Operationen selbst. |
-| [F1](F1-geschaeftsprozesse.md) | Die Akteure „Supabase" und „OpenStreetMap" in GP-01/GP-02 entsprechen NB-02/NB-03 bzw. NB-04. |
-| [F2](F2-anwendungsfaelle.md) | Jede Operation ist einem Anwendungsfall zugeordnet („Ausgelöst durch"); UC-01 wird durch S1.3, UC-02–UC-12 durch S1.4, die Kartenanteile von UC-02/UC-03/UC-10 zusätzlich durch S1.5 erbracht. |
+| [F1](F1-geschaeftsprozesse.md) | Die Akteure „Supabase", „OpenStreetMap" und „Nominatim" entsprechen NB-02/NB-03, NB-04 und NB-05. |
+| [F2](F2-anwendungsfaelle.md) | Jede Operation ist einem Anwendungsfall zugeordnet („Ausgelöst durch"); UC-01 wird durch S1.3, UC-02–UC-12 durch S1.4, die Kartenanteile von UC-02/UC-03/UC-10 zusätzlich durch S1.5 und das Reverse-Geocoding von UC-10 durch S1.6 erbracht. |
 | [F3](F3-anwendungsfunktionen.md) | AF-01, AF-02 und AF-04 stehen hinter den drei atomaren Operationen in S1.4; AF-03 liefert den abgeleiteten Status, der in den Leseoperationen mitgelesen wird. |
 | [D1](D1-datenmodell.md) | Die Operationen in S1.4 lesen und schreiben genau die Entitäten aus D1.4; `profile.user_id` stammt aus S1.3. Kartendaten und Auth-Objekte sind laut D1.7 bewusst nicht modelliert. |
-| [D2](D2-datentypen.md) | `Pin` (D2.4) wird in `check_in` geprüft, `GeoCoordinate` (D2.7) entsteht durch den Kartenpin in S1.5, `QrContent` (D2.8) trägt den Deep-Link aus S1.2. |
+| [D2](D2-datentypen.md) | `Pin` (D2.4) wird in `check_in` geprüft, `GeoCoordinate` (D2.7) entsteht durch den Kartenpin in S1.5 und wird in S1.6 aufgelöst, `QrContent` (D2.8) trägt den Deep-Link aus S1.2. |
 | [B1](B1-dialogspezifikation.md) | B1 ist der Contract von NB-01; die Fehler- und Ladezustände aus B1.5.4 sind die Anzeigeseite der Fehlerbehandlung aus S1.1. |
 | [N1](N1-nichtfunktionale-anforderungen.md) | N1-QA-04 begrenzt die übertragenen personenbezogenen Daten, N1-QA-05 die Behandlung von Schlüsseln, N1-QA-06 fordert die Ausfallpfade, N1-QA-09 die Meldungen ohne technische Interna, N1-QA-10 den Free-Tier-Rahmen. |
 | [N2](N2-querschnittskonzepte.md) | N2 setzt die hier beschriebenen Operationen technisch um: N2.4/N2.10 die Atomarität, N2.11 die Zugriffsregeln, N2.12 die Antwortcodes. Der in N2.11 erwähnte, dort unbenannte Erstellungsaufruf ist die Operation `create_session` aus S1.4. |
 | ARCH (`docs/arch/`) | Bindet die Operationen an konkrete Endpunkte, Payloads und Bibliotheken. |
 
-## S1.8 Offene Punkte
+## S1.9 Offene Punkte
 
 | Punkt | Beschreibung | Zuständig |
 |---|---|---|
@@ -168,10 +191,10 @@ Ebenfalls **nicht** Gegenstand von S1:
 
 Das Verhalten bei offensichtlichen Court-Dubletten ist eine Frage des Dialogverhaltens und liegt bei [B1.8](B1-dialogspezifikation.md#b18-offene-punkte); es berührt keine Schnittstelle.
 
-## S1.9 Eingesetzte KI-Werkzeuge
+## S1.10 Eingesetzte KI-Werkzeuge
 
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | GitHub Copilot (ursprüngliche Stub-Struktur), Claude Code (Claude Sonnet 5, Ausarbeitung), Codex |
-| Verwendung | Vollständige Ausarbeitung des Bausteins nach dem Vorbild der Referenz-Dokumentation (Herold S1): Operationen, Ein-/Ausgaben, Semantik und Fehlerbehandlung je Nachbarsystem; Auflösung der zuvor als „zu dokumentieren" markierten Abschnitte; Aufnahme der Teamentscheidungen zu Authentifizierungsverfahren, atomaren Schreiboperationen, Kartennutzung ohne Geocoding-Dienst und QR-Scan über die Gerätekamera. Codex korrigierte am 2026-07-28 einen defekten internen Sprunglink. |
+| Verwendung | Vollständige Ausarbeitung des Bausteins nach dem Vorbild der Referenz-Dokumentation (Herold S1): Operationen, Ein-/Ausgaben, Semantik und Fehlerbehandlung je Nachbarsystem; Auflösung der zuvor als „zu dokumentieren" markierten Abschnitte; Aufnahme der Teamentscheidungen zu Authentifizierungsverfahren, atomaren Schreiboperationen und QR-Scan über die Gerätekamera. Codex ergänzte am 2026-07-29 den Contract für das beschlossene Reverse-Geocoding über Nominatim und aktualisierte die betroffenen Abgrenzungen. |
 | Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [N1](N1-nichtfunktionale-anforderungen.md) und [N2](N2-querschnittskonzepte.md). Die zuvor im Stub genannten Endpunkt-URLs wurden entfernt, weil sie teils nicht den tatsächlichen Schnittstellen entsprachen und die Endpunkt-Ebene laut Referenz-Vorbild in die Architekturdokumentation gehört. Aktualisierung (2026-07-28, Codex): Veraltete Kennzeichnung der in UC-02 bereits ausgeschlossenen Geolocation als offenen Punkt entfernt. Die fachliche Verantwortung bleibt beim Team. |

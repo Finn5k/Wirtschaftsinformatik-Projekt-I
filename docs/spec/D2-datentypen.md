@@ -51,13 +51,11 @@ Fachlicher Status einer Session. Der Wert wird **abgeleitet** (siehe [D1.6](D1-d
 | `scheduled` | Angelegt, aber noch nicht gestartet (`jetzt < start_at`). Beitritt möglich, Check-in nicht. |
 | `active` | Läuft (`start_at ≤ jetzt < start_at + duration_min`). Beitritt und Check-in möglich. |
 | `completed` | Beendet (`jetzt ≥ start_at + duration_min`). Read-only, nur Historie. |
-| `cancelled` | Abgesagt. Im MVP definiert, aber **nicht** durch Nutzeraktion auslösbar; für spätere Ausbaustufen reserviert. |
-
-**Ableitung & Ordnung:** Solange `cancelled` nicht gilt, ergibt sich der Status allein aus der Zeit (Ableitungstabelle in AF-03). Die fachliche Reihenfolge ist **monoton vorwärts**: `scheduled → active → completed`. Rücksprünge sind unzulässig; ein Endzustand (`completed`, `cancelled`) wird nicht verlassen.
+**Ableitung & Ordnung:** Der Status ergibt sich allein aus der Zeit (Ableitungstabelle in AF-03). Die fachliche Reihenfolge ist **monoton vorwärts**: `scheduled → active → completed`. Rücksprünge sind unzulässig; `completed` wird nicht verlassen.
 
 **Handhabung:** Konsumenten (UI, Prüfungen in AF-01/AF-02) müssen den bereitgestellten abgeleiteten Wert verwenden. Der Status wird gemäß [N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03) bei jeder Abfrage berechnet und nicht zeitgesteuert materialisiert.
 
-**Validierung:** Nur die vier genannten Werte sind gültig. Ein direkter, fachlich unzulässiger Übergang (z. B. `completed → active`) ist ungültig und darf nicht auftreten.
+**Validierung:** Nur die drei genannten Werte sind gültig. Ein direkter, fachlich unzulässiger Übergang (z. B. `completed → active`) ist ungültig und darf nicht auftreten.
 
 ## D2.4 Pin
 
@@ -102,11 +100,11 @@ Teilnahmezustand eines `participant`.
 
 **Wertform:** Eine geografische Koordinate als **Dezimalzahl** im WGS84-Bezugssystem. `latitude` liegt im Bereich **−90 bis +90**, `longitude` im Bereich **−180 bis +180**.
 
-**Optionalität & Paarbildung:** Koordinaten sind je `court` optional (`[0..1]`) und treten **paarweise** auf: entweder sind `latitude` und `longitude` beide gesetzt oder beide leer (Invariante aus [D1.4](D1-datenmodell.md#court--sportort)). Ein einzelner Koordinatenwert ohne Partner ist fachlich ungültig.
+**Paarbildung:** Koordinaten treten je `court` **paarweise** auf. Für im MVP neu erfasste Courts sind beide Werte verpflichtend, da sie aus dem gesetzten Kartenpin entstehen (Invariante aus [D1.4](D1-datenmodell.md#court--sportort)). Ein einzelner Koordinatenwert ohne Partner ist fachlich ungültig.
 
-**Verwendung:** Dient ausschließlich der Kartendarstellung über OpenStreetMap/Leaflet ([NB-04](P2-architekturueberblick.md#p22-nachbarsysteme)). Fehlen die Koordinaten, bleibt die Session über `court.city`/`name` weiterhin auffindbar (Graceful Degradation, UC-02).
+**Verwendung:** Dient der Kartendarstellung über OpenStreetMap/Leaflet ([NB-04](P2-architekturueberblick.md#p22-nachbarsysteme)) und als Eingabe für das Reverse-Geocoding über Nominatim (NB-05).
 
-**Validierung:** Werte außerhalb der genannten Bereiche sind ungültig. Koordinaten entstehen ausschließlich durch das Setzen eines Kartenpins; eine Umrechnung zwischen Adresse und Koordinaten (Geocoding) findet in keiner Richtung statt ([S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)).
+**Validierung:** Werte außerhalb der genannten Bereiche sind ungültig. Koordinaten entstehen durch das Setzen eines Kartenpins; Nominatim leitet daraus Ort und, sofern vorhanden, Adresse ab ([S1.6](S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)).
 
 ## D2.8 QrContent
 
@@ -141,7 +139,7 @@ Attribut- und Entitätsnamen sind in **englischem `snake_case`** gehalten (konsi
 | [D1](D1-datenmodell.md) | Verwendet die hier definierten Typen für alle Attribute; jede Typreferenz in D1 wird hier aufgelöst. |
 | [F3](F3-anwendungsfunktionen.md) | Definiert die Regeln über den Werten: `SessionStatus` (AF-03), `Pin`/`QrContent` (AF-02, AF-04), `ParticipantStatus` (AF-01, AF-02). |
 | [P1](P1-ziele-rahmenbedingungen.md) | Scope-Grenzen prägen die Wertebereiche (kein `waiting`, NG-10; DSGVO CON-D-01). |
-| [S1](S1-nachbarsysteme.md) | `Identifier` (`user_id`) stammt aus Supabase Auth (NB-02); `GeoCoordinate` entsteht über die Kartenansicht (NB-04), nicht über einen Geocoding-Dienst. |
+| [S1](S1-nachbarsysteme.md) | `Identifier` (`user_id`) stammt aus Supabase Auth (NB-02); `GeoCoordinate` entsteht über die Kartenansicht (NB-04) und wird für Reverse-Geocoding an NB-05 übergeben. |
 | N1 / N2 | Feldlängen, Obergrenzen, technische Typzuordnung, Constraints, PIN-Speicherung, Zeittoleranz beim Check-in. |
 | B1 | Ein-/Ausgabeformate und Feldvalidierung in den Dialogen. |
 | E2 | Glossar: konsistente Begriffe zu den Typwerten. |
@@ -158,5 +156,5 @@ die technischen Entscheidungen zu PIN, QR-Inhalt und Identifiern in
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Claude Code (Opus 4.8) / Codex |
-| Verwendung | Entwurf des D2-Datentypenverzeichnisses: Katalogisierung der trivialen und nicht-trivialen Typen, Definition von Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. Codex glich am 2026-07-28 die Beschreibungen von Textlängen und Sessiondauer an die bereits getroffenen Festlegungen in N1 an und korrigierte den N2-Verweis. |
-| Prüfung | Inhalte wurden gegen [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md) und die Herold-Referenz geprüft und mit dem Team abgestimmt. Angleichung an S1 (2026-07-26, Claude Sonnet 5): Herkunft der Koordinaten in D2.7 festgelegt (Kartenpin statt Geocoding). Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): D2.11 vollständig aufgelöst, da Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz in N1.7 als bewusst nicht festgelegt dokumentiert sind. Aktualisierung (2026-07-28, Codex): Frühere N2-Entscheidungsmarker bei Identifiern, Status, PIN und QR-Inhalt durch Verweise auf die inzwischen getroffenen N2-Festlegungen ersetzt. Redundanzkorrektur (2026-07-28, Codex): Wiederholung der Festlegungen aus N1/N2 in D2.11 durch maßgebliche Verweise ersetzt. |
+| Verwendung | Entwurf des D2-Datentypenverzeichnisses: Katalogisierung der trivialen und nicht-trivialen Typen, Definition von Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. Codex entfernte am 2026-07-29 `cancelled` aus `SessionStatus` und konkretisierte `GeoCoordinate` für Kartenpin und Reverse-Geocoding. |
+| Prüfung | Inhalte wurden gegen [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md), [S1](S1-nachbarsysteme.md), N1/N2 und die Herold-Referenz geprüft und mit dem Team abgestimmt. Wertebereiche, Statusumfang, Kartenpin, Reverse-Geocoding, PIN und QR-Inhalt entsprechen den aktuellen Festlegungen. |

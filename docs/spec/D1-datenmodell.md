@@ -96,7 +96,7 @@ erDiagram
 | `user_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Primärschlüssel. Entspricht der **externen Auth-Kennung** aus Supabase Auth ([NB-02](P2-architekturueberblick.md#p22-nachbarsysteme)). Der Auth-Nutzer selbst (E-Mail, Passwort, Tokens) gehört zum Nachbarsystem und ist **nicht** Teil dieses Modells. |
 | `display_name` | [`Text`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 1 | Anzeigename in Session-Detail und Teilnehmerliste (UC-03, UC-07). |
 | `city` | [`Text`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 0..1 | Heimatort des Nutzers. Dient als Vorbelegung der Ortssuche (UC-02, B1 DLG-02) und wird anderen Nutzern **nicht** angezeigt. |
-| `avatar_url` | [`Url`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 0..1 | Profilbild (P1 erwähnt, MVP-Umfang laut UC-12 offen). |
+| `avatar_url` | [`Url`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 0..1 | Optionaler Anzeigewert für ein vorhandenes Profilbild. Upload und Bearbeitung sind nicht Teil des MVP (UC-12). |
 | `created_at` | [`Timestamp`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 1 | Zeitpunkt der Anlage. |
 
 **Assoziationen:** organisiert 0..* `session` (als `organizer_id`); besitzt 0..* `participant` (als `user_id`); bevorzugt 0..* `sport` über `sport_preference`; erfasst optional 0..* `court` (als `created_by`).
@@ -136,15 +136,15 @@ erDiagram
 | `court_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Primärschlüssel. |
 | `name` | [`Text`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 1 | Fachliche Benennung des Sportorts. Pflicht (UC-10). |
 | `city` | [`Text`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 1 | Ort/Region, Grundlage der ortsbasierten Suche (UC-02). |
-| `address` | [`Text`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 0..1 | Optionale genauere Adressangabe. |
-| `latitude` | [`GeoCoordinate`](D2-datentypen.md#d27-geocoordinate) | 0..1 | Geografische Breite für die Kartendarstellung ([NB-04](P2-architekturueberblick.md#p22-nachbarsysteme)). |
-| `longitude` | [`GeoCoordinate`](D2-datentypen.md#d27-geocoordinate) | 0..1 | Geografische Länge. |
+| `address` | [`Text`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 0..1 | Vom Reverse-Geocoding gelieferte genauere Adressangabe, sofern verfügbar. |
+| `latitude` | [`GeoCoordinate`](D2-datentypen.md#d27-geocoordinate) | 1 | Geografische Breite des gesetzten Kartenpins für Kartendarstellung und Reverse-Geocoding. |
+| `longitude` | [`GeoCoordinate`](D2-datentypen.md#d27-geocoordinate) | 1 | Geografische Länge des gesetzten Kartenpins. |
 | `created_by` | [`Identifier`](D2-datentypen.md#d22-identifier) | 0..1 | Optionaler Verweis auf das `profile`, das den Court erfasst hat. |
 | `created_at` | [`Timestamp`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 1 | Zeitpunkt der Anlage. |
 
 **Assoziationen:** ist Austragungsort von 0..* `session` (als `court_id`); optional erfasst von 0..1 `profile` (als `created_by`).
 
-**Invariante (fachlich, UC-10):** Ein Court benötigt mindestens `name` und `city`. Koordinaten sind optional und verbessern nur die Kartendarstellung; sie ersetzen nicht die fachliche Benennung. Die beiden Koordinaten treten fachlich **gemeinsam** auf: entweder sind beide gesetzt oder beide leer.
+**Invariante (fachlich, UC-10):** Ein im MVP erfasster Court benötigt `name`, `city`, `latitude` und `longitude`. Die Koordinaten entstehen gemeinsam durch den verpflichtenden Kartenpin. `city` und die optionale `address` werden aus diesem Koordinatenpaar per Reverse-Geocoding abgeleitet und nicht als unabhängige Freitexte gespeichert.
 
 ### `session` — Sport-Session
 
@@ -216,7 +216,7 @@ Einige fachlich zentrale Merkmale werden **nicht als eigenständig gepflegte Att
 
 | Merkmal | Zugehörige Entität | Ableitung | Definiert in |
 |---|---|---|---|
-| `status` | `session` | Aus aktueller Zeit im Verhältnis zu `start_at` und `start_at + duration_min`: `scheduled` / `active` / `completed`; `cancelled` reserviert. | [F3 AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge), [D2](D2-datentypen.md#d23-sessionstatus) |
+| `status` | `session` | Aus aktueller Zeit im Verhältnis zu `start_at` und `start_at + duration_min`: `scheduled` / `active` / `completed`. | [F3 AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge), [D2](D2-datentypen.md#d23-sessionstatus) |
 | `confirmed_count` | `session` | Anzahl `participant` der Session mit `status ∈ {confirmed, checked_in}`. Grundlage der Kapazitätsprüfung (AF-01) und der Anzeige „x/max". | [F3 AF-01](F3-anwendungsfunktionen.md#f33-af-01--beitritts--und-kapazitätsregel) |
 | `qr_content` | `session` | Verweis auf die Check-in-Ansicht mit `session_id` und `pin` (konzeptionell `…/check-in?session=<id>&pin=<pin>`). | [F3 AF-04](F3-anwendungsfunktionen.md#f36-af-04--pin--und-qr-code-erzeugung), [D2](D2-datentypen.md#d28-qrcontent) |
 
@@ -252,7 +252,7 @@ Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#
 
 ## D1.9 Offene Punkte
 
-Keine offenen Punkte am Datenmodell selbst. Zwei Fragen berühren `profile`-Attribute, sind aber Fragen des Dialogverhaltens und deshalb in [B1.8](B1-dialogspezifikation.md#b18-offene-punkte) geführt: der Umfang der in Teilnehmerlisten sichtbaren Profilfelder (UC-03, UC-07) und der MVP-Umfang von `avatar_url` (UC-12).
+Keine offenen Punkte am Datenmodell selbst. Der Umfang der in Teilnehmerlisten sichtbaren Profilfelder (UC-03, UC-07) ist eine Frage des Dialogverhaltens und deshalb in [B1.8](B1-dialogspezifikation.md#b18-offene-punkte) geführt. `avatar_url` bleibt ein optionaler Anzeigewert; Upload und Bearbeitung sind im MVP ausgeschlossen.
 
 Die technischen Entscheidungen zu Schlüsseln, Zählstrategie und
 Statuspersistenz stehen ausschließlich in
@@ -263,5 +263,5 @@ Statuspersistenz stehen ausschließlich in
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Claude Code (Opus 4.8) / Codex |
-| Verwendung | Entwurf des D1-Bausteins: Ableitung der Entitätstypen, Attribute und Beziehungen aus den „Bezug zu Daten"-Angaben in F2/F3, Erstellung des ER-Diagramms und der Invarianten. Codex korrigierte am 2026-07-28 den veralteten Platzhalterverweis auf N2. |
+| Verwendung | Entwurf des D1-Bausteins: Ableitung der Entitätstypen, Attribute und Beziehungen aus den „Bezug zu Daten"-Angaben in F2/F3, Erstellung des ER-Diagramms und der Invarianten. Codex konkretisierte am 2026-07-29 die Court-Invariante für Kartenpin und Reverse-Geocoding sowie `avatar_url` als read-only Anzeigewert. |
 | Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und die Herold-Referenz geprüft und mit dem Team abgestimmt. Richtungsentscheidungen (fachliche Abstraktion, Sportart als Katalog, englische Feldnamen, Mermaid-ER-Diagramm) wurden vorab bestätigt. Nachtrag (2026-07-26, Claude Sonnet 5): initialer Sportarten-Katalog dokumentiert, abgeglichen mit den im Prototyp verwendeten Werten. Nachtrag (2026-07-26, Claude Sonnet 5): `profile.city` als optionales Attribut aufgenommen (Heimatort, Vorbelegung der Ortssuche, für andere Nutzer nicht sichtbar). Redundanzkorrektur (2026-07-28, Codex): Wiederholte N2-Entscheidungen aus D1.9 entfernt und durch einen Verweis ersetzt. |

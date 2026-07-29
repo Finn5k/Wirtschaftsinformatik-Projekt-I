@@ -36,7 +36,7 @@ Die vier Anwendungsfunktionen greifen ineinander: AF-03 definiert den Status, de
 ### Regeln und Invarianten (AF-01)
 
 1. **Anmeldepflicht:** Nur angemeldete Nutzer können beitreten.
-2. **Beitrittsfähiger Status:** Ein Beitritt ist nur zulässig, solange die Session laut AF-03 im Status `scheduled` oder `active` ist. Bei `completed` oder `cancelled` ist kein Beitritt möglich.
+2. **Beitrittsfähiger Status:** Ein Beitritt ist nur zulässig, solange die Session laut AF-03 im Status `scheduled` oder `active` ist. Bei `completed` ist kein Beitritt möglich.
 3. **Kein Doppelbeitritt:** Ein Nutzer, der bereits einen Teilnahme-Eintrag (in beliebigem Status) für die Session besitzt, kann nicht erneut beitreten. Der Organisator zählt ab Erstellung als Teilnehmer (F1 GP-02 A7) und kann seiner eigenen Session nicht zusätzlich beitreten.
 4. **Harte Kapazitätsgrenze:** Ein Beitritt ist nur zulässig, wenn die Anzahl bestätigter Teilnehmer **kleiner** als `max_participants` ist. Der Organisator belegt einen der Plätze.
 5. **Keine Überbuchung, keine Warteliste (Invariante):** Zu keinem Zeitpunkt darf die Anzahl bestätigter Teilnehmer `max_participants` überschreiten. Wartelisten sind out of scope (P1 NG-10); „voll" bedeutet endgültige Ablehnung.
@@ -127,21 +127,18 @@ Auswertung von oben nach unten; erste zutreffende Regel gewinnt.
 | Identifier | AF-03 |
 | Name | Session-Lifecycle / Statusübergänge |
 | Zweck | Bestimmt den fachlichen Status einer Session zeitbasiert und legt fest, welche Statusübergänge zulässig sind. Der Status steuert, welche Aktionen (Beitritt, Check-in, Historie) erlaubt sind. |
-| Eingaben | Session mit geplantem Start, Dauer und einem Storniert-Kennzeichen; aktuelle Zeit. |
-| Ergebnis | Ein eindeutiger Status: `scheduled`, `active`, `completed` oder `cancelled`. |
-| Statuswerte | `scheduled` (angelegt, vor Start), `active` (laufend), `completed` (beendet, read-only), `cancelled` (abgesagt — im MVP definiert, aber nicht nutzerauslösbar; reserviert). |
+| Eingaben | Session mit geplantem Start und Dauer; aktuelle Zeit. |
+| Ergebnis | Ein eindeutiger Status: `scheduled`, `active` oder `completed`. |
+| Statuswerte | `scheduled` (angelegt, vor Start), `active` (laufend), `completed` (beendet, read-only). |
 
 ### Regeln und Invarianten (AF-03)
 
-1. **Zeitbasierte Ableitung:** Solange die Session nicht storniert ist, ergibt sich ihr Status allein aus der aktuellen Zeit im Verhältnis zu Start und Ende (Ende = Start + Dauer). Es ist kein manueller Statuswechsel durch den Organisator vorgesehen (F1 schließt Session-Bearbeitung nach Erstellung aus).
+1. **Zeitbasierte Ableitung:** Der Status ergibt sich allein aus der aktuellen Zeit im Verhältnis zu Start und Ende (Ende = Start + Dauer). Es ist kein manueller Statuswechsel durch den Organisator vorgesehen; Bearbeiten, Absagen und Löschen sind gemäß P1 NG-11 nicht Teil des MVP.
 2. **Auto-Close:** Der Übergang `active` → `completed` erfolgt automatisch, sobald die Zeit Start + Dauer erreicht ist (F1 GP-01 A17, GP-02 A21). Es ist keine Aktion eines Nutzers nötig.
 3. **Monotonie (Invariante):** Der Status bewegt sich ausschließlich vorwärts (`scheduled` → `active` → `completed`). Ein Rücksprung ist unzulässig; eine abgeschlossene Session wird nie wieder aktiv.
-4. **Stornierung reserviert:** `cancelled` ist als Status definiert (P1 nennt „storniert" im Lifecycle), im MVP jedoch nicht durch eine Nutzeraktion auslösbar, da F1 keine nachträgliche Session-Änderung modelliert. Der Wert bleibt für spätere Ausbaustufen reserviert.
-5. **Statusgesteuerte Aktionen:** Der abgeleitete Status bestimmt die zulässigen Aktionen anderer Anwendungsfunktionen und Use Cases (siehe Tabelle unten).
+4. **Statusgesteuerte Aktionen:** Der abgeleitete Status bestimmt die zulässigen Aktionen anderer Anwendungsfunktionen und Use Cases (siehe Tabelle unten).
 
 ### Ableitungstabelle Status (AF-03)
-
-Gilt, wenn die Session nicht storniert ist (`cancelled` = false):
 
 | Bedingung (mit `Ende = Start + Dauer`) | Status |
 |---|---|
@@ -157,7 +154,6 @@ Gilt, wenn die Session nicht storniert ist (`cancelled` = false):
 | active → completed | Zeit erreicht Ende | ja (automatisch, Auto-Close) | nur Historie/Ansicht (UC-11), keine Änderungen |
 | scheduled → completed | — | nein | — |
 | completed → * | — | nein (Endzustand) | — |
-| scheduled → cancelled | (reserviert) | nicht im MVP auslösbar | — |
 
 Ableitung erlaubter Aktionen je Status:
 
@@ -166,12 +162,11 @@ Ableitung erlaubter Aktionen je Status:
 | scheduled | ja | nein (außerhalb Fenster) | ja | ja |
 | active | ja | ja | ja | ja |
 | completed | nein | nein | nein (nur Historie UC-11) | ja (read-only) |
-| cancelled | nein | nein | nein | ja (read-only) |
 
 | Abschnitt | Inhalt |
 |---|---|
 | Bezug zu F1 | GP-01 A15 (aktiv), A17 (Auto-Close); GP-02 A21 (Auto-Close). |
-| Bezug zu Daten | Session (Start, Dauer, Status/Storniert-Kennzeichen); Datentypen in D1/D2. |
+| Bezug zu Daten | Session (Start, Dauer, abgeleiteter Status); Datentypen in D1/D2. |
 | Bezug zu NFR | Verlässliche Zeitbasis, Konsistenz zwischen angezeigtem und tatsächlichem Status. |
 | Technische Umsetzung | Der Status wird gemäß [N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03) bei jeder Abfrage berechnet und nicht persistiert. |
 
@@ -242,7 +237,7 @@ Typische fachliche Kette einer organisierten Session:
 
 | Baustein | Relevanz für F3 |
 |---|---|
-| [P1](P1-ziele-rahmenbedingungen.md) | Kapazität als harte Grenze und Ausschluss der Warteliste (NG-10) sind Grundlage von AF-01. Status-Lifecycle (geplant/aktiv/abgeschlossen/storniert) ist Grundlage von AF-03. |
+| [P1](P1-ziele-rahmenbedingungen.md) | Kapazität als harte Grenze und Ausschluss der Warteliste (NG-10) sind Grundlage von AF-01. Der zeitbasierte Status-Lifecycle (geplant/aktiv/abgeschlossen) und der Ausschluss nachträglicher Session-Änderungen (NG-11) sind Grundlage von AF-03. |
 | [F1](F1-geschaeftsprozesse.md) | Liefert die Aktivitäten, aus denen die Regeln stammen: Beitritt (GP-01 A9-A13), Check-in (GP-02 A12-A19), Auto-Close (GP-01 A17, GP-02 A21), PIN/QR (GP-02 A8). |
 | [F2](F2-anwendungsfaelle.md) | AF-01 präzisiert UC-04, AF-02 präzisiert UC-08/UC-09, AF-03 stützt UC-02/UC-03/UC-11, AF-04 stützt UC-06. Die in F2 offen gelassenen Punkte (Concurrency, Check-in-Fenster, PIN-Regel) werden hier geschlossen. |
 | [S1](S1-nachbarsysteme.md) | Nachbarsysteme (Supabase Auth, PostgREST/PostgreSQL, OpenStreetMap) erbringen die Vorbedingungen und die technische Ausführung; F3 beschreibt nur die fachlichen Regeln. |
@@ -263,5 +258,5 @@ festgelegt; die Qualitätsabgrenzungen stehen in
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Claude Code / Codex |
-| Verwendung | Entwurf des F3-Bausteins, Identifikation der Anwendungsfunktionen aus den offenen Punkten von F2, Formulierung der Regeln, Entscheidungstabellen und Pseudocode-Kerne; Codex korrigierte am 2026-07-28 einen defekten internen Sprunglink. |
+| Verwendung | Entwurf des F3-Bausteins, Identifikation der Anwendungsfunktionen aus den offenen Punkten von F2, Formulierung der Regeln, Entscheidungstabellen und Pseudocode-Kerne; Codex entfernte am 2026-07-29 den nicht zum MVP gehörenden Status `cancelled` und grenzte nachträgliche Session-Änderungen ab. |
 | Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md) und die Herold-Referenz geprüft und manuell abgestimmt; der Warteliste-Scope-Konflikt wurde in P1 (NG-10) aufgelöst und in F2 nachgezogen. Toter Querverweis auf D2 korrigiert (2026-07-26, Claude Sonnet 5). Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): F3.10 aufgelöst, da alle fünf dort geführten Punkte inzwischen in N2 bzw. N1.7 entschieden sind. Aktualisierung (2026-07-28, Codex): Veraltete „Offene Punkte“-Zeilen in AF-01 bis AF-04 durch Verweise auf die bereits festgelegte technische Umsetzung in N1/N2 ersetzt. Redundanzkorrektur (2026-07-28, Codex): Wiederholung dieser technischen Festlegungen in F3.10 durch Verweise auf N1/N2 ersetzt. |

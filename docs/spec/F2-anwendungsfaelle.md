@@ -141,7 +141,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu Benutzerschnittstelle | Suchformular, Filter, Ergebnisliste, Kartenansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Performance bei Suche, mobile Nutzbarkeit, Graceful Degradation der Karte. |
 | Akzeptanzkriterien | Given Sessions in einer Region, When der Teilnehmer nach dieser Region sucht, Then werden passende zukünftige Sessions angezeigt. Given keine Treffer, When die Suche abgeschlossen ist, Then erscheint eine leere Ergebnisansicht ohne Systemfehler. |
-| Festlegung | Die Ortssuche erfolgt über eine Eingabe des Nutzers, vorbelegt aus `profile.city`; eine automatische Standortermittlung wird bewusst nicht genutzt (S1.6). |
+| Festlegung | Die Ortssuche erfolgt über eine Eingabe des Nutzers, vorbelegt aus `profile.city`; eine automatische Standortermittlung wird bewusst nicht genutzt (S1.7). |
 
 ### UC-03 — Session-Detail ansehen
 
@@ -239,13 +239,13 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Hauptszenario | 1. Organisator öffnet das Formular zur Session-Erstellung. 2. Organisator gibt Sessiondaten ein. 3. Organisator wählt oder erfasst den Sportort. 4. LocalCourt prüft Pflichtangaben und fachliche Grenzen. 5. LocalCourt erstellt die Session. 6. LocalCourt zeigt die Detailansicht mit Bestätigung. |
 | Alternative Szenarien | Organisator bricht die Erstellung ab; es wird keine Session gespeichert. |
 | Ausnahmefälle | Pflichtangaben fehlen, Zeitpunkt liegt in der Vergangenheit, Teilnehmerlimit ist ungültig, Court-Daten sind unvollständig oder Nutzer ist nicht angemeldet. |
-| Fachliche Regeln | Sessions benötigen Sportart, Zeitpunkt, Dauer, Court/Sportort und Teilnehmerlimit. Session-Bearbeitung nach Erstellung ist nach F1 aktuell nicht modelliert. |
+| Fachliche Regeln | Sessions benötigen Sportart, Zeitpunkt, Dauer, Court/Sportort und Teilnehmerlimit. Bearbeiten, Absagen und Löschen nach der Erstellung sind nicht Teil des MVP (P1 NG-11). |
 | Bezug zu F1 | GP-02 A3-A9. |
 | Bezug zu Daten | Session, Court, Sportart, Participant, Profile |
 | Bezug zu Benutzerschnittstelle | Session-Erstellformular; siehe B1. |
 | Bezug zu NFR / Qualität | Erstellung soll mit niedriger Einstiegshürde möglich sein; P1 SC-02 nennt unter 2 Minuten als Ziel. |
 | Akzeptanzkriterien | Given ein angemeldeter Organisator mit gültigen Angaben, When er die Erstellung absendet, Then existiert eine geplante Session. Given fehlende Pflichtangaben, Then wird keine Session veröffentlicht und die Eingaben werden erklärt. |
-| Abgrenzung | Session-Serien und spätere Bearbeitung liegen außerhalb des MVP. |
+| Abgrenzung | Session-Serien sowie Bearbeiten, Absagen und Löschen bestehender Sessions liegen außerhalb des MVP. |
 
 ### UC-07 — Teilnehmerliste anzeigen
 
@@ -335,21 +335,21 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Ziel | Sessions sind einem auffindbaren Sportort zugeordnet. |
 | Kurzbeschreibung | Bei der Session-Erstellung wählt der Organisator einen vorhandenen Court/Sportort aus. Falls der Sportort noch nicht vorhanden ist, kann er im begrenzten MVP-Umfang erfasst werden. |
 | Primärer Akteur | Organisator |
-| Unterstützende Akteure / Systeme | Browser / React-Frontend, Supabase PostgREST / PostgreSQL, OpenStreetMap / Leaflet |
+| Unterstützende Akteure / Systeme | Browser / React-Frontend, Supabase PostgREST / PostgreSQL, OpenStreetMap / Leaflet, Nominatim |
 | Auslöser | Organisator erstellt eine Session und benötigt einen Sportort. |
-| Vorbedingung | Organisator ist angemeldet; Name und Ort des Courts sind bekannt. |
+| Vorbedingung | Organisator ist angemeldet; der Court kann auf der Karte eindeutig markiert werden. |
 | Nachbedingung bei Erfolg | Session kann einem bestehenden oder neu erfassten Court zugeordnet werden. |
 | Nachbedingung bei Fehler | Es wird kein unvollständiger Court als Grundlage einer Session verwendet. |
 | Hauptszenario | 1. Organisator sucht oder öffnet die Court-Auswahl. 2. LocalCourt zeigt vorhandene passende Courts. 3. Organisator wählt einen Court aus. 4. LocalCourt übernimmt den Court in die Session-Erstellung. |
-| Alternative Szenarien | Organisator erfasst einen neuen Court mit Mindestangaben. Danach steht der Court für die Session-Erstellung zur Verfügung. |
-| Ausnahmefälle | Pflichtangaben fehlen, Ort ist uneindeutig, Karte kann nicht geladen werden oder ein Court existiert bereits offensichtlich doppelt. |
-| Fachliche Regeln | Ein Court benötigt mindestens einen Namen und eine Ortsangabe. Koordinaten verbessern die Kartendarstellung, ersetzen aber nicht die fachliche Benennung. |
+| Alternative Szenarien | Organisator erfasst einen neuen Court: Er vergibt einen Namen, setzt einen Pin auf der Karte und LocalCourt ermittelt Ort und Adresse per Reverse-Geocoding. Danach steht der Court für die Session-Erstellung zur Verfügung. |
+| Ausnahmefälle | Name oder Kartenpin fehlen, Reverse-Geocoding liefert keine verwertbare Ortsangabe, Karte beziehungsweise Geocoding-Dienst ist nicht erreichbar oder ein Court existiert bereits offensichtlich doppelt. |
+| Fachliche Regeln | Ein neu erfasster Court benötigt einen Namen, ein Koordinatenpaar und den daraus per Reverse-Geocoding bestimmten Ort. Die ermittelte Adresse wird gespeichert, sofern der Dienst eine liefert; Ort und Adresse werden nicht als widersprüchliche Freitexte erfasst. |
 | Bezug zu F1 | GP-02 A3; indirekt relevant für GP-01 A6-A8, weil Court-Daten dort zur Anzeige und Auffindbarkeit genutzt werden. |
 | Bezug zu Daten | Court, Sportart, Session |
 | Bezug zu Benutzerschnittstelle | Court-Auswahl und einfache Erfassungsmaske; siehe B1. |
-| Bezug zu NFR / Qualität | Datenqualität, einfache Bedienbarkeit, Fallback ohne Karte. |
-| Akzeptanzkriterien | Given ein vorhandener Court, When ein Organisator ihn auswählt, Then kann die Session mit diesem Court erstellt werden. Given gültige neue Court-Daten, When der Organisator sie erfasst, Then ist der Court für die Session auswählbar. |
-| Offene Punkte | Verhalten bei offensichtlichen Court-Dubletten — siehe [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). Ein Geocoding-Dienst wird nicht eingesetzt: Koordinaten entstehen durch das Setzen eines Kartenpins, Ort und Adressangabe sind freie Eingaben (siehe [S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)). |
+| Bezug zu NFR / Qualität | Datenqualität, einfache Bedienbarkeit, verständliche Fehlerbehandlung bei Karten- oder Geocoding-Ausfall. |
+| Akzeptanzkriterien | Given ein vorhandener Court, When ein Organisator ihn auswählt, Then kann die Session mit diesem Court erstellt werden. Given Name, Kartenpin und eine erfolgreiche Ortsauflösung, When der Organisator den neuen Court speichert, Then werden Koordinaten und ermittelte Ortsdaten gemeinsam gespeichert und der Court ist auswählbar. Given die Ortsauflösung schlägt fehl, Then wird kein unvollständiger Court gespeichert und der Nutzer kann den Aufruf wiederholen. |
+| Offene Punkte | Verhalten bei offensichtlichen Court-Dubletten — siehe [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). |
 
 ### UC-11 — Session-Historie ansehen
 
@@ -385,7 +385,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Name | Profil und Sportpräferenzen verwalten |
 | Gruppe | Profil |
 | Ziel | Nutzer verwalten Basisinformationen, die für Anzeige und Sportsuche relevant sind. |
-| Kurzbeschreibung | Nutzer können ihren Anzeigenamen und bevorzugte Sportarten verwalten. Das Profil bleibt auf MVP-relevante Angaben begrenzt. |
+| Kurzbeschreibung | Nutzer können ihren Anzeigenamen, Heimatort und bevorzugte Sportarten verwalten. Ein vorhandenes Profilbild wird angezeigt, aber im MVP weder hochgeladen noch bearbeitet. |
 | Primärer Akteur | Teilnehmer oder Organisator |
 | Unterstützende Akteure / Systeme | Browser / React-Frontend, Supabase Auth, Supabase PostgREST / PostgreSQL |
 | Auslöser | Nutzer öffnet seine Profileinstellungen. |
@@ -395,13 +395,13 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Hauptszenario | 1. Nutzer öffnet das Profil. 2. LocalCourt zeigt aktuelle Basisdaten und Sportpräferenzen. 3. Nutzer ändert zulässige Angaben. 4. LocalCourt prüft Pflichtfelder und speichert Änderungen. 5. LocalCourt zeigt die aktualisierten Daten. |
 | Alternative Szenarien | Nutzer bricht die Bearbeitung ab; es werden keine Änderungen gespeichert. |
 | Ausnahmefälle | Pflichtangaben fehlen, Datenformat ist ungültig oder Speichern schlägt fehl. |
-| Fachliche Regeln | Profilinformationen werden auf notwendige Basisdaten begrenzt. Sportpräferenzen dürfen die Suche unterstützen, ersetzen aber nicht die manuelle Filterung. |
+| Fachliche Regeln | Profilinformationen werden auf notwendige Basisdaten begrenzt. Sportpräferenzen dürfen die Suche unterstützen, ersetzen aber nicht die manuelle Filterung. `avatar_url` ist im MVP ausschließlich ein optionaler Anzeigewert; Upload und Bearbeitung sind ausgeschlossen. |
 | Bezug zu F1 | GP-01 A2-A3; GP-03 A1-A3. |
 | Bezug zu Daten | Profile, Sportart |
 | Bezug zu Benutzerschnittstelle | Profileinstellungen; siehe B1. |
 | Bezug zu NFR / Qualität | Datenschutz, einfache Bedienbarkeit, Datenminimierung. |
 | Akzeptanzkriterien | Given ein angemeldeter Nutzer, When er gültige Profiländerungen speichert, Then werden diese beim erneuten Öffnen angezeigt. Given ungültige Angaben, Then bleibt das bestehende Profil erhalten und der Fehler wird erklärt. |
-| Offene Punkte | MVP-Umfang der Profilbildbearbeitung — siehe [B1.8](B1-dialogspezifikation.md#b18-offene-punkte). |
+| Abgrenzung | Kein Profilbild-Upload und keine Bearbeitung von `avatar_url`; kein öffentliches Profilverzeichnis. |
 
 ## F2.5 Konsistenzprüfung mit F1, P1 und P2
 
@@ -435,6 +435,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Wartelisten | Nach P1-Anpassung explizit out of scope (P1 NG-10). Ohne Benachrichtigungskanal fachlich nicht sinnvoll; Kapazität ist eine harte Grenze (F3 AF-01). Der frühere Scope-Konflikt zwischen P1 und F1/F2 ist damit aufgelöst. |
 | Session-Serien | F1 modelliert keine Cross-Process-Serien. Jede Session ist im MVP unabhängig. |
 | Session-Bearbeitung nach Erstellung | F1 schließt Modifikation nach Erstellung als MVP-Vereinfachung aus. |
+| Session-Absage und -Löschung | P1 NG-11 schließt beide Aktionen zusammen mit der Bearbeitung bestehender Sessions aus. |
 | Session-Kommentare | P1 erwähnt externe Koordination bzw. Kommentare nur indirekt im Out-of-Scope-Kontext; F1 modelliert keinen Kommentarprozess. |
 
 ## F2.7 Cross-References / Weiterverwendung
@@ -464,6 +465,6 @@ Die stabilen IDs UC-01 bis UC-12 müssen später in Architektur, Tests und Code 
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Codex / ChatGPT |
-| Verwendung | Entwurf, Strukturierung, Formulierung prüfbarer Akzeptanzkriterien und Konsistenzprüfung; Codex korrigierte am 2026-07-28 veraltete Suchbegriffe und Querverweisstatus. |
+| Verwendung | Entwurf, Strukturierung, Formulierung prüfbarer Akzeptanzkriterien und Konsistenzprüfung; Codex arbeitete am 2026-07-29 die Teamentscheidungen zu unveränderlichen Sessions, read-only Profilbildern und Reverse-Geocoding in UC-06, UC-10 und UC-12 ein. |
 | Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Angleichung an S1 (2026-07-26, Claude Sonnet 5): offene Punkte in UC-01 (Anmeldeverfahren) und UC-10 (Geocoding) geschlossen. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): veraltete Zeilen in UC-02, UC-03, UC-05, UC-07, UC-10 und UC-12 auf den heutigen Stand gebracht und auf den jeweils zuständigen Baustein verwiesen. Aktualisierung (2026-07-28, Codex): Bereits entschiedene oder ausgeschlossene Punkte in UC-01, UC-02, UC-04, UC-06, UC-08 und UC-09 korrekt als Festlegung beziehungsweise Abgrenzung bezeichnet; Löschverweis in UC-03 entfernt. |
 | Fachliche Verantwortung | Bleibt beim Team. |

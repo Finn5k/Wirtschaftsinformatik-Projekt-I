@@ -29,20 +29,23 @@ flowchart TB
     end
 
     osm["OpenStreetMap / Leaflet<br/>Kartenkacheln (Anzeige, Pin-Setzen)"]
+    nominatim["Nominatim<br/>Reverse-Geocoding"]
 
     user -->|"HTTPS, Interaktion"| ui
     ui -->|"Login / JWT"| auth
     ui -->|"CRUD (JSON/REST)"| rest
     rest --> db
     ui -.->|"Tiles / GeoJSON (Client-Side)"| osm
+    ui -.->|"Koordinaten → Ort / Adresse"| nominatim
 ```
 
 ### Kommunikations-Kanäle
 
-- **Inbound**: Browser-User → React-Frontend (synchron, Request-Response; kein Echtzeit-Kanal, siehe [S1.6](S1-nachbarsysteme.md#s16-nicht-genutzte-schnittstellen-und-abgrenzung))
+- **Inbound**: Browser-User → React-Frontend (synchron, Request-Response; kein Echtzeit-Kanal, siehe [S1.7](S1-nachbarsysteme.md#s17-nicht-genutzte-schnittstellen-und-abgrenzung))
 - **Frontend → Supabase Auth**: Authentifizierung, Session-Management (synchron, HTTPS)
 - **Frontend → Supabase PostgREST API**: Lesezugriffe sowie die atomaren Schreiboperationen auf Sessions, Courts, Participants, Profiles (synchron, REST)
-- **Frontend → OpenStreetMap**: Kartenkacheln zur Darstellung und zum Setzen eines Pins (kein Geocoding, Client-Side)
+- **Frontend → OpenStreetMap**: Kartenkacheln zur Darstellung und zum Setzen eines Pins (Client-Side)
+- **Frontend → Nominatim**: Reverse-Geocoding des gesetzten Court-Pins zu Ort und optionaler Adresse (synchron, HTTPS)
 
 **Zusammenfassung**: Greenfield-System ohne Legacy-Integration. Alle Nachbarsysteme sind Cloud-Services via HTTPS-APIs.
 
@@ -56,8 +59,9 @@ Vollständige Aufzählung aller Systeme, mit denen LocalCourt kommuniziert:
 |----|--------|-------|----------|-----------|-----------|-------|
 | **NB-01** | **Browser / React-Frontend** ([S1.2](S1-nachbarsysteme.md#s12-nb-01--browser-nutzerkanal)) | Einziger Nutzer-Kontaktpunkt; Session-Verwaltung, Entdeckung, Check-In | Inbound | Tight (Synchron, Request-Response) | Kontinuierlich | Nutzer |
 | **NB-02** | **Supabase Authentication** ([S1.3](S1-nachbarsysteme.md#s13-nb-02--supabase-auth)) | Nutzer-Anmeldung, Session-Verwaltung, Token-basierte Auth | Bidirektional (Request: Credentials; Response: JWT) | Tight (Synchron) | Per Login/Logout/Token-Refresh | Supabase (Third-Party) |
-| **NB-03** | **Supabase PostgREST API** ([S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)) | CRUD auf Sessions, Courts, Participants, Profiles, Check-ins | Bidirektional (Request: JSON Payload; Response: JSON Result) | Tight (Synchron, aber batching möglich) | Per Action (create, read, filter, update, delete) | Supabase (Third-Party) |
-| **NB-04** | **OpenStreetMap / Leaflet** ([S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)) | Kartendarstellung, Visualisierung von Court-Positionen, Setzen eines Pins bei der Court-Erfassung (kein Geocoding) | Outbound (Response nur für Rendering) | Loose (Asynchron, UI-only) | Per Map-Rendering | OpenStreetMap Foundation (Third-Party) |
+| **NB-03** | **Supabase PostgREST API** ([S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)) | Lesen und fachlich erlaubtes Anlegen/Aktualisieren von Sessions, Courts, Teilnahmen, Profilen und Check-ins | Bidirektional (Request: JSON Payload; Response: JSON Result) | Tight (Synchron, aber batching möglich) | Je Lese- oder Schreibaktion | Supabase (Third-Party) |
+| **NB-04** | **OpenStreetMap / Leaflet** ([S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)) | Kartendarstellung, Visualisierung von Court-Positionen, Setzen eines Pins bei der Court-Erfassung | Outbound (Response nur für Rendering) | Loose (Asynchron, UI-only) | Per Map-Rendering | OpenStreetMap Foundation (Third-Party) |
+| **NB-05** | **Nominatim** ([S1.6](S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)) | Reverse-Geocoding des gesetzten Court-Pins zu Ort und optionaler Adresse | Bidirektional (Koordinaten → strukturierte Ortsdaten) | Loose (Synchron, austauschbar) | Einmal je nutzerseitigem Pin-Setzen/-Verschieben | OpenStreetMap Foundation (Third-Party) |
 
 ---
 
@@ -71,6 +75,7 @@ Detaillierte Interface-Contracts (Endpoints, Payloads, Error Handling) sind ausg
 | NB-02 | Supabase Auth | HTTPS/REST | JSON | JWT Token | 401/403 Unauthorized, Server-Error Propagation | ✅ |
 | NB-03 | Supabase PostgREST | HTTPS/REST | JSON | Bearer Token (JWT) | 400/401/403/404/500, Business-Logic Error Messages | ✅ |
 | NB-04 | OpenStreetMap | HTTPS/REST | GeoJSON, Tiles | (keine) | Graceful Degradation (Fallback zu Fallback-Map oder Text) | ✅ |
+| NB-05 | Nominatim | HTTPS/REST | JSON | (keine) | Fehlermeldung und manuelle Wiederholung; kein Speichern unvollständiger Courts | ✅ |
 
 **Hinweise auf Schnittstellen-Details**: Siehe [S1 — Nachbarsysteme](S1-nachbarsysteme.md)
 
@@ -228,7 +233,7 @@ sequenceDiagram
 Diese Systeme können in späteren Phasen (P, M, N durchlaufen später Iterationen) hinzugefügt werden:
 - **Email-Notifications** (Session-Reminder, Participant Invites)
 - **Push-Notifications** (Mobile Web, Desktop)
-- **Advanced Geocoding** (Google Maps API, Nominatim)
+- **Erweiterte Ortssuche und Adress-Autovervollständigung** (zusätzlicher Geocoding-Anbieter)
 - **Analytics** (Segment, Mixpanel)
 - **Monitoring** (Sentry, DataDog)
 
@@ -236,11 +241,12 @@ Diese Systeme können in späteren Phasen (P, M, N durchlaufen später Iteration
 
 ## Zusammenfassung
 
-LocalCourt ist ein **Greenfield-System** ohne Legacy-Integration. Das System kommuniziert mit **4 Nachbarsystemen**:
+LocalCourt ist ein **Greenfield-System** ohne Legacy-Integration. Das System kommuniziert mit **5 Nachbarsystemen**:
 1. **Browser/Frontend** (User-Input)
 2. **Supabase Auth** (Authentifizierung)
 3. **Supabase PostgREST** (Datenbank-CRUD)
 4. **OpenStreetMap** (Kartendarstellung)
+5. **Nominatim** (Reverse-Geocoding bei der Court-Erfassung)
 
 Alle Nachbarsysteme sind **Cloud-Services** über HTTPS-APIs, ideal für Free-Tier-Budgets. Die Architektur ist **anfängerfreundlich** (React + Supabase, minimal Backend-Logic) und **später skalierbar** (Backend-Services können später hinzugefügt werden, wenn komplexere Business-Logic erforderlich wird).
 
@@ -260,6 +266,6 @@ Alle Nachbarsysteme sind **Cloud-Services** über HTTPS-APIs, ideal für Free-Ti
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | GitHub Copilot, Claude (Claude Code) |
-| Verwendung | Entwurf des Architekturüberblicks: Systemkontext, Nachbarsysteme, Deployment-Topologie und kritische Datenflüsse. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitung (Umstellung der Diagramme auf Mermaid, Entfernen überholter Waitlist-Datenflüsse gemäß NG-10) mit Claude Code (Opus 4.8). Angleichung an S1 (2026-07-26, Claude Sonnet 5): Datenflüsse P2.5 auf die atomaren Schreiboperationen umgestellt, Geocoding- und WebSocket-Erwähnungen entfernt, veraltete M1/M2-Verweise ersetzt; unverständlicher Ausschluss-Eintrag mit Verweis auf das Referenzprojekt durch eine für LocalCourt zutreffende Formulierung ersetzt. |
+| Werkzeug | GitHub Copilot, Claude (Claude Code), Codex |
+| Verwendung | Entwurf des Architekturüberblicks: Systemkontext, Nachbarsysteme, Deployment-Topologie und kritische Datenflüsse. Codex ergänzte am 2026-07-29 Nominatim als beschlossenes fünftes Nachbarsystem für Reverse-Geocoding. |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md) und [S1](S1-nachbarsysteme.md). Systemkontext, Nachbarsysteminventar und Datenflüsse wurden nach der Teamentscheidung erneut geprüft; Nominatim ist als NB-05 aufgenommen und nicht mehr als zukünftige Erweiterung geführt. |
