@@ -2,6 +2,7 @@ import { Search, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import { SessionCard } from "../components/sessions/SessionCard";
+import { sportTypes } from "../data/sports";
 import { getSessionsBySportType } from "../services/sessionService";
 import { getCurrentUser } from "../services/userService";
 import type { SportType } from "../types/session";
@@ -10,19 +11,13 @@ type SessionFilter = "Alle" | SportType;
 
 const filters: SessionFilter[] = [
   "Alle",
-  "Laufen",
-  "Radfahren",
-  "Fußball",
-  "Basketball",
-  "Badminton",
-  "Schwimmen",
+  ...sportTypes,
 ];
 
 export function DiscoverPage() {
-  const [activeFilter, setActiveFilter] = useState<SessionFilter>("Alle");
-  const [searchTerm, setSearchTerm] = useState("");
-
   const currentUser = getCurrentUser();
+  const [activeFilter, setActiveFilter] = useState<SessionFilter>("Alle");
+  const [searchTerm, setSearchTerm] = useState(currentUser.city);
 
   // Suche nach Ort/Region und optional Sportart (B1 DLG-02, UC-02).
   const normalizedSearch = searchTerm.trim().toLowerCase();

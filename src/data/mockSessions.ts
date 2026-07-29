@@ -15,14 +15,14 @@ export const mockSessions: SportSession[] = [
     description:
       "Starte mit uns aktiv in den Abend. Lockere Laufrunde durch die Wieseckaue mit moderatem Tempo.",
     durationMin: 60,
-    participantsCount: 8,
+    participantsCount: 3,
     maxParticipants: 15,
     status: "scheduled",
     organizerId: "current-user",
     organizerName: "Lena Aktiv",
     pin: "4821",
     participants: [
-      { id: "current-user", name: "Lena", status: "confirmed" },
+      { id: "current-user", name: "Lena Aktiv", status: "confirmed" },
       { id: "u2", name: "Max", status: "confirmed" },
       { id: "u3", name: "Sara", status: "confirmed" },
     ],
@@ -41,7 +41,7 @@ export const mockSessions: SportSession[] = [
     description:
       "Lockeres Kleinfeldspiel nach Uni oder Arbeit. Alle sind willkommen, Teams werden vor Ort gebildet.",
     durationMin: 90,
-    participantsCount: 10,
+    participantsCount: 3,
     maxParticipants: 16,
     status: "active",
     organizerId: "u4",
@@ -50,7 +50,7 @@ export const mockSessions: SportSession[] = [
     participants: [
       { id: "u4", name: "Jonas", status: "checked_in" },
       { id: "u5", name: "Mira", status: "confirmed" },
-      { id: "current-user", name: "Lena", status: "confirmed" },
+      { id: "current-user", name: "Lena Aktiv", status: "confirmed" },
     ],
   },
   {
@@ -67,7 +67,7 @@ export const mockSessions: SportSession[] = [
     description:
       "Entspannte Fahrradrunde entlang der Lahn zum Sonnenuntergang. Ideal für alle, die eine lockere Runde fahren möchten.",
     durationMin: 75,
-    participantsCount: 6,
+    participantsCount: 2,
     maxParticipants: 12,
     status: "scheduled",
     organizerId: "u6",
@@ -92,7 +92,7 @@ export const mockSessions: SportSession[] = [
     description:
       "Schnelle 3v3 Basketball-Session auf dem Campus Court. Ideal für lockere Runs nach Uni oder Arbeit.",
     durationMin: 90,
-    participantsCount: 6,
+    participantsCount: 3,
     maxParticipants: 6,
     status: "scheduled",
     organizerId: "u8",
@@ -118,7 +118,7 @@ export const mockSessions: SportSession[] = [
     description:
       "Offene Badminton-Session für Einsteiger und Fortgeschrittene. Schläger bitte selbst mitbringen.",
     durationMin: 120,
-    participantsCount: 4,
+    participantsCount: 2,
     maxParticipants: 12,
     status: "scheduled",
     organizerId: "u11",
@@ -143,7 +143,7 @@ export const mockSessions: SportSession[] = [
     description:
       "Gemeinsame Schwimmeinheit mit Fokus auf Technik, ruhigem Tempo und sauberem Einstieg.",
     durationMin: 60,
-    participantsCount: 5,
+    participantsCount: 2,
     maxParticipants: 10,
     status: "scheduled",
     organizerId: "u13",
@@ -168,7 +168,7 @@ export const mockSessions: SportSession[] = [
     description:
       "Gemeinsame Laufrunde entlang der Lahn. Diese Session ist bereits abgeschlossen.",
     durationMin: 60,
-    participantsCount: 7,
+    participantsCount: 3,
     maxParticipants: 12,
     status: "completed",
     organizerId: "u6",
@@ -176,7 +176,7 @@ export const mockSessions: SportSession[] = [
     pin: "5074",
     participants: [
       { id: "u6", name: "Amir", status: "checked_in" },
-      { id: "current-user", name: "Lena", status: "checked_in" },
+      { id: "current-user", name: "Lena Aktiv", status: "checked_in" },
       { id: "u7", name: "Noah", status: "confirmed" },
     ],
   },
@@ -194,14 +194,14 @@ export const mockSessions: SportSession[] = [
     description:
       "Die erste Ausgabe des Morning Run. Diese Session ist bereits abgeschlossen.",
     durationMin: 60,
-    participantsCount: 10,
+    participantsCount: 3,
     maxParticipants: 15,
     status: "completed",
     organizerId: "current-user",
     organizerName: "Lena Aktiv",
     pin: "3390",
     participants: [
-      { id: "current-user", name: "Lena", status: "checked_in" },
+      { id: "current-user", name: "Lena Aktiv", status: "checked_in" },
       { id: "u2", name: "Max", status: "checked_in" },
       { id: "u3", name: "Sara", status: "confirmed" },
     ],

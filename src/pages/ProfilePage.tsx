@@ -1,6 +1,7 @@
 import { Check, LogOut, Mail, MapPin, Pencil, X } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { sportTypes } from "../data/sports";
 import { getCurrentUser } from "../services/userService";
 import type { SportType } from "../types/session";
 
@@ -8,14 +9,7 @@ import type { SportType } from "../types/session";
 // bevorzugte Sportarten. Zustände: Ansicht / Bearbeiten.
 // Level/XP/Rang, Streak, Abzeichen und Avatar-Items sind bewusst entfernt (NG-05).
 
-const allSports: SportType[] = [
-  "Laufen",
-  "Radfahren",
-  "Fußball",
-  "Basketball",
-  "Badminton",
-  "Schwimmen",
-];
+const allSports: readonly SportType[] = sportTypes;
 
 export function ProfilePage() {
   const navigate = useNavigate();
