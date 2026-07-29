@@ -38,6 +38,7 @@ export interface SportSession {
   courtId: string;
   locationName: string;
   city: string;
+  startAt: string;
   dateLabel: string;
   timeLabel: string;
   description: string;

@@ -1,7 +1,8 @@
 import { CheckCircle2, Clock, KeyRound, QrCode, XCircle } from "lucide-react";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
-import { getSessionById } from "../services/sessionService";
+import { checkIn, getSessionById } from "../services/sessionService";
+import { getCurrentUser } from "../services/userService";
 
 // Check-in gemäß B1 DLG-06 (UC-08 QR / UC-09 PIN, Regeln in F3 AF-02).
 // Zustände: Scan → PIN-Eingabe → Erfolg / Abgelehnt; Zeitfenster nur bei "active".
@@ -12,9 +13,17 @@ export function CheckInPage() {
   const sessionId = searchParams.get("session") ?? undefined;
   const deepLinkPin = searchParams.get("pin") ?? "";
   const session = getSessionById(sessionId);
+  const currentUser = getCurrentUser();
+  const participation = session?.participants.find(
+    (participant) => participant.id === currentUser.id,
+  );
 
   const [view, setView] = useState<CheckInView>(
-    deepLinkPin ? "pin" : "scan",
+    participation?.status === "checked_in"
+      ? "success"
+      : deepLinkPin
+        ? "pin"
+        : "scan",
   );
   const [pinInput, setPinInput] = useState(deepLinkPin);
   const [pinError, setPinError] = useState<string | null>(null);
@@ -46,6 +55,17 @@ export function CheckInPage() {
     );
   }
 
+  if (!participation) {
+    return (
+      <BlockedScreen
+        title="Check-in nicht möglich"
+        message="Du bist dieser Session nicht beigetreten."
+        linkTo={`/sessions/${session.id}`}
+        linkLabel="Zurück zur Session"
+      />
+    );
+  }
+
   function submitPin() {
     if (!/^\d{4}$/.test(pinInput)) {
       setPinError("Bitte gib genau 4 Ziffern ein.");
@@ -59,6 +79,7 @@ export function CheckInPage() {
     }
 
     setPinError(null);
+    checkIn(session!.id);
     setView("success");
   }
 
@@ -188,7 +209,10 @@ export function CheckInPage() {
 
       <button
         type="button"
-        onClick={() => setView("success")}
+        onClick={() => {
+          checkIn(session.id);
+          setView("success");
+        }}
         className="mt-8 w-full rounded-2xl bg-emerald-500 py-3 font-bold text-white"
       >
         Teilnahme bestätigen

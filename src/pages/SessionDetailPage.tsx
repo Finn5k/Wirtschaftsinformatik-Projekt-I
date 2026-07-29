@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { StatusBadge } from "../components/sessions/StatusBadge";
-import { getSessionById } from "../services/sessionService";
+import { getSessionById, joinSession } from "../services/sessionService";
 import { getCurrentUser } from "../services/userService";
 import { isSessionFull } from "../types/session";
 
@@ -22,16 +22,10 @@ import { isSessionFull } from "../types/session";
 export function SessionDetailPage() {
   const { sessionId } = useParams();
   const navigate = useNavigate();
+  const [, setLocalRevision] = useState(0);
 
   const session = getSessionById(sessionId);
   const currentUser = getCurrentUser();
-
-  const initiallyJoined = session
-    ? session.participants.some((p) => p.id === currentUser.id)
-    : false;
-
-  // Lokaler Demo-Zustand: simuliert den Beitritt (im finalen System AF-01 über die API).
-  const [hasJoined, setHasJoined] = useState(initiallyJoined);
 
   if (!session) {
     return (
@@ -61,8 +55,18 @@ export function SessionDetailPage() {
   const isOrganizer = session.organizerId === currentUser.id;
   const isReadOnly = session.status === "completed";
   const isFull = isSessionFull(session);
+  const currentParticipation = session.participants.find(
+    (participant) => participant.id === currentUser.id,
+  );
+  const hasJoined = Boolean(currentParticipation);
   const canJoin = !isOrganizer && !hasJoined && !isReadOnly && !isFull;
-  const canCheckIn = !isOrganizer && hasJoined && session.status === "active";
+  const canCheckIn =
+    !isOrganizer &&
+    currentParticipation?.status === "confirmed" &&
+    session.status === "active";
+  const checkedInCount = session.participants.filter(
+    (participant) => participant.status === "checked_in",
+  ).length;
 
   return (
     <div className="min-h-[780px] bg-white">
@@ -110,6 +114,19 @@ export function SessionDetailPage() {
             <p className="mt-1 text-sm text-slate-500">
               Beitritt und Check-in sind nicht mehr möglich (nur Ansicht).
             </p>
+          </section>
+        )}
+
+        {isOrganizer && isReadOnly && (
+          <section className="grid grid-cols-2 gap-3">
+            <ResultCard
+              label="Bestätigte Teilnehmer"
+              value={`${session.participantsCount}`}
+            />
+            <ResultCard
+              label="Eingecheckt"
+              value={`${checkedInCount}`}
+            />
           </section>
         )}
 
@@ -195,9 +212,17 @@ export function SessionDetailPage() {
                 className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-3"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
-                    {participant.name.slice(0, 1)}
-                  </div>
+                  {participant.avatarUrl ? (
+                    <img
+                      src={participant.avatarUrl}
+                      alt=""
+                      className="h-9 w-9 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
+                      {participant.name.slice(0, 1)}
+                    </div>
+                  )}
 
                   <p className="font-semibold text-slate-800">
                     {participant.name}
@@ -247,6 +272,15 @@ export function SessionDetailPage() {
           </section>
         )}
 
+        {!isOrganizer &&
+          currentParticipation?.status === "checked_in" &&
+          session.status === "active" && (
+            <section className="flex items-center gap-3 rounded-3xl bg-emerald-50 p-4 text-emerald-700">
+              <CheckCircle2 size={22} />
+              <p className="font-bold">Du bist eingecheckt.</p>
+            </section>
+          )}
+
         <section className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
           <div className="mb-3 flex items-center justify-between">
             <div>
@@ -272,7 +306,10 @@ export function SessionDetailPage() {
             {canJoin ? (
               <button
                 type="button"
-                onClick={() => setHasJoined(true)}
+                onClick={() => {
+                  joinSession(session.id);
+                  setLocalRevision((revision) => revision + 1);
+                }}
                 className="w-full rounded-2xl bg-blue-600 py-3 font-bold text-white"
               >
                 Beitreten
@@ -291,6 +328,20 @@ export function SessionDetailPage() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+interface ResultCardProps {
+  label: string;
+  value: string;
+}
+
+function ResultCard({ label, value }: ResultCardProps) {
+  return (
+    <div className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
+      <p className="text-xs font-semibold text-slate-500">{label}</p>
+      <p className="mt-1 text-2xl font-extrabold text-slate-950">{value}</p>
     </div>
   );
 }
