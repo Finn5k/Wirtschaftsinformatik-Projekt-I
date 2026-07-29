@@ -1,4 +1,5 @@
 import type { SportSession } from "../types/session";
+import { mockUser } from "./mockUser";
 
 export const mockSessions: SportSession[] = [
   {
@@ -8,6 +9,7 @@ export const mockSessions: SportSession[] = [
     courtId: "court-wieseckaue",
     locationName: "Stadtpark Wieseckaue",
     city: "Gießen",
+    startAt: "2026-07-29T18:00:00+02:00",
     latitude: 50.5926,
     longitude: 8.6909,
     dateLabel: "Heute",
@@ -22,7 +24,12 @@ export const mockSessions: SportSession[] = [
     organizerName: "Lena Aktiv",
     pin: "4821",
     participants: [
-      { id: "current-user", name: "Lena Aktiv", status: "confirmed" },
+      {
+        id: "current-user",
+        name: "Lena Aktiv",
+        status: "confirmed",
+        avatarUrl: mockUser.avatarUrl,
+      },
       { id: "u2", name: "Max", status: "confirmed" },
       { id: "u3", name: "Sara", status: "confirmed" },
     ],
@@ -34,6 +41,7 @@ export const mockSessions: SportSession[] = [
     courtId: "court-giessen-west",
     locationName: "Sportplatz Gießen West",
     city: "Gießen",
+    startAt: "2026-07-29T10:00:00+02:00",
     latitude: 50.5847,
     longitude: 8.6598,
     dateLabel: "Heute",
@@ -50,7 +58,12 @@ export const mockSessions: SportSession[] = [
     participants: [
       { id: "u4", name: "Jonas", status: "checked_in" },
       { id: "u5", name: "Mira", status: "confirmed" },
-      { id: "current-user", name: "Lena Aktiv", status: "confirmed" },
+      {
+        id: "current-user",
+        name: "Lena Aktiv",
+        status: "confirmed",
+        avatarUrl: mockUser.avatarUrl,
+      },
     ],
   },
   {
@@ -60,6 +73,7 @@ export const mockSessions: SportSession[] = [
     courtId: "court-lahnradweg",
     locationName: "Lahnradweg",
     city: "Gießen",
+    startAt: "2026-07-30T17:00:00+02:00",
     latitude: 50.5764,
     longitude: 8.6847,
     dateLabel: "Morgen",
@@ -85,6 +99,7 @@ export const mockSessions: SportSession[] = [
     courtId: "court-campus",
     locationName: "Campus Court",
     city: "Friedberg",
+    startAt: "2026-07-29T20:00:00+02:00",
     latitude: 50.3372,
     longitude: 8.7558,
     dateLabel: "Heute",
@@ -111,6 +126,7 @@ export const mockSessions: SportSession[] = [
     courtId: "court-thm-halle",
     locationName: "THM Sporthalle",
     city: "Gießen",
+    startAt: "2026-07-31T18:30:00+02:00",
     latitude: 50.5878,
     longitude: 8.6833,
     dateLabel: "Freitag",
@@ -136,6 +152,7 @@ export const mockSessions: SportSession[] = [
     courtId: "court-ringallee",
     locationName: "Hallenbad Ringallee",
     city: "Gießen",
+    startAt: "2026-08-01T10:00:00+02:00",
     latitude: 50.5967,
     longitude: 8.6849,
     dateLabel: "Samstag",
@@ -161,6 +178,7 @@ export const mockSessions: SportSession[] = [
     courtId: "court-lahnradweg",
     locationName: "Lahnradweg",
     city: "Gießen",
+    startAt: "2026-07-26T09:00:00+02:00",
     latitude: 50.5764,
     longitude: 8.6847,
     dateLabel: "Letzten Sonntag",
@@ -176,7 +194,12 @@ export const mockSessions: SportSession[] = [
     pin: "5074",
     participants: [
       { id: "u6", name: "Amir", status: "checked_in" },
-      { id: "current-user", name: "Lena Aktiv", status: "checked_in" },
+      {
+        id: "current-user",
+        name: "Lena Aktiv",
+        status: "checked_in",
+        avatarUrl: mockUser.avatarUrl,
+      },
       { id: "u7", name: "Noah", status: "confirmed" },
     ],
   },
@@ -187,6 +210,7 @@ export const mockSessions: SportSession[] = [
     courtId: "court-wieseckaue",
     locationName: "Stadtpark Wieseckaue",
     city: "Gießen",
+    startAt: "2026-07-15T18:00:00+02:00",
     latitude: 50.5926,
     longitude: 8.6909,
     dateLabel: "Vor 2 Wochen",
@@ -201,7 +225,12 @@ export const mockSessions: SportSession[] = [
     organizerName: "Lena Aktiv",
     pin: "3390",
     participants: [
-      { id: "current-user", name: "Lena Aktiv", status: "checked_in" },
+      {
+        id: "current-user",
+        name: "Lena Aktiv",
+        status: "checked_in",
+        avatarUrl: mockUser.avatarUrl,
+      },
       { id: "u2", name: "Max", status: "checked_in" },
       { id: "u3", name: "Sara", status: "confirmed" },
     ],
