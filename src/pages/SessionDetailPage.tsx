@@ -59,8 +59,7 @@ export function SessionDetailPage() {
   }
 
   const isOrganizer = session.organizerId === currentUser.id;
-  const isReadOnly =
-    session.status === "completed" || session.status === "cancelled";
+  const isReadOnly = session.status === "completed";
   const isFull = isSessionFull(session);
   const canJoin = !isOrganizer && !hasJoined && !isReadOnly && !isFull;
   const canCheckIn = !isOrganizer && hasJoined && session.status === "active";
@@ -238,7 +237,7 @@ export function SessionDetailPage() {
                 </p>
 
                 <Link
-                  to={`/check-in/${session.id}`}
+                  to={`/check-in?session=${session.id}`}
                   className="mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-emerald-500 py-3 font-bold text-white"
                 >
                   Zum Check-in

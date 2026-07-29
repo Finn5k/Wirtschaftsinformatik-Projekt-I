@@ -9,7 +9,7 @@ export type SportType =
 
 // Statuswerte gemäß Spezifikation D2.3 (SessionStatus).
 // "Voll" ist kein Status, sondern wird aus der Belegung abgeleitet (AF-01).
-export type SessionStatus = "scheduled" | "active" | "completed" | "cancelled";
+export type SessionStatus = "scheduled" | "active" | "completed";
 
 // Teilnahmestatus gemäß Spezifikation D2.5 (ParticipantStatus).
 export type ParticipantStatus = "confirmed" | "checked_in";
