@@ -22,7 +22,7 @@ Die folgenden Zusagen gelten für **jede** in S1 beschriebene Operation und werd
 - **Fehlerpropagierung.** Fehler eines Nachbarsystems (Zeitüberschreitung, 4xx, 5xx, Netzabbruch) werden an den aufrufenden Anwendungsfall weitergegeben und dem Nutzer in den Fehler- und Ladezuständen aus [B1.5.4](B1-dialogspezifikation.md#b154-fehler--und-ladezustände) angezeigt. Fachliche Ablehnungen sind davon zu unterscheiden: Sie folgen den Ergebniscodes aus [F3](F3-anwendungsfunktionen.md) und dem Fehler-Mapping in [N2.12](N2-querschnittskonzepte.md#n212-fehler-mapping-ergebniscodes--http) und erscheinen als Inline-Meldung, nicht als Systemfehler. Ein fehlgeschlagener Aufruf verändert den fachlichen Zustand nicht.
 - **Kontrollierte Degradation.** Ist ein Nachbarsystem nicht erreichbar, bleibt die Anwendung bedienbar, soweit sie ohne dieses System auskommt; ein Ausfall führt zu einer verständlichen Meldung, nicht zum Absturz ([N1-QA-06](N1-nichtfunktionale-anforderungen.md#n12-qualitätsziele-im-überblick)). Der jeweilige Ausfallpfad ist pro Nachbarsystem angegeben.
 - **Authentifizierung.** Aufrufe gegen NB-03 tragen das Zugangstoken (JWT), das LocalCourt zuvor über NB-02 erhalten hat. Der öffentliche Projektschlüssel von Supabase (Publishable Key) begleitet jeden Aufruf, ist **kein Geheimnis** und liegt bauartbedingt im ausgelieferten Frontend-Bundle; der Zugriffsschutz wird nicht über diesen Schlüssel, sondern über Row-Level-Security ([N2.11](N2-querschnittskonzepte.md#n211-row-level-security-rls)) erbracht. Geheime Schlüssel (Service-Role-Key) werden vom Frontend **nie** verwendet und liegen nicht im Repository ([N1-QA-05](N1-nichtfunktionale-anforderungen.md#n1-qa-05--sicherheit)).
-- **Ebene der Beschreibung.** S1 benennt Operationen und ihre Semantik. Konkrete Endpunkt-URLs, Request-/Response-Feldnamen, Header, Wiederholungsbudgets und Bibliotheksaufrufe sind Umsetzungsdetails und gehören in die Architekturdokumentation unter `docs/arch/` sowie in den Code. Die technische Ausformung des Datenmodells hinter NB-03 steht in [N2](N2-querschnittskonzepte.md).
+- **Ebene der Beschreibung.** S1 benennt Operationen und ihre Semantik. Konkrete Bindung und Laufzeitverhalten gehören in die [Architekturdokumentation](../arch/README.md) sowie in den Code. Die technische Ausformung des Datenmodells hinter NB-03 steht in [N2](N2-querschnittskonzepte.md).
 
 ## S1.2 NB-01 — Browser (Nutzerkanal)
 
@@ -161,7 +161,7 @@ Bewusst **nicht** genutzte Fähigkeiten der bestehenden Nachbarsysteme — hier 
 
 Ebenfalls **nicht** Gegenstand von S1:
 
-- **Endpunkt-URLs, Feldnamen, Header, Wiederholungsbudgets, Bibliotheksaufrufe** — Umsetzungsdetails, siehe `docs/arch/` und Code.
+- **Endpunkt-URLs, Feldnamen, Header, Wiederholungsbudgets, Bibliotheksaufrufe** — Umsetzungsdetails, siehe [Architekturdokumentation](../arch/README.md) und Code.
 - **Innerer Aufbau des Frontends** (Komponenten, Zustandsverwaltung, Routing) — Architektur, nicht Schnittstelle.
 - **Datenbankschema, Schlüssel, Zugriffsregeln im Detail** — siehe [N2](N2-querschnittskonzepte.md).
 - **Ablauf und Reihenfolge der Aufrufe** innerhalb eines Anwendungsfalls — siehe [F2](F2-anwendungsfaelle.md) und die Datenflüsse in [P2.5](P2-architekturueberblick.md#p25-kritische-datenflüsse).
@@ -180,21 +180,22 @@ Ebenfalls **nicht** Gegenstand von S1:
 | [B1](B1-dialogspezifikation.md) | B1 ist der Contract von NB-01; die Fehler- und Ladezustände aus B1.5.4 sind die Anzeigeseite der Fehlerbehandlung aus S1.1. |
 | [N1](N1-nichtfunktionale-anforderungen.md) | N1-QA-04 begrenzt die übertragenen personenbezogenen Daten, N1-QA-05 die Behandlung von Schlüsseln, N1-QA-06 fordert die Ausfallpfade, N1-QA-09 die Meldungen ohne technische Interna, N1-QA-10 den Free-Tier-Rahmen. |
 | [N2](N2-querschnittskonzepte.md) | N2 setzt die hier beschriebenen Operationen technisch um: N2.4/N2.10 die Atomarität, N2.11 die Zugriffsregeln, N2.12 die Antwortcodes. Der in N2.11 erwähnte, dort unbenannte Erstellungsaufruf ist die Operation `create_session` aus S1.4. |
-| ARCH (`docs/arch/`) | Bindet die Operationen an konkrete Endpunkte, Payloads und Bibliotheken. |
+| [ARCH](../arch/README.md) | Bindet die Operationen an Bausteine, Laufzeitabläufe und Bibliotheken. |
 
-## S1.9 Offene Punkte
+## S1.9 Architekturfestlegungen
 
-| Punkt | Beschreibung | Zuständig |
-|---|---|---|
-| Seitengröße der Ergebnislisten | Konkrete Blockgröße beim seitenweisen Abruf in `sessionsSuchen`. | ARCH |
-| Wiederholverhalten | Ob und wie oft ein fehlgeschlagener Aufruf automatisch wiederholt wird, statt den Nutzer erneut auslösen zu lassen. | ARCH |
-
-Eine automatische Court-Dublettenprüfung ist gemäß [F2 UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen) nicht Teil des MVP und berührt daher keinen Schnittstellen-Contract.
+Die [Architekturdokumentation](../arch/README.md) legt für das MVP fest:
+Gefilterte Ergebnislisten werden ohne Pagination vollständig geladen, und
+fehlgeschlagene Aufrufe werden nicht automatisch wiederholt. Eine erneute
+Anfrage wird ausschließlich durch den Nutzer ausgelöst. Eine automatische
+Court-Dublettenprüfung ist gemäß
+[F2 UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen)
+ebenfalls nicht Teil des MVP.
 
 ## S1.10 Eingesetzte KI-Werkzeuge
 
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | GitHub Copilot (ursprüngliche Stub-Struktur), Claude Code (Claude Sonnet 5, Ausarbeitung), Codex |
-| Verwendung | Vollständige Ausarbeitung des Bausteins nach dem Vorbild der Referenz-Dokumentation (Herold S1): Operationen, Ein-/Ausgaben, Semantik und Fehlerbehandlung je Nachbarsystem. Codex ergänzte am 2026-07-29 Reverse-Geocoding und Profilsichtbarkeit und glich anschließend die bestätigte Nicht-MVP-Abgrenzung der Court-Dublettenprüfung ab. |
+| Verwendung | Vollständige Ausarbeitung des Bausteins nach dem Vorbild der Referenz-Dokumentation (Herold S1): Operationen, Ein-/Ausgaben, Semantik und Fehlerbehandlung je Nachbarsystem. Codex ergänzte am 2026-07-29 Reverse-Geocoding und glich Pagination, Wiederholungsverhalten und Court-Dubletten mit der fertiggestellten Architektur ab. |
 | Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [N1](N1-nichtfunktionale-anforderungen.md) und [N2](N2-querschnittskonzepte.md). Die zuvor im Stub genannten Endpunkt-URLs wurden entfernt, weil sie teils nicht den tatsächlichen Schnittstellen entsprachen und die Endpunkt-Ebene laut Referenz-Vorbild in die Architekturdokumentation gehört. Aktualisierung (2026-07-28, Codex): Veraltete Kennzeichnung der in UC-02 bereits ausgeschlossenen Geolocation als offenen Punkt entfernt. Die fachliche Verantwortung bleibt beim Team. |

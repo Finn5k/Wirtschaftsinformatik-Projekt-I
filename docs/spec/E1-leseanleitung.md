@@ -26,7 +26,7 @@ E1 ersetzt nicht das Glossar ([E2](E2-glossar.md)) und nicht den Spezifikationsi
 | **Fachliche Reviewer / Product Owner** | Prüfen, ob Geschäftsprozesse korrekt in Use Cases und Anwendungsfunktionen übersetzt wurden; Abgleich mit Zielen und Nicht-Zielen. | [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md) |
 | **Entwickler** | Konkrete, programmierbare Vorgaben: Datenmodell, Datentypen, Dialoge, Schnittstellen, technische Umsetzung. | [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [S1](S1-nachbarsysteme.md), [N2](N2-querschnittskonzepte.md) |
 | **Tester** | Prüfbare Akzeptanzkriterien und Qualitätsanforderungen je Use Case; Grundlage für Testfälle. | [F2](F2-anwendungsfaelle.md) (Akzeptanzkriterien), [F3](F3-anwendungsfunktionen.md) (Entscheidungstabellen), [N1](N1-nichtfunktionale-anforderungen.md) |
-| **Architekt** | Nachbarsysteme, Datenflüsse, Deployment-Topologie und technische Entscheidungen als Grundlage für `docs/arch/` nach arc42. | [P2](P2-architekturueberblick.md), [S1](S1-nachbarsysteme.md), [N2](N2-querschnittskonzepte.md), [N1](N1-nichtfunktionale-anforderungen.md) |
+| **Architekt** | Nachbarsysteme, Datenflüsse, Deployment-Topologie und technische Entscheidungen. | [Architekturdokumentation](../arch/README.md), [P2](P2-architekturueberblick.md), [S1](S1-nachbarsysteme.md), [N2](N2-querschnittskonzepte.md), [N1](N1-nichtfunktionale-anforderungen.md) |
 | **Professor / Prüfer** | Vollständigkeit und Konsistenz der Spezifikation nach Siedersleben-Schema; Nachvollziehbarkeit vom Geschäftsprozess bis zum Code. | [README](README.md) (Status aller Bausteine), E1 (dieser Baustein), [E1.7](#e17-querverweise-und-traceability) |
 
 ---
@@ -39,7 +39,7 @@ E1 ersetzt nicht das Glossar ([E2](E2-glossar.md)) und nicht den Spezifikationsi
 | **Fachliche Reviewer / Product Owner** | [P1](P1-ziele-rahmenbedingungen.md) → [F1](F1-geschaeftsprozesse.md) → [F2](F2-anwendungsfaelle.md) → [F3](F3-anwendungsfunktionen.md) | Geschäftsziele und Scope rahmen die Geschäftsprozesse; F2 leitet daraus die Use Cases ab; F3 löst die darin offen gelassenen fachlichen Regeln auf. |
 | **Entwickler** | [F2](F2-anwendungsfaelle.md) → [D1](D1-datenmodell.md) → [D2](D2-datentypen.md) → [B1](B1-dialogspezifikation.md) → [S1](S1-nachbarsysteme.md) → [N2](N2-querschnittskonzepte.md) | Use Cases geben den fachlichen Rahmen vor; Datenmodell und Datentypen sind die Grundlage jeder Implementierung; Dialoge und Schnittstellen konkretisieren UI und API; N2 löst die dort offen gelassenen technischen Fragen auf. |
 | **Tester** | [F2](F2-anwendungsfaelle.md) (Akzeptanzkriterien) → [F3](F3-anwendungsfunktionen.md) (Entscheidungstabellen) → [N1](N1-nichtfunktionale-anforderungen.md) | Akzeptanzkriterien je Use Case sind die Grundlage funktionaler Tests; Entscheidungstabellen decken Randfälle ab; N1 liefert die nichtfunktionalen Prüfkriterien. |
-| **Architekt** | [P2](P2-architekturueberblick.md) → [S1](S1-nachbarsysteme.md) → [D1](D1-datenmodell.md)/[D2](D2-datentypen.md) → [N2](N2-querschnittskonzepte.md) → [N1](N1-nichtfunktionale-anforderungen.md) | Systemkontext und Nachbarsysteme zuerst; danach Datenmodell als Schema-Grundlage; N2 bündelt die technische Umsetzung, die die Grundlage für die spätere, noch ausstehende Architekturdokumentation nach arc42 unter `docs/arch/` bildet. |
+| **Architekt** | [P2](P2-architekturueberblick.md) → [S1](S1-nachbarsysteme.md) → [D1](D1-datenmodell.md)/[D2](D2-datentypen.md) → [N2](N2-querschnittskonzepte.md) → [N1](N1-nichtfunktionale-anforderungen.md) → [Architektur](../arch/README.md) | Systemkontext und Nachbarsysteme zuerst; danach Datenmodell und Querschnittsentscheidungen; die Architekturdokumentation führt diese Grundlagen in Baustein-, Laufzeit- und Deployment-Sichten zusammen. |
 | **Professor / Prüfer** | [README](README.md) → E1 (dieser Baustein) → [P1](P1-ziele-rahmenbedingungen.md) → [F1](F1-geschaeftsprozesse.md) → [F2](F2-anwendungsfaelle.md) → [F3](F3-anwendungsfunktionen.md) → [D1](D1-datenmodell.md) → [D2](D2-datentypen.md) → [B1](B1-dialogspezifikation.md) → [S1](S1-nachbarsysteme.md) → [N1](N1-nichtfunktionale-anforderungen.md) → [N2](N2-querschnittskonzepte.md) | Vollständiger Durchlauf durch alle Bausteine in Siedersleben-Reihenfolge; E1 vorab erklärt Struktur und ID-Schema, damit die anschließende Prüfung auf Vollständigkeit und Konsistenz zielgerichtet erfolgen kann. |
 
 ---
@@ -101,7 +101,7 @@ Alle Diagramme in der Spezifikation sind als **Mermaid**-Codeblöcke eingebettet
 | ER-Diagramm | `erDiagram` | [D1.2](D1-datenmodell.md#d12-überblick-er-diagramm) | Entitätstypen und ihre Beziehungen. |
 | Dialoglandkarte | `flowchart` mit `subgraph` je Navigationsbereich | [B1.2](B1-dialogspezifikation.md#b12-dialoglandkarte) | Navigation zwischen Dialogen (DLG-nn). |
 | Entscheidungstabelle | Markdown-Tabelle statt Diagramm | [F3.3](F3-anwendungsfunktionen.md#entscheidungstabelle-af-01) ff. | Fallunterscheidung fachlicher Regeln, präziser als ein Diagramm. |
-| Architekturdiagramme nach arc42 | noch nicht festgelegt | `docs/arch/` (noch zu erstellen) | Komponenten-, Deployment- und Laufzeitsichten, die laut [P2](P2-architekturueberblick.md#p2--architekturüberblick) bewusst nicht in P2 gehören; werden ergänzt, sobald die Architekturdokumentation erstellt wird. |
+| Architekturdiagramme nach arc42 | `flowchart` und `sequenceDiagram` | [Architekturdokumentation](../arch/README.md) | Komponenten-, Deployment- und Laufzeitsichten, die laut [P2](P2-architekturueberblick.md#p2--architekturüberblick) bewusst nicht in P2 gehören. |
 
 ---
 
@@ -117,12 +117,12 @@ P1 (Ziele, Scope, Constraints)
       → B1 (Dialoge)
       → S1 (Nachbarsystem-Schnittstellen)
       → N1 (nichtfunktionale Anforderungen) → N2 (technische Umsetzung)
-        → Architektur (docs/arch/, arc42 — noch zu erstellen)
+        → Architektur (docs/arch/README.md, arc42)
           → Code
             → Tests
 ```
 
-Jeder Schritt in dieser Kette **verfeinert**, ohne den vorherigen Schritt zu widersprechen: F2 leitet Use Cases aus den Geschäftsprozessen in F1 ab; F3 löst die in F2 bewusst offen gelassenen fachlichen Regeln auf; D1/D2, B1, S1 und N1 konkretisieren F2/F3 aus Daten-, Dialog-, Schnittstellen- und Qualitätssicht; N2 setzt die dort offen gelassenen technischen Fragen auf dem konkreten Stack (P1 CON-T-01–CON-T-03, P2) um. Architektur, Code und Tests liegen außerhalb von `docs/spec/` und müssen dieselben IDs referenzieren; die Architekturdokumentation nach arc42 unter `docs/arch/` ist noch zu erstellen.
+Jeder Schritt in dieser Kette **verfeinert**, ohne den vorherigen Schritt zu widersprechen: F2 leitet Use Cases aus den Geschäftsprozessen in F1 ab; F3 löst die in F2 bewusst offen gelassenen fachlichen Regeln auf; D1/D2, B1, S1 und N1 konkretisieren F2/F3 aus Daten-, Dialog-, Schnittstellen- und Qualitätssicht; N2 setzt die dort offen gelassenen technischen Fragen auf dem konkreten Stack (P1 CON-T-01–CON-T-03, P2) um. [Architektur](../arch/README.md), Code und Tests liegen außerhalb von `docs/spec/` und müssen dieselben IDs referenzieren.
 
 **Konkretes Beispiel der Kette für UC-04 „Session beitreten":**
 
@@ -134,7 +134,7 @@ Jeder Schritt in dieser Kette **verfeinert**, ohne den vorherigen Schritt zu wid
 | Datenmodell | [D1.4 `participant`](D1-datenmodell.md#participant--teilnahme) | Entität, die den Beitritt persistiert. |
 | Schnittstelle | [S1.4 NB-03](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) | Atomare Operation `join_session`. |
 | Technische Umsetzung | [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01) | Atomarität des Beitritts auf PostgreSQL-Ebene. |
-| Architektur | `docs/arch/` (ausstehend) | Komponente/Sequenz, die `join_session` aufruft; wird dokumentiert, sobald `docs/arch/` vorliegt. |
+| Architektur | [Baustein- und Laufzeitsicht](../arch/README.md#5-laufzeitsichten) | Frontend-Service ruft `join_session` auf; PostgreSQL prüft und schreibt atomar. |
 | Code | Implementierung des Beitritts-Flows | — |
 | Test | Testfall zu UC-04 (Kapazität voll/frei) | — |
 
@@ -179,5 +179,5 @@ Für die gesamte Spezifikation gelten unabhängig vom einzelnen Baustein folgend
 |---|---|
 | Werkzeug | Claude Code |
 | Verwendung | Entwurf und redaktionelle Überarbeitung des E1-Bausteins, insbesondere Zielgruppen, Lesereihenfolge, ID-Konventionen, Diagrammübersicht und Traceability-Kette. |
-| Prüfung | Inhalte wurden gegen README, P1, P2, F1, F2, F3, D1, D2, B1, S1, N1 und N2 geprüft. Relative Links, Abschnittsanker, IDs und Statusangaben wurden mit den vorhandenen Dateien abgeglichen und manuell überarbeitet. Nachtrag (2026-07-26, Claude Sonnet 5): Statusangaben aus E1.4 und E1.8 entfernt, die E2 noch als geplant führten und damit gegen die eigene Konsistenzregel „Ein Ort für den Status" verstießen; S3 als bewusst zurückgestellt eingeordnet. Aktualisierung (2026-07-28, Codex): Status von `docs/arch/` von „im Aufbau" auf „noch zu erstellen" berichtigt. |
+| Prüfung | Inhalte wurden gegen README, P1, P2, F1, F2, F3, D1, D2, B1, S1, N1, N2 und die Architekturdokumentation geprüft. Relative Links, Abschnittsanker, IDs und Statusangaben wurden manuell abgeglichen. Aktualisierung (2026-07-29, Codex): Lesereihenfolge, Diagrammübersicht und Traceability an die fertiggestellte `docs/arch/README.md` angepasst. |
 | Fachliche Verantwortung | Bleibt beim Team. |
