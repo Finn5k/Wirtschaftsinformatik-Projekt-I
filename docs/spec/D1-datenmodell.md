@@ -252,7 +252,7 @@ Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#
 | [S1](S1-nachbarsysteme.md) | Auth-Kennung und Kartendaten stammen aus Nachbarsystemen und sind hier nur referenziert. |
 | E2 | Glossar: einheitliche Begriffe (Session, Teilnahme/Participant, Court/Sportort, Profil, Sportart). |
 
-## D1.9 Offene Punkte
+## D1.9 Entscheidungsstand
 
 Keine offenen Punkte am Datenmodell selbst. In Teilnehmerlisten sind ausschließlich `display_name` und optional `avatar_url` sichtbar (UC-03, UC-07); `avatar_url` bleibt ein reiner Anzeigewert, dessen Upload und Bearbeitung im MVP ausgeschlossen sind.
 
@@ -266,4 +266,4 @@ Statuspersistenz stehen ausschließlich in
 |---|---|
 | Werkzeug | Claude Code (Opus 4.8) / Codex |
 | Verwendung | Entwurf des D1-Bausteins: Ableitung der Entitätstypen, Attribute und Beziehungen aus den „Bezug zu Daten"-Angaben in F2/F3, Erstellung des ER-Diagramms und der Invarianten. Codex konkretisierte am 2026-07-29 die Court-Invariante, Profilsichtbarkeit und Löschwirkung des bestätigten administrativen DSGVO-Prozesses. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und die Herold-Referenz geprüft und mit dem Team abgestimmt. Richtungsentscheidungen (fachliche Abstraktion, Sportart als Katalog, englische Feldnamen, Mermaid-ER-Diagramm) wurden vorab bestätigt. Nachtrag (2026-07-26, Claude Sonnet 5): initialer Sportarten-Katalog dokumentiert, abgeglichen mit den im Prototyp verwendeten Werten. Nachtrag (2026-07-26, Claude Sonnet 5): `profile.city` als optionales Attribut aufgenommen (Heimatort, Vorbelegung der Ortssuche, für andere Nutzer nicht sichtbar). Redundanzkorrektur (2026-07-28, Codex): Wiederholte N2-Entscheidungen aus D1.9 entfernt und durch einen Verweis ersetzt. |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und die Herold-Referenz geprüft und mit dem Team abgestimmt. Richtungsentscheidungen (fachliche Abstraktion, Sportart als Katalog, englische Feldnamen, Mermaid-ER-Diagramm) wurden vorab bestätigt. Nachtrag (2026-07-26, Claude Sonnet 5): initialer Sportarten-Katalog dokumentiert, abgeglichen mit den im Prototyp verwendeten Werten. Nachtrag (2026-07-26, Claude Sonnet 5): `profile.city` als optionales Attribut aufgenommen (Heimatort, Vorbelegung der Ortssuche, für andere Nutzer nicht sichtbar). Redundanzkorrektur (2026-07-28, Codex): Wiederholte N2-Entscheidungen aus D1.9 entfernt und durch einen Verweis ersetzt. Finaler Hygienecheck (2026-07-29, Codex): den abgeschlossenen Abschnitt D1.9 als Entscheidungsstand bezeichnet und betroffene Verweise aktualisiert. |

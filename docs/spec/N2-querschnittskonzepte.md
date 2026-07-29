@@ -47,7 +47,7 @@ optionale `address` erst nach erfolgreichem Reverse-Geocoding gemeinsam an
 und Ortsauflösung kein Court mit fehlenden oder widersprüchlichen Ortsdaten
 persistiert werden.
 
-**Zu `participant_id` vs. zusammengesetzter Schlüssel:** Die ursprünglich in [D1.9](D1-datenmodell.md#d19-offene-punkte) geführte Frage ist hier entschieden: Es wird ein eigener `participant_id` (`uuid`) als Primärschlüssel verwendet, zusätzlich zum `UNIQUE (session_id, user_id)`-Constraint. Begründung: PostgREST (NB-03) adressiert Ressourcen einfacher über einen einzelnen Identifier (`PATCH /participants/<id>`, wie in [P2.5 Szenario 3](P2-architekturueberblick.md#p25-kritische-datenflüsse) dargestellt), während die fachliche Eindeutigkeit weiterhin über den `UNIQUE`-Constraint erzwungen wird.
+**Zu `participant_id` vs. zusammengesetzter Schlüssel:** Die ursprünglich in [D1.9](D1-datenmodell.md#d19-entscheidungsstand) geführte Frage ist hier entschieden: Es wird ein eigener `participant_id` (`uuid`) als Primärschlüssel verwendet, zusätzlich zum `UNIQUE (session_id, user_id)`-Constraint. Begründung: PostgREST (NB-03) adressiert Ressourcen einfacher über einen einzelnen Identifier (`PATCH /participants/<id>`, wie in [P2.5 Szenario 3](P2-architekturueberblick.md#p25-kritische-datenflüsse) dargestellt), während die fachliche Eindeutigkeit weiterhin über den `UNIQUE`-Constraint erzwungen wird.
 
 ### Indizes
 
@@ -64,7 +64,7 @@ Die konkrete Indexwahl ist eine Performance-Optimierung ohne fachliche Auswirkun
 
 ## N2.4 Atomarität des Beitritts (AF-01)
 
-Entscheidet die ursprünglich in [F3 AF-01 Regel 6](F3-anwendungsfunktionen.md#f33-af-01--beitritts--und-kapazitätsregel) und [D1.9](D1-datenmodell.md#d19-offene-punkte) dokumentierte Umsetzungsfrage.
+Entscheidet die ursprünglich in [F3 AF-01 Regel 6](F3-anwendungsfunktionen.md#f33-af-01--beitritts--und-kapazitätsregel) und [D1.9](D1-datenmodell.md#d19-entscheidungsstand) dokumentierte Umsetzungsfrage.
 
 **Entscheidung:** Prüfung freier Plätze und Anlegen der Teilnahme erfolgen in **einer einzigen atomaren PostgreSQL-Funktion** (`SECURITY DEFINER`), die über PostgREST als RPC-Endpoint (`POST /rest/v1/rpc/join_session`) aufgerufen wird, anstatt über ein direktes `INSERT` auf `/rest/v1/participants`. Der Aufrufer übergibt ausschließlich die Session-ID; die Nutzer-ID wird innerhalb der Funktion aus dem verifizierten JWT über `auth.uid()` bestimmt. Die Funktion bildet den Pseudocode aus F3.3 exakt ab:
 
@@ -94,7 +94,7 @@ Namen eines anderen Nutzers anzulegen.
 
 ## N2.5 Zählstrategie `confirmed_count`
 
-Entscheidet die ursprünglich in [D1.6](D1-datenmodell.md#d16-abgeleitete-merkmale) und [D1.9](D1-datenmodell.md#d19-offene-punkte) dokumentierte Umsetzungsfrage.
+Entscheidet die ursprünglich in [D1.6](D1-datenmodell.md#d16-abgeleitete-merkmale) und [D1.9](D1-datenmodell.md#d19-entscheidungsstand) dokumentierte Umsetzungsfrage.
 
 **Entscheidung:** `confirmed_count` wird **berechnet** (`COUNT(*) FROM participant WHERE session_id = … AND status IN ('confirmed','checked_in')`), nicht als eigenständig gepflegtes Feld geführt. Begründung:
 
@@ -106,7 +106,7 @@ Für die Anzeige (UC-02, UC-03, B1 DLG-04) wird `confirmed_count` über eine Vie
 
 ## N2.6 Statuspersistenz (AF-03)
 
-Entscheidet die ursprünglich in [F3 AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge), [D1.6](D1-datenmodell.md#d16-abgeleitete-merkmale) und [D1.9](D1-datenmodell.md#d19-offene-punkte) dokumentierte Umsetzungsfrage.
+Entscheidet die ursprünglich in [F3 AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge), [D1.6](D1-datenmodell.md#d16-abgeleitete-merkmale) und [D1.9](D1-datenmodell.md#d19-entscheidungsstand) dokumentierte Umsetzungsfrage.
 
 **Entscheidung:** `session.status` wird **nicht** gespeichert, sondern bei jeder Abfrage aus `start_at`, `duration_min` und der aktuellen Serverzeit berechnet (SQL-Ausdruck bzw. View, die die Ableitungstabelle aus AF-03 nachbildet: `scheduled` wenn `now() < start_at`, `active` wenn `start_at ≤ now() < start_at + duration_min * interval '1 minute'`, sonst `completed`).
 
@@ -136,7 +136,7 @@ Entscheidet die ursprünglich in [D2.8](D2-datentypen.md#d28-qrcontent) dokument
 
 ## N2.9 Identifier-Strategie
 
-Entscheidet die ursprünglich in [D2.2](D2-datentypen.md#d22-identifier) und [D2.11](D2-datentypen.md#d211-offene-punkte) dokumentierte Umsetzungsfrage.
+Entscheidet die ursprünglich in [D2.2](D2-datentypen.md#d22-identifier) und [D2.11](D2-datentypen.md#d211-entscheidungsstand) dokumentierte Umsetzungsfrage.
 
 **Entscheidung:** `uuid` (Version 4, `gen_random_uuid()`) für alle system-vergebenen Primärschlüssel (`sport_id`, `court_id`, `session_id`, `participant_id`). Begründung: PostgreSQL/Supabase unterstützt `gen_random_uuid()` nativ (`pgcrypto`), UUIDs sind kollisionssicher ohne zentrale Sequenz-Koordination und passen zu PostgREST, das Ressourcen über die Primärschlüssel-Spalte adressiert.
 
@@ -144,7 +144,7 @@ Entscheidet die ursprünglich in [D2.2](D2-datentypen.md#d22-identifier) und [D2
 
 ## N2.10 Zeitfenster und Zeittoleranz beim Check-in (AF-02)
 
-Entscheidet die ursprünglich in [F3 AF-02](F3-anwendungsfunktionen.md#f34-af-02--check-in-validierung) und [F3.10](F3-anwendungsfunktionen.md#f310-offene-punkte) dokumentierte Umsetzungsfrage.
+Entscheidet die ursprünglich in [F3 AF-02](F3-anwendungsfunktionen.md#f34-af-02--check-in-validierung) und [F3.10](F3-anwendungsfunktionen.md#f310-entscheidungsstand) dokumentierte Umsetzungsfrage.
 
 Die Check-in-Prüfung (AF-02 Regel 4) wird serverseitig als Teil einer weiteren atomaren Funktion (`check_in`, RPC analog zu [N2.4](#n24-atomarität-des-beitritts-af-01)) ausgeführt, die den Status **exakt** nach der Ableitungstabelle aus AF-03/[N2.6](#n26-statuspersistenz-af-03) prüft — d. h. `active` bedeutet `start_at ≤ now() < start_at + duration_min`. Eine Client-Zeit wird dabei nie als Vertrauensbasis verwendet; maßgeblich ist ausschließlich `now()` der Datenbank, um eine Manipulation über die Client-Uhr auszuschließen.
 
@@ -223,4 +223,4 @@ Nicht mehr offen: Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz 
 |---|---|
 | Werkzeug | Claude (Claude Sonnet 5) / Codex |
 | Verwendung | Entwurf des N2-Bausteins: Auflösung der in D1, D2 und F3 explizit an N2 verwiesenen offenen Punkte auf Basis des bestehenden Tech-Stacks. Codex bereinigte am 2026-07-29 Status-, Court- und Profilsichtbarkeitsfragen und konkretisierte anschließend den bestätigten administrativen DSGVO-Prozess samt Fremdschlüssel-Löschwirkung. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md) und [S1](S1-nachbarsysteme.md) geprüft; keine über das MVP hinausgehenden Funktionen wurden eingeführt. Die Entscheidungen zur PIN-Klartextspeicherung ([N2.7](#n27-pin-erzeugung-und--speicherung-af-04)) und zur berechneten Statuspersistenz ([N2.6](#n26-statuspersistenz-af-03)) sind dokumentiert. Nachtrag (2026-07-26, Claude Sonnet 5): tote Anker korrigiert, veralteter Hinweis auf ein noch fehlendes N1 entfernt; der in N2.11 unbenannte Erstellungsaufruf ist in [S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) als `create_session` benannt. Aktualisierung (2026-07-28, Codex): Verweise auf bereits entschiedene Umsetzungsfragen konsolidiert. Aktualisierung (2026-07-29, Codex): Den bestätigten administrativen DSGVO-Prozess und seine Löschkaskaden konsistent mit D1/N1 dokumentiert. |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md) und [S1](S1-nachbarsysteme.md) geprüft; keine über das MVP hinausgehenden Funktionen wurden eingeführt. Die Entscheidungen zur PIN-Klartextspeicherung ([N2.7](#n27-pin-erzeugung-und--speicherung-af-04)) und zur berechneten Statuspersistenz ([N2.6](#n26-statuspersistenz-af-03)) sind dokumentiert. Nachtrag (2026-07-26, Claude Sonnet 5): tote Anker korrigiert, veralteter Hinweis auf ein noch fehlendes N1 entfernt; der in N2.11 unbenannte Erstellungsaufruf ist in [S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) als `create_session` benannt. Aktualisierung (2026-07-28, Codex): Verweise auf bereits entschiedene Umsetzungsfragen konsolidiert. Aktualisierung (2026-07-29, Codex): Den bestätigten administrativen DSGVO-Prozess und seine Löschkaskaden konsistent mit D1/N1 dokumentiert. Finaler Hygienecheck (2026-07-29, Codex): Verweise auf die abgeschlossenen Entscheidungsstände in D1, D2 und F3 aktualisiert. |

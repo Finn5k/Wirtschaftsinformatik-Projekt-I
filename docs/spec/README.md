@@ -35,8 +35,8 @@ Beschreibt aus Anwendungssicht, wie sich LocalCourt in seine Umgebung einbettet:
 - Welche Koppelung und Häufigkeit der Kommunikation?
 
 **Inhalte**:
-- Systemkontext-Diagramm (Browser ↔ Supabase ↔ PostgreSQL, OpenStreetMap)
-- Nachbarsysteme-Inventar (NB-01: Browser, NB-02: Supabase Auth, NB-03: Supabase PostgREST, NB-04: OpenStreetMap/Leaflet)
+- Systemkontext-Diagramm (Browser ↔ Supabase ↔ PostgreSQL, OpenStreetMap/Nominatim)
+- Nachbarsysteme-Inventar (NB-01: Browser, NB-02: Supabase Auth, NB-03: Supabase PostgREST, NB-04: OpenStreetMap/Leaflet, NB-05: Nominatim)
 - Deployment-Topologie & Infrastruktur
 - 3 kritische Datenflüsse: Session erstellen, Session entdecken/beitreten, Check-in
 - Bewusste Ausschlüsse (KI-APIs, Payment, E-Mail-Services, Message Queues)
@@ -284,6 +284,7 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 | 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Bereits entschiedene Sichtbarkeit von Anzeigename und optionalem Profilbild in Teilnehmerlisten über B1, F2, D1, N1, N2 und S1 konsistent nachgezogen |
 | 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Teamentscheidungen zu Sortierung, Court-Dubletten, Organisator-Ergebnisdaten, Fehlertexten sowie DSGVO-Auskunft und -Löschung konsistent eingearbeitet |
 | 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Schlanke arc42-Architekturdokumentation mit Baustein-, Laufzeit- und Deployment-Sichten, Querschnittskonzepten, ADRs und Prototyp-Abgleich ergänzt |
+| 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Finalen Link-, Redundanz- und Konsistenzdurchlauf durchgeführt; P2-Kurzindex, Testabgrenzung und abgeschlossene Entscheidungsstände vereinheitlicht |
 
 ---
 
@@ -302,4 +303,4 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 |---|---|
 | Werkzeug | GitHub Copilot, Claude Code, ChatGPT — soweit im jeweiligen Bearbeitungsschritt verwendet |
 | Verwendung | Strukturierung, Formulierungsvorschläge, Konsistenzprüfung, Pflege des Spezifikationsindex und Verknüpfung der ergänzenden arc42-Architekturdokumentation |
-| Prüfung | Inhalte wurden gegen die vorhandenen Spezifikationsbausteine, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Die fachliche Verantwortung bleibt beim Team. Jeder Baustein weist die konkrete KI-Nutzung zusätzlich im eigenen Abschnitt „Eingesetzte KI-Werkzeuge" aus. Redundanzkorrektur (2026-07-28, Codex): Status im Index nur noch in den Überschriften geführt; wiederholte Entscheidungen und dezentrale Status-/Historienangaben auf ihre maßgeblichen Fundstellen reduziert. |
+| Prüfung | Inhalte wurden gegen die vorhandenen Spezifikationsbausteine, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Die fachliche Verantwortung bleibt beim Team. Jeder Baustein weist die konkrete KI-Nutzung zusätzlich im eigenen Abschnitt „Eingesetzte KI-Werkzeuge" aus. Redundanzkorrektur (2026-07-28, Codex): Status im Index nur noch in den Überschriften geführt; wiederholte Entscheidungen und dezentrale Status-/Historienangaben auf ihre maßgeblichen Fundstellen reduziert. Finaler Hygienecheck (2026-07-29, Codex): relative Linkziele, Abschnittsverweise, Offenheitsformulierungen und Kurzbeschreibungen erneut repositoryweit abgeglichen. |

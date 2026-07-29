@@ -245,7 +245,7 @@ Typische fachliche Kette einer organisierten Session:
 | N1 / N2 | Nichtfunktionale Bewertung (Sicherheitsniveau der PIN, Konsistenz bei Parallelzugriff) und technische Umsetzung der Atomarität, des Zeitfensters und des Auto-Close. |
 | E2 | Glossar: einheitliche Begriffe (Session, Teilnahme/Participant, Check-in, Status). |
 
-## F3.10 Offene Punkte
+## F3.10 Entscheidungsstand
 
 Keine. Die fachlichen Regeln in AF-01 bis AF-04 sind vollständig. Ihre
 technische Umsetzung ist in
@@ -259,4 +259,4 @@ festgelegt; die Qualitätsabgrenzungen stehen in
 |---|---|
 | Werkzeug | Claude Code / Codex |
 | Verwendung | Entwurf des F3-Bausteins, Identifikation der Anwendungsfunktionen aus den offenen Punkten von F2, Formulierung der Regeln, Entscheidungstabellen und Pseudocode-Kerne; Codex entfernte am 2026-07-29 den nicht zum MVP gehörenden Status `cancelled` und grenzte nachträgliche Session-Änderungen ab. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md) und die Herold-Referenz geprüft und manuell abgestimmt; der Warteliste-Scope-Konflikt wurde in P1 (NG-10) aufgelöst und in F2 nachgezogen. Toter Querverweis auf D2 korrigiert (2026-07-26, Claude Sonnet 5). Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): F3.10 aufgelöst, da alle fünf dort geführten Punkte inzwischen in N2 bzw. N1.7 entschieden sind. Aktualisierung (2026-07-28, Codex): Veraltete „Offene Punkte“-Zeilen in AF-01 bis AF-04 durch Verweise auf die bereits festgelegte technische Umsetzung in N1/N2 ersetzt. Redundanzkorrektur (2026-07-28, Codex): Wiederholung dieser technischen Festlegungen in F3.10 durch Verweise auf N1/N2 ersetzt. |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md) und die Herold-Referenz geprüft und manuell abgestimmt; der Warteliste-Scope-Konflikt wurde in P1 (NG-10) aufgelöst und in F2 nachgezogen. Toter Querverweis auf D2 korrigiert (2026-07-26, Claude Sonnet 5). Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): F3.10 aufgelöst, da alle fünf dort geführten Punkte inzwischen in N2 bzw. N1.7 entschieden sind. Aktualisierung (2026-07-28, Codex): Veraltete „Offene Punkte“-Zeilen in AF-01 bis AF-04 durch Verweise auf die bereits festgelegte technische Umsetzung in N1/N2 ersetzt. Redundanzkorrektur (2026-07-28, Codex): Wiederholung dieser technischen Festlegungen in F3.10 durch Verweise auf N1/N2 ersetzt. Finaler Hygienecheck (2026-07-29, Codex): den abgeschlossenen Abschnitt F3.10 als Entscheidungsstand bezeichnet und betroffene Verweise aktualisiert. |

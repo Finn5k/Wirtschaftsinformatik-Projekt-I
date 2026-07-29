@@ -144,7 +144,7 @@ Attribut- und Entitätsnamen sind in **englischem `snake_case`** gehalten (konsi
 | B1 | Ein-/Ausgabeformate und Feldvalidierung in den Dialogen. |
 | E2 | Glossar: konsistente Begriffe zu den Typwerten. |
 
-## D2.11 Offene Punkte
+## D2.11 Entscheidungsstand
 
 Keine. Qualitätsbezogene Nicht-Festlegungen stehen in
 [N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen);
@@ -157,4 +157,4 @@ die technischen Entscheidungen zu PIN, QR-Inhalt und Identifiern in
 |---|---|
 | Werkzeug | Claude Code (Opus 4.8) / Codex |
 | Verwendung | Entwurf des D2-Datentypenverzeichnisses: Katalogisierung der trivialen und nicht-trivialen Typen, Definition von Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. Codex entfernte am 2026-07-29 `cancelled` aus `SessionStatus` und konkretisierte `GeoCoordinate` für Kartenpin und Reverse-Geocoding. |
-| Prüfung | Inhalte wurden gegen [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md), [S1](S1-nachbarsysteme.md), N1/N2 und die Herold-Referenz geprüft und mit dem Team abgestimmt. Wertebereiche, Statusumfang, Kartenpin, Reverse-Geocoding, PIN und QR-Inhalt entsprechen den aktuellen Festlegungen. |
+| Prüfung | Inhalte wurden gegen [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md), [S1](S1-nachbarsysteme.md), N1/N2 und die Herold-Referenz geprüft und mit dem Team abgestimmt. Wertebereiche, Statusumfang, Kartenpin, Reverse-Geocoding, PIN und QR-Inhalt entsprechen den aktuellen Festlegungen. Finaler Hygienecheck (2026-07-29, Codex): den abgeschlossenen Abschnitt D2.11 als Entscheidungsstand bezeichnet und betroffene Verweise aktualisiert. |
