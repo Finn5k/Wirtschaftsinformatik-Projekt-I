@@ -6,7 +6,7 @@ Dieser Baustein beschreibt das **fachliche Datenmodell** von LocalCourt: die fac
 
 Nach Siedersleben ist D1 ein **fachliches, konzeptionelles Modell**. Es legt Entitätstypen, Attribute und Assoziationen fest, jedoch **nicht** die technische Realisierung. Konkrete Datenbanktabellen, PostgreSQL-Spaltentypen, Primär-/Fremdschlüssel, Indizes, Sperr- und Transaktionsstrategien gehören in [N2](N2-querschnittskonzepte.md) und die Architekturbausteine. Die formale Definition der verwendeten **Datentypen und Wertebereiche** erfolgt im zugehörigen Baustein [D2 — Datentypen](D2-datentypen.md).
 
-D1 ist die gemeinsame Referenz für die Datenobjekte, die in [F2](F2-anwendungsfaelle.md) („Bezug zu Daten") und [F3](F3-anwendungsfunktionen.md) („Bezug zu Daten") bereits genannt, aber dort nicht formal definiert wurden. Die Benennung der Entitäten und Attribute erfolgt in **englischem `snake_case`** (konsistent mit den Pseudocode-Kernen in F3 und den Datenflüssen in [P2](P2-architekturueberblick.md)); die Beschreibung bleibt deutsch.
+D1 ist die gemeinsame Referenz für die Datenobjekte, die in [F2](F2-anwendungsfaelle.md) („Bezug zu Daten") und [F3](F3-anwendungsfunktionen.md) („Bezug zu Daten") bereits genannt, aber dort nicht formal definiert wurden. Die Benennung der Entitäten und Attribute erfolgt in **englischem `snake_case`** (konsistent mit den Berechnungsformeln und Entscheidungstabellen in F3 und den Datenflüssen in [P2](P2-architekturueberblick.md)); die Beschreibung bleibt deutsch.
 
 **Abgrenzung:** D1 zeigt Entitätstypen und ihre fachlichen Attribute. Fachliche *Regeln* über diese Daten (Beitritt, Kapazität, Check-in, Lifecycle) stehen in [F3](F3-anwendungsfunktionen.md); D1 verweist nur auf sie. Rein technische Hilfsobjekte (Auth-Sitzungen, Tokens, Kartenkacheln) sind Sache der Nachbarsysteme ([S1](S1-nachbarsysteme.md)) und nicht Teil des fachlichen Datenmodells.
 
@@ -176,14 +176,14 @@ erDiagram
 | `session_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Verweis auf die `session`. |
 | `user_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Verweis auf das teilnehmende `profile`. |
 | `status` | [`ParticipantStatus`](D2-datentypen.md#d25-participantstatus) | 1 | `confirmed` (beigetreten) oder `checked_in` (anwesend). |
-| `joined_at` | [`Timestamp`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 1 | Zeitpunkt des Beitritts. Reihenfolge für die Concurrency-Regel (AF-01 R6). |
+| `joined_at` | [`Timestamp`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 1 | Zeitpunkt des Beitritts (Grundlage von AF-01 – Kapazitätsinvariante und Atomarität; keine Reihenfolgegarantie). |
 | `checked_in_at` | [`Timestamp`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 0..1 | Zeitpunkt des Check-ins; gesetzt genau dann, wenn `status = checked_in` (AF-02). |
 
 **Assoziationen:** gehört zu 1 `session`; gehört zu 1 `profile`.
 
 **Invarianten (fachlich):**
 - **Eindeutigkeit:** Höchstens eine Teilnahme je (`session_id`, `user_id`) — kein Doppelbeitritt (AF-01 R3). Die technische Umsetzung (Unique-Constraint, atomares Insert) gehört in D2/N2.
-- **Check-in-Kopplung:** `checked_in_at` ist gesetzt ⇔ `status = checked_in`. Der Übergang `confirmed → checked_in` ist monoton (keine Rücknahme, AF-02 R6).
+- **Check-in-Kopplung:** `checked_in_at` ist gesetzt ⇔ `status = checked_in`. Der Übergang `confirmed → checked_in` ist monoton (keine Rücknahme, AF-02 – Keine Statusrücknahme).
 
 ### `sport_preference` — Sportpräferenz (n:m)
 
@@ -218,9 +218,9 @@ Einige fachlich zentrale Merkmale werden **nicht als eigenständig gepflegte Att
 
 | Merkmal | Zugehörige Entität | Ableitung | Definiert in |
 |---|---|---|---|
-| `status` | `session` | Aus aktueller Zeit im Verhältnis zu `start_at` und `start_at + duration_min`: `scheduled` / `active` / `completed`. | [F3 AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge), [D2](D2-datentypen.md#d23-sessionstatus) |
-| `confirmed_count` | `session` | Anzahl `participant` der Session mit `status ∈ {confirmed, checked_in}`. Grundlage der Kapazitätsprüfung (AF-01) und der Anzeige „x/max". | [F3 AF-01](F3-anwendungsfunktionen.md#f33-af-01--beitritts--und-kapazitätsregel) |
-| `qr_content` | `session` | Verweis auf die Check-in-Ansicht mit `session_id` und `pin` (konzeptionell `…/check-in?session=<id>&pin=<pin>`). | [F3 AF-04](F3-anwendungsfunktionen.md#f36-af-04--pin--und-qr-code-erzeugung), [D2](D2-datentypen.md#d28-qrcontent) |
+| `status` | `session` | Aus aktueller Zeit im Verhältnis zu `start_at` und `start_at + duration_min`: `scheduled` / `active` / `completed`. | [F3 AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session), [D2](D2-datentypen.md#d23-sessionstatus) |
+| `confirmed_count` | `session` | Anzahl `participant` der Session mit `status ∈ {confirmed, checked_in}`. Grundlage der Kapazitätsprüfung (AF-01) und der Anzeige „x/max". | [F3 AF-01](F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel) |
+| `qr_content` | `session` | Verweis auf die Check-in-Ansicht mit `session_id` und `pin` (konzeptionell `…/check-in?session=<id>&pin=<pin>`). | [F3 AF-04](F3-anwendungsfunktionen.md#af-04--pin--und-qr-code-erzeugung), [D2](D2-datentypen.md#d28-qrcontent) |
 
 Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#d14-entitätstypen-im-detail), sind aber fachlich Teil der Session-Sicht (z. B. in UC-03, UC-07).
 
