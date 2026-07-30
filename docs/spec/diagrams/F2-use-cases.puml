@@ -1,0 +1,54 @@
+@startuml F2-use-cases
+left to right direction
+skinparam backgroundColor White
+skinparam usecase {
+  BackgroundColor White
+  BorderColor Black
+  ArrowColor Black
+}
+skinparam actor {
+  BorderColor Black
+}
+skinparam nodesep 20
+skinparam ranksep 40
+
+actor "Teilnehmer" as Teilnehmer
+actor "Organisator" as Organisator
+
+rectangle "LocalCourt" {
+  usecase "UC-10\nCourt / Sportort erfassen\noder auswählen" as UC10
+  usecase "UC-07\nTeilnehmerliste anzeigen" as UC07
+  usecase "UC-06\nSession erstellen" as UC06
+
+  usecase "UC-12\nProfil und Sportpräferenzen verwalten" as UC12
+  usecase "UC-11\nSession-Historie ansehen" as UC11
+  usecase "UC-05\nEigene Sessions anzeigen" as UC05
+  usecase "UC-03\nSession-Detail ansehen" as UC03
+  usecase "UC-01\nRegistrieren / Anmelden" as UC01
+
+  usecase "UC-09\nCheck-in per PIN\ndurchführen" as UC09
+  usecase "UC-08\nCheck-in per QR-Code\ndurchführen" as UC08
+  usecase "UC-04\nSession beitreten" as UC04
+  usecase "UC-02\nSession suchen" as UC02
+}
+
+Teilnehmer -- UC02
+Teilnehmer -- UC04
+Teilnehmer -- UC08
+Teilnehmer -- UC09
+Teilnehmer -- UC01
+Teilnehmer -- UC03
+Teilnehmer -- UC05
+Teilnehmer -- UC11
+Teilnehmer -- UC12
+
+Organisator -- UC01
+Organisator -- UC03
+Organisator -- UC05
+Organisator -- UC11
+Organisator -- UC12
+Organisator -- UC06
+Organisator -- UC07
+Organisator -- UC10
+
+@enduml

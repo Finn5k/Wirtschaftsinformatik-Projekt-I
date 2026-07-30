@@ -1,0 +1,28 @@
+@startuml F2-uc10-court-erfassen
+skinparam backgroundColor White
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam ArrowColor Black
+
+start
+:Organisator öffnet die Court-Auswahl;
+if (Passender Court vorhanden?) then (ja)
+  :Organisator wählt vorhandenen Court aus;
+  :LocalCourt übernimmt Court in die Session-Erstellung;
+else (nein)
+  :Organisator vergibt Namen\nund setzt Kartenpin;
+  :LocalCourt löst Ort/Adresse\nper Reverse-Geocoding auf;
+  if (Reverse-Geocoding erfolgreich?) then (ja)
+    :LocalCourt speichert neuen Court\nmit Koordinaten und Ortsdaten;
+    :Court steht für die\nSession-Erstellung zur Verfügung;
+  else (nein)
+    :LocalCourt zeigt Fehlermeldung;
+    :Kein unvollständiger Court wird gespeichert;
+    stop
+  endif
+endif
+:Session-Erstellung (UC-06) wird fortgesetzt;
+stop
+@enduml
