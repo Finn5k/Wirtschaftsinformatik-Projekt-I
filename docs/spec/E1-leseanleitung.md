@@ -75,7 +75,7 @@ Zentrale spezifizierte Elemente wie Ziele, Geschäftsprozesse, Use Cases, Anwend
 | `NB-nn` | Nachbarsystem | [P2.2](P2-architekturueberblick.md#p22-nachbarsysteme), detailliert in [S1](S1-nachbarsysteme.md) | `NB-03` Supabase PostgREST API |
 | `GP-nn` | Geschäftsprozess (real, IT-unabhängig) | [F1](F1-geschaeftsprozesse.md) | `GP-02` Regelmäßige Treffen organisieren |
 | `A1…An` | Aktivität innerhalb eines Geschäftsprozesses | [F1](F1-geschaeftsprozesse.md) (je GP-nn eigene Zählung) | `GP-02 A12` |
-| `UC-nn` | Anwendungsfall (Use Case) | [F2.2](F2-anwendungsfaelle.md#f22-use-case-index) | `UC-04` Session beitreten |
+| `UC-nn` | Anwendungsfall (Use Case) | [F2.3](F2-anwendungsfaelle.md#f23-use-case-index) | `UC-04` Session beitreten |
 | `AF-nn` | Anwendungsfunktion (fachliches Regelwerk) | [F3.2](F3-anwendungsfunktionen.md#f32-katalog-der-anwendungsfunktionen) | `AF-01` Beitritts- und Kapazitätsregel |
 | Entitätsname in Backticks (z. B. `` `session` ``) | Entitätstyp im Datenmodell | [D1.3](D1-datenmodell.md#d13-entitätstypen-im-überblick) | `` `participant` `` |
 | `B1`–`B7` | Beziehung zwischen Entitätstypen | [D1.5](D1-datenmodell.md#d15-beziehungen) | `B2` Teilnahme (`session` → `participant`) |
@@ -90,18 +90,19 @@ Beim Verweis auf einen Baustein wird immer die Baustein-Kurzform verwendet (`P1`
 
 ## E1.6 Diagramme und Notationen
 
-Alle Diagramme in der Spezifikation sind als **Mermaid**-Codeblöcke eingebettet, damit sie auf GitHub direkt gerendert werden und im Diff versionierbar bleiben. Es gibt kein Diagramm als Bilddatei.
+Diagramme in der Spezifikation werden grundsätzlich als **versionierbare Quellen** gepflegt, damit sie im Diff nachvollziehbar bleiben. Der größte Teil ist als **Mermaid**-Codeblock direkt in Markdown eingebettet und wird so auf GitHub unmittelbar gerendert. Wo Mermaid für die gewünschte UML-Darstellung nicht ausreicht, beispielsweise bei Use-Case-Diagrammen mit expliziter Systemgrenze oder komplexeren Aktivitätsdiagrammen mit Verzweigungen, liegt die Quelle stattdessen als **PlantUML**-`.puml`-Datei unter `diagrams/` vor; die zugehörige gerenderte PNG-Datei unter `diagrams-png/` wird im Markdown eingebunden. Konkretes Beispiel dafür ist [F2](F2-anwendungsfaelle.md), dessen Use-Case- und UC-10-Aktivitätsdiagramm als PlantUML vorliegen.
 
-| Diagrammtyp | Mermaid-Notation | Verwendet in | Zweck |
+| Diagrammtyp | Notation | Verwendet in | Zweck |
 |---|---|---|
-| Aktivitätsdiagramm mit Swimlanes | `flowchart` mit `subgraph` je Akteur | [F1.1.5](F1-geschaeftsprozesse.md#f115-ablaufdiagramm-mermaid), [F1.2.5](F1-geschaeftsprozesse.md#f125-ablaufdiagramm-mermaid) | Ablauf eines Geschäftsprozesses je Akteur. |
-| Use-Case-Diagramm | `flowchart` mit Akteur-Knoten und Ovalen (`((...))`) | [F2.3](F2-anwendungsfaelle.md#f23-use-case-diagramm) | Zuordnung Use Cases ↔ Akteure. |
-| Systemkontext- / Deployment-Diagramm | `flowchart` mit `subgraph` je Tier/System | [P2.1](P2-architekturueberblick.md#p21-systemkontext), [P2.4](P2-architekturueberblick.md#p24-deployment--architektur-topologie) | Nachbarsysteme und Deployment-Topologie. |
-| Sequenzdiagramm | `sequenceDiagram` | [P2.5](P2-architekturueberblick.md#p25-kritische-datenflüsse) | Ablauf kritischer Datenflüsse über mehrere Systeme hinweg. |
-| ER-Diagramm | `erDiagram` | [D1.2](D1-datenmodell.md#d12-überblick-er-diagramm) | Entitätstypen und ihre Beziehungen. |
-| Dialoglandkarte | `flowchart` mit `subgraph` je Navigationsbereich | [B1.2](B1-dialogspezifikation.md#b12-dialoglandkarte) | Navigation zwischen Dialogen (DLG-nn). |
+| Aktivitätsdiagramm mit Swimlanes | Mermaid `flowchart` mit `subgraph` je Akteur | [F1.1.5](F1-geschaeftsprozesse.md#f115-ablaufdiagramm-mermaid), [F1.2.5](F1-geschaeftsprozesse.md#f125-ablaufdiagramm-mermaid) | Ablauf eines Geschäftsprozesses je Akteur. |
+| Use-Case-Diagramm | PlantUML `usecase`-Notation (`diagrams/F2-use-cases.puml`, gerendert als `diagrams-png/F2-use-cases.png`) | [F2.2](F2-anwendungsfaelle.md#f22-use-case-übersicht) | Zuordnung Use Cases ↔ Akteure mit expliziter Systemgrenze. |
+| Aktivitätsdiagramm mit Verzweigungen | PlantUML `if`/`else`-Aktivitätsnotation (`diagrams/F2-uc10-court-erfassen.puml`, gerendert als `diagrams-png/F2-uc10-court-erfassen.png`) | [F2.4 UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen) | Verzweigungen (Auswahl vs. Neuerfassung mit Geocoding-Fehlerfall), die Mermaid-Flowcharts hier weniger klar darstellen. |
+| Systemkontext- / Deployment-Diagramm | Mermaid `flowchart` mit `subgraph` je Tier/System | [P2.1](P2-architekturueberblick.md#p21-systemkontext), [P2.4](P2-architekturueberblick.md#p24-deployment--architektur-topologie) | Nachbarsysteme und Deployment-Topologie. |
+| Sequenzdiagramm | Mermaid `sequenceDiagram` | [P2.5](P2-architekturueberblick.md#p25-kritische-datenflüsse) | Ablauf kritischer Datenflüsse über mehrere Systeme hinweg. |
+| ER-Diagramm | Mermaid `erDiagram` | [D1.2](D1-datenmodell.md#d12-überblick-er-diagramm) | Entitätstypen und ihre Beziehungen. |
+| Dialoglandkarte | Mermaid `flowchart` mit `subgraph` je Navigationsbereich | [B1.2](B1-dialogspezifikation.md#b12-dialoglandkarte) | Navigation zwischen Dialogen (DLG-nn). |
 | Entscheidungstabelle | Markdown-Tabelle statt Diagramm | [F3.3](F3-anwendungsfunktionen.md#entscheidungstabelle-af-01) ff. | Fallunterscheidung fachlicher Regeln, präziser als ein Diagramm. |
-| Architekturdiagramme nach arc42 | `flowchart` und `sequenceDiagram` | [Architekturdokumentation](../arch/README.md) | Komponenten-, Deployment- und Laufzeitsichten, die laut [P2](P2-architekturueberblick.md#p2--architekturüberblick) bewusst nicht in P2 gehören. |
+| Architekturdiagramme nach arc42 | Mermaid `flowchart` und `sequenceDiagram` | [Architekturdokumentation](../arch/README.md) | Komponenten-, Deployment- und Laufzeitsichten, die laut [P2](P2-architekturueberblick.md#p2--architekturüberblick) bewusst nicht in P2 gehören. |
 
 ---
 
