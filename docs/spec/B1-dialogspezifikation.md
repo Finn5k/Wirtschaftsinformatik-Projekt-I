@@ -324,7 +324,7 @@ Frühere Prototyp-Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht*
 | `NOT_JOINED` | „Du bist dieser Session nicht beigetreten." (Verweis auf DLG-04 / Beitreten) |
 | `INVALID_CREDENTIAL` | „Der QR-Code oder die PIN ist für diese Session ungültig.“ |
 | `OUTSIDE_WINDOW` | „Der Check-in ist nur während der laufenden Session möglich.“ |
-| `ALREADY_CHECKED_IN` | „Du bist bereits eingecheckt.“ (Bestätigung ohne Änderung, AF-02 R5) |
+| `ALREADY_CHECKED_IN` | „Du bist bereits eingecheckt.“ (Bestätigung ohne Änderung, [AF-02 – Idempotenz bei wiederholtem Check-in](F3-anwendungsfunktionen.md#f34-af-02--check-in-validierung)) |
 
 Kann eine Aktion wegen eines nicht näher bestimmbaren technischen Fehlers nicht ausgeführt werden, lautet der Rückfalltext: „Die Aktion konnte nicht ausgeführt werden. Bitte versuche es erneut.“ Technische Details, interne IDs und Datenbankmeldungen werden nicht angezeigt (N1-QA-09).
 
@@ -419,7 +419,7 @@ Beim Absenden eines Formulars werden alle Felder geprüft; Fehler erscheinen **f
 
 ### B1.5.4 Fehler- und Ladezustände
 
-Während synchroner Anfragen zeigt der Dialog eine Ladeanzeige; Bedienelemente, die die Aktion erneut auslösen würden, sind deaktiviert (Schutz gegen Doppelklick, ergänzend zur fachlichen Idempotenz AF-01 R7/AF-02 R5). Netzwerk-/Serverfehler erscheinen als nicht-blockierende Meldung mit Wiederholen-Möglichkeit; der Datenstand des Dialogs bleibt unverändert (Nachbedingungen bei Fehler, F2).
+Während synchroner Anfragen zeigt der Dialog eine Ladeanzeige; Bedienelemente, die die Aktion erneut auslösen würden, sind deaktiviert (Schutz gegen Doppelklick, ergänzend zur fachlichen Idempotenz AF-01 – Idempotenz gegen Doppelklick/[AF-02 – Idempotenz bei wiederholtem Check-in](F3-anwendungsfunktionen.md#f34-af-02--check-in-validierung)). Netzwerk-/Serverfehler erscheinen als nicht-blockierende Meldung mit Wiederholen-Möglichkeit; der Datenstand des Dialogs bleibt unverändert (Nachbedingungen bei Fehler, F2).
 
 ### B1.5.5 Leere Zustände
 

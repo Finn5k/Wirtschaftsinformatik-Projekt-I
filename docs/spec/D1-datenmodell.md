@@ -176,14 +176,14 @@ erDiagram
 | `session_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Verweis auf die `session`. |
 | `user_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Verweis auf das teilnehmende `profile`. |
 | `status` | [`ParticipantStatus`](D2-datentypen.md#d25-participantstatus) | 1 | `confirmed` (beigetreten) oder `checked_in` (anwesend). |
-| `joined_at` | [`Timestamp`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 1 | Zeitpunkt des Beitritts. Reihenfolge für die Concurrency-Regel (AF-01 R6). |
+| `joined_at` | [`Timestamp`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 1 | Zeitpunkt des Beitritts (Grundlage von AF-01 – Kapazitätsinvariante und Atomarität; keine Reihenfolgegarantie). |
 | `checked_in_at` | [`Timestamp`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 0..1 | Zeitpunkt des Check-ins; gesetzt genau dann, wenn `status = checked_in` (AF-02). |
 
 **Assoziationen:** gehört zu 1 `session`; gehört zu 1 `profile`.
 
 **Invarianten (fachlich):**
 - **Eindeutigkeit:** Höchstens eine Teilnahme je (`session_id`, `user_id`) — kein Doppelbeitritt (AF-01 R3). Die technische Umsetzung (Unique-Constraint, atomares Insert) gehört in D2/N2.
-- **Check-in-Kopplung:** `checked_in_at` ist gesetzt ⇔ `status = checked_in`. Der Übergang `confirmed → checked_in` ist monoton (keine Rücknahme, AF-02 R6).
+- **Check-in-Kopplung:** `checked_in_at` ist gesetzt ⇔ `status = checked_in`. Der Übergang `confirmed → checked_in` ist monoton (keine Rücknahme, AF-02 – Keine Statusrücknahme).
 
 ### `sport_preference` — Sportpräferenz (n:m)
 
