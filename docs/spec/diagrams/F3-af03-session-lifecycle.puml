@@ -15,5 +15,5 @@ note right of scheduled : Beitritt möglich, kein Check-in
 note right of active : Beitritt und Check-in möglich
 note right of completed : nur Historie (read-only), Endzustand
 
-note "Status wird bei jeder Abfrage aus Start,\nDauer und aktueller Zeit berechnet –\nnicht persistiert, kein manueller Wechsel (N2.6)" as N
+note "Status wird bei jeder Abfrage aus Start,\nDauer und aktueller Zeit berechnet –\nnicht persistiert, kein manueller Wechsel" as N
 @enduml

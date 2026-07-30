@@ -44,7 +44,7 @@ Die folgenden Sektionen [D2.2–D2.8](#d22-identifier) definieren die **nicht-tr
 
 ## D2.3 SessionStatus
 
-Fachlicher Status einer Session. Der Wert wird **abgeleitet** (siehe [D1.6](D1-datenmodell.md#d16-abgeleitete-merkmale) und [F3 AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge)), nicht frei gesetzt.
+Fachlicher Status einer Session. Der Wert wird **abgeleitet** (siehe [D1.6](D1-datenmodell.md#d16-abgeleitete-merkmale) und [F3 AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session)), nicht frei gesetzt.
 
 | Wert | Bedeutung |
 |---|---|

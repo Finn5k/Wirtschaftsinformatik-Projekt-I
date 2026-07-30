@@ -76,7 +76,7 @@ Zentrale spezifizierte Elemente wie Ziele, Geschäftsprozesse, Use Cases, Anwend
 | `GP-nn` | Geschäftsprozess (real, IT-unabhängig) | [F1](F1-geschaeftsprozesse.md) | `GP-02` Regelmäßige Treffen organisieren |
 | `A1…An` | Aktivität innerhalb eines Geschäftsprozesses | [F1](F1-geschaeftsprozesse.md) (je GP-nn eigene Zählung) | `GP-02 A12` |
 | `UC-nn` | Anwendungsfall (Use Case) | [F2.2](F2-anwendungsfaelle.md#f22-use-case-index) | `UC-04` Session beitreten |
-| `AF-nn` | Anwendungsfunktion (fachliches Regelwerk) | [F3.2](F3-anwendungsfunktionen.md#f32-katalog-der-anwendungsfunktionen) | `AF-01` Beitritts- und Kapazitätsregel |
+| `AF-nn` | Anwendungsfunktion (fachliches Regelwerk) | [F3.1](F3-anwendungsfunktionen.md#f31-katalog-der-anwendungsfunktionen) | `AF-01` Beitritts- und Kapazitätsregel |
 | Entitätsname in Backticks (z. B. `` `session` ``) | Entitätstyp im Datenmodell | [D1.3](D1-datenmodell.md#d13-entitätstypen-im-überblick) | `` `participant` `` |
 | `B1`–`B7` | Beziehung zwischen Entitätstypen | [D1.5](D1-datenmodell.md#d15-beziehungen) | `B2` Teilnahme (`session` → `participant`) |
 | Datentypname in Backticks (z. B. `` `SessionStatus` ``) | Fachlicher Datentyp | [D2](D2-datentypen.md#katalogübersicht) | `` `Pin` `` |
@@ -100,7 +100,7 @@ Alle Diagramme in der Spezifikation sind als **Mermaid**-Codeblöcke eingebettet
 | Sequenzdiagramm | `sequenceDiagram` | [P2.5](P2-architekturueberblick.md#p25-kritische-datenflüsse) | Ablauf kritischer Datenflüsse über mehrere Systeme hinweg. |
 | ER-Diagramm | `erDiagram` | [D1.2](D1-datenmodell.md#d12-überblick-er-diagramm) | Entitätstypen und ihre Beziehungen. |
 | Dialoglandkarte | `flowchart` mit `subgraph` je Navigationsbereich | [B1.2](B1-dialogspezifikation.md#b12-dialoglandkarte) | Navigation zwischen Dialogen (DLG-nn). |
-| Entscheidungstabelle | Markdown-Tabelle statt Diagramm | [F3.3](F3-anwendungsfunktionen.md#entscheidungstabelle-af-01) ff. | Fallunterscheidung fachlicher Regeln, präziser als ein Diagramm. |
+| Entscheidungstabelle | Markdown-Tabelle statt Diagramm | [F3.2](F3-anwendungsfunktionen.md#entscheidungstabelle-af-01) ff. | Fallunterscheidung fachlicher Regeln, präziser als ein Diagramm. |
 | Architekturdiagramme nach arc42 | `flowchart` und `sequenceDiagram` | [Architekturdokumentation](../arch/README.md) | Komponenten-, Deployment- und Laufzeitsichten, die laut [P2](P2-architekturueberblick.md#p2--architekturüberblick) bewusst nicht in P2 gehören. |
 
 ---
@@ -130,7 +130,7 @@ Jeder Schritt in dieser Kette **verfeinert**, ohne den vorherigen Schritt zu wid
 |---|---|---|
 | Geschäftsprozess | [F1.1](F1-geschaeftsprozesse.md#f11-geschäftsprozess-spontan-sportaktivitäten-finden-gp-01) GP-01, Aktivitäten A9–A13 | Realer Ablauf: Teilnehmer findet Session und tritt bei. |
 | Anwendungsfall | [F2.4 UC-04](F2-anwendungsfaelle.md#uc-04--session-beitreten) | Systemunterstützte Interaktion mit Vorbedingungen und Akzeptanzkriterien. |
-| Anwendungsfunktion | [F3.3 AF-01](F3-anwendungsfunktionen.md#f33-af-01--beitritts--und-kapazitätsregel) | Fachliche Kapazitätsregel, die UC-04 zugrunde liegt. |
+| Anwendungsfunktion | [F3.2 AF-01](F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel) | Fachliche Kapazitätsregel, die UC-04 zugrunde liegt. |
 | Datenmodell | [D1.4 `participant`](D1-datenmodell.md#participant--teilnahme) | Entität, die den Beitritt persistiert. |
 | Schnittstelle | [S1.4 NB-03](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) | Atomare Operation `join_session`. |
 | Technische Umsetzung | [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01) | Atomarität des Beitritts auf PostgreSQL-Ebene. |
