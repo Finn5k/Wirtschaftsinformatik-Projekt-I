@@ -126,8 +126,8 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Use Cases | UC-02, UC-04, UC-08, UC-09, UC-10 |
 | Betroffene Datenobjekte / Datentypen | `session` (`max_participants`, abgeleitet `confirmed_count`), `participant` (`status`), `GeoCoordinate` (D2.7) |
 | Betroffene Dialoge | DLG-02, DLG-03 (Fehlerfall Karte), DLG-04, DLG-05 (Court-Erfassung), DLG-06 |
-| Akzeptanzkriterien | Given eine Session mit einem letzten freien Platz, When zwei Nutzer nahezu gleichzeitig beitreten, Then wird höchstens einer bestätigt und der andere erhält `SESSION_FULL` (AF-01 R6). Given ein nicht erreichbarer Kartendienst, When DLG-03 geöffnet wird, Then erscheint ein Hinweis mit Verweis auf DLG-02 statt eines Fehlerabbruchs. Given Karte oder Reverse-Geocoding sind bei der Court-Erfassung nicht verfügbar, When der Nutzer speichern möchte, Then wird kein Court angelegt und eine Wiederholmöglichkeit angezeigt. Given ein wiederholter gültiger Check-in-Versuch, When er erneut ausgeführt wird, Then bleibt der ursprüngliche Check-in-Zeitpunkt erhalten (`ALREADY_CHECKED_IN`, AF-02 R5). |
-| Prüfmethode | Code-Walkthrough der Atomaritäts-Umsetzung gegen den AF-01-Pseudocode; manuelle Tests mit deaktiviertem Karten- beziehungsweise Nominatim-Zugriff in den Browser-DevTools. |
+| Akzeptanzkriterien | Given eine Session mit einem letzten freien Platz, When zwei Nutzer nahezu gleichzeitig beitreten, Then wird höchstens einer bestätigt und der andere erhält `SESSION_FULL` (AF-01 – Kapazitätsinvariante und Atomarität). Given ein nicht erreichbarer Kartendienst, When DLG-03 geöffnet wird, Then erscheint ein Hinweis mit Verweis auf DLG-02 statt eines Fehlerabbruchs. Given Karte oder Reverse-Geocoding sind bei der Court-Erfassung nicht verfügbar, When der Nutzer speichern möchte, Then wird kein Court angelegt und eine Wiederholmöglichkeit angezeigt. Given ein wiederholter gültiger Check-in-Versuch, When er erneut ausgeführt wird, Then bleibt der ursprüngliche Check-in-Zeitpunkt erhalten (`ALREADY_CHECKED_IN`, [AF-02 – Idempotenz bei wiederholtem Check-in](F3-anwendungsfunktionen.md#af-02--check-in-validierung)). |
+| Prüfmethode | Code-Walkthrough der Atomaritäts-Umsetzung gegen die AF-01-Entscheidungstabelle; manuelle Tests mit deaktiviertem Karten- beziehungsweise Nominatim-Zugriff in den Browser-DevTools. |
 | Festlegung | Die technische Umsetzung der Atomarität ist in [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01) als unteilbare serverseitige Operation entschieden. |
 
 ### N1-QA-07 — Wartbarkeit
@@ -137,7 +137,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | ID | N1-QA-07 |
 | Name | Wartbarkeit |
 | Beschreibung | Modulstruktur und Benennung im Code sollen die in P2 beschriebene Architektur sowie die in D1/D2 festgelegten Entitäts-, Attribut- und Typnamen widerspiegeln, damit Spezifikation und Code durchgängig aufeinander abbildbar bleiben. |
-| Begründung | Der wichtigste Bewertungsaspekt des Projekts ist, dass Use Cases, Architektur und Code aufeinander aufbauen (siehe Projektvorgabe). D1 legt englische `snake_case`-Namen für Entitäten/Attribute bewusst konsistent zu den F3-Pseudocode-Kernen und den P2-Datenflüssen fest. |
+| Begründung | Der wichtigste Bewertungsaspekt des Projekts ist, dass Use Cases, Architektur und Code aufeinander aufbauen (siehe Projektvorgabe). D1 legt englische `snake_case`-Namen für Entitäten/Attribute bewusst konsistent zu den in F3 genutzten Feldbezeichnungen und den P2-Datenflüssen fest. |
 | Betroffene Use Cases | alle (mittelbar, über Code-Struktur) |
 | Betroffene Datenobjekte / Datentypen | alle Entitäten aus D1 und Typen aus D2 |
 | Betroffene Dialoge | keine dialogspezifische Wirkung; betrifft die Code-Ebene hinter B1 |

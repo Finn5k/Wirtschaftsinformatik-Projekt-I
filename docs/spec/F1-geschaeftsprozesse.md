@@ -43,13 +43,13 @@ Zeitliche und logische Reihenfolge. Die **Support**-Spalte benennt, wer die Akti
 | A8 | Teilnehmer wählt interessante Session aus (Click) | Participant, Browser | Zeigt Session-Detail-View (Beschreibung, Organisator, Teilnehmer-Liste). |
 | A9 | Teilnehmer klickt „Beitreten" | Participant, Browser | Explizite Nutzeraktion gemäß UC-04. |
 | A10 | Frontend löst den Beitritt aus | Browser → LocalCourt | Beitrittswunsch zur gewählten Session (UC-04). |
-| A11 | LocalCourt prüft Kapazität und legt die Teilnahme an | LocalCourt → PostgreSQL | Prüfung und Anlage erfolgen unteilbar, damit die Kapazität auch bei gleichzeitigen Beitritten eingehalten wird ([AF-01](F3-anwendungsfunktionen.md#f33-af-01--beitritts--und-kapazitätsregel), S1.4). Ist die Session voll, wird abgelehnt — keine Warteliste (NG-10). |
+| A11 | LocalCourt prüft Kapazität und legt die Teilnahme an | LocalCourt → PostgreSQL | Prüfung und Anlage erfolgen unteilbar, damit die Kapazität auch bei gleichzeitigen Beitritten eingehalten wird ([AF-01](F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel), S1.4). Ist die Session voll, wird abgelehnt — keine Warteliste (NG-10). |
 | A12 | Teilnehmer sieht Bestätigung "Du bist dabei!" | Browser (UI Feedback) | Toast-Nachricht oder Modal mit Session-Details. |
 | A13 | Session wird in "Meine Sessions" angezeigt | Browser (UI) | Frontend-State aktualisiert, Participant-Count erhöht sich. |
 | A14 | Teilnehmer navigiert zur Session-Detail & wartet auf Start | Participant, LocalCourt | Session-Timeline, Organisator-Infos, andere Teilnehmer-Namen sichtbar. |
-| A15 | Zum Startzeitpunkt: Session gilt als "aktiv" | LocalCourt | Statusübergang `scheduled` → `active`, zeitbasiert abgeleitet ([AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge)); kein Scheduler und keine Benachrichtigung (N2.6, F1.4). |
+| A15 | Zum Startzeitpunkt: Session gilt als "aktiv" | LocalCourt | Statusübergang `scheduled` → `active`, zeitbasiert abgeleitet ([AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session)); kein Scheduler und keine Benachrichtigung (N2.6, F1.4). |
 | A16 | Teilnehmer erscheint zum Event und beteiligt sich physisch | Participant (Real-World) | **Post-IT**: Sport findet statt, LocalCourt nicht mehr involviert. |
-| A17 | Nach Session-Ende: Session gilt als abgeschlossen | LocalCourt | Statusübergang `active` → `completed`, abgeleitet aus Startzeitpunkt + Dauer ([AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge)). |
+| A17 | Nach Session-Ende: Session gilt als abgeschlossen | LocalCourt | Statusübergang `active` → `completed`, abgeleitet aus Startzeitpunkt + Dauer ([AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session)). |
 | A18 | Teilnehmer kann später Session-Historie anschauen | Participant, LocalCourt | Vergangene Sessions read-only in „Meine Sessions" (UC-11); keine Auswertungen oder Statistiken (F1.4). |
 
 ### F1.1.3 Dokumente
@@ -116,7 +116,7 @@ sequenceDiagram
 **Hinweise zum Diagramm**:
 - A1, A16 sind **Pre-/Post-LocalCourt** (reale Welt), A17 ist systemautomatisch.
 - A2–A14, A18 sind **LocalCourt-unterstützt**.
-- Der Statuswechsel (A15/A17) ist zeitbasiert abgeleitet; die Regel steht in [F3 AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge).
+- Der Statuswechsel (A15/A17) ist zeitbasiert abgeleitet; die Regel steht in [F3 AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session).
 
 ---
 
@@ -151,9 +151,9 @@ Zeitliche und logische Reihenfolge.
 | A3 | Organisator füllt Session-Form aus | Organizer, Browser, OpenStreetMap, Nominatim | Felder: Titel, Sportart, Court, Startzeitpunkt, Dauer, Teilnehmerlimit und Beschreibung. Bei einem neuen Court setzt er einen Kartenpin; LocalCourt übernimmt Ort und optionale Adresse aus dem Reverse-Geocoding (UC-10). |
 | A4 | Organisator klickt "Session erstellen" | Organizer | Form Submission. |
 | A5 | Frontend übergibt die Session-Angaben an LocalCourt | Browser → LocalCourt | Sportart, Sportort, Titel, Beschreibung, Startzeitpunkt, Dauer und Teilnehmerlimit (UC-06). |
-| A6 | LocalCourt legt die Session an und erzeugt die PIN | LocalCourt → PostgreSQL | Status ergibt sich zeitbasiert als `scheduled` ([AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge)); die vierstellige PIN entsteht bei der Anlage ([AF-04](F3-anwendungsfunktionen.md#f36-af-04--pin--und-qr-code-erzeugung)). |
+| A6 | LocalCourt legt die Session an und erzeugt die PIN | LocalCourt → PostgreSQL | Status ergibt sich zeitbasiert als `scheduled` ([AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session)); die vierstellige PIN entsteht bei der Anlage ([AF-04](F3-anwendungsfunktionen.md#af-04--pin--und-qr-code-erzeugung)). |
 | A7 | LocalCourt führt den Organisator als Teilnehmer | LocalCourt → PostgreSQL | Geschieht gemeinsam mit der Anlage aus A6, sodass keine Session ohne ihren Organisator entstehen kann (D1-Invariante, S1.4). Der Organisator belegt damit einen Platz (AF-01 R4). |
-| A8 | Frontend zeigt QR-Code & PIN | Browser (UI) | QR-Code wird clientseitig aus Session-Bezug und PIN erzeugt und trägt den Check-in-Deep-Link ([AF-04](F3-anwendungsfunktionen.md#f36-af-04--pin--und-qr-code-erzeugung), N2.8); er wird nicht als Bild gespeichert. |
+| A8 | Frontend zeigt QR-Code & PIN | Browser (UI) | QR-Code wird clientseitig aus Session-Bezug und PIN erzeugt und trägt den Check-in-Deep-Link ([AF-04](F3-anwendungsfunktionen.md#af-04--pin--und-qr-code-erzeugung), N2.8); er wird nicht als Bild gespeichert. |
 | A9 | Organisator hält QR-Code + PIN für den Treffpunkt bereit | Organizer | Anzeige am Bildschirm; es gibt keine Druckausgabe (siehe Spezifikationsindex, Baustein B3). |
 | **Vor Session-Start** | | | |
 | A10 | Potenzielle Teilnehmer öffnen LocalCourt (GP-01: Suche & Beitreten) | Participant, Browser, LocalCourt | Sessions sind für alle sichtbar (public discovery). Participants treten bei. |
@@ -162,7 +162,7 @@ Zeitliche und logische Reihenfolge.
 | A12 | Zum Startzeitpunkt: Organisator öffnet Check-In-Screen | Organizer, Browser, LocalCourt | Status sichtbar: "aktiv", QR-Code + PIN prominent angezeigt. |
 | A13 | Teilnehmer scannt QR-Code mit der Kamera-App des Geräts | Participant | QR-Code enkodiert: Redirect zu LocalCourt/check-in?session=<id>&pin=<pin>. LocalCourt selbst nutzt keine Kamera-Schnittstelle (S1.2). |
 | A14 | QR-Code-Scan führt zu Browser-Seite mit automatischem Check-In | Browser (Participant) | LocalCourt erkennt session_id & pin aus URL und ruft die atomare Check-in-Operation auf (S1.4, AF-02). |
-| A15 | LocalCourt markiert die Teilnahme als `checked_in` | LocalCourt → PostgreSQL | Mit Zeitstempel; maßgeblich ist die Serverzeit, nicht die Uhr des Geräts ([AF-02](F3-anwendungsfunktionen.md#f34-af-02--check-in-validierung), N2.10). |
+| A15 | LocalCourt markiert die Teilnahme als `checked_in` | LocalCourt → PostgreSQL | Mit Zeitstempel; maßgeblich ist die Serverzeit, nicht die Uhr des Geräts ([AF-02](F3-anwendungsfunktionen.md#af-02--check-in-validierung), N2.10). |
 | A16 | Participant sieht Bestätigung "✓ Check-in erfolgreich!" | Browser (UI Feedback) | Toast oder Modal mit checked_in-Status. |
 | A17 | Organisator sieht in Participant-Liste: "X / Y Checked in" | Organizer, Browser | Aktualisierung beim Aufruf bzw. Neuladen der Liste (kein Echtzeit-Kanal, S1.7). Grüne Häkchen für checked_in, Grau für "confirmed aber nicht checked_in". |
 | **Fallback: PIN-Eingabe (falls QR-Scan fehlschlägt)** | | | |
@@ -181,7 +181,7 @@ Zeitliche und logische Reihenfolge.
 |----------|-----------|--------|
 | **Session-Angaben** | A3 | Eingaben des Organisators; erst mit A6 dauerhaft. |
 | **Session** | A6 | Die angelegte Session (Entität `session` in [D1](D1-datenmodell.md)), inklusive PIN. |
-| **QR-Code** | A8 | Zur Anzeige erzeugter Code mit dem Check-in-Deep-Link; wird nicht gespeichert ([AF-04](F3-anwendungsfunktionen.md#f36-af-04--pin--und-qr-code-erzeugung), N2.8). |
+| **QR-Code** | A8 | Zur Anzeige erzeugter Code mit dem Check-in-Deep-Link; wird nicht gespeichert ([AF-04](F3-anwendungsfunktionen.md#af-04--pin--und-qr-code-erzeugung), N2.8). |
 | **PIN** | A6 | Vierstelliges Check-in-Geheimnis, Bestandteil der Session ([D2.4](D2-datentypen.md#d24-pin)). |
 | **Teilnehmerliste** | A11 | Die Teilnahmen der Session mit ihrem jeweiligen Status. |
 | **Check-in** | A15 | Statuswechsel der Teilnahme auf `checked_in` mit Zeitstempel (`checked_in_at`). |
@@ -242,7 +242,7 @@ sequenceDiagram
 
 **Hinweise zum Diagramm**:
 - A1, A20 sind **Pre-/Post-LocalCourt** (reale Welt); A21 ist systemautomatisch (Auto-Close, AF-03).
-- Check-in hat zwei gleichwertige Pfade: QR-Scan (A13–A16) oder PIN-Eingabe (A18–A19); die Prüfung ist in [F3 AF-02](F3-anwendungsfunktionen.md#f34-af-02--check-in-validierung) spezifiziert.
+- Check-in hat zwei gleichwertige Pfade: QR-Scan (A13–A16) oder PIN-Eingabe (A18–A19); die Prüfung ist in [F3 AF-02](F3-anwendungsfunktionen.md#af-02--check-in-validierung) spezifiziert.
 
 ---
 

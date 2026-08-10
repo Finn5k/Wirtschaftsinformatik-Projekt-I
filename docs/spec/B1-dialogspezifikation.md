@@ -324,7 +324,7 @@ Frühere Prototyp-Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht*
 | `NOT_JOINED` | „Du bist dieser Session nicht beigetreten." (Verweis auf DLG-04 / Beitreten) |
 | `INVALID_CREDENTIAL` | „Der QR-Code oder die PIN ist für diese Session ungültig.“ |
 | `OUTSIDE_WINDOW` | „Der Check-in ist nur während der laufenden Session möglich.“ |
-| `ALREADY_CHECKED_IN` | „Du bist bereits eingecheckt.“ (Bestätigung ohne Änderung, AF-02 R5) |
+| `ALREADY_CHECKED_IN` | „Du bist bereits eingecheckt.“ (Bestätigung ohne Änderung, [AF-02 – Idempotenz bei wiederholtem Check-in](F3-anwendungsfunktionen.md#af-02--check-in-validierung)) |
 
 Kann eine Aktion wegen eines nicht näher bestimmbaren technischen Fehlers nicht ausgeführt werden, lautet der Rückfalltext: „Die Aktion konnte nicht ausgeführt werden. Bitte versuche es erneut.“ Technische Details, interne IDs und Datenbankmeldungen werden nicht angezeigt (N1-QA-09).
 
@@ -419,7 +419,7 @@ Beim Absenden eines Formulars werden alle Felder geprüft; Fehler erscheinen **f
 
 ### B1.5.4 Fehler- und Ladezustände
 
-Während synchroner Anfragen zeigt der Dialog eine Ladeanzeige; Bedienelemente, die die Aktion erneut auslösen würden, sind deaktiviert (Schutz gegen Doppelklick, ergänzend zur fachlichen Idempotenz AF-01 R7/AF-02 R5). Netzwerk-/Serverfehler erscheinen als nicht-blockierende Meldung mit Wiederholen-Möglichkeit; der Datenstand des Dialogs bleibt unverändert (Nachbedingungen bei Fehler, F2).
+Während synchroner Anfragen zeigt der Dialog eine Ladeanzeige; Bedienelemente, die die Aktion erneut auslösen würden, sind deaktiviert (Schutz gegen Doppelklick, ergänzend zur fachlichen Idempotenz AF-01 – Idempotenz gegen Doppelklick/[AF-02 – Idempotenz bei wiederholtem Check-in](F3-anwendungsfunktionen.md#af-02--check-in-validierung)). Netzwerk-/Serverfehler erscheinen als nicht-blockierende Meldung mit Wiederholen-Möglichkeit; der Datenstand des Dialogs bleibt unverändert (Nachbedingungen bei Fehler, F2).
 
 ### B1.5.5 Leere Zustände
 
@@ -458,7 +458,7 @@ Der aktuelle UI-Prototyp bildet alle Dialoge DLG-01 bis DLG-08 ab. Die nachfolge
 | Session-Erstellung | lokale Erfolgsvorschau mit zufälliger PIN | persistente Session, Court und Organisator-Teilnahme sowie Wechsel zur neuen DLG-04 fehlen |
 | QR-Verarbeitung | Deep-Link-Einstieg und Vorbelegung der PIN sind umgesetzt; QR-Symbol bleibt Platzhalter | echte QR-Erzeugung aus dem festgelegten Format in [N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04) fehlt |
 | Check-in | PIN wird lokal gegen Mockdaten geprüft; QR-Weg bestätigt direkt | Teilnahmeprüfung, Idempotenz, Persistenz und vollständige AF-02-Ergebniscodes fehlen |
-| Session-Lifecycle | Statuswerte sind statische Mockdaten | Umsetzung der in [N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03) festgelegten Statusberechnung nach AF-03 fehlt |
+| Status einer Sport-Session | Statuswerte sind statische Mockdaten | Umsetzung der in [AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session) festgelegten Statusberechnung fehlt |
 | Kartenfehler | echte OSM-Karte ist eingebunden | Graceful Degradation zu DLG-02 bei Ausfall fehlt |
 | Lade- und Netzwerkzustände | keine asynchronen Backend-Anfragen | Muster aus [B1.5.4](#b154-fehler--und-ladezustände) sind noch nicht demonstriert |
 | Profil | Bearbeitung wirkt nur im lokalen Seitenzustand; Profilbild wird ausschließlich angezeigt | Persistenz von Anzeigename, Ort und Präferenzen fehlt |

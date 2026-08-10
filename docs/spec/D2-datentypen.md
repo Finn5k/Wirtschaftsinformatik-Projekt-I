@@ -44,7 +44,7 @@ Die folgenden Sektionen [D2.2–D2.8](#d22-identifier) definieren die **nicht-tr
 
 ## D2.3 SessionStatus
 
-Fachlicher Status einer Session. Der Wert wird **abgeleitet** (siehe [D1.6](D1-datenmodell.md#d16-abgeleitete-merkmale) und [F3 AF-03](F3-anwendungsfunktionen.md#f35-af-03--session-lifecycle--statusübergänge)), nicht frei gesetzt.
+Fachlicher Status einer Session. Der Wert wird **abgeleitet** (siehe [D1.6](D1-datenmodell.md#d16-abgeleitete-merkmale) und [F3 AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session)), nicht frei gesetzt.
 
 | Wert | Bedeutung |
 |---|---|
@@ -63,7 +63,7 @@ Fachlicher Status einer Session. Der Wert wird **abgeleitet** (siehe [D1.6](D1-d
 
 **Erzeugung:** Wird bei der Session-Erstellung **zufällig** erzeugt (AF-04) und bleibt über die Lebensdauer der Session unverändert.
 
-**Eindeutigkeit:** Nur **je Session** eindeutig zuordenbar, **nicht global**. Die Prüfung erfolgt immer im Kontext einer konkreten Session (QR-Inhalt trägt `session_id`, manuelle Eingabe erfolgt in der Check-in-Ansicht einer Session), daher ist ein PIN-Zusammenfall verschiedener Sessions fachlich unkritisch (AF-04 R2).
+**Eindeutigkeit:** Nur **je Session** eindeutig zuordenbar, **nicht global**. Die Prüfung erfolgt immer im Kontext einer konkreten Session (QR-Inhalt trägt `session_id`, manuelle Eingabe erfolgt in der Check-in-Ansicht einer Session), daher ist ein PIN-Zusammenfall verschiedener Sessions fachlich unkritisch (AF-04 – Eindeutigkeit im Prüfkontext).
 
 **Gleichheit:** Zeichenweiser Vergleich der vierstelligen Zeichenkette (inkl. führender Nullen).
 
@@ -80,7 +80,7 @@ Teilnahmezustand eines `participant`.
 | `confirmed` | Nutzer ist der Session beigetreten und belegt einen Kapazitätsplatz (AF-01). |
 | `checked_in` | Nutzer hat sich vor Ort eingecheckt (AF-02); `checked_in_at` ist gesetzt. |
 
-**Ordnung & Übergänge:** Der Zustand bewegt sich **monoton** `confirmed → checked_in`. Eine Rücknahme (`checked_in → confirmed`) ist fachlich unzulässig (AF-02 R6). Es gibt **keinen** Wert `waiting` — Wartelisten sind out of scope (P1 NG-10).
+**Ordnung & Übergänge:** Der Zustand bewegt sich **monoton** `confirmed → checked_in`. Eine Rücknahme (`checked_in → confirmed`) ist fachlich unzulässig (AF-02 – Keine Statusrücknahme). Es gibt **keinen** Wert `waiting` — Wartelisten sind out of scope (P1 NG-10).
 
 **Kopplung an Zeitstempel:** `status = checked_in` ⇔ `checked_in_at` ist gesetzt (Invariante aus [D1.4](D1-datenmodell.md#participant--teilnahme)).
 
@@ -108,9 +108,9 @@ Teilnahmezustand eines `participant`.
 
 ## D2.8 QrContent
 
-**Wertform:** Ein **abgeleiteter** Verweis (`Url`/`Text`), der auf die Check-in-Ansicht einer Session zeigt und `session_id` sowie `pin` kodiert (konzeptionell `…/check-in?session=<session_id>&pin=<pin>`, AF-04 R3).
+**Wertform:** Ein **abgeleiteter** Verweis (`Url`/`Text`), der auf die Check-in-Ansicht einer Session zeigt und `session_id` sowie `pin` kodiert (konzeptionell `…/check-in?session=<session_id>&pin=<pin>`, AF-04 – QR-Inhalt).
 
-**Erzeugung & Stabilität:** Wird aus `session_id` und `pin` abgeleitet (nicht unabhängig gepflegt) und ist über die Lebensdauer der Session stabil, da beide Bestandteile unverändert bleiben (AF-04 R4). Der QR-Inhalt wird gemäß [N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04) bei Bedarf clientseitig erzeugt und nicht als Feld oder Bild gespeichert.
+**Erzeugung & Stabilität:** Wird aus `session_id` und `pin` abgeleitet (nicht unabhängig gepflegt) und ist über die Lebensdauer der Session stabil, da beide Bestandteile unverändert bleiben (AF-04 – Stabilität). Der QR-Inhalt wird gemäß [N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04) bei Bedarf clientseitig erzeugt und nicht als Feld oder Bild gespeichert.
 
 **Fachliche Gleichwertigkeit zu Pin:** Der QR-Inhalt trägt dieselbe PIN, die AF-02 prüft; QR-Scan (UC-08) und manuelle PIN-Eingabe (UC-09) sind daher fachlich gleichwertig.
 

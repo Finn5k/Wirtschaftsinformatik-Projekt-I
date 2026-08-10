@@ -188,7 +188,7 @@ sequenceDiagram
 
 ### Szenario 3: Check-in durchführen (Teilnehmer)
 
-Der Check-in wird vom **Teilnehmer** selbst ausgelöst — per QR-Scan (UC-08) oder PIN-Eingabe (UC-09); der Organisator stellt QR/PIN nur bereit und sieht das Ergebnis (UC-07). Die fachliche Prüfung ist in [F3 AF-02](F3-anwendungsfunktionen.md#f34-af-02--check-in-validierung) spezifiziert.
+Der Check-in wird vom **Teilnehmer** selbst ausgelöst — per QR-Scan (UC-08) oder PIN-Eingabe (UC-09); der Organisator stellt QR/PIN nur bereit und sieht das Ergebnis (UC-07). Die fachliche Prüfung ist in [F3 AF-02](F3-anwendungsfunktionen.md#af-02--check-in-validierung) spezifiziert.
 
 ```mermaid
 sequenceDiagram

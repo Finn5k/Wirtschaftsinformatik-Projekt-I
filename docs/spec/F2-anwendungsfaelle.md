@@ -138,7 +138,7 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 | Bezug zu Benutzerschnittstelle | Beitrittsaktion in der Session-Detailansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Konsistenz bei parallelen Beitritten, verständliche Fehler, Datenschutz. |
 | Akzeptanzkriterien | Given eine offene Session mit freier Kapazität, When ein angemeldeter Teilnehmer beitritt, Then ist er Teilnehmer der Session. Given eine volle Session, When ein Teilnehmer beitreten möchte, Then wird kein Beitritt gespeichert und die Session wird als voll erklärt. |
-| Festlegung | Das Verhalten bei gleichzeitigem Beitritt ist in [F3 AF-01](F3-anwendungsfunktionen.md#f33-af-01--beitritts--und-kapazitätsregel) fachlich präzisiert (wer zuerst kommt, keine Überbuchung) und in [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01) technisch umgesetzt. |
+| Festlegung | Das Verhalten bei gleichzeitigem Beitritt ist in [F3 AF-01](F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel) fachlich präzisiert (wer zuerst kommt, keine Überbuchung) und in [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01) technisch umgesetzt. |
 
 ### UC-05 — Eigene Sessions anzeigen
 

@@ -159,7 +159,7 @@ Profil → Bearbeiten → lokale Ansicht aktualisieren
 | QR-Code | Symbol beziehungsweise Platzhalter | echte QR-Erzeugung im festgelegten Deep-Link-Format (AF-04, N2.8) |
 | QR-Check-in | Schaltfläche bestätigt ohne Scan oder Merkmalsprüfung | tatsächlicher QR-Einstieg und dieselbe fachliche Prüfung wie beim PIN-Weg |
 | PIN-Check-in | prüft lokal Teilnahme, Zeitfenster und PIN und aktualisiert den Check-in-Status im gemeinsamen Mockzustand | serverseitige Prüfung und Persistenz nach AF-02 |
-| Session-Lifecycle | Status ist fest in den Mockdaten hinterlegt | abgeleitete Statusführung gemäß AF-03, bei jeder Abfrage berechnet (N2.6) |
+| Status einer Sport-Session | Status ist fest in den Mockdaten hinterlegt | abgeleitete Statusführung gemäß [AF-03](spec/F3-anwendungsfunktionen.md#af-03--status-einer-sport-session), bei jeder Abfrage berechnet |
 | Profil | Änderungen gelten nur bis zum Verlassen der Seite; Profilbild ist read-only | persistente Änderung von Anzeigename, Ort und Präferenzen; Profilbild-Upload und -Bearbeitung sind kein MVP |
 | Karte | OSM-Karte ist real eingebunden | spezifizierte Graceful Degradation bei nicht erreichbarem Kartendienst fehlt |
 | Lade-/Netzwerkfehler | keine asynchronen Anfragen vorhanden | Ladeanzeigen, während laufender Anfragen deaktivierte Aktionen, verständliche Fehlermeldungen und Wiederholungsmöglichkeiten gemäß B1.5.4 |
