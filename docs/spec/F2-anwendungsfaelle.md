@@ -8,13 +8,19 @@ F2 beschreibt dabei die fachlich sichtbaren Nutzerziele und Systemreaktionen. Sy
 
 Die UC-IDs in diesem Dokument bleiben stabil. Sie dienen später als Referenz in Architektur, Tests und Code, damit im Review nachvollziehbar bleibt: Use Case in der Spezifikation → Architekturkomponente oder Sequenz → Implementierung → Test.
 
-## F2.2 Use-Case-Index
+## F2.2 Use-Case-Übersicht
+
+![F2 Use-Case-Diagramm](diagrams-png/F2-use-cases.png)
+
+Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren außerhalb: Teilnehmer und Organisator. Jeder Use Case erscheint genau einmal; gemeinsam genutzte Use Cases (UC-01, UC-03, UC-05, UC-11, UC-12) sind mit beiden Akteuren verbunden, die übrigen jeweils nur mit ihrem primären Akteur. Die zugehörigen Nachbarsysteme wie Supabase Auth, Supabase PostgREST/PostgreSQL und OpenStreetMap/Leaflet gehören nicht zur Systemgrenze und werden im Architekturüberblick [P2](P2-architekturueberblick.md) und in [S1](S1-nachbarsysteme.md) beschrieben. Die PlantUML-Quelle liegt unter [`diagrams/F2-use-cases.puml`](diagrams/F2-use-cases.puml).
+
+## F2.3 Use-Case-Index
 
 | UC-ID | Name | Gruppe | Primärer Akteur | Zugehöriger Geschäftsprozess aus F1 | Zugehörige F1-Aktivitäten | Kurzbeschreibung | Status |
 |---|---|---|---|---|---|---|---|
 | UC-01 | Registrieren / Anmelden | Zugriff | Teilnehmer, Organisator | GP-02, indirekt GP-01 | GP-02 A2 | Nutzer authentifizieren sich, damit Beitritt, Session-Erstellung, Check-in und Profilfunktionen eindeutig zugeordnet werden können. | MVP |
 | UC-02 | Session suchen | Session Discovery | Teilnehmer | GP-01, GP-03 | GP-01 A2-A7, GP-03 A1-A7 | Teilnehmer suchen Sessions nach Ort und optional nach Sportart; Karte und Liste zeigen passende zukünftige Sessions. | MVP |
-| UC-03 | Session-Detail ansehen | Session Discovery | Teilnehmer, Organisator | GP-01, GP-02 | GP-01 A8, GP-02 A11-A12 | Nutzer öffnen eine Session und sehen fachlich relevante Details wie Sportart, Ort, Zeit, Kapazität, Organisator und Teilnehmerstatus. | MVP |
+| UC-03 | Session-Detail ansehen | Session Discovery | Teilnehmer, Organisator | GP-01, GP-02 | GP-01 A8, A14; GP-02 A11-A12 | Nutzer öffnen eine Session und sehen fachlich relevante Details wie Sportart, Ort, Zeit, Kapazität, Organisator und Teilnehmerstatus. | MVP |
 | UC-04 | Session beitreten | Teilnahme | Teilnehmer | GP-01 | GP-01 A9-A13 | Ein angemeldeter Teilnehmer tritt einer noch offenen Session bei und erscheint danach in der Teilnehmerliste sowie unter eigenen Sessions. | MVP |
 | UC-05 | Eigene Sessions anzeigen | Teilnahme / Organisation | Teilnehmer, Organisator | GP-01, GP-02 | GP-01 A13-A14, GP-02 A11, A22-A23 | Nutzer sehen Sessions, an denen sie teilnehmen oder die sie organisieren. | MVP |
 | UC-06 | Session erstellen | Organisation | Organisator | GP-02 | GP-02 A3-A9 | Ein Organisator erstellt eine neue Session mit Sportart, Court/Sportort, Zeit, Dauer, Teilnehmerlimit und Beschreibung. | MVP |
@@ -26,68 +32,6 @@ Die UC-IDs in diesem Dokument bleiben stabil. Sie dienen später als Referenz in
 | UC-12 | Profil und Sportpräferenzen verwalten | Profil | Teilnehmer, Organisator | GP-01, GP-03 | GP-01 A2-A3, GP-03 A1-A3 | Nutzer verwalten Basisprofil und bevorzugte Sportarten, soweit dies für Suche, Anzeige und Teilnahme nötig ist. | MVP, einfach |
 
 **Status-Legende:** `MVP` bezeichnet Use Cases, die für den ersten funktionsfähigen Produktstand vorgesehen sind. `MVP, begrenzt` bedeutet fachlich relevant, aber mit bewusst reduziertem Umfang. `MVP, einfach` bedeutet, dass nur eine schlanke, nicht erweiterte Basisversion modelliert wird.
-
-## F2.3 Use-Case-Diagramm
-
-### Teilnehmer-Use-Cases
-
-```mermaid
-flowchart LR
-    teilnehmer([Teilnehmer])
-
-    subgraph lc["Systemgrenze: LocalCourt"]
-        direction TB
-        uc01(("UC-01<br/>Registrieren / Anmelden"))
-        uc02(("UC-02<br/>Session suchen"))
-        uc03(("UC-03<br/>Session-Detail ansehen"))
-        uc04(("UC-04<br/>Session beitreten"))
-        uc05(("UC-05<br/>Eigene Sessions anzeigen"))
-        uc08(("UC-08<br/>Check-in per QR-Code"))
-        uc09(("UC-09<br/>Check-in per PIN"))
-        uc11(("UC-11<br/>Session-Historie ansehen"))
-        uc12(("UC-12<br/>Profil und Sportpräferenzen verwalten"))
-    end
-
-    teilnehmer --- uc01
-    teilnehmer --- uc02
-    teilnehmer --- uc03
-    teilnehmer --- uc04
-    teilnehmer --- uc05
-    teilnehmer --- uc08
-    teilnehmer --- uc09
-    teilnehmer --- uc11
-    teilnehmer --- uc12
-```
-
-### Organisator-Use-Cases
-
-```mermaid
-flowchart LR
-    organisator([Organisator])
-
-    subgraph lc["Systemgrenze: LocalCourt"]
-        direction TB
-        uc01(("UC-01<br/>Registrieren / Anmelden"))
-        uc03(("UC-03<br/>Session-Detail ansehen"))
-        uc05(("UC-05<br/>Eigene Sessions anzeigen"))
-        uc06(("UC-06<br/>Session erstellen"))
-        uc07(("UC-07<br/>Teilnehmerliste anzeigen"))
-        uc10(("UC-10<br/>Court / Sportort erfassen oder auswählen"))
-        uc11(("UC-11<br/>Session-Historie ansehen"))
-        uc12(("UC-12<br/>Profil und Sportpräferenzen verwalten"))
-    end
-
-    organisator --- uc01
-    organisator --- uc03
-    organisator --- uc05
-    organisator --- uc06
-    organisator --- uc07
-    organisator --- uc10
-    organisator --- uc11
-    organisator --- uc12
-```
-
-Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze sowie die zugehörigen Use Cases innerhalb der Systemgrenze „LocalCourt". Die zugehörigen Nachbarsysteme wie Supabase Auth, Supabase PostgREST/PostgreSQL und OpenStreetMap/Leaflet gehören nicht zur Systemgrenze und werden im Architekturüberblick [P2](P2-architekturueberblick.md) und in [S1](S1-nachbarsysteme.md) beschrieben.
 
 ## F2.4 Detaillierte Use-Case-Spezifikationen
 
@@ -106,7 +50,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Vorbedingung | LocalCourt ist erreichbar; Nutzer besitzt Zugang zu einem unterstützten Anmeldeverfahren. |
 | Nachbedingung bei Erfolg | Nutzer ist angemeldet und kann geschützte Use Cases ausführen. |
 | Nachbedingung bei Fehler | Nutzer bleibt nicht angemeldet; geschützte Aktionen werden nicht ausgeführt. |
-| Hauptszenario | 1. Nutzer öffnet Anmeldung oder Registrierung. 2. Nutzer gibt die erforderlichen Zugangsdaten ein. 3. LocalCourt prüft die Anmeldung über Supabase Auth. 4. LocalCourt zeigt den angemeldeten Zustand. 5. Nutzer wird zur zuvor gewünschten Funktion oder zur Startansicht geführt. |
+| Hauptszenario | 1. Nutzer öffnet Anmeldung oder Registrierung.<br>2. Nutzer gibt die erforderlichen Zugangsdaten ein.<br>3. LocalCourt prüft die Anmeldung über Supabase Auth.<br>4. LocalCourt zeigt den angemeldeten Zustand.<br>5. Nutzer wird zur zuvor gewünschten Funktion oder zur Startansicht geführt. |
 | Alternative Szenarien | Nutzer hat bereits eine gültige Sitzung und wird direkt als angemeldet erkannt. |
 | Ausnahmefälle | Ungültige Zugangsdaten, bereits verwendete E-Mail-Adresse, schwaches Passwort oder nicht erreichbarer Auth-Dienst werden verständlich angezeigt. |
 | Fachliche Regeln | Geschützte Aktionen dürfen nur angemeldeten Nutzern zugeordnet werden. Rollen sind im MVP fachlich durch die Aktion bestimmt: Wer eine Session erstellt, ist für diese Session Organisator. |
@@ -132,7 +76,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Vorbedingung | Es gibt erreichbare Session- und Court-Daten; Anmeldung ist für die Suche nicht zwingend erforderlich, sofern spätere Zugriffsregeln nichts anderes festlegen. |
 | Nachbedingung bei Erfolg | Teilnehmer sieht eine Ergebnisliste, auch wenn sie leer ist. |
 | Nachbedingung bei Fehler | Keine Suchergebnisse werden als gültig übernommen; Nutzer erhält eine Fehlermeldung oder eine textuelle Fallback-Ansicht. |
-| Hauptszenario | 1. Teilnehmer öffnet die Suche. 2. Teilnehmer gibt Ort/Region ein. 3. Teilnehmer wählt optional eine Sportart oder "Alle Sportarten". 4. LocalCourt zeigt passende zukünftige Sessions. 5. LocalCourt zeigt, soweit möglich, Court-Positionen auf einer Karte. |
+| Hauptszenario | 1. Teilnehmer öffnet die Suche.<br>2. Teilnehmer gibt Ort/Region ein.<br>3. Teilnehmer wählt optional eine Sportart oder "Alle Sportarten".<br>4. LocalCourt zeigt passende zukünftige Sessions.<br>5. LocalCourt zeigt, soweit möglich, Court-Positionen auf einer Karte. |
 | Alternative Szenarien | Ohne Sportartfilter werden Sessions mehrerer Sportarten angezeigt. Bei fehlender Karte bleibt die Listenansicht nutzbar. |
 | Ausnahmefälle | Keine passenden Sessions vorhanden, Kartendienst nicht verfügbar oder Netzwerkfehler. |
 | Fachliche Regeln | Standardmäßig werden nur zukünftige oder aktive Sessions angezeigt. Abgeschlossene Sessions gehören in UC-11. |
@@ -159,7 +103,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Vorbedingung | Die Session existiert und ist für den Nutzer sichtbar. |
 | Nachbedingung bei Erfolg | Detailinformationen sind angezeigt; mögliche Folgeaktionen sind sichtbar. |
 | Nachbedingung bei Fehler | Nutzer bleibt in der vorherigen Ansicht oder sieht eine Fehlerseite ohne Änderung an Session-Daten. |
-| Hauptszenario | 1. Nutzer wählt eine Session. 2. LocalCourt lädt die fachlichen Details. 3. LocalCourt zeigt Zeit, Sportart, Court/Sportort, Beschreibung, Kapazität und Status. 4. LocalCourt zeigt abhängig vom Nutzerstatus mögliche Aktionen wie Beitreten oder Check-in. |
+| Hauptszenario | 1. Nutzer wählt eine Session.<br>2. LocalCourt lädt die fachlichen Details.<br>3. LocalCourt zeigt Zeit, Sportart, Court/Sportort, Beschreibung, Kapazität und Status.<br>4. LocalCourt zeigt abhängig vom Nutzerstatus mögliche Aktionen wie Beitreten oder Check-in. |
 | Alternative Szenarien | Organisator sieht zusätzliche Informationen wie Teilnehmerliste oder Check-in-Status. Abgeschlossene Sessions werden read-only angezeigt. |
 | Ausnahmefälle | Session existiert nicht, ist nicht zugreifbar oder Daten können nicht geladen werden. |
 | Fachliche Regeln | Detailansicht darf keine nicht benötigten privaten Profildaten anderer Nutzer anzeigen. Aktionen richten sich nach Status, Rolle und Teilnahmezustand. |
@@ -185,7 +129,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Vorbedingung | Nutzer ist angemeldet; Session ist sichtbar, noch nicht abgeschlossen und nicht voll. |
 | Nachbedingung bei Erfolg | Participant-Eintrag existiert; Teilnehmerstatus ist beigetreten. |
 | Nachbedingung bei Fehler | Kein Participant-Eintrag wird erzeugt oder verändert; Nutzer erhält Feedback. |
-| Hauptszenario | 1. Teilnehmer öffnet eine Session. 2. Teilnehmer wählt "Beitreten". 3. LocalCourt prüft Anmeldestatus, Sessionstatus und Kapazität. 4. LocalCourt trägt den Nutzer als Teilnehmer ein. 5. LocalCourt bestätigt den Beitritt. |
+| Hauptszenario | 1. Teilnehmer öffnet eine Session.<br>2. Teilnehmer wählt "Beitreten".<br>3. LocalCourt prüft Anmeldestatus, Sessionstatus und Kapazität.<br>4. LocalCourt trägt den Nutzer als Teilnehmer ein.<br>5. LocalCourt bestätigt den Beitritt. |
 | Alternative Szenarien | Nutzer ist nicht angemeldet und wird zuerst zu UC-01 geführt. |
 | Ausnahmefälle | Session ist voll, abgeschlossen, nicht mehr sichtbar oder Nutzer ist bereits beigetreten. |
 | Fachliche Regeln | Ein Nutzer darf derselben Session nicht mehrfach beitreten. Kapazitätsgrenzen werden eingehalten. Wartelisten sind out of scope (P1 NG-10). Die vollständige Beitritts- und Kapazitätsregel ist in F3 AF-01 spezifiziert. |
@@ -211,7 +155,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Vorbedingung | Nutzer ist angemeldet. |
 | Nachbedingung bei Erfolg | Eigene Sessions sind nach sinnvollen Kriterien angezeigt, z.B. bevorstehend und vergangen getrennt. |
 | Nachbedingung bei Fehler | Bestehende Daten bleiben unverändert; Nutzer erhält Feedback. |
-| Hauptszenario | 1. Nutzer öffnet "Meine Sessions". 2. LocalCourt ermittelt Sessions mit Teilnahme oder Organisatorrolle. 3. LocalCourt zeigt bevorstehende Sessions. 4. Nutzer kann eine Session-Detailansicht öffnen. |
+| Hauptszenario | 1. Nutzer öffnet "Meine Sessions".<br>2. LocalCourt ermittelt Sessions mit Teilnahme oder Organisatorrolle.<br>3. LocalCourt zeigt bevorstehende Sessions.<br>4. Nutzer kann eine Session-Detailansicht öffnen. |
 | Alternative Szenarien | Wenn keine eigenen Sessions vorhanden sind, zeigt LocalCourt einen leeren Zustand. Vergangene Sessions verweisen auf UC-11. |
 | Ausnahmefälle | Nutzer ist nicht angemeldet oder Daten können nicht geladen werden. |
 | Fachliche Regeln | Nutzer sehen nur Sessions, zu denen sie fachlich berechtigt sind. Organisierte und beigetretene Sessions dürfen unterscheidbar sein. |
@@ -237,7 +181,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Vorbedingung | Organisator ist angemeldet; notwendige Angaben sind vorhanden; ein Court wird ausgewählt oder über UC-10 erfasst. |
 | Nachbedingung bei Erfolg | Neue Session existiert im Status geplant; Organisator ist zugeordnet; Session kann gefunden werden. |
 | Nachbedingung bei Fehler | Keine unvollständige Session wird veröffentlicht. |
-| Hauptszenario | 1. Organisator öffnet das Formular zur Session-Erstellung. 2. Organisator gibt Sessiondaten ein. 3. Organisator wählt oder erfasst den Sportort. 4. LocalCourt prüft Pflichtangaben und fachliche Grenzen. 5. LocalCourt erstellt die Session. 6. LocalCourt zeigt die Detailansicht mit Bestätigung. |
+| Hauptszenario | 1. Organisator öffnet das Formular zur Session-Erstellung.<br>2. Organisator gibt Sessiondaten ein.<br>3. Organisator wählt oder erfasst den Sportort.<br>4. LocalCourt prüft Pflichtangaben und fachliche Grenzen.<br>5. LocalCourt erstellt die Session.<br>6. LocalCourt zeigt die Detailansicht mit Bestätigung. |
 | Alternative Szenarien | Organisator bricht die Erstellung ab; es wird keine Session gespeichert. |
 | Ausnahmefälle | Pflichtangaben fehlen, Zeitpunkt liegt in der Vergangenheit, Teilnehmerlimit ist ungültig, Court-Daten sind unvollständig oder Nutzer ist nicht angemeldet. |
 | Fachliche Regeln | Sessions benötigen Sportart, Zeitpunkt, Dauer, Court/Sportort und Teilnehmerlimit. Bearbeiten, Absagen und Löschen nach der Erstellung sind nicht Teil des MVP (P1 NG-11). |
@@ -263,7 +207,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Vorbedingung | Nutzer ist angemeldet und Organisator der Session. |
 | Nachbedingung bei Erfolg | Teilnehmerliste und Statusinformationen sind angezeigt. |
 | Nachbedingung bei Fehler | Keine Teilnehmerdaten werden unberechtigt angezeigt. |
-| Hauptszenario | 1. Organisator öffnet eine eigene Session. 2. LocalCourt prüft die Berechtigung. 3. LocalCourt zeigt Teilnehmer und deren Teilnahme- bzw. Check-in-Status. 4. Organisator kann die Liste während der Session erneut laden oder aktualisiert sehen. |
+| Hauptszenario | 1. Organisator öffnet eine eigene Session.<br>2. LocalCourt prüft die Berechtigung.<br>3. LocalCourt zeigt Teilnehmer und deren Teilnahme- bzw. Check-in-Status.<br>4. Organisator kann die Liste während der Session erneut laden oder aktualisiert sehen. |
 | Alternative Szenarien | Bei keiner Teilnahme zeigt LocalCourt eine leere Liste mit Teilnehmerzahl 0. |
 | Ausnahmefälle | Nutzer ist nicht Organisator, Session existiert nicht oder Daten können nicht geladen werden. |
 | Fachliche Regeln | Teilnehmerlisten sind nicht als öffentliches soziales Verzeichnis zu verstehen. Sichtbarkeit folgt Datenschutz- und Berechtigungsregeln. |
@@ -289,7 +233,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Vorbedingung | Teilnehmer ist angemeldet und der Session beigetreten; Session ist in einer Check-in-fähigen Phase; QR-Code gehört zur Session. |
 | Nachbedingung bei Erfolg | Participant-Status ist eingecheckt; Organisator kann den Status sehen. |
 | Nachbedingung bei Fehler | Participant-Status bleibt unverändert; Nutzer erhält Feedback. |
-| Hauptszenario | 1. Organisator zeigt QR-Code für die Session. 2. Teilnehmer scannt den QR-Code. 3. LocalCourt öffnet die Check-in-Ansicht. 4. LocalCourt prüft Zugehörigkeit und Sessionstatus. 5. LocalCourt markiert den Teilnehmer als eingecheckt. 6. Teilnehmer sieht eine Bestätigung. |
+| Hauptszenario | 1. Organisator zeigt QR-Code für die Session.<br>2. Teilnehmer scannt den QR-Code.<br>3. LocalCourt öffnet die Check-in-Ansicht.<br>4. LocalCourt prüft Zugehörigkeit und Sessionstatus.<br>5. LocalCourt markiert den Teilnehmer als eingecheckt.<br>6. Teilnehmer sieht eine Bestätigung. |
 | Alternative Szenarien | Falls der QR-Scan nicht funktioniert, nutzt der Teilnehmer UC-09. |
 | Ausnahmefälle | QR-Code ist ungültig, Session ist nicht check-in-fähig, Teilnehmer ist nicht beigetreten, Nutzer ist nicht angemeldet oder der Check-in wurde bereits durchgeführt. |
 | Fachliche Regeln | Check-in setzt Teilnahme voraus. Mehrfacher Check-in ändert den fachlichen Endzustand nicht. |
@@ -315,7 +259,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Vorbedingung | Teilnehmer ist angemeldet und der Session beigetreten; Session ist check-in-fähig; Organisator stellt die PIN bereit. |
 | Nachbedingung bei Erfolg | Participant-Status ist eingecheckt. |
 | Nachbedingung bei Fehler | Participant-Status bleibt unverändert. |
-| Hauptszenario | 1. Teilnehmer öffnet die PIN-Check-in-Ansicht. 2. Teilnehmer gibt die Session-PIN ein. 3. LocalCourt prüft PIN, Sessionstatus und Teilnahme. 4. LocalCourt markiert den Teilnehmer als eingecheckt. 5. Teilnehmer sieht eine Bestätigung. |
+| Hauptszenario | 1. Teilnehmer öffnet die PIN-Check-in-Ansicht.<br>2. Teilnehmer gibt die Session-PIN ein.<br>3. LocalCourt prüft PIN, Sessionstatus und Teilnahme.<br>4. LocalCourt markiert den Teilnehmer als eingecheckt.<br>5. Teilnehmer sieht eine Bestätigung. |
 | Alternative Szenarien | Teilnehmer kehrt zum QR-Code-Check-in zurück. |
 | Ausnahmefälle | PIN ist falsch, Session ist nicht check-in-fähig, Teilnehmer ist nicht beigetreten oder Nutzer ist nicht angemeldet. |
 | Fachliche Regeln | PIN-Check-in ist fachlich gleichwertig zum QR-Check-in. Falsche PINs dürfen keinen Check-in erzeugen. |
@@ -341,7 +285,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Vorbedingung | Organisator ist angemeldet; der Court kann auf der Karte eindeutig markiert werden. |
 | Nachbedingung bei Erfolg | Session kann einem bestehenden oder neu erfassten Court zugeordnet werden. |
 | Nachbedingung bei Fehler | Es wird kein unvollständiger Court als Grundlage einer Session verwendet. |
-| Hauptszenario | 1. Organisator sucht oder öffnet die Court-Auswahl. 2. LocalCourt zeigt vorhandene passende Courts. 3. Organisator wählt einen Court aus. 4. LocalCourt übernimmt den Court in die Session-Erstellung. |
+| Hauptszenario | 1. Organisator sucht oder öffnet die Court-Auswahl.<br>2. LocalCourt zeigt vorhandene passende Courts.<br>3. Organisator wählt einen Court aus.<br>4. LocalCourt übernimmt den Court in die Session-Erstellung. |
 | Alternative Szenarien | Organisator erfasst einen neuen Court: Er vergibt einen Namen, setzt einen Pin auf der Karte und LocalCourt ermittelt Ort und Adresse per Reverse-Geocoding. Danach steht der Court für die Session-Erstellung zur Verfügung. |
 | Ausnahmefälle | Name oder Kartenpin fehlen, Reverse-Geocoding liefert keine verwertbare Ortsangabe oder Karte beziehungsweise Geocoding-Dienst ist nicht erreichbar. |
 | Fachliche Regeln | Ein neu erfasster Court benötigt einen Namen, ein Koordinatenpaar und den daraus per Reverse-Geocoding bestimmten Ort. Die ermittelte Adresse wird gespeichert, sofern der Dienst eine liefert; Ort und Adresse werden nicht als widersprüchliche Freitexte erfasst. |
@@ -351,6 +295,10 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Bezug zu NFR / Qualität | Datenqualität, einfache Bedienbarkeit, verständliche Fehlerbehandlung bei Karten- oder Geocoding-Ausfall. |
 | Akzeptanzkriterien | Given ein vorhandener Court, When ein Organisator ihn auswählt, Then kann die Session mit diesem Court erstellt werden. Given Name, Kartenpin und eine erfolgreiche Ortsauflösung, When der Organisator den neuen Court speichert, Then werden Koordinaten und ermittelte Ortsdaten gemeinsam gespeichert und der Court ist auswählbar. Given die Ortsauflösung schlägt fehl, Then wird kein unvollständiger Court gespeichert und der Nutzer kann den Aufruf wiederholen. |
 | Festlegung | Im MVP findet keine automatische Dublettenprüfung statt. Vorhandene Courts werden vorrangig zur Auswahl angeboten; bei einer Neuerfassung können fachlich gleiche Courts mehrfach entstehen. Erkennung und Zusammenführung sind eine spätere Erweiterung. |
+
+Der Ablauf verzweigt sich zwischen Auswahl eines vorhandenen Courts und Neuerfassung mit Reverse-Geocoding und möglichem Fehlerfall; das folgende Aktivitätsdiagramm ergänzt die Tabelle um diese Verzweigung:
+
+![Aktivitätsdiagramm UC-10: Court erfassen oder auswählen](diagrams-png/F2-uc10-court-erfassen.png)
 
 ### UC-11 — Session-Historie ansehen
 
@@ -367,7 +315,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Vorbedingung | Nutzer ist angemeldet; es existieren abgeschlossene eigene Sessions oder ein leerer Zustand ist möglich. |
 | Nachbedingung bei Erfolg | Vergangene Sessions werden angezeigt oder ein leerer Zustand wird erklärt. |
 | Nachbedingung bei Fehler | Keine Daten werden verändert; Nutzer erhält Feedback. |
-| Hauptszenario | 1. Nutzer öffnet die Historie. 2. LocalCourt lädt vergangene Sessions mit Bezug zum Nutzer. 3. LocalCourt zeigt die Sessions in einer read-only Übersicht. 4. Nutzer kann eine Detailansicht öffnen. |
+| Hauptszenario | 1. Nutzer öffnet die Historie.<br>2. LocalCourt lädt vergangene Sessions mit Bezug zum Nutzer.<br>3. LocalCourt zeigt die Sessions in einer read-only Übersicht.<br>4. Nutzer kann eine Detailansicht öffnen. |
 | Alternative Szenarien | Organisator sieht bei eigenen vergangenen Sessions die Session-Kerndaten, bestätigte Teilnehmerzahl, Check-in-Anzahl und Teilnehmerliste mit Check-in-Status. |
 | Ausnahmefälle | Nutzer ist nicht angemeldet oder Daten können nicht geladen werden. |
 | Fachliche Regeln | Vergangene Sessions werden nach ihrem Ende absteigend sortiert. Die Historie ist kein Admin-Report, kein Rating und keine Statistikplattform; Diagramme, Exporte und sessionübergreifende Auswertungen sind ausgeschlossen. |
@@ -393,7 +341,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 | Vorbedingung | Nutzer ist angemeldet. |
 | Nachbedingung bei Erfolg | Geänderte Profilinformationen und Sportpräferenzen sind gespeichert. |
 | Nachbedingung bei Fehler | Vorherige Profilinformationen bleiben erhalten. |
-| Hauptszenario | 1. Nutzer öffnet das Profil. 2. LocalCourt zeigt aktuelle Basisdaten und Sportpräferenzen. 3. Nutzer ändert zulässige Angaben. 4. LocalCourt prüft Pflichtfelder und speichert Änderungen. 5. LocalCourt zeigt die aktualisierten Daten. |
+| Hauptszenario | 1. Nutzer öffnet das Profil.<br>2. LocalCourt zeigt aktuelle Basisdaten und Sportpräferenzen.<br>3. Nutzer ändert zulässige Angaben.<br>4. LocalCourt prüft Pflichtfelder und speichert Änderungen.<br>5. LocalCourt zeigt die aktualisierten Daten. |
 | Alternative Szenarien | Nutzer bricht die Bearbeitung ab; es werden keine Änderungen gespeichert. |
 | Ausnahmefälle | Pflichtangaben fehlen, Datenformat ist ungültig oder Speichern schlägt fehl. |
 | Fachliche Regeln | Profilinformationen werden auf notwendige Basisdaten begrenzt. Sportpräferenzen dürfen die Suche unterstützen, ersetzen aber nicht die manuelle Filterung. `avatar_url` ist im MVP ausschließlich ein optionaler Anzeigewert; Upload und Bearbeitung sind ausgeschlossen. |
@@ -410,7 +358,7 @@ Die Diagramme zeigen jeweils den primären Akteur außerhalb der Systemgrenze so
 |---|---|---|---|---|
 | UC-01 | GP-02 A2; Voraussetzung für geschützte Aktionen | Authentifizierung, Profile, DSGVO | NB-01, NB-02 | Passt zu Supabase Auth und Web-UI. |
 | UC-02 | GP-01 A2-A7, GP-03 A1-A7 | G-02, G-03, Session-Discovery | NB-01, NB-03, NB-04 | Kernfunktion für Finden lokaler Sportaktivitäten. |
-| UC-03 | GP-01 A8, GP-02 A11-A12 | Web-UI für Session-Verwaltung | NB-01, NB-03, NB-04 | Detailansicht verbindet Suche, Beitritt und Organisation. |
+| UC-03 | GP-01 A8, A14; GP-02 A11-A12 | Web-UI für Session-Verwaltung | NB-01, NB-03, NB-04 | Detailansicht verbindet Suche, Beitritt und Organisation. |
 | UC-04 | GP-01 A9-A13 | Teilnehmer-Verwaltung, Kapazität | NB-01, NB-02, NB-03 | Kapazität ist harte Grenze ohne Warteliste (P1 NG-10). Beitritts- und Kapazitätslogik ist in F3 AF-01 präzisiert. |
 | UC-05 | GP-01 A13-A14, GP-02 A11, A22-A23 | Session-Verwaltung, Nutzerübersicht | NB-01, NB-03 | Unterstützt Orientierung nach Beitritt und Erstellung. |
 | UC-06 | GP-02 A3-A9 | Session-Erstellung, SC-02 | NB-01, NB-02, NB-03 | Kernfunktion des Organisators. |
@@ -467,5 +415,5 @@ Die stabilen IDs UC-01 bis UC-12 müssen später in Architektur, Tests und Code 
 |---|---|
 | Werkzeug | Codex / ChatGPT |
 | Verwendung | Entwurf, Strukturierung, Formulierung prüfbarer Akzeptanzkriterien und Konsistenzprüfung; Codex arbeitete am 2026-07-29 die Teamentscheidungen zu unveränderlichen Sessions, read-only Profilbildern, sichtbaren Profilfeldern, Reverse-Geocoding, Listensortierung, Court-Dubletten und Organisator-Ergebnisdaten ein. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Angleichung an S1 (2026-07-26, Claude Sonnet 5): offene Punkte in UC-01 (Anmeldeverfahren) und UC-10 (Geocoding) geschlossen. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): veraltete Zeilen in UC-02, UC-03, UC-05, UC-07, UC-10 und UC-12 auf den heutigen Stand gebracht und auf den jeweils zuständigen Baustein verwiesen. Aktualisierung (2026-07-28, Codex): Bereits entschiedene oder ausgeschlossene Punkte in UC-01, UC-02, UC-04, UC-06, UC-08 und UC-09 korrekt als Festlegung beziehungsweise Abgrenzung bezeichnet; Löschverweis in UC-03 entfernt. |
+| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Angleichung an S1 (2026-07-26, Claude Sonnet 5): offene Punkte in UC-01 (Anmeldeverfahren) und UC-10 (Geocoding) geschlossen. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): veraltete Zeilen in UC-02, UC-03, UC-05, UC-07, UC-10 und UC-12 auf den heutigen Stand gebracht und auf den jeweils zuständigen Baustein verwiesen. Aktualisierung (2026-07-28, Codex): Bereits entschiedene oder ausgeschlossene Punkte in UC-01, UC-02, UC-04, UC-06, UC-08 und UC-09 korrekt als Festlegung beziehungsweise Abgrenzung bezeichnet; Löschverweis in UC-03 entfernt. Überarbeitung (2026-07-30, Claude Sonnet 5, Claude Code): Die beiden getrennten Mermaid-Diagramme (Teilnehmer/Organisator) zu einem PlantUML-Use-Case-Diagramm mit einer Systemgrenze zusammengeführt (`diagrams/F2-use-cases.puml`); F2.2 (Übersicht) und F2.3 (Index) getauscht, sodass das Diagramm direkt nach F2.1 erscheint; F1-Bezug von UC-03 in Index und F2.5 um die in der Detailspezifikation bereits vorhandene Aktivität GP-01 A14 ergänzt; alle Hauptszenarien UC-01–UC-12 mit sichtbaren Zeilenumbrüchen (`<br>`) formatiert; ergänzendes PlantUML-Aktivitätsdiagramm für UC-10 (`diagrams/F2-uc10-court-erfassen.puml`) hinzugefügt, da dort echte Verzweigungen (Auswahl vs. Neuerfassung mit Geocoding-Fehlerfall) bestehen; für UC-06 und UC-08 wurde auf ein Zusatzdiagramm verzichtet, da der Ablauf linear ist und bereits durch die F1-Sequenzdiagramme (GP-02) abgedeckt wird. Alle Änderungen gegen das aktuelle F1-Dokument geprüft. |
 | Fachliche Verantwortung | Bleibt beim Team. |
