@@ -29,10 +29,11 @@ LocalCourt löst das Problem der dezentralisierten Koordination: Heute brauchen 
 | Rolle | Beschreibung | Interaktion mit LocalCourt |
 |-------|-------------|---------------------------|
 | **Operator (Team LocalCourt)** | 4-köpfiges Entwicklungsteam der Hochschule (Spec Lead, Project Lead, QA, Frontend). | Entwicklung, Deployment und Betrieb; nicht Teil der fachlichen Primärnutzergruppen. |
-| **Primäre Nutzer** | Sportbegeisterte im Alter von 18–30 Jahren (Amateur und Profi-Level). Erwartete Primär-Demografie. | Erstellen, entdecken, beitreten Sessions. Verwalten Profil und Sport-Präferenzen. |
-| **Sekundäre Nutzer** | Sportler außerhalb der 18–30-Altersgruppe (offen für alle Altersgruppen). | Gleiche Funktionen wie primäre Nutzer. |
+| **Nutzer** | Sportinteressierte Personen, die LocalCourt zur Suche und Teilnahme an lokalen Sport-Sessions nutzen. | Sessions entdecken und beitreten, Profil und Sportpräferenzen verwalten. |
+| **Organisator** | Nutzer, die eigene Sport-Sessions erstellen und organisieren. | Sessions erstellen und verwalten; Teilnehmer und Check-ins einsehen. |
 | **Trainings-/Vereinsgruppen** | Strukturierte Sportgruppen (z.B. Hochschulsport, lokale Clubs). | Organisieren regelmäßige Sessions und verwalten Teilnehmerlisten. |
 | **Cloud-Provider (Free-Tier)** | Hosting und Datenbankinfrastruktur im kostenlosen Segment. | Stellt Rechenkapazität und Datenspeicher bereit. Begrenzt maximale Nutzerzahl und API-Calls. |
+| **External APIs** | Externe Dienste, die LocalCourt zur Bereitstellung bestimmter Funktionen nutzt. | Bereitstellung bzw. Austausch von Daten über definierte Schnittstellen. |
 
 ---
 
