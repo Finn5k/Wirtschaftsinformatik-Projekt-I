@@ -75,48 +75,7 @@ Der Ablauf einzelner Anwendungsfälle über mehrere Systeme hinweg (z. B. Sessio
 
 ---
 
-## P2.6 Fehlende / Zukünftige Systeme
-
-### Nicht integriert (bewusste Ausschlüsse)
-
-| System | Grund für Ausschluss |
-|--------|---------------------|
-| **KI-APIs** (OpenAI, Claude, etc.) | MVP braucht keine Text-Generation, Recommendation Engines, oder Smart-Matching. Community-Discovery reicht. |
-| **Payment-Gateway** (Stripe, PayPal) | Keine monetären Transaktionen (P1 NG-01). |
-| **Email-Service** (SendGrid, Mailgun) | MVP: Keine Email-Notifikationen. Optional später für Session-Reminders. |
-| **Push-Notifications** (Firebase Cloud Messaging) | MVP: Keine mobilen Push-Notifications. Web-Notifications später optional. |
-| **Message Queue** (RabbitMQ, Kafka) | Synchrone REST-API genügt für MVP; asynchrone Background-Jobs nicht nötig. |
-| **Webhooks / eingehende Schnittstellen** | LocalCourt wird von keinem externen System aufgerufen. Alle Abläufe starten in der Benutzeroberfläche (F1); es gibt keine eingehende Integration, die zu bedienen wäre. |
-| **Social-Media Integration** (OAuth Social, Sharing) | MVP nur Email+Password Auth. Social-Auth optional später. |
-
-### Optionale Future Integrations
-
-Diese Systeme können in späteren Iterationen ergänzt werden:
-- **Email-Notifications** (Session-Reminder, Participant Invites)
-- **Push-Notifications** (Mobile Web, Desktop)
-- **Erweiterte Ortssuche und Adress-Autovervollständigung** (zusätzlicher Geocoding-Anbieter)
-- **Analytics** (Segment, Mixpanel)
-- **Monitoring** (Sentry, DataDog)
-
----
-
-## Zusammenfassung
-
-LocalCourt ist ein **Greenfield-System** ohne Legacy-Integration: Teilnehmer und Organisator nutzen eine einzige Blackbox, die mit vier externen Cloud-Nachbarsystemen kommuniziert — **Supabase Auth**, **Supabase PostgREST**, **OpenStreetMap** und **Nominatim** ([P2.2](#p22-nachbarsysteme)). Interne Architektur, Deployment-Topologie und Laufzeitabläufe stehen in der [Architekturdokumentation](../arch/README.md).
-
----
-
-## Referenzen
-
-- **P1 — Ziele und Rahmenbedingungen**: `P1-ziele-rahmenbedingungen.md`
-- **S1 — Nachbarsysteme (Schnittstellen-Contracts)**: [S1-nachbarsysteme.md](S1-nachbarsysteme.md)
-- **Architekturdokumentation** (Deployment, Laufzeitsichten): [docs/arch/README.md](../arch/README.md)
-- **Herold P2 Reference** (English): [GitHub](https://github.com/carstenlucke/herold/blob/main/docs/spec/P2-architekturueberblick.md)
-- **Team & Rollen**: `../../TEAMINFO.md`
-
----
-
-## P2.7 Eingesetzte KI-Werkzeuge
+## P2.6 Eingesetzte KI-Werkzeuge
 
 | Aspekt | Inhalt |
 |---|---|
