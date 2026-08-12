@@ -1,53 +1,43 @@
 # P2 — Architekturüberblick
 
-Beschreibt aus Anwendungssicht, wie sich LocalCourt in seine Umgebung einbettet: Welche Systeme kommunizieren mit LocalCourt, in welche Richtung der Datenaustausch läuft, und welche Partner-Systeme es gibt.
+P2 zeigt LocalCourt als **Blackbox im Systemkontext**: die Akteure, die das System nutzen, die Nachbarsysteme, mit denen es kommuniziert, und die Richtung dieser Kommunikation. Nach Siedersleben Section 4.2 ist das Ziel dieses Bausteins die **vollständige Aufzählung aller Nachbarsysteme**, nicht die innere Architektur.
 
-Nach Siedersleben Section 4.2: Das Ziel dieses Bausteins ist die **vollständige Aufzählung aller Nachbarsysteme** und die Datenflussbeschreibung zwischen ihnen.
-
-**Hinweis**: Interne Architektur (Komponenten-Zerlegung, Layering, Laufzeitsichten, Deployment-Details) ist **außer Scope** und wird in der [Architekturdokumentation](../arch/README.md) beschrieben.
+**Hinweis**: Interne Architektur (Komponenten-Zerlegung, Layering, Laufzeitsichten, Deployment-Details) ist **außer Scope** und steht in der [Architekturdokumentation](../arch/README.md).
 
 ---
 
 ## P2.1 Systemkontext
 
-LocalCourt ist eine **webbasierte Anwendung** für die dezentralisierte Koordination lokaler Sportaktivitäten. Das System besteht aus einer React-Frontend-Anwendung (im Browser), die mit einer Cloud-Infrastruktur kommuniziert.
+LocalCourt ist eine webbasierte Anwendung für die dezentrale Koordination lokaler Sportaktivitäten. Im Systemkontext ist LocalCourt eine einzige Blackbox: Zwei menschliche Akteure — **Teilnehmer** und **Organisator** ([F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md)) — nutzen das System; vier externe Nachbarsysteme stellen Anmeldung, Datenhaltung, Kartendarstellung und Ortsauflösung bereit ([P2.2](#p22-nachbarsysteme)).
 
-### Kontext-Diagramm (High-Level)
+### Kontext-Diagramm
 
 ```mermaid
-flowchart TB
-    user(["Browser-Nutzer"])
+flowchart LR
+    teilnehmer(["Teilnehmer"])
+    organisator(["Organisator"])
 
-    subgraph lc["LocalCourt (React-Frontend, Vercel)"]
-        ui["Session-Verwaltung · Court-Suche<br/>Profile · Check-in · Kartenansicht"]
-    end
+    lc["LocalCourt"]
 
-    subgraph supa["Supabase (Cloud)"]
-        auth["Auth Service"]
-        rest["PostgREST API"]
-        db[("PostgreSQL")]
-    end
+    supabase["Supabase<br/>(Anmeldung & Daten)"]
+    osm["OpenStreetMap<br/>(Kartenkacheln)"]
+    nominatim["Nominatim<br/>(Ortsauflösung)"]
 
-    osm["OpenStreetMap / Leaflet<br/>Kartenkacheln (Anzeige, Pin-Setzen)"]
-    nominatim["Nominatim<br/>Reverse-Geocoding"]
-
-    user -->|"HTTPS, Interaktion"| ui
-    ui -->|"Login / JWT"| auth
-    ui -->|"CRUD (JSON/REST)"| rest
-    rest --> db
-    ui -.->|"Tiles / GeoJSON (Client-Side)"| osm
-    ui -.->|"Koordinaten → Ort / Adresse"| nominatim
+    teilnehmer -->|nutzt| lc
+    organisator -->|nutzt| lc
+    lc -->|Anmeldung, Sessions,<br/>Courts, Profile| supabase
+    lc -->|Kartendarstellung| osm
+    lc -->|Reverse-Geocoding bei<br/>Court-Erfassung| nominatim
 ```
 
-### Kommunikations-Kanäle
+### Kommunikationsrichtung
 
-- **Inbound**: Browser-User → React-Frontend (synchron, Request-Response; kein Echtzeit-Kanal, siehe [S1.7](S1-nachbarsysteme.md#s17-nicht-genutzte-schnittstellen-und-abgrenzung))
-- **Frontend → Supabase Auth**: Authentifizierung, Session-Management (synchron, HTTPS)
-- **Frontend → Supabase PostgREST API**: Lesezugriffe sowie die atomaren Schreiboperationen auf Sessions, Courts, Participants, Profiles (synchron, REST)
-- **Frontend → OpenStreetMap**: Kartenkacheln zur Darstellung und zum Setzen eines Pins (Client-Side)
-- **Frontend → Nominatim**: Reverse-Geocoding des gesetzten Court-Pins zu Ort und optionaler Adresse (synchron, HTTPS)
+- **Teilnehmer, Organisator → LocalCourt**: einzige Eingangsrichtung; jede Aktion geht von einem der beiden Akteure aus, es gibt keinen eingehenden Kanal von außen ([S1.7](S1-nachbarsysteme.md#s17-nicht-genutzte-schnittstellen-und-abgrenzung)).
+- **LocalCourt → Supabase**: Anmeldung sowie sämtlicher Datenzugriff auf Sessions, Courts, Teilnahmen und Profile.
+- **LocalCourt → OpenStreetMap**: Kartendarstellung der Courts.
+- **LocalCourt → Nominatim**: Ortsauflösung eines gesetzten Court-Pins bei der Court-Erfassung.
 
-**Zusammenfassung**: Greenfield-System ohne Legacy-Integration. Alle Nachbarsysteme sind Cloud-Services via HTTPS-APIs.
+LocalCourt ist ein Greenfield-System ohne Legacy-Integration; alle Nachbarsysteme sind Cloud-Dienste, die über HTTPS angesprochen werden.
 
 ---
 
@@ -55,162 +45,33 @@ flowchart TB
 
 Vollständige Aufzählung aller Systeme, mit denen LocalCourt kommuniziert:
 
-| ID | System | Rolle | Richtung | Koppelung | Häufigkeit | Owner |
-|----|--------|-------|----------|-----------|-----------|-------|
-| **NB-01** | **Browser / React-Frontend** ([S1.2](S1-nachbarsysteme.md#s12-nb-01--browser-nutzerkanal)) | Einziger Nutzer-Kontaktpunkt; Session-Verwaltung, Entdeckung, Check-In | Inbound | Tight (Synchron, Request-Response) | Kontinuierlich | Nutzer |
-| **NB-02** | **Supabase Authentication** ([S1.3](S1-nachbarsysteme.md#s13-nb-02--supabase-auth)) | Nutzer-Anmeldung, Session-Verwaltung, Token-basierte Auth | Bidirektional (Request: Credentials; Response: JWT) | Tight (Synchron) | Per Login/Logout/Token-Refresh | Supabase (Third-Party) |
-| **NB-03** | **Supabase PostgREST API** ([S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)) | Lesen und fachlich erlaubtes Anlegen/Aktualisieren von Sessions, Courts, Teilnahmen, Profilen und Check-ins | Bidirektional (Request: JSON Payload; Response: JSON Result) | Tight (Synchron, aber batching möglich) | Je Lese- oder Schreibaktion | Supabase (Third-Party) |
-| **NB-04** | **OpenStreetMap / Leaflet** ([S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)) | Kartendarstellung, Visualisierung von Court-Positionen, Setzen eines Pins bei der Court-Erfassung | Outbound (Response nur für Rendering) | Loose (Asynchron, UI-only) | Per Map-Rendering | OpenStreetMap Foundation (Third-Party) |
-| **NB-05** | **Nominatim** ([S1.6](S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)) | Reverse-Geocoding des gesetzten Court-Pins zu Ort und optionaler Adresse | Bidirektional (Koordinaten → strukturierte Ortsdaten) | Loose (Synchron, austauschbar) | Einmal je nutzerseitigem Pin-Setzen/-Verschieben | OpenStreetMap Foundation (Third-Party) |
+| ID | System | Rolle | Richtung | Kopplung | Owner |
+|----|--------|-------|----------|----------|-------|
+| **NB-01** | **Nutzerkanal (Browser)** ([S1.2](S1-nachbarsysteme.md#s12-nb-01--browser-nutzerkanal)) | Teilnehmer und Organisator nutzen LocalCourt; einziger Kontaktpunkt zum Menschen | Inbound | Synchron, je Nutzeraktion | Nutzer |
+| **NB-02** | **Supabase Authentication** ([S1.3](S1-nachbarsysteme.md#s13-nb-02--supabase-auth)) | Anmeldung, Sitzungsverwaltung, Token-Ausgabe | Bidirektional | Synchron, je Login/Logout/Token-Refresh | Supabase (Third-Party) |
+| **NB-03** | **Supabase PostgREST API** ([S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)) | Lesen sowie fachlich geprüftes Anlegen/Aktualisieren von Sessions, Courts, Teilnahmen und Profilen | Bidirektional | Synchron, je Lese-/Schreibaktion | Supabase (Third-Party) |
+| **NB-04** | **OpenStreetMap** ([S1.5](S1-nachbarsysteme.md#s15-nb-04--openstreetmap-tiles)) | Kartendarstellung der Courts | Outbound | Client-seitig, je Kartenanzeige | OpenStreetMap Foundation |
+| **NB-05** | **Nominatim** ([S1.6](S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)) | Reverse-Geocoding eines gesetzten Court-Pins | Bidirektional | Synchron, einmal je Pin-Setzen/-Verschieben | OpenStreetMap Foundation |
+
+Supabase erscheint hier bewusst als zwei Schnittstellen (NB-02 Anmeldung, NB-03 Daten), weil beide unterschiedliche Contracts haben ([S1](S1-nachbarsysteme.md)); interne Supabase-Dienste wie Datenbank oder Edge Functions sind aus Sicht von LocalCourt kein eigenes Nachbarsystem und werden hier nicht gesondert ausmodelliert.
 
 ---
 
-## P2.3 Schnittstellen-Übersicht
+## P2.3 Schnittstellen
 
-Detaillierte Interface-Contracts (Endpoints, Payloads, Error Handling) sind ausgelagert in **S1 — Nachbarsysteme-Schnittstellen** (eine Datei pro NB-XX). Diese Übersicht ist das **Inventar**.
-
-| NB-ID | System | Protokoll | Format | Auth | Fehlerbehandlung | Status |
-|-------|--------|-----------|--------|------|------------------|--------|
-| NB-01 | Browser | HTTP(S) | HTML, JSON | Browser-Session | User Feedback (Modal/Toast) | ✅ |
-| NB-02 | Supabase Auth | HTTPS/REST | JSON | JWT Token | 401/403 Unauthorized, Server-Error Propagation | ✅ |
-| NB-03 | Supabase PostgREST | HTTPS/REST | JSON | Bearer Token (JWT) | 400/401/403/404/500, Business-Logic Error Messages | ✅ |
-| NB-04 | OpenStreetMap | HTTPS/REST | GeoJSON, Tiles | (keine) | Graceful Degradation (Fallback zu Fallback-Map oder Text) | ✅ |
-| NB-05 | Nominatim | HTTPS/REST | JSON | (keine) | Fehlermeldung und manuelle Wiederholung; kein Speichern unvollständiger Courts | ✅ |
-
-**Hinweise auf Schnittstellen-Details**: Siehe [S1 — Nachbarsysteme](S1-nachbarsysteme.md)
+Die Schnittstellen-Contracts (Operationen, Ein-/Ausgaben, Fehlersemantik) je Nachbarsystem stehen vollständig in [S1 — Nachbarsysteme](S1-nachbarsysteme.md); die Zuordnung NB-nn → S1-Abschnitt steht dort in der Einleitung. P2 wiederholt diese Contracts nicht.
 
 ---
 
-## P2.4 Deployment & Architektur-Topologie
+## P2.4 Deployment
 
-### Infrastruktur-Übersicht
-
-```mermaid
-flowchart LR
-    browser(["Browser / Nutzer"])
-
-    subgraph frontend["Frontend-Tier"]
-        vercel["Vercel · Free<br/>React SPA (Vite Build)"]
-    end
-
-    subgraph backend["Backend-Tier · Supabase (Free)"]
-        rest["PostgREST API"]
-        auth["Auth Layer<br/>JWT · Row-Level-Security"]
-    end
-
-    subgraph data["Data-Tier"]
-        db[("PostgreSQL · Free<br/>500 MB, 2 Connections")]
-    end
-
-    osm["OpenStreetMap / Leaflet<br/>Client-Side Rendering"]
-
-    browser -->|"HTTPS / JSON"| vercel
-    vercel -->|"REST"| rest
-    vercel -->|"Auth"| auth
-    rest -->|"Connection Pool"| db
-    auth --> db
-    browser -.->|"Tiles"| osm
-```
-
-Hinweis: OpenStreetMap/Leaflet wird clientseitig gerendert und ist kein deploytes Tier von LocalCourt.
-
-### Deployment-Details
-
-| Komponente | Infrastruktur | Anbieter | Tier | Skalierung | Monitoring |
-|------------|---------------|----------|------|-----------|-----------|
-| **Frontend** | Vercel (CDN, Edge Functions) | Vercel Inc. | Free | Auto-Scale | Vercel Dashboard |
-| **PostgREST API** | Supabase (Managed Service) | Supabase | Free | Limited (~50 req/s) | Supabase Logs |
-| **Database** | PostgreSQL (Managed) | Supabase | Free | Limited (500 MB, 2 Connections) | Supabase Logs |
-| **Authentication** | Supabase Auth | Supabase | Free | Unlimited Users | Supabase Logs |
-| **Geo-Data** | OpenStreetMap CDN | OSM Foundation | Free/Tile-Server | Community-Scale | None |
+Hosting, Infrastruktur-Tiers und die konkreten Free-Tier-Grenzen der genutzten Dienste sind interne Architekturentscheidungen und stehen in der [Architekturdokumentation, §6 Verteilung und Deployment](../arch/README.md#6-verteilung-und-deployment).
 
 ---
 
-## P2.5 Kritische Datenflüsse
+## P2.5 Datenflüsse
 
-### Szenario 1: Session erstellen (Organizer)
-
-```mermaid
-sequenceDiagram
-    actor O as Organisator
-    participant FE as Frontend
-    participant API as Supabase PostgREST
-    participant DB as PostgreSQL
-
-    O->>FE: (1) Formular: title, sport, start_at, court, max_participants
-    FE->>FE: (2) Frontend-Validierung
-    FE->>API: (3) rpc/create_session (Bearer JWT)
-    API->>DB: (4) atomar: INSERT session (PIN erzeugt, status abgeleitet: scheduled)<br/>+ INSERT participant (Organisator, confirmed)
-    API-->>FE: (5) 200 OK { session_id, ... }
-    FE-->>O: Redirect Session-Detail + "Session erstellt"
-```
-
-Session und Organisator-Teilnahme entstehen gemeinsam in einer atomaren serverseitigen Funktion ([S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest), [N2.11](N2-querschnittskonzepte.md#n211-row-level-security-rls)); ein direkter Schreibzugriff auf `session` ist nicht vorgesehen.
-
-**Fehlerbehandlung**:
-- 401 Unauthorized: JWT abgelaufen → Re-Login erforderlich
-- 400 Bad Request: Validation Error (z.B. `start_at` < now) → Show Form Error
-- 500 Server Error: DB Error → Show "Something went wrong" + Log UUID
-
----
-
-### Szenario 2: Session finden & beitreten (Participant)
-
-```mermaid
-sequenceDiagram
-    actor P as Teilnehmer
-    participant FE as Frontend
-    participant API as Supabase PostgREST
-    participant OSM as OpenStreetMap
-
-    P->>FE: (1) Ort + Sportart-Filter
-    FE->>API: (2) GET /sessions?city&sport (Filter, nur zukünftige)
-    API-->>FE: (3) [ sessions inkl. confirmed_count ]
-    FE->>OSM: (4) Court-Positionen rendern
-    OSM-->>FE: Tiles / Pins
-    P->>FE: (5) Session wählen → "Beitreten"
-    FE->>API: (6) rpc/join_session { session_id }
-    alt (7a) Kapazität frei (AF-01, atomar)
-        API-->>FE: 200 { status: confirmed }
-        FE-->>P: "Beigetreten"
-    else (7b) Session voll
-        API-->>FE: 409 Conflict
-        FE-->>P: "Session ist voll" (keine Warteliste, NG-10)
-    end
-```
-
-**Fehlerbehandlung**:
-- 409 Conflict: Session voll → "Session ist voll" Message (harte Kapazitätsgrenze, keine Warteliste; P1 NG-10, F3 AF-01)
-- 401 Unauthorized: Nicht angemeldet → Redirect zu Login
-- 403 Forbidden: Nutzer darf dieser Session nicht beitreten (RLS) → Explain
-
----
-
-### Szenario 3: Check-in durchführen (Teilnehmer)
-
-Der Check-in wird vom **Teilnehmer** selbst ausgelöst — per QR-Scan (UC-08) oder PIN-Eingabe (UC-09); der Organisator stellt QR/PIN nur bereit und sieht das Ergebnis (UC-07). Die fachliche Prüfung ist in [F3 AF-02](F3-anwendungsfunktionen.md#af-02--check-in-validierung) spezifiziert.
-
-```mermaid
-sequenceDiagram
-    actor P as Teilnehmer
-    participant FE as Frontend
-    participant API as Supabase PostgREST
-    participant DB as PostgreSQL
-
-    Note over P,DB: Session ist active (AF-03), Teilnehmer ist confirmed
-    P->>FE: (1) QR-Code scannen ODER PIN eingeben
-    FE->>API: (2) rpc/check_in { session_id, pin }
-    API->>DB: (3) atomar: Teilnahme, PIN und Zeitfenster prüfen,<br/>dann UPDATE status=checked_in, checked_in_at=NOW()
-    API-->>FE: (4) 200 { status: checked_in }
-    FE-->>P: (5) "✓ Check-in erfolgreich"
-    Note over FE,DB: idempotent (AF-02); keine Statusrücknahme
-```
-
-**Fehlerbehandlung** (Ergebniscodes aus AF-02):
-- `NOT_JOINED`: Teilnehmer ist der Session nicht beigetreten → Hinweis „zuerst beitreten"
-- `INVALID_CREDENTIAL`: falsche PIN / QR einer anderen Session → „Ungültiger Code"
-- `OUTSIDE_WINDOW`: Session nicht `active` → „Check-in nur während der Session möglich"
-- `ALREADY_CHECKED_IN`: bereits eingecheckt → Bestätigung ohne Änderung (idempotent)
+Der Ablauf einzelner Anwendungsfälle über mehrere Systeme hinweg (z. B. Session erstellen, beitreten, Check-in) ist eine Laufzeitsicht und steht in der [Architekturdokumentation, §5 Laufzeitsichten](../arch/README.md#5-laufzeitsichten). Die zugehörigen Ergebniscodes sind in [F3](F3-anwendungsfunktionen.md) definiert und in [N2.3](N2-querschnittskonzepte.md#n23-fehler-mapping-ergebniscodes--http) auf HTTP-Antworten abgebildet.
 
 ---
 
@@ -230,7 +91,7 @@ sequenceDiagram
 
 ### Optionale Future Integrations
 
-Diese Systeme können in späteren Phasen (P, M, N durchlaufen später Iterationen) hinzugefügt werden:
+Diese Systeme können in späteren Iterationen ergänzt werden:
 - **Email-Notifications** (Session-Reminder, Participant Invites)
 - **Push-Notifications** (Mobile Web, Desktop)
 - **Erweiterte Ortssuche und Adress-Autovervollständigung** (zusätzlicher Geocoding-Anbieter)
@@ -241,14 +102,7 @@ Diese Systeme können in späteren Phasen (P, M, N durchlaufen später Iteration
 
 ## Zusammenfassung
 
-LocalCourt ist ein **Greenfield-System** ohne Legacy-Integration. Das System kommuniziert mit **5 Nachbarsystemen**:
-1. **Browser/Frontend** (User-Input)
-2. **Supabase Auth** (Authentifizierung)
-3. **Supabase PostgREST** (Datenbank-CRUD)
-4. **OpenStreetMap** (Kartendarstellung)
-5. **Nominatim** (Reverse-Geocoding bei der Court-Erfassung)
-
-Alle Nachbarsysteme sind **Cloud-Services** über HTTPS-APIs, ideal für Free-Tier-Budgets. Die Architektur ist **anfängerfreundlich** (React + Supabase, minimal Backend-Logic) und **später skalierbar** (Backend-Services können später hinzugefügt werden, wenn komplexere Business-Logic erforderlich wird).
+LocalCourt ist ein **Greenfield-System** ohne Legacy-Integration: Teilnehmer und Organisator nutzen eine einzige Blackbox, die mit vier externen Cloud-Nachbarsystemen kommuniziert — **Supabase Auth**, **Supabase PostgREST**, **OpenStreetMap** und **Nominatim** ([P2.2](#p22-nachbarsysteme)). Interne Architektur, Deployment-Topologie und Laufzeitabläufe stehen in der [Architekturdokumentation](../arch/README.md).
 
 ---
 
@@ -256,7 +110,7 @@ Alle Nachbarsysteme sind **Cloud-Services** über HTTPS-APIs, ideal für Free-Ti
 
 - **P1 — Ziele und Rahmenbedingungen**: `P1-ziele-rahmenbedingungen.md`
 - **S1 — Nachbarsysteme (Schnittstellen-Contracts)**: [S1-nachbarsysteme.md](S1-nachbarsysteme.md)
-- **Architekturdokumentation**: [docs/arch/README.md](../arch/README.md)
+- **Architekturdokumentation** (Deployment, Laufzeitsichten): [docs/arch/README.md](../arch/README.md)
 - **Herold P2 Reference** (English): [GitHub](https://github.com/carstenlucke/herold/blob/main/docs/spec/P2-architekturueberblick.md)
 - **Team & Rollen**: `../../TEAMINFO.md`
 
@@ -266,6 +120,6 @@ Alle Nachbarsysteme sind **Cloud-Services** über HTTPS-APIs, ideal für Free-Ti
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | GitHub Copilot, Claude (Claude Code), Codex |
-| Verwendung | Entwurf des Architekturüberblicks: Systemkontext, Nachbarsysteme, Deployment-Topologie und kritische Datenflüsse. Codex ergänzte am 2026-07-29 Nominatim und glich anschließend den Verweis auf die fertiggestellte arc42-Architekturdokumentation ab. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md) und [S1](S1-nachbarsysteme.md). Systemkontext, Nachbarsysteminventar und Datenflüsse wurden nach der Teamentscheidung erneut geprüft; Nominatim ist als NB-05 aufgenommen und nicht mehr als zukünftige Erweiterung geführt. |
+| Werkzeug | GitHub Copilot, Claude (Claude Code, Claude Sonnet 5), Codex |
+| Verwendung | Entwurf des Architekturüberblicks: Systemkontext, Nachbarsysteme und Abgrenzung zu Architektur/Laufzeitsicht. Codex ergänzte am 2026-07-29 Nominatim und glich den Verweis auf die arc42-Architekturdokumentation ab. Claude Sonnet 5 (Claude Code) hat P2 am 2026-08-12 nach Professor-Feedback zu einer reinen Blackbox-Systemkontextsicht überarbeitet: interne Bestandteile (Frontend-Komponenten, Deployment-Tiers, Laufzeit-Sequenzdiagramme) entfernt und auf die bestehende Architekturdokumentation (§5/§6) verwiesen; Teilnehmer und Organisator als externe Akteure ergänzt; Supabase auf seine beiden Schnittstellen (Auth, Daten) als Blackbox reduziert. |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [S1](S1-nachbarsysteme.md) und [docs/arch/README.md](../arch/README.md). Dadurch ungültig gewordene Verweise auf entfallene P2-Detailinhalte wurden in S1, N2, N1 und E1 minimal korrigiert; die konkreten Free-Tier-Grenzen wurden nach [arch §6](../arch/README.md#6-verteilung-und-deployment) verschoben, damit keine technische Information verloren geht. Fachliche Verantwortung bleibt beim Team. |

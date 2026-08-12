@@ -19,7 +19,7 @@ Dieses Querschnittskonzept beschreibt die systemweit geltenden Zugriffsregeln au
 | `profile` | Basisfelder (`display_name`, `avatar_url`) für alle angemeldeten Nutzer lesbar (Teilnehmerliste, UC-03/UC-07); `display_name` und `city` nur für `user_id = auth.uid()` schreibbar. `avatar_url` bleibt im MVP unverändert. | UC-12, D1.4 „Datenschutz" |
 | `court`, `sport`, `sport_preference` | `court`/`sport` lesbar für alle; `court`-Erstellung durch angemeldete Nutzer (UC-10, `created_by = auth.uid()`); `sport_preference` nur für den eigenen `user_id` schreibbar. | UC-10, UC-12 |
 
-Diese Policies setzen die in P2.3 bereits skizzierten Fehlercodes (401/403) technisch um: Ein `403 Forbidden` aus P2.5 Szenario 2 (RLS-Verletzung) entsteht genau dann, wenn eine dieser Bedingungen nicht erfüllt ist.
+Diese Policies setzen die Fehlercodes aus N2.3 technisch um: Ein `403 Forbidden` (RLS-Verletzung) entsteht genau dann, wenn eine dieser Bedingungen nicht erfüllt ist.
 
 ## N2.3 Fehler-Mapping (Ergebniscodes → HTTP)
 
@@ -31,7 +31,7 @@ Dieses Querschnittskonzept beschreibt die einheitliche Behandlung fachlicher Feh
 | AF-01 | `NOT_AUTHENTICATED` | `401 Unauthorized` |
 | AF-01 | `SESSION_NOT_JOINABLE` | `409 Conflict` |
 | AF-01 | `ALREADY_JOINED` | `409 Conflict` |
-| AF-01 | `SESSION_FULL` | `409 Conflict` (entspricht P2.5 Szenario 2, 7b) |
+| AF-01 | `SESSION_FULL` | `409 Conflict` (siehe [F3 AF-01](F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel)) |
 | AF-02 | `OK` / `ALREADY_CHECKED_IN` | `200 OK` (beide idempotent erfolgreich, AF-02 Regel 5) |
 | AF-02 | `NOT_JOINED` | `403 Forbidden` |
 | AF-02 | `INVALID_CREDENTIAL` | `400 Bad Request` |

@@ -35,7 +35,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | N1-QA-07 | Wartbarkeit | Modulstruktur, Benennung und Datenobjekte folgen den in D1/D2/P2 festgelegten Namen und Zuständigkeiten. | alle | P2 (Architekturüberblick), D1, D2 | Soll | Code-Review gegen D1/D2-Benennung |
 | N1-QA-08 | Testbarkeit | Use Cases und Anwendungsfunktionen besitzen prüfbare Akzeptanzkriterien, die manuell oder automatisiert nachvollzogen werden können. | alle MVP-Use-Cases | F2 (Akzeptanzkriterien), F3 (Entscheidungstabellen) | Soll | Abgleich Akzeptanzkriterien ↔ beobachtbares Verhalten |
 | N1-QA-09 | Nachvollziehbarkeit / Logging ohne sensible Daten | Fehlermeldungen und Logs sind für Nutzer verständlich und enthalten keine technischen Interna oder personenbezogenen Daten. | UC-01, UC-04, UC-06, UC-08, UC-09 | F2 (Ausnahmefälle), B1 (B1.5.4) | Muss | manuelle Prüfung der Fehlertexte im Browser |
-| N1-QA-10 | Betrieb im Free-/Student-Tier | Das System läuft innerhalb der Grenzen der genutzten Free-Tier-Dienste, ohne kostenpflichtige Zusatzdienste vorauszusetzen. | UC-02, UC-06 (mittelbar alle) | P1 (CON-T-02, CON-T-05, G-05), P2 (Deployment-Topologie) | Muss | Review der Deployment-Konfiguration und genutzten Dienste |
+| N1-QA-10 | Betrieb im Free-/Student-Tier | Das System läuft innerhalb der Grenzen der genutzten Free-Tier-Dienste, ohne kostenpflichtige Zusatzdienste vorauszusetzen. | UC-02, UC-06 (mittelbar alle) | P1 (CON-T-02, CON-T-05, G-05), Architekturdokumentation (Deployment-Topologie, §6) | Muss | Review der Deployment-Konfiguration und genutzten Dienste |
 
 ## N1.3 Detaillierte Qualitätsanforderungen
 
@@ -181,13 +181,13 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 |---|---|
 | ID | N1-QA-10 |
 | Name | Betrieb im Free-/Student-Tier |
-| Beschreibung | Das System muss innerhalb der Grenzen der kostenlosen Pläne von Vercel und Supabase betreibbar sein (Verbindungs-, Speicher- und Anfragegrenzen gemäß P2), ohne kostenpflichtige Zusatzdienste vorauszusetzen. |
-| Begründung | P1 nennt den Betrieb im Free-/Student-Tier als Geschäftsziel (G-05) und als technischen Constraint (CON-T-02, CON-T-05). P2 dokumentiert die konkreten Free-Tier-Limits (z. B. 500 MB Datenbank, 2 Verbindungen, ~50 Anfragen/s). |
+| Beschreibung | Das System muss innerhalb der Grenzen der kostenlosen Pläne von Vercel und Supabase betreibbar sein (Verbindungs-, Speicher- und Anfragegrenzen gemäß [Architekturdokumentation §6](../arch/README.md#6-verteilung-und-deployment)), ohne kostenpflichtige Zusatzdienste vorauszusetzen. |
+| Begründung | P1 nennt den Betrieb im Free-/Student-Tier als Geschäftsziel (G-05) und als technischen Constraint (CON-T-02, CON-T-05). Die Architekturdokumentation dokumentiert die konkreten Free-Tier-Limits (z. B. 500 MB Datenbank, 2 Verbindungen, ~50 Anfragen/s). |
 | Betroffene Use Cases | mittelbar alle; unmittelbar UC-02 (Datenbankabfragen) und UC-06 (Schreibzugriffe) |
 | Betroffene Datenobjekte / Datentypen | keine spezifische Entität; betrifft die Gesamtmenge der gespeicherten Daten und die Anfragehäufigkeit. |
 | Betroffene Dialoge | keine dialogspezifische Wirkung |
-| Akzeptanzkriterien | Given die aktuelle Deployment-Konfiguration, When sie mit den in P2 dokumentierten Free-Tier-Diensten abgeglichen wird, Then werden ausschließlich diese Dienste genutzt (kein kostenpflichtiger Zusatzdienst). Given die erwartete Nutzerzahl aus P1 (SC-04: ~100–500 aktive Nutzer), When das System unter dieser Last betrachtet wird, Then bleibt es im Rahmen des jeweiligen Provider-Plans. |
-| Prüfmethode | Review der Deployment- und Infrastrukturkonfiguration gegen P2; Abgleich der genutzten Dienste mit der Nachbarsystem-Liste aus P2/S1. |
+| Akzeptanzkriterien | Given die aktuelle Deployment-Konfiguration, When sie mit den in P2 gelisteten Nachbarsystemen und den in der Architekturdokumentation dokumentierten Free-Tier-Grenzen abgeglichen wird, Then werden ausschließlich diese Dienste innerhalb ihrer Grenzen genutzt (kein kostenpflichtiger Zusatzdienst). Given die erwartete Nutzerzahl aus P1 (SC-04: ~100–500 aktive Nutzer), When das System unter dieser Last betrachtet wird, Then bleibt es im Rahmen des jeweiligen Provider-Plans. |
+| Prüfmethode | Review der Deployment- und Infrastrukturkonfiguration gegen die Architekturdokumentation (§6); Abgleich der genutzten Dienste mit der Nachbarsystem-Liste aus P2/S1. |
 | Offene Punkte | Ein konkreter Lasttest bis an die Free-Tier-Grenzen ist nicht vorgesehen; SC-04 bleibt insofern eine Zielgröße, kein geprüfter Wert. |
 
 ## N1.4 Qualitätsanforderungen nach Use Cases
@@ -231,7 +231,7 @@ Folgende in P1 dokumentierte Randbedingungen sind für N1 unmittelbar relevant:
 | N1-QA-07 Wartbarkeit | Stichprobenartiger Namensabgleich Code ↔ D1/D2/P2 | Konsistente Benennung von Entitäten und Modulen | gesamte Codebasis |
 | N1-QA-08 Testbarkeit | Abgleich Akzeptanzkriterium ↔ beobachtetes Verhalten | Verhalten entspricht F2/F3-Kriterien | alle MVP-Use-Cases |
 | N1-QA-09 Nachvollziehbarkeit | Prüfung der Fehlertexte je Ausnahmefall | Keine technischen Interna, verständliche Sprache | Fehlerbehandlung (B1.5.4), Ergebniscodes (F3) |
-| N1-QA-10 Free-Tier-Betrieb | Review der Deployment-Konfiguration gegen P2 | Ausschließlich in P2 gelistete Free-Tier-Dienste genutzt | Deployment-Topologie (P2.4) |
+| N1-QA-10 Free-Tier-Betrieb | Review der Deployment-Konfiguration gegen die Architekturdokumentation | Ausschließlich in P2 gelistete Free-Tier-Dienste genutzt | Deployment-Topologie ([arch §6](../arch/README.md#6-verteilung-und-deployment)) |
 
 ## N1.7 Bewusst nicht festgelegte Qualitätsanforderungen
 
@@ -254,7 +254,7 @@ Folgende Punkte sind bewusst **nicht** Teil der Qualitätsanforderungen von Loca
 | Quelle | Relevanz für N1 | Ergebnis der Prüfung |
 |---|---|---|
 | [P1](P1-ziele-rahmenbedingungen.md) | Geschäftsziele (G-03, G-05), Erfolgskriterien (SC-02–SC-05) und Constraints (CON-T-*, CON-D-*) sind die primäre Quelle der Qualitätsziele. | Konsistent; N1-QA-01–N1-QA-05, N1-QA-10 direkt aus P1 abgeleitet, keine neuen Constraints erfunden. |
-| [P2](P2-architekturueberblick.md) | Deployment-Topologie und Free-Tier-Limits konkretisieren N1-QA-10; Fehlerbehandlungsmuster der Datenflüsse stützen N1-QA-06/N1-QA-09. | Konsistent; genannte Limits (500 MB, 2 Verbindungen) stimmen mit P2.4 überein. |
+| [P2](P2-architekturueberblick.md) | Nachbarsysteme grenzen die Free-Tier-Dienste ein, die N1-QA-10 einhält; die [Architekturdokumentation](../arch/README.md#6-verteilung-und-deployment) konkretisiert Deployment-Topologie und Free-Tier-Limits, ihre Fehlerbehandlungsmuster stützen N1-QA-06/N1-QA-09. | Konsistent; genannte Limits (500 MB, 2 Verbindungen) stimmen mit arch §6 überein. |
 | [F1](F1-geschaeftsprozesse.md) | Mobile Nutzung des QR-Check-ins (GP-02 A13) stützt N1-QA-02; Ausschluss von Benachrichtigungen stützt N1.7. | Konsistent; keine Widersprüche zu den Geschäftsprozessen. |
 | [F2](F2-anwendungsfaelle.md) | „Bezug zu NFR / Qualität" je Use Case ist die direkte Grundlage der Mapping-Tabelle in N1.4. | Konsistent; alle in F2 genannten NFR-Stichworte sind in N1.2/N1.3 aufgegriffen. |
 | [F3](F3-anwendungsfunktionen.md) | Sicherheitsniveau der PIN, Konsistenz bei Parallelzugriff und Zeittoleranz sind direkte Grundlage von N1-QA-05/N1-QA-06. | Konsistent; die fachlichen Regeln aus F3 werden in N1 bewertet und in N2 technisch konkretisiert. |
