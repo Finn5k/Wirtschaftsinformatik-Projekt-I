@@ -100,22 +100,6 @@ Diese Systeme können in späteren Iterationen ergänzt werden:
 
 ---
 
-## Zusammenfassung
-
-LocalCourt ist ein **Greenfield-System** ohne Legacy-Integration: Teilnehmer und Organisator nutzen eine einzige Blackbox, die mit vier externen Cloud-Nachbarsystemen kommuniziert — **Supabase Auth**, **Supabase PostgREST**, **OpenStreetMap** und **Nominatim** ([P2.2](#p22-nachbarsysteme)). Interne Architektur, Deployment-Topologie und Laufzeitabläufe stehen in der [Architekturdokumentation](../arch/README.md).
-
----
-
-## Referenzen
-
-- **P1 — Ziele und Rahmenbedingungen**: `P1-ziele-rahmenbedingungen.md`
-- **S1 — Nachbarsysteme (Schnittstellen-Contracts)**: [S1-nachbarsysteme.md](S1-nachbarsysteme.md)
-- **Architekturdokumentation** (Deployment, Laufzeitsichten): [docs/arch/README.md](../arch/README.md)
-- **Herold P2 Reference** (English): [GitHub](https://github.com/carstenlucke/herold/blob/main/docs/spec/P2-architekturueberblick.md)
-- **Team & Rollen**: `../../TEAMINFO.md`
-
----
-
 ## P2.7 Eingesetzte KI-Werkzeuge
 
 | Aspekt | Inhalt |
