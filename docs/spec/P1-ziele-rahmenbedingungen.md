@@ -79,22 +79,6 @@ LocalCourt löst das Problem der dezentralisierten Koordination: Heute brauchen 
 | **CON-T-04** | **Responsive Web-UI, kein Native App** | Spart Bundle-Size, Build-Time, App-Store-Approval-Overhead. Ein Codebase für alle Geräte (Desktop, Tablet, Smartphone). |
 | **CON-T-05** | **Maximale Nutzerzahl durch Free-Tier limitiert** | Konkrete Grenzen richten sich nach den Free-Tier-Kontingenten von Supabase und Vercel. Das System muss diese Grenzen beachten und transparent kommunizieren. |
 
-### Organisatorische Constraints
-
-| ID | Constraint | Rationale |
-|----|-----------|-----------|
-| **CON-O-01** | **4-köpfiges Team** | Feste Ressourcenverfügbarkeit. Keine unbegrenzten Personaloptionen. |
-| **CON-O-02** | **Hochschul-Projekt, impliziter Zeitrahmen (~6 Monate)** | Semester-basierte Lieferrhythmen. Nach Projektende Support/Wartung unklar. |
-| **CON-O-03** | **Dokumentation nach Siedersleben-Schema** | Verpflichtend für Hochschul-Projekt: Dokumentation der Spezifikation nach den Siedersleben-Bausteinen, insbesondere P1, P2, F1, F2, F3, D1, D2, B1, S1, N1, N2, E1 und E2. |
-
-### Datenschutz & Sicherheit
-
-| ID | Constraint | Rationale |
-|----|-----------|-----------|
-| **CON-D-01** | **DSGVO-Compliance** | EU-Projekt mit potenziell EU-Bürgern als Nutzer. Datenschutzerklärung und angemessener Umgang mit Auskunfts-/Löschanfragen sind zu berücksichtigen. Ein Consent-Banner ist nur erforderlich, falls zustimmungspflichtige Cookies oder Tracking eingesetzt werden. |
-| **CON-D-02** | **Keine Speicherung von Zahlungsdaten** | Out-of-Scope (NG-01). Vereinfacht Compliance (PCI-DSS nicht nötig). |
-| **CON-D-03** | **Authentifizierung ohne SMS** | SMS-Gateway = kostenpflichtig. Gewählte Variante: Anmeldung mit E-Mail und Passwort. |
-
 ---
 
 ## P1.6 Erfolgskriterien
