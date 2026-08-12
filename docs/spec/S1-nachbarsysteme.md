@@ -105,7 +105,7 @@ Hier genügt eine Berechtigungsprüfung ohne mehrschrittige fachliche Regel; die
 | **Richtung** | Bidirektional (Anfrage: Filter bzw. Nutzdaten; Antwort: Datensätze bzw. Ergebniscode). |
 | **Fehlerbehandlung** | Technische Fehler (fehlendes oder abgelaufenes Token, verletzte Zugriffsregel, Datenbankfehler) werden nach [N2.12](N2-querschnittskonzepte.md#n212-fehler-mapping-ergebniscodes--http) beantwortet und als Fehlerzustand nach [B1.5.4](B1-dialogspezifikation.md#b154-fehler--und-ladezustände) angezeigt. Meldungen an den Nutzer enthalten keine technischen Interna ([N1-QA-09](N1-nichtfunktionale-anforderungen.md#n12-qualitätsziele-im-überblick)). |
 | **Ausfallpfad** | Ist NB-03 nicht erreichbar, ist LocalCourt fachlich nicht nutzbar — es gibt keinen lokalen Datenbestand und keinen Offline-Betrieb. Der Nutzer erhält eine Meldung mit Wiederholmöglichkeit; es werden keine Daten zwischengespeichert und später nachgesendet. |
-| **Mengen und Grenzen** | Die Nutzung bleibt im Rahmen des Free-Tiers ([N1-QA-10](N1-nichtfunktionale-anforderungen.md#n1-qa-10--betrieb-im-free-student-tier), [P2.4](P2-architekturueberblick.md#p24-deployment--architektur-topologie)). Ergebnislisten werden seitenweise abgerufen; die konkrete Seitengröße ist ein Umsetzungsdetail. |
+| **Mengen und Grenzen** | Die Nutzung bleibt im Rahmen des Free-Tiers ([N1-QA-10](N1-nichtfunktionale-anforderungen.md#n1-qa-10--betrieb-im-free-student-tier), [Architekturdokumentation §6](../arch/README.md#6-verteilung-und-deployment)). Ergebnislisten werden seitenweise abgerufen; die konkrete Seitengröße ist ein Umsetzungsdetail. |
 
 ## S1.5 NB-04 — OpenStreetMap-Tiles
 
@@ -164,14 +164,14 @@ Ebenfalls **nicht** Gegenstand von S1:
 - **Endpunkt-URLs, Feldnamen, Header, Wiederholungsbudgets, Bibliotheksaufrufe** — Umsetzungsdetails, siehe [Architekturdokumentation](../arch/README.md) und Code.
 - **Innerer Aufbau des Frontends** (Komponenten, Zustandsverwaltung, Routing) — Architektur, nicht Schnittstelle.
 - **Datenbankschema, Schlüssel, Zugriffsregeln im Detail** — siehe [N2](N2-querschnittskonzepte.md).
-- **Ablauf und Reihenfolge der Aufrufe** innerhalb eines Anwendungsfalls — siehe [F2](F2-anwendungsfaelle.md) und die Datenflüsse in [P2.5](P2-architekturueberblick.md#p25-kritische-datenflüsse).
+- **Ablauf und Reihenfolge der Aufrufe** innerhalb eines Anwendungsfalls — siehe [F2](F2-anwendungsfaelle.md) und die Laufzeitsichten in der [Architekturdokumentation §5](../arch/README.md#5-laufzeitsichten).
 
 ## S1.8 Konsistenz und Cross-References
 
 | Baustein | Bezug zu S1 |
 |---|---|
 | [P1](P1-ziele-rahmenbedingungen.md) | Die Free-Tier-Rahmenbedingungen (CON-T-01–CON-T-05) begrenzen die Auswahl der Nachbarsysteme; CON-D-03 („Authentifizierung ohne SMS") stützt das Verfahren in S1.3. |
-| [P2](P2-architekturueberblick.md) | P2.2 zählt die Nachbarsysteme auf; jeder dortige NB-Eintrag wird hier in genau einem Abschnitt detailliert. P2.5 zeigt die Aufrufreihenfolge, S1 die Operationen selbst. |
+| [P2](P2-architekturueberblick.md) | P2.2 zählt die Nachbarsysteme auf; jeder dortige NB-Eintrag wird hier in genau einem Abschnitt detailliert. Die [Architekturdokumentation §5](../arch/README.md#5-laufzeitsichten) zeigt die Aufrufreihenfolge, S1 die Operationen selbst. |
 | [F1](F1-geschaeftsprozesse.md) | Die Akteure „Supabase", „OpenStreetMap" und „Nominatim" entsprechen NB-02/NB-03, NB-04 und NB-05. |
 | [F2](F2-anwendungsfaelle.md) | Jede Operation ist einem Anwendungsfall zugeordnet („Ausgelöst durch"); UC-01 wird durch S1.3, UC-02–UC-12 durch S1.4, die Kartenanteile von UC-02/UC-03/UC-10 zusätzlich durch S1.5 und das Reverse-Geocoding von UC-10 durch S1.6 erbracht. |
 | [F3](F3-anwendungsfunktionen.md) | AF-01, AF-02 und AF-04 stehen hinter den drei atomaren Operationen in S1.4; AF-03 liefert den abgeleiteten Status, der in den Leseoperationen mitgelesen wird. |

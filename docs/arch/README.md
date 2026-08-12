@@ -284,6 +284,18 @@ Service-Role-Key gehören weder in Vercel-Clientvariablen noch ins Repository.
 Monitoring erfolgt über Vercel Dashboard sowie Supabase Auth-, PostgREST- und
 Database-Logs. Eine zusätzliche Monitoring-Plattform ist kein MVP-Bestandteil.
 
+### 6.1 Free-Tier-Grenzen
+
+Konkrete Kontingente der genutzten Dienste (P1 CON-T-02, CON-T-05; N1-QA-10):
+
+| Komponente | Anbieter | Tier | Grenze |
+|---|---|---|---|
+| Frontend (Vercel) | Vercel Inc. | Free | Auto-Scale, CDN |
+| PostgREST API | Supabase | Free | ~50 Anfragen/s |
+| PostgreSQL | Supabase | Free | 500 MB, 2 Verbindungen |
+| Auth | Supabase | Free | Unlimitierte Nutzer |
+| Kartenkacheln (OSM) | OpenStreetMap Foundation | Free/Community | Community-Nutzungsrichtlinie |
+
 ## 7. Querschnittskonzepte
 
 | Konzept | Architekturregel | Maßgebliche Fundstelle |
