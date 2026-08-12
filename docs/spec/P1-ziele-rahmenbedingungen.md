@@ -95,23 +95,6 @@ LocalCourt löst das Problem der dezentralisierten Koordination: Heute brauchen 
 
 ---
 
-## Zusammenfassung
-
-LocalCourt ist eine **webbasierte Plattform zur dezentralisierten Koordination lokaler Sportaktivitäten**. Das System richtet sich primär an Sportbegeisterte im Alter von 18–30 Jahren und adressiert das Problem unzentralisierter Kommunikation. Erfolg wird am Erreichen von UX-Zielen, System-Stabilität, und Team-Acceptance gemessen.
-
-Die Mission wird unter klaren Budget-, Technologie-, und zeitlichen Constraints realisiert: Free-Tier-only, PostgreSQL, React/Node.js, und impliziter 6-monatiger Hochschul-Rahmen. Explizit außer Scope bleiben Zahlungssysteme, Nutzer-Messaging, AI-Features, und kommerzielles Booking — diese hätten den MVP verzögert ohne strategischen Mehrwert.
-
----
-
-## Referenzen
-
-- **Siedersleben-Schema**: strukturierte Softwarespezifikation in Bausteine wie P1/P2, F1–F3, D1/D2, B1–B3, S1–S3, N1/N2 und E1/E2.
-- **Team & Rollen**: Siehe [`TEAMINFO.md`](../../TEAMINFO.md) im Repository-Root
-- **Architekturdetails**: siehe Architekturdokumentation nach arc42 unter `docs/arch/`
-- **Beispiel**: [Herold P1 — Goals and Constraints](https://github.com/carstenlucke/herold/blob/main/docs/spec/P1-ziele-rahmenbedingungen.md) (English reference)
-
----
-
 ## P1.7 Eingesetzte KI-Werkzeuge
 
 | Aspekt | Inhalt |
