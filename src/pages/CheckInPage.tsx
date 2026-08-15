@@ -197,33 +197,23 @@ export function CheckInPage() {
       </span>
 
       <h1 className="mt-4 text-center text-3xl font-extrabold">
-        QR-Code scannen
+        QR-Code mit Kamera scannen
       </h1>
 
       <p className="mt-2 max-w-xs text-center text-sm leading-6 text-slate-300">
-        Scanne den QR-Code des Organisators, um deine Anwesenheit bei „
-        {session.title}“ zu bestätigen.
+        Öffne die Kamera-App deines Geräts und scanne den QR-Code des
+        Organisators. Der erkannte Link führt mit vorausgefülltem Code zurück
+        zum Check-in für „{session.title}“.
       </p>
 
-      <div className="mt-8 flex h-60 w-60 items-center justify-center rounded-[2rem] bg-white text-slate-950">
-        <QrCode size={120} />
+      <div className="mt-8 flex h-48 w-48 items-center justify-center rounded-[2rem] border border-white/15 bg-white/10 text-emerald-300">
+        <QrCode size={88} />
       </div>
 
       <button
         type="button"
-        onClick={() => {
-          checkIn(session.id);
-          setView("success");
-        }}
-        className="mt-8 w-full rounded-2xl bg-emerald-500 py-3 font-bold text-white"
-      >
-        Teilnahme bestätigen
-      </button>
-
-      <button
-        type="button"
         onClick={() => setView("pin")}
-        className="mt-3 w-full rounded-2xl border border-white/20 py-3 font-bold text-white"
+        className="mt-8 w-full rounded-2xl bg-emerald-500 py-3 font-bold text-white"
       >
         Code manuell eingeben
       </button>

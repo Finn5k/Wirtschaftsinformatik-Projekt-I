@@ -13,6 +13,7 @@ import {
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { StatusBadge } from "../components/sessions/StatusBadge";
+import { CheckInQrCode } from "../components/sessions/CheckInQrCode";
 import { getSessionById, joinSession } from "../services/sessionService";
 import { getCurrentUser } from "../services/userService";
 import { isSessionFull } from "../types/session";
@@ -164,7 +165,11 @@ export function SessionDetailPage() {
           <section className="rounded-3xl bg-slate-950 p-4 text-white">
             <div className="flex items-start gap-4">
               <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-white text-slate-950">
-                <QrCode size={48} />
+                <CheckInQrCode
+                  sessionId={session.id}
+                  pin={session.pin}
+                  size={68}
+                />
               </div>
 
               <div className="min-w-0 flex-1">
