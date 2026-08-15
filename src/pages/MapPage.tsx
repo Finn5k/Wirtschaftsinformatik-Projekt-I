@@ -7,6 +7,11 @@ import { StatusBadge } from "../components/sessions/StatusBadge";
 import { sportTypes } from "../data/sports";
 import { getSessionsBySportType } from "../services/sessionService";
 import type { SportSession, SportType } from "../types/session";
+import {
+  formatSessionDate,
+  formatSessionTime,
+  getSessionStatus,
+} from "../utils/sessionTime";
 
 type SessionFilter = "Alle" | SportType;
 
@@ -135,7 +140,8 @@ export function MapPage() {
                   <br />
                   {session.locationName}
                   <br />
-                  {session.dateLabel} · {session.timeLabel}
+                  {formatSessionDate(session.startAt)} ·{" "}
+                  {formatSessionTime(session.startAt)}
                 </Popup>
               </Marker>
             );
@@ -156,7 +162,7 @@ export function MapPage() {
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
               <div className="mb-2 flex items-center gap-2">
-                <StatusBadge status={selectedSession.status} />
+                <StatusBadge status={getSessionStatus(selectedSession)} />
                 <span className="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-bold text-blue-700">
                   {selectedSession.sportType}
                 </span>
@@ -180,7 +186,7 @@ export function MapPage() {
             <div className="rounded-2xl bg-slate-50 p-3">
               <p className="text-xs text-slate-500">Zeit</p>
               <p className="font-extrabold text-slate-950">
-                {selectedSession.timeLabel}
+                {formatSessionTime(selectedSession.startAt)}
               </p>
             </div>
 

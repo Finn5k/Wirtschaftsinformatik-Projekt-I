@@ -8,6 +8,11 @@ import {
 } from "../services/sessionService";
 import { getCurrentUser } from "../services/userService";
 import type { SportSession } from "../types/session";
+import {
+  formatSessionDate,
+  formatSessionTime,
+  getSessionStatus,
+} from "../utils/sessionTime";
 
 // "Meine Sessions" gemäß B1 DLG-07 mit zwei Zuständen (Tabs):
 // Bevorstehend (UC-05) und Vergangen (UC-11, read-only Historie).
@@ -120,6 +125,7 @@ function MySessionRow({ session, showCheckInInfo }: MySessionRowProps) {
     (participant) => participant.id === currentUser.id,
   );
   const wasCheckedIn = myParticipation?.status === "checked_in";
+  const status = getSessionStatus(session);
 
   return (
     <Link
@@ -127,7 +133,7 @@ function MySessionRow({ session, showCheckInInfo }: MySessionRowProps) {
       className="block rounded-3xl border border-slate-100 bg-white p-4 shadow-sm"
     >
       <div className="mb-2 flex flex-wrap items-center gap-2">
-        <StatusBadge status={session.status} />
+        <StatusBadge status={status} />
         <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">
           {session.sportType}
         </span>
@@ -150,7 +156,7 @@ function MySessionRow({ session, showCheckInInfo }: MySessionRowProps) {
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
         <span className="flex items-center gap-1">
           <Clock size={13} />
-          {session.dateLabel} · {session.timeLabel}
+          {formatSessionDate(session.startAt)} · {formatSessionTime(session.startAt)}
         </span>
         <span className="flex items-center gap-1">
           <MapPin size={13} />

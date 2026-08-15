@@ -6,6 +6,7 @@ import { sportTypes } from "../data/sports";
 import { getSessionsBySportType } from "../services/sessionService";
 import { getCurrentUser } from "../services/userService";
 import type { SportType } from "../types/session";
+import { formatSessionDate, formatSessionTime } from "../utils/sessionTime";
 
 type SessionFilter = "Alle" | SportType;
 
@@ -121,8 +122,9 @@ export function DiscoverPage() {
                   </h3>
 
                   <p className="mt-1 text-sm text-white/80">
-                    {featuredSession.locationName} · {featuredSession.dateLabel}{" "}
-                    {featuredSession.timeLabel}
+                    {featuredSession.locationName} ·{" "}
+                    {formatSessionDate(featuredSession.startAt)}{" "}
+                    {formatSessionTime(featuredSession.startAt)}
                   </p>
                 </div>
               </div>

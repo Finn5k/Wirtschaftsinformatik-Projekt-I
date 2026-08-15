@@ -39,13 +39,10 @@ export interface SportSession {
   locationName: string;
   city: string;
   startAt: string;
-  dateLabel: string;
-  timeLabel: string;
   description: string;
   durationMin: number;
   participantsCount: number;
   maxParticipants: number;
-  status: SessionStatus;
   organizerId: string;
   organizerName: string;
   pin: string;

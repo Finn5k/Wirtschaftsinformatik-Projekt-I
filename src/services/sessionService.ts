@@ -1,6 +1,7 @@
 import { mockSessions } from "../data/mockSessions";
 import { mockUser } from "../data/mockUser";
 import type { SportSession, SportType } from "../types/session";
+import { getSessionStatus } from "../utils/sessionTime";
 
 let sessions = mockSessions.map((session) => ({
   ...session,
@@ -28,13 +29,12 @@ export function getSessionById(
 export function getDiscoverableSessions(): SportSession[] {
   return sessions
     .filter(
-      (session) =>
-        session.status === "scheduled" || session.status === "active",
+      (session) => getSessionStatus(session) !== "completed",
     )
     .sort((left, right) => {
       const statusOrder = { active: 0, scheduled: 1, completed: 2 };
       const statusDifference =
-        statusOrder[left.status] - statusOrder[right.status];
+        statusOrder[getSessionStatus(left)] - statusOrder[getSessionStatus(right)];
 
       if (statusDifference !== 0) {
         return statusDifference;
@@ -72,7 +72,7 @@ export function getMyUpcomingSessions(): SportSession[] {
     .filter(
       (session) =>
         isMySession(session) &&
-        (session.status === "scheduled" || session.status === "active"),
+        getSessionStatus(session) !== "completed",
     )
     .sort(
       (left, right) =>
@@ -85,7 +85,7 @@ export function getMyUpcomingSessions(): SportSession[] {
 export function getMyPastSessions(): SportSession[] {
   return sessions
     .filter(
-      (session) => isMySession(session) && session.status === "completed",
+      (session) => isMySession(session) && getSessionStatus(session) === "completed",
     )
     .sort((left, right) => {
       const leftEnd =
@@ -104,7 +104,7 @@ export function joinSession(sessionId: string): SportSession | undefined {
 
   if (
     !session ||
-    session.status === "completed" ||
+    getSessionStatus(session) === "completed" ||
     session.participants.some((participant) => participant.id === mockUser.id) ||
     session.participantsCount >= session.maxParticipants
   ) {
@@ -138,7 +138,7 @@ export function checkIn(sessionId: string): SportSession | undefined {
     (participant) => participant.id === mockUser.id,
   );
 
-  if (!session || session.status !== "active" || !participation) {
+  if (!session || getSessionStatus(session) !== "active" || !participation) {
     return session;
   }
 

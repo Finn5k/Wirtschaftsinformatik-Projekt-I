@@ -2,6 +2,11 @@ import { Clock, MapPin, Timer, Users } from "lucide-react";
 import { Link } from "react-router";
 import type { SportSession } from "../../types/session";
 import { isSessionFull } from "../../types/session";
+import {
+  formatSessionDate,
+  formatSessionTime,
+  getSessionStatus,
+} from "../../utils/sessionTime";
 import { StatusBadge } from "./StatusBadge";
 
 interface SessionCardProps {
@@ -16,17 +21,18 @@ export function SessionCard({ session }: SessionCardProps) {
   // "Voll" ist abgeleitet aus der Belegung (AF-01), kein eigener Status.
   // Volle Sessions bleiben ansehbar, aber ohne Beitritt — keine Warteliste (P1 NG-10).
   const isFull = isSessionFull(session);
+  const status = getSessionStatus(session);
 
   return (
     <article className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-sm">
       <div className="p-3">
         <div className="min-w-0">
           <div className="mb-2 flex flex-wrap items-center gap-2">
-            <StatusBadge status={session.status} />
+            <StatusBadge status={status} />
             <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">
               {session.sportType}
             </span>
-            {isFull && session.status !== "completed" && (
+            {isFull && status !== "completed" && (
               <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-700">
                 Voll
               </span>
@@ -48,7 +54,8 @@ export function SessionCard({ session }: SessionCardProps) {
             <div className="flex items-center gap-1 text-slate-500">
               <Clock size={13} />
               <span>
-                {session.dateLabel} · {session.timeLabel}
+                {formatSessionDate(session.startAt)} ·{" "}
+                {formatSessionTime(session.startAt)}
               </span>
             </div>
 

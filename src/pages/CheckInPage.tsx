@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { checkIn, getSessionById } from "../services/sessionService";
 import { getCurrentUser } from "../services/userService";
+import { getSessionStatus } from "../utils/sessionTime";
 
 // Check-in gemäß B1 DLG-06 (UC-08 QR / UC-09 PIN, Regeln in F3 AF-02).
 // Zustände: Scan → PIN-Eingabe → Erfolg / Abgelehnt; Zeitfenster nur bei "active".
@@ -17,6 +18,7 @@ export function CheckInPage() {
   const participation = session?.participants.find(
     (participant) => participant.id === currentUser.id,
   );
+  const status = session ? getSessionStatus(session) : undefined;
 
   const [view, setView] = useState<CheckInView>(
     participation?.status === "checked_in"
@@ -40,12 +42,12 @@ export function CheckInPage() {
   }
 
   // Zeitfenster gemäß AF-02 Regel 4: Check-in nur, solange die Session "active" ist.
-  if (session.status !== "active") {
+  if (status !== "active") {
     return (
       <BlockedScreen
         title="Check-in nicht möglich"
         message={
-          session.status === "scheduled"
+          status === "scheduled"
             ? `Der Check-in für „${session.title}" öffnet erst zum Session-Start.`
             : `„${session.title}" ist bereits beendet — der Check-in ist geschlossen.`
         }
