@@ -1,6 +1,30 @@
 import type { SportSession } from "../types/session";
 import { mockUser } from "./mockUser";
 
+function relativeStartAt({
+  days = 0,
+  hours = 0,
+  minutes = 0,
+}: {
+  days?: number;
+  hours?: number;
+  minutes?: number;
+}): string {
+  const start = new Date();
+  start.setSeconds(0, 0);
+  start.setDate(start.getDate() + days);
+  start.setHours(start.getHours() + hours);
+  start.setMinutes(start.getMinutes() + minutes);
+  return start.toISOString();
+}
+
+function startAtDayOffset(days: number, hours: number, minutes = 0): string {
+  const start = new Date();
+  start.setDate(start.getDate() + days);
+  start.setHours(hours, minutes, 0, 0);
+  return start.toISOString();
+}
+
 export const mockSessions: SportSession[] = [
   {
     id: "morning-run",
@@ -9,17 +33,14 @@ export const mockSessions: SportSession[] = [
     courtId: "court-wieseckaue",
     locationName: "Stadtpark Wieseckaue",
     city: "Gießen",
-    startAt: "2026-07-29T18:00:00+02:00",
+    startAt: startAtDayOffset(1, 8),
     latitude: 50.5926,
     longitude: 8.6909,
-    dateLabel: "Heute",
-    timeLabel: "18:00",
     description:
       "Starte mit uns aktiv in den Abend. Lockere Laufrunde durch die Wieseckaue mit moderatem Tempo.",
     durationMin: 60,
     participantsCount: 3,
     maxParticipants: 15,
-    status: "scheduled",
     organizerId: "current-user",
     organizerName: "Lena Aktiv",
     pin: "4821",
@@ -41,17 +62,14 @@ export const mockSessions: SportSession[] = [
     courtId: "court-giessen-west",
     locationName: "Sportplatz Gießen West",
     city: "Gießen",
-    startAt: "2026-07-29T10:00:00+02:00",
+    startAt: relativeStartAt({ minutes: -30 }),
     latitude: 50.5847,
     longitude: 8.6598,
-    dateLabel: "Heute",
-    timeLabel: "19:30",
     description:
       "Lockeres Kleinfeldspiel nach Uni oder Arbeit. Alle sind willkommen, Teams werden vor Ort gebildet.",
     durationMin: 90,
     participantsCount: 3,
     maxParticipants: 16,
-    status: "active",
     organizerId: "u4",
     organizerName: "Jonas",
     pin: "7302",
@@ -73,17 +91,14 @@ export const mockSessions: SportSession[] = [
     courtId: "court-lahnradweg",
     locationName: "Lahnradweg",
     city: "Gießen",
-    startAt: "2026-07-30T17:00:00+02:00",
+    startAt: startAtDayOffset(1, 19),
     latitude: 50.5764,
     longitude: 8.6847,
-    dateLabel: "Morgen",
-    timeLabel: "17:00",
     description:
       "Entspannte Fahrradrunde entlang der Lahn zum Sonnenuntergang. Ideal für alle, die eine lockere Runde fahren möchten.",
     durationMin: 75,
     participantsCount: 2,
     maxParticipants: 12,
-    status: "scheduled",
     organizerId: "u6",
     organizerName: "Amir",
     pin: "1958",
@@ -99,17 +114,14 @@ export const mockSessions: SportSession[] = [
     courtId: "court-campus",
     locationName: "Campus Court",
     city: "Friedberg",
-    startAt: "2026-07-29T20:00:00+02:00",
+    startAt: startAtDayOffset(1, 20),
     latitude: 50.3372,
     longitude: 8.7558,
-    dateLabel: "Heute",
-    timeLabel: "20:00",
     description:
       "Schnelle 3v3 Basketball-Session auf dem Campus Court. Ideal für lockere Runs nach Uni oder Arbeit.",
     durationMin: 90,
     participantsCount: 3,
     maxParticipants: 6,
-    status: "scheduled",
     organizerId: "u8",
     organizerName: "Chris",
     pin: "6440",
@@ -126,17 +138,14 @@ export const mockSessions: SportSession[] = [
     courtId: "court-thm-halle",
     locationName: "THM Sporthalle",
     city: "Gießen",
-    startAt: "2026-07-31T18:30:00+02:00",
+    startAt: startAtDayOffset(2, 18, 30),
     latitude: 50.5878,
     longitude: 8.6833,
-    dateLabel: "Freitag",
-    timeLabel: "18:30",
     description:
       "Offene Badminton-Session für Einsteiger und Fortgeschrittene. Schläger bitte selbst mitbringen.",
     durationMin: 120,
     participantsCount: 2,
     maxParticipants: 12,
-    status: "scheduled",
     organizerId: "u11",
     organizerName: "Maya",
     pin: "2716",
@@ -152,17 +161,14 @@ export const mockSessions: SportSession[] = [
     courtId: "court-ringallee",
     locationName: "Hallenbad Ringallee",
     city: "Gießen",
-    startAt: "2026-08-01T10:00:00+02:00",
+    startAt: startAtDayOffset(3, 10),
     latitude: 50.5967,
     longitude: 8.6849,
-    dateLabel: "Samstag",
-    timeLabel: "10:00",
     description:
       "Gemeinsame Schwimmeinheit mit Fokus auf Technik, ruhigem Tempo und sauberem Einstieg.",
     durationMin: 60,
     participantsCount: 2,
     maxParticipants: 10,
-    status: "scheduled",
     organizerId: "u13",
     organizerName: "Sophie",
     pin: "8135",
@@ -178,17 +184,14 @@ export const mockSessions: SportSession[] = [
     courtId: "court-lahnradweg",
     locationName: "Lahnradweg",
     city: "Gießen",
-    startAt: "2026-07-26T09:00:00+02:00",
+    startAt: startAtDayOffset(-2, 9),
     latitude: 50.5764,
     longitude: 8.6847,
-    dateLabel: "Letzten Sonntag",
-    timeLabel: "09:00",
     description:
       "Gemeinsame Laufrunde entlang der Lahn. Diese Session ist bereits abgeschlossen.",
     durationMin: 60,
     participantsCount: 3,
     maxParticipants: 12,
-    status: "completed",
     organizerId: "u6",
     organizerName: "Amir",
     pin: "5074",
@@ -210,17 +213,14 @@ export const mockSessions: SportSession[] = [
     courtId: "court-wieseckaue",
     locationName: "Stadtpark Wieseckaue",
     city: "Gießen",
-    startAt: "2026-07-15T18:00:00+02:00",
+    startAt: startAtDayOffset(-14, 18),
     latitude: 50.5926,
     longitude: 8.6909,
-    dateLabel: "Vor 2 Wochen",
-    timeLabel: "18:00",
     description:
       "Die erste Ausgabe des Morning Run. Diese Session ist bereits abgeschlossen.",
     durationMin: 60,
     participantsCount: 3,
     maxParticipants: 15,
-    status: "completed",
     organizerId: "current-user",
     organizerName: "Lena Aktiv",
     pin: "3390",

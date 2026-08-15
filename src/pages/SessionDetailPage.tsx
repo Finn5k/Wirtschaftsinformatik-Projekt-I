@@ -16,6 +16,11 @@ import { StatusBadge } from "../components/sessions/StatusBadge";
 import { getSessionById, joinSession } from "../services/sessionService";
 import { getCurrentUser } from "../services/userService";
 import { isSessionFull } from "../types/session";
+import {
+  formatSessionDate,
+  formatSessionTime,
+  getSessionStatus,
+} from "../utils/sessionTime";
 
 // Session-Detail gemäß B1 DLG-04 mit rollen- und statusabhängigen Zuständen:
 // Offen / Beigetreten / Organisator / Read-only (UC-03, UC-04, UC-07).
@@ -53,7 +58,8 @@ export function SessionDetailPage() {
   }
 
   const isOrganizer = session.organizerId === currentUser.id;
-  const isReadOnly = session.status === "completed";
+  const status = getSessionStatus(session);
+  const isReadOnly = status === "completed";
   const isFull = isSessionFull(session);
   const currentParticipation = session.participants.find(
     (participant) => participant.id === currentUser.id,
@@ -63,7 +69,7 @@ export function SessionDetailPage() {
   const canCheckIn =
     !isOrganizer &&
     currentParticipation?.status === "confirmed" &&
-    session.status === "active";
+    status === "active";
   const checkedInCount = session.participants.filter(
     (participant) => participant.status === "checked_in",
   ).length;
@@ -85,7 +91,7 @@ export function SessionDetailPage() {
 
         <div className="absolute bottom-5 left-4 right-4">
           <div className="mb-3 flex items-center gap-2">
-            <StatusBadge status={session.status} />
+            <StatusBadge status={status} />
             <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
               {session.sportType}
             </span>
@@ -140,12 +146,12 @@ export function SessionDetailPage() {
           <InfoCard
             icon={<Calendar size={18} />}
             label="Datum"
-            value={session.dateLabel}
+            value={formatSessionDate(session.startAt)}
           />
           <InfoCard
             icon={<Clock size={18} />}
             label="Uhrzeit"
-            value={session.timeLabel}
+            value={formatSessionTime(session.startAt)}
           />
           <InfoCard
             icon={<Timer size={18} />}
@@ -274,7 +280,7 @@ export function SessionDetailPage() {
 
         {!isOrganizer &&
           currentParticipation?.status === "checked_in" &&
-          session.status === "active" && (
+          status === "active" && (
             <section className="flex items-center gap-3 rounded-3xl bg-emerald-50 p-4 text-emerald-700">
               <CheckCircle2 size={22} />
               <p className="font-bold">Du bist eingecheckt.</p>
