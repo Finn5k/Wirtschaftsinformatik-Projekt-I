@@ -1,7 +1,8 @@
 import { KeyRound, Mail, User } from "lucide-react";
 import type { ReactNode } from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
+import { useAuth } from "../auth/authContext";
 
 // Anmelden / Registrieren gemäß B1 DLG-01 (UC-01).
 // UI-Prototyp: Die Prüfung übernimmt im finalen System Supabase Auth (S1, NB-02);
@@ -15,7 +16,9 @@ interface FormErrors {
 }
 
 export function LoginPage() {
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [mode, setMode] = useState<Mode>("login");
   const [email, setEmail] = useState("");
@@ -53,7 +56,14 @@ export function LoginPage() {
       return;
     }
 
-    navigate("/discover");
+    login();
+
+    const requestedPath = searchParams.get("redirect");
+    const safeRedirect =
+      requestedPath?.startsWith("/") && !requestedPath.startsWith("//")
+      ? requestedPath
+      : "/discover";
+    navigate(safeRedirect, { replace: true });
   }
 
   return (

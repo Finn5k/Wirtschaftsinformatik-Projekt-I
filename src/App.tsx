@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from "react-router";
+import { ProtectedRoute } from "./auth/ProtectedRoute";
 import { AppLayout } from "./components/layout/AppLayout";
 import { CheckInPage } from "./pages/CheckInPage";
 import { CreateSessionPage } from "./pages/CreateSessionPage";
@@ -15,16 +16,18 @@ export default function App() {
       {/* DLG-01: eigener Dialog ohne Hauptnavigation (B1) */}
       <Route path="/login" element={<LoginPage />} />
 
-      <Route element={<AppLayout />}>
-        <Route path="/" element={<Navigate to="/discover" replace />} />
-        <Route path="/discover" element={<DiscoverPage />} />
-        <Route path="/map" element={<MapPage />} />
-        <Route path="/sessions/new" element={<CreateSessionPage />} />
-        <Route path="/sessions/:sessionId" element={<SessionDetailPage />} />
-        <Route path="/my-sessions" element={<MySessionsPage />} />
-        <Route path="/check-in" element={<CheckInPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="*" element={<Navigate to="/discover" replace />} />
+      <Route element={<ProtectedRoute />}>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<Navigate to="/discover" replace />} />
+          <Route path="/discover" element={<DiscoverPage />} />
+          <Route path="/map" element={<MapPage />} />
+          <Route path="/sessions/new" element={<CreateSessionPage />} />
+          <Route path="/sessions/:sessionId" element={<SessionDetailPage />} />
+          <Route path="/my-sessions" element={<MySessionsPage />} />
+          <Route path="/check-in" element={<CheckInPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="*" element={<Navigate to="/discover" replace />} />
+        </Route>
       </Route>
     </Routes>
   );
