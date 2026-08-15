@@ -17,8 +17,9 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { mockCourts } from "../../data/mockCourts";
 import { sportTypes } from "../../data/sports";
+import { createSession } from "../../services/sessionService";
 import { getCurrentUser } from "../../services/userService";
-import type { SportType } from "../../types/session";
+import type { Court, SportSession, SportType } from "../../types/session";
 
 // Feldliste gemäß B1 DLG-05 (normativ): Sportart, Titel, Beschreibung (Kann),
 // Datum, Uhrzeit, Dauer, Court (Auswahl oder Neuerfassung, UC-10), Teilnehmerlimit.
@@ -40,15 +41,11 @@ interface FormState {
 
 type FormErrors = Partial<Record<keyof FormState | "duration", string>>;
 
-function generatePin(): string {
-  return String(Math.floor(Math.random() * 10000)).padStart(4, "0");
-}
-
 export function CreateSessionForm() {
   const currentUser = getCurrentUser();
   const [participantLimit, setParticipantLimit] = useState(10);
   const [durationMin, setDurationMin] = useState(60);
-  const [createdPin, setCreatedPin] = useState<string | null>(null);
+  const [createdSession, setCreatedSession] = useState<SportSession | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
 
   const [form, setForm] = useState<FormState>({
@@ -128,12 +125,31 @@ export function CreateSessionForm() {
       return;
     }
 
-    // Im finalen System: Session speichern (UC-06), Status "scheduled" (AF-03),
-    // PIN/QR erzeugen (AF-04), Organisator als Teilnehmer erfassen (AF-01).
-    setCreatedPin(generatePin());
+    const selectedCourt = mockCourts.find((entry) => entry.id === form.courtId);
+    const court: Court = selectedCourt ?? {
+      id: `mock-court-${crypto.randomUUID()}`,
+      name: form.newCourtName.trim(),
+      city: form.newCourtCity.trim(),
+      address: form.newCourtAddress.trim() || undefined,
+      // Übergangswert des UI-Prototyps, bis die Kartenpin-Erfassung umgesetzt ist.
+      latitude: 50.5841,
+      longitude: 8.6784,
+    };
+
+    const session = createSession({
+      sportType: form.sportType,
+      title: form.title,
+      description: form.description,
+      startAt: new Date(`${form.date}T${form.time}`).toISOString(),
+      durationMin,
+      maxParticipants: participantLimit,
+      court,
+    });
+
+    setCreatedSession(session);
   }
 
-  if (createdPin) {
+  if (createdSession) {
     const courtLabel = isNewCourt
       ? `${form.newCourtName}, ${form.newCourtCity}`
       : (() => {
@@ -170,7 +186,7 @@ export function CreateSessionForm() {
               <div className="mt-3 flex items-center gap-2">
                 <KeyRound size={18} className="text-emerald-300" />
                 <span className="text-3xl font-extrabold tracking-[0.3em]">
-                  {createdPin}
+                  {createdSession.pin}
                 </span>
               </div>
 
@@ -210,7 +226,7 @@ export function CreateSessionForm() {
 
         <button
           type="button"
-          onClick={() => setCreatedPin(null)}
+          onClick={() => setCreatedSession(null)}
           className="w-full rounded-2xl border border-slate-200 bg-white py-3 font-bold text-blue-600"
         >
           Weitere Session erstellen
