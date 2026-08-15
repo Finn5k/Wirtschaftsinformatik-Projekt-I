@@ -1,6 +1,7 @@
 import { Check, LogOut, Mail, MapPin, Pencil, X } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { useAuth } from "../auth/authContext";
 import { sportTypes } from "../data/sports";
 import { getCurrentUser } from "../services/userService";
 import type { SportType } from "../types/session";
@@ -12,6 +13,7 @@ import type { SportType } from "../types/session";
 const allSports: readonly SportType[] = sportTypes;
 
 export function ProfilePage() {
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const currentUser = getCurrentUser();
 
@@ -218,7 +220,10 @@ export function ProfilePage() {
         <section className="px-4 pb-6 pt-5">
           <button
             type="button"
-            onClick={() => navigate("/login")}
+            onClick={() => {
+              navigate("/login", { replace: true });
+              logout();
+            }}
             className="flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white py-3 font-bold text-red-600 shadow-sm"
           >
             <LogOut size={18} />
