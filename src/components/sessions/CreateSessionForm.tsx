@@ -7,7 +7,6 @@ import {
   MapPin,
   Minus,
   Plus,
-  QrCode,
   Timer,
   Users,
   Zap,
@@ -20,6 +19,7 @@ import { sportTypes } from "../../data/sports";
 import { createSession } from "../../services/sessionService";
 import { getCurrentUser } from "../../services/userService";
 import type { Court, SportSession, SportType } from "../../types/session";
+import { CheckInQrCode } from "./CheckInQrCode";
 
 // Feldliste gemäß B1 DLG-05 (normativ): Sportart, Titel, Beschreibung (Kann),
 // Datum, Uhrzeit, Dauer, Court (Auswahl oder Neuerfassung, UC-10), Teilnehmerlimit.
@@ -175,7 +175,11 @@ export function CreateSessionForm() {
         <section className="rounded-3xl bg-slate-950 p-5 text-white">
           <div className="flex items-start gap-4">
             <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-white text-slate-950">
-              <QrCode size={64} />
+              <CheckInQrCode
+                sessionId={createdSession.id}
+                pin={createdSession.pin}
+                size={80}
+              />
             </div>
 
             <div className="min-w-0 flex-1">
