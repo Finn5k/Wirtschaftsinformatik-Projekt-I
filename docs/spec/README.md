@@ -137,7 +137,7 @@ Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste)
 - Standard-Benutzeraktionen (Navigation, Validierung, Fehler-/Leerzustände) einmal zentral
 - Prototyp-Screenshots je Dialog (illustrativ, nicht bindend für das visuelle Design)
 - Abgleich mit dem aktuellen Frontend: alle acht Dialoge sind im UI-Prototyp realisiert, teilweise mit lokaler Mock-Persistenz, aber noch ohne Backend beziehungsweise serverseitige Persistenz
-- Verbleibende Abweichungen, insbesondere echte Authentifizierung und Autorisierung, serverseitige Persistenz, Court-Erfassung mit Reverse-Geocoding sowie API-Fehlerzustände
+- Verbleibende Abweichungen, insbesondere echte Authentifizierung und Autorisierung, serverseitige Persistenz sowie noch nicht durchgängig realisierte API-Fehlerzustände
 
 ---
 
@@ -286,6 +286,7 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 | 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Schlanke arc42-Architekturdokumentation mit Baustein-, Laufzeit- und Deployment-Sichten, Querschnittskonzepten, ADRs und Prototyp-Abgleich ergänzt |
 | 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Finalen Link-, Redundanz- und Konsistenzdurchlauf durchgeführt; P2-Kurzindex, Testabgrenzung und abgeschlossene Entscheidungsstände vereinheitlicht |
 | 2026-08-16 | Chevron Rustler, mit Codex-Unterstützung | Frontend-Abgleich nach PR #49 bis #52 aktualisiert: simulierte Authentifizierung, lokale Session-Persistenz, Statusableitung und QR-Code-Erzeugung korrekt dokumentiert |
+| 2026-08-18 | Chevron Rustler, mit Codex-Unterstützung | Court-Neuerfassung im UI-Prototyp mit Kartenpin, Nominatim-Reverse-Geocoding, Wiederholungszustand und lokaler Mock-Persistenz umgesetzt und dokumentiert |
 
 ---
 
@@ -304,4 +305,4 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 |---|---|
 | Werkzeug | GitHub Copilot, Claude Code, ChatGPT — soweit im jeweiligen Bearbeitungsschritt verwendet |
 | Verwendung | Strukturierung, Formulierungsvorschläge, Konsistenzprüfung, Pflege des Spezifikationsindex und Verknüpfung der ergänzenden arc42-Architekturdokumentation |
-| Prüfung | Inhalte wurden gegen die vorhandenen Spezifikationsbausteine, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Die fachliche Verantwortung bleibt beim Team. Jeder Baustein weist die konkrete KI-Nutzung zusätzlich im eigenen Abschnitt „Eingesetzte KI-Werkzeuge" aus. Redundanzkorrektur (2026-07-28, Codex): Status im Index nur noch in den Überschriften geführt; wiederholte Entscheidungen und dezentrale Status-/Historienangaben auf ihre maßgeblichen Fundstellen reduziert. Finaler Hygienecheck (2026-07-29, Codex): relative Linkziele, Abschnittsverweise, Offenheitsformulierungen und Kurzbeschreibungen erneut repositoryweit abgeglichen. Aktualisierung (2026-08-16, Codex): B1-Kurzbeschreibung und zentrale Historie gegen den implementierten Frontendstand aus PR #49 bis #52 geprüft. |
+| Prüfung | Inhalte wurden gegen die vorhandenen Spezifikationsbausteine, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Die fachliche Verantwortung bleibt beim Team. Jeder Baustein weist die konkrete KI-Nutzung zusätzlich im eigenen Abschnitt „Eingesetzte KI-Werkzeuge" aus. Redundanzkorrektur (2026-07-28, Codex): Status im Index nur noch in den Überschriften geführt; wiederholte Entscheidungen und dezentrale Status-/Historienangaben auf ihre maßgeblichen Fundstellen reduziert. Finaler Hygienecheck (2026-07-29, Codex): relative Linkziele, Abschnittsverweise, Offenheitsformulierungen und Kurzbeschreibungen erneut repositoryweit abgeglichen. Aktualisierung (2026-08-16, Codex): B1-Kurzbeschreibung und zentrale Historie gegen den implementierten Frontendstand aus PR #49 bis #52 geprüft. Aktualisierung (2026-08-18, Codex): B1-Kurzbeschreibung und Historie nach Umsetzung der spezifizierten Court-Neuerfassung aktualisiert. |

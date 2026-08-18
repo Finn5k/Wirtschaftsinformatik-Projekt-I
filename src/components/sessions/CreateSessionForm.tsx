@@ -4,22 +4,32 @@ import {
   Clock,
   FileText,
   KeyRound,
+  LoaderCircle,
   MapPin,
   Minus,
   Plus,
+  RefreshCw,
   Timer,
   Users,
   Zap,
 } from "lucide-react";
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router";
-import { mockCourts } from "../../data/mockCourts";
 import { sportTypes } from "../../data/sports";
+import { createCourt, getCourts } from "../../services/courtService";
+import {
+  reverseGeocode,
+  type ReverseGeocodingResult,
+} from "../../services/geocodingService";
 import { createSession } from "../../services/sessionService";
 import { getCurrentUser } from "../../services/userService";
 import type { Court, SportSession, SportType } from "../../types/session";
 import { CheckInQrCode } from "./CheckInQrCode";
+import {
+  CourtLocationPicker,
+  type CourtCoordinates,
+} from "./CourtLocationPicker";
 
 // Feldliste gemäß B1 DLG-05 (normativ): Sportart, Titel, Beschreibung (Kann),
 // Datum, Uhrzeit, Dauer, Court (Auswahl oder Neuerfassung, UC-10), Teilnehmerlimit.
@@ -39,7 +49,16 @@ interface FormState {
   newCourtAddress: string;
 }
 
-type FormErrors = Partial<Record<keyof FormState | "duration", string>>;
+type FormErrors = Partial<
+  Record<keyof FormState | "duration" | "newCourtLocation", string>
+>;
+
+type GeocodingStatus = "idle" | "loading" | "success" | "error";
+
+function isStartInPast(date: string, time: string) {
+  const startAt = new Date(`${date}T${time}`);
+  return Number.isFinite(startAt.getTime()) && startAt.getTime() < Date.now();
+}
 
 export function CreateSessionForm() {
   const currentUser = getCurrentUser();
@@ -47,6 +66,13 @@ export function CreateSessionForm() {
   const [durationMin, setDurationMin] = useState(60);
   const [createdSession, setCreatedSession] = useState<SportSession | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [courtCoordinates, setCourtCoordinates] =
+    useState<CourtCoordinates | null>(null);
+  const [geocodingStatus, setGeocodingStatus] =
+    useState<GeocodingStatus>("idle");
+  const [geocodingError, setGeocodingError] = useState<string | null>(null);
+  const [mapTilesUnavailable, setMapTilesUnavailable] = useState(false);
+  const geocodingAbortController = useRef<AbortController | null>(null);
 
   const [form, setForm] = useState<FormState>({
     sportType: currentUser.preferredSports[0] ?? sportTypes[0],
@@ -61,6 +87,7 @@ export function CreateSessionForm() {
   });
 
   const isNewCourt = form.courtId === NEW_COURT_VALUE;
+  const courts = getCourts();
 
   function updateForm(field: keyof FormState, value: string) {
     setForm((current) => ({
@@ -82,6 +109,46 @@ export function CreateSessionForm() {
     setDurationMin((current) => Math.max(1, current + delta));
   }
 
+  async function lookupCourtLocation(coordinates: CourtCoordinates) {
+    geocodingAbortController.current?.abort();
+    const abortController = new AbortController();
+    geocodingAbortController.current = abortController;
+
+    setCourtCoordinates(coordinates);
+    setGeocodingStatus("loading");
+    setGeocodingError(null);
+    setForm((current) => ({
+      ...current,
+      newCourtCity: "",
+      newCourtAddress: "",
+    }));
+    setErrors((current) => ({ ...current, newCourtLocation: undefined }));
+
+    try {
+      const result: ReverseGeocodingResult = await reverseGeocode(
+        coordinates.latitude,
+        coordinates.longitude,
+        abortController.signal,
+      );
+
+      setForm((current) => ({
+        ...current,
+        newCourtCity: result.city,
+        newCourtAddress: result.address ?? "",
+      }));
+      setGeocodingStatus("success");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        return;
+      }
+
+      setGeocodingStatus("error");
+      setGeocodingError(
+        "Der Ort konnte nicht ermittelt werden. Bitte versuche es erneut oder setze den Pin neu.",
+      );
+    }
+  }
+
   function validateForm() {
     const nextErrors: FormErrors = {};
 
@@ -91,11 +158,8 @@ export function CreateSessionForm() {
 
     if (!form.date) {
       nextErrors.date = "Bitte wähle ein Datum aus.";
-    } else if (form.time) {
-      const startAt = new Date(`${form.date}T${form.time}`);
-      if (Number.isFinite(startAt.getTime()) && startAt.getTime() < Date.now()) {
-        nextErrors.date = "Der Zeitpunkt muss in der Zukunft liegen.";
-      }
+    } else if (form.time && isStartInPast(form.date, form.time)) {
+      nextErrors.date = "Der Zeitpunkt muss in der Zukunft liegen.";
     }
 
     if (!form.time) {
@@ -110,8 +174,13 @@ export function CreateSessionForm() {
       if (!form.newCourtName.trim()) {
         nextErrors.newCourtName = "Bitte gib einen Namen für den Sportort ein.";
       }
-      if (!form.newCourtCity.trim()) {
-        nextErrors.newCourtCity = "Bitte gib einen Ort an.";
+      if (
+        !courtCoordinates ||
+        geocodingStatus !== "success" ||
+        !form.newCourtCity.trim()
+      ) {
+        nextErrors.newCourtLocation =
+          "Bitte setze einen Kartenpin und warte auf die Ortsbestimmung.";
       }
     }
 
@@ -125,16 +194,25 @@ export function CreateSessionForm() {
       return;
     }
 
-    const selectedCourt = mockCourts.find((entry) => entry.id === form.courtId);
-    const court: Court = selectedCourt ?? {
-      id: `mock-court-${crypto.randomUUID()}`,
-      name: form.newCourtName.trim(),
-      city: form.newCourtCity.trim(),
-      address: form.newCourtAddress.trim() || undefined,
-      // Übergangswert des UI-Prototyps, bis die Kartenpin-Erfassung umgesetzt ist.
-      latitude: 50.5841,
-      longitude: 8.6784,
-    };
+    const selectedCourt = courts.find((entry) => entry.id === form.courtId);
+    let court: Court;
+
+    if (selectedCourt) {
+      court = selectedCourt;
+    } else {
+      if (!courtCoordinates || !form.newCourtCity.trim()) {
+        return;
+      }
+
+      court = createCourt({
+        id: `mock-court-${crypto.randomUUID()}`,
+        name: form.newCourtName.trim(),
+        city: form.newCourtCity.trim(),
+        address: form.newCourtAddress.trim() || undefined,
+        latitude: courtCoordinates.latitude,
+        longitude: courtCoordinates.longitude,
+      });
+    }
 
     const session = createSession({
       sportType: form.sportType,
@@ -150,12 +228,7 @@ export function CreateSessionForm() {
   }
 
   if (createdSession) {
-    const courtLabel = isNewCourt
-      ? `${form.newCourtName}, ${form.newCourtCity}`
-      : (() => {
-          const court = mockCourts.find((entry) => entry.id === form.courtId);
-          return court ? `${court.name}, ${court.city}` : "—";
-        })();
+    const courtLabel = `${createdSession.locationName}, ${createdSession.city}`;
 
     return (
       <div className="space-y-4">
@@ -300,7 +373,7 @@ export function CreateSessionForm() {
         error={errors.courtId}
         placeholder="Sportort auswählen ..."
         options={[
-          ...mockCourts.map((court) => ({
+          ...courts.map((court) => ({
             value: court.id,
             label: `${court.name}, ${court.city}`,
           })),
@@ -324,22 +397,69 @@ export function CreateSessionForm() {
             placeholder="z.B. Bolzplatz Nordstadt"
           />
 
-          <FormInput
-            icon={<MapPin size={18} />}
-            label="Ort / Stadt"
-            value={form.newCourtCity}
-            onChange={(value) => updateForm("newCourtCity", value)}
-            error={errors.newCourtCity}
-            placeholder="z.B. Gießen"
+          <CourtLocationPicker
+            coordinates={courtCoordinates}
+            onSelect={lookupCourtLocation}
+            onTileError={() => setMapTilesUnavailable(true)}
           />
 
-          <FormInput
-            icon={<MapPin size={18} />}
-            label="Adresse (optional)"
-            value={form.newCourtAddress}
-            onChange={(value) => updateForm("newCourtAddress", value)}
-            placeholder="z.B. Nordstadtstraße 12"
-          />
+          {mapTilesUnavailable && (
+            <p className="rounded-2xl bg-amber-50 px-4 py-3 text-xs font-bold leading-5 text-amber-800">
+              Die Kartenkacheln konnten nicht vollständig geladen werden. Prüfe
+              deine Verbindung und versuche es erneut.
+            </p>
+          )}
+
+          {geocodingStatus === "loading" && (
+            <p className="flex items-center gap-2 rounded-2xl bg-white px-4 py-3 text-xs font-bold text-blue-700">
+              <LoaderCircle className="animate-spin" size={16} />
+              Ort und Adresse werden ermittelt …
+            </p>
+          )}
+
+          {geocodingStatus === "success" && (
+            <section className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
+              <p className="text-xs font-bold text-emerald-700">
+                Standort ermittelt
+              </p>
+              <p className="mt-1 text-sm font-extrabold text-slate-950">
+                {form.newCourtCity}
+              </p>
+              <p className="mt-1 text-xs text-slate-600">
+                {form.newCourtAddress || "Keine genaue Adresse verfügbar"}
+              </p>
+              {courtCoordinates && (
+                <p className="mt-2 text-[11px] text-slate-500">
+                  {courtCoordinates.latitude.toFixed(6)}, {" "}
+                  {courtCoordinates.longitude.toFixed(6)}
+                </p>
+              )}
+            </section>
+          )}
+
+          {geocodingStatus === "error" && (
+            <section className="rounded-2xl border border-red-100 bg-red-50 p-4">
+              <p className="text-xs font-bold leading-5 text-red-700">
+                {geocodingError}
+              </p>
+              {courtCoordinates && (
+                <button
+                  type="button"
+                  onClick={() => lookupCourtLocation(courtCoordinates)}
+                  className="mt-3 flex items-center gap-2 text-xs font-extrabold text-red-700"
+                >
+                  <RefreshCw size={14} />
+                  Erneut versuchen
+                </button>
+              )}
+            </section>
+          )}
+
+          {errors.newCourtLocation && (
+            <p className="px-1 text-xs font-bold text-red-600">
+              {errors.newCourtLocation}
+            </p>
+          )}
         </div>
       )}
 
