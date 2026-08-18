@@ -3,7 +3,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../auth/authContext";
 import { sportTypes } from "../data/sports";
-import { getCurrentUser } from "../services/userService";
+import {
+  getCurrentUser,
+  updateCurrentUser,
+} from "../services/userService";
 import type { SportType } from "../types/session";
 
 // Profil gemäß B1 DLG-08 (UC-12): Anzeigename, Ort, E-Mail (read-only, Auth),
@@ -15,24 +18,20 @@ const allSports: readonly SportType[] = sportTypes;
 export function ProfilePage() {
   const { logout } = useAuth();
   const navigate = useNavigate();
-  const currentUser = getCurrentUser();
+  const [currentUser, setCurrentUser] = useState(getCurrentUser);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState(currentUser.name);
-  const [city, setCity] = useState(currentUser.city);
-  const [sports, setSports] = useState<SportType[]>(
+  const [draftName, setDraftName] = useState(currentUser.name);
+  const [draftCity, setDraftCity] = useState(currentUser.city);
+  const [draftSports, setDraftSports] = useState<SportType[]>(
     currentUser.preferredSports,
   );
-
-  const [draftName, setDraftName] = useState(name);
-  const [draftCity, setDraftCity] = useState(city);
-  const [draftSports, setDraftSports] = useState<SportType[]>(sports);
   const [nameError, setNameError] = useState<string | null>(null);
 
   function startEditing() {
-    setDraftName(name);
-    setDraftCity(city);
-    setDraftSports(sports);
+    setDraftName(currentUser.name);
+    setDraftCity(currentUser.city);
+    setDraftSports(currentUser.preferredSports);
     setNameError(null);
     setIsEditing(true);
   }
@@ -51,10 +50,13 @@ export function ProfilePage() {
       return;
     }
 
-    // Im finalen System: UC-12 speichert die Änderungen über die API.
-    setName(draftName.trim());
-    setCity(draftCity.trim());
-    setSports(draftSports);
+    setCurrentUser(
+      updateCurrentUser({
+        name: draftName,
+        city: draftCity,
+        preferredSports: draftSports,
+      }),
+    );
     setIsEditing(false);
   }
 
@@ -64,7 +66,7 @@ export function ProfilePage() {
         <div className="mb-5 flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold text-white/80">Profil</p>
-            <h1 className="text-2xl font-extrabold">{name}</h1>
+            <h1 className="text-2xl font-extrabold">{currentUser.name}</h1>
           </div>
 
           {!isEditing && (
@@ -81,14 +83,14 @@ export function ProfilePage() {
         <div className="flex items-center gap-4">
           <img
             src={currentUser.avatarUrl}
-            alt={name}
+            alt={currentUser.name}
             className="h-20 w-20 rounded-3xl border-4 border-white/30 object-cover shadow-lg"
           />
 
           <div className="min-w-0 flex-1">
             <p className="flex items-center gap-1.5 text-sm font-semibold text-white/85">
               <MapPin size={14} />
-              {city || "Kein Ort angegeben"}
+              {currentUser.city || "Kein Ort angegeben"}
             </p>
             <p className="mt-1.5 flex items-center gap-1.5 text-sm font-semibold text-white/85">
               <Mail size={14} />
@@ -196,9 +198,9 @@ export function ProfilePage() {
               </p>
             </div>
 
-            {sports.length > 0 ? (
+            {currentUser.preferredSports.length > 0 ? (
               <div className="flex flex-wrap gap-2">
-                {sports.map((sport) => (
+                {currentUser.preferredSports.map((sport) => (
                   <span
                     key={sport}
                     className="rounded-2xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700"
