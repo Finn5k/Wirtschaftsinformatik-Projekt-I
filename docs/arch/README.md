@@ -314,12 +314,12 @@ Konkrete Kontingente der genutzten Dienste (P1 CON-T-02, CON-T-05; N1-QA-10):
 
 | Bereich | UI-Prototyp | Zielarchitektur |
 |---|---|---|
-| Routing und Dialoge | React Router und DLG-01–DLG-08 vorhanden | Geschützte Routen und Rückkehr nach Anmeldung ergänzen |
+| Routing und Dialoge | React Router, DLG-01–DLG-08 und simulierter Schutz personenbezogener Routen vorhanden | Schutz auf echte Supabase-Anmeldesitzung umstellen |
 | Datenzugriff | synchrone Services auf Mockdaten | asynchrone Services auf Supabase Auth/PostgREST |
-| Persistenz | lokaler React-Zustand | PostgreSQL über Views und RPCs |
-| Sessionstatus/Zählung | statische Mockwerte | serverseitig berechnete Werte |
-| Court-Erfassung | lokale Formularfelder | Kartenpin, Nominatim und atomare Speicherung |
-| QR/PIN | Symbol und lokale Prüfung | echte QR-Erzeugung und serverseitige `check_in`-RPC |
+| Persistenz | lokaler React-Zustand und ausgewählte Mock-Persistenz in `localStorage` | PostgreSQL über Views und RPCs |
+| Sessionstatus/Zählung | Status aus Start und Dauer abgeleitet; Teilnehmerzahl im Mockobjekt geführt | serverseitig berechnete Werte |
+| Court-Erfassung | Kartenpin, Nominatim-Reverse-Geocoding und lokale Court-Persistenz | serverseitige, atomare Speicherung |
+| QR/PIN | echte clientseitige QR-Erzeugung und gemeinsame lokale Prüfung | serverseitige `check_in`-RPC |
 | RLS | nicht vorhanden | Policies gemäß N2.11 |
 
 Damit ist die aktuelle Ordnerstruktur ein UI-Prototyp der Bausteinsicht, aber
@@ -359,5 +359,5 @@ als zusätzliche ADR-Zeile mit Status und Begründung ergänzt.
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | ChatGPT / Codex |
-| Verwendung | Strukturierung nach arc42, Ableitung der Baustein-, Laufzeit- und Deployment-Sichten aus P2, S1, D1, N1/N2 sowie Abgleich mit dem aktuellen React-Prototyp. |
-| Prüfung | Inhalte wurden gegen die vorhandene Spezifikation, `package.json`, `src/`, `vite.config.ts` und `vercel.json` geprüft. Es wurden keine neuen fachlichen Funktionen eingeführt. Die Verantwortung für Architektur und Freigabe verbleibt beim Team. |
+| Verwendung | Strukturierung nach arc42, Ableitung der Baustein-, Laufzeit- und Deployment-Sichten aus P2, S1, D1, N1/N2 sowie Abgleich mit dem aktuellen React-Prototyp. Codex aktualisierte am 2026-08-18 den Implementierungsstand nach Umsetzung der Court-Neuerfassung. |
+| Prüfung | Inhalte wurden gegen die vorhandene Spezifikation, `package.json`, `src/`, `vite.config.ts` und `vercel.json` geprüft. Es wurden keine neuen fachlichen Funktionen eingeführt. Die Verantwortung für Architektur und Freigabe verbleibt beim Team. Aktualisierung (2026-08-18, Codex): Auth-Simulation, lokale Mock-Persistenz, Statusableitung, QR-Code-Erzeugung und Court-Reverse-Geocoding gegen den aktuellen Code geprüft. |

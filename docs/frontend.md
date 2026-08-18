@@ -86,6 +86,7 @@ src/components/layout/
 
 src/components/sessions/
   CheckInQrCode.tsx
+  CourtLocationPicker.tsx
   CreateSessionForm.tsx
   SessionCard.tsx
   StatusBadge.tsx
@@ -129,6 +130,8 @@ Der lesende Zugriff ist teilweise über folgende Services gekapselt:
 ```txt
 src/services/sessionService.ts
 src/services/userService.ts
+src/services/courtService.ts
+src/services/geocodingService.ts
 ```
 
 Die Services liefern synchron Mockdaten und teilen Sessionänderungen zwischen
@@ -169,12 +172,12 @@ Profil → Bearbeiten → lokale Ansicht aktualisieren
 | Zugriffsschutz | geschützte Routen leiten zu DLG-01 und nach der simulierten Anmeldung zum ursprünglichen Ziel zurück | Schutz anhand einer echten Anmeldesitzung und Nutzeridentität gemäß B1.5.2 |
 | Session-Beitritt | gemeinsamer lokaler Mockzustand aktualisiert Teilnehmerliste, Teilnehmerzahl und „Meine Sessions“ konsistent; bei vorgegebenen Mock-Sessions nicht reloadfest | serverseitig persistenter, atomarer Beitritt nach AF-01 |
 | Session-Erstellung | neuer Datensatz mit Organisator-Teilnahme, lokal erzeugter PIN, `localStorage`-Speicherung und Navigation zur Detailansicht | serverseitige Session- und Court-Persistenz samt atomarer Organisator-Teilnahme |
-| Court-Neuerfassung | nur Bestandteil des Formularzustands, ohne Kartenpin | persistente Erfassung mit verpflichtendem Kartenpin und Reverse-Geocoding für Ort/Adresse (S1.5/S1.6); automatische Dublettenprüfung ist kein MVP |
+| Court-Neuerfassung | verpflichtender Kartenpin, Reverse-Geocoding für Ort und optionale Adresse, Wiederholungsmöglichkeit bei Fehlern und lokale Wiederverwendung über `localStorage` | serverseitige Court-Persistenz fehlt; automatische Dublettenprüfung ist bewusst kein MVP |
 | QR-/PIN-Check-in | QR-Deep-Link und manuelle PIN-Eingabe führen in dieselbe lokale Prüfung; der QR-Code wird clientseitig erzeugt und per Kamera-App des Geräts geöffnet | serverseitige Prüfung, Idempotenz und Persistenz nach AF-02 |
 | Status einer Sport-Session | Status wird aus Startzeit und Dauer abgeleitet | künftig serverseitig maßgebliche Berechnung gemäß [AF-03](spec/F3-anwendungsfunktionen.md#af-03--status-einer-sport-session) |
 | Profil | Änderungen gelten nur bis zum Verlassen der Seite; Profilbild ist read-only | persistente Änderung von Anzeigename, Ort und Präferenzen; Profilbild-Upload und -Bearbeitung sind kein MVP |
 | Karte | OSM-Karte ist real eingebunden | spezifizierte Graceful Degradation bei nicht erreichbarem Kartendienst fehlt |
-| Lade-/Netzwerkfehler | keine asynchronen Anfragen vorhanden | Ladeanzeigen, während laufender Anfragen deaktivierte Aktionen, verständliche Fehlermeldungen und Wiederholungsmöglichkeiten gemäß B1.5.4 |
+| Lade-/Netzwerkfehler | Court-Geocoding zeigt Lade-, Fehler- und Wiederholungszustand; übrige Datenzugriffe sind synchron | Muster aus B1.5.4 bei der späteren Backend-Anbindung auf alle asynchronen Aktionen übertragen |
 | Validierung | zentrale Formulare validieren ausgewählte Pflichtangaben | vollständige Umsetzung der Regeln aus D2/N1 und der verbindlichen Fehlertexte aus B1 |
 | Tests | kein Testskript und keine automatisierten UI-Tests | manuelle Prüfung anhand der Akzeptanzkriterien aus F2/F3; automatisierte Tests bleiben optional, da für das MVP weder Testframework noch Test-CI vorgegeben sind (N1-QA-08, P1 SC-07) |
 
@@ -199,5 +202,5 @@ Festlegungen stehen in den dort verlinkten Spezifikationsbausteinen.
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | ChatGPT / Codex |
-| Verwendung | Abgleich der Frontend-Dokumentation mit den vorhandenen Routen, Seiten, Komponenten, Mockdaten und Services; Codex aktualisierte am 2026-07-29 Statusumfang, Profilbildabgrenzung, Court-Reverse-Geocoding, Check-in-Deep-Link sowie die bestätigten Festlegungen zu Court-Dubletten und Fehlertexten. Am 2026-08-16 glich Codex den dokumentierten Prototypstand mit der inzwischen realisierten simulierten Authentifizierung, lokalen Session-Persistenz, Statusableitung und QR-Code-Erzeugung ab. |
-| Prüfung | Angaben wurden gegen `src/App.tsx`, `src/auth/`, `src/pages/`, `src/components/`, `src/data/`, `src/services/`, `src/utils/` und die bestehenden Bausteine B1, F2, F3, D1, D2 und N1 geprüft. Es wurden keine fachlichen oder technischen Entscheidungen ergänzt. Nachtrag (2026-07-26, Claude Sonnet 5): zwei Abweichungszeilen korrigiert, die QR-Format und Statusführung noch als offen führten, obwohl sie in AF-04/N2.8 bzw. N2.6 entschieden sind. Aktualisierung (2026-07-28, Codex): Validierungsbedarf an die bewussten Festlegungen und Nicht-Festlegungen aus D2/N1 angeglichen. Redundanzkorrektur (2026-07-28, Codex): Wiederholung offener und bereits entschiedener Spezifikationspunkte durch einen Verweis auf B1.8 ersetzt. Finaler Hygienecheck (2026-07-29, Codex): Testabweichung an die bestehende manuelle MVP-Prüfung aus N1 und P1 angeglichen und B1-Verweis aktualisiert. Aktualisierung (2026-07-29, Codex): Sortierung sowie konsistente lokale Beitritts-, Teilnehmer- und Check-in-Zustände gegen B1/F3 geprüft und den aktuellen Prototyp-Abgleich nachgezogen. Aktualisierung (2026-08-16, Codex): die Abweichungstabelle und Strukturübersicht gegen die Frontend-Änderungen aus PR #49 bis #52 geprüft; lokale Mock-Persistenz klar von Backend- beziehungsweise serverseitiger Persistenz abgegrenzt. |
+| Verwendung | Abgleich der Frontend-Dokumentation mit den vorhandenen Routen, Seiten, Komponenten, Mockdaten und Services; Codex aktualisierte am 2026-07-29 Statusumfang, Profilbildabgrenzung, Court-Reverse-Geocoding, Check-in-Deep-Link sowie die bestätigten Festlegungen zu Court-Dubletten und Fehlertexten. Am 2026-08-16 glich Codex den dokumentierten Prototypstand mit der inzwischen realisierten simulierten Authentifizierung, lokalen Session-Persistenz, Statusableitung und QR-Code-Erzeugung ab. Am 2026-08-18 dokumentierte Codex die realisierte Court-Erfassung mit Kartenpin und Nominatim. |
+| Prüfung | Angaben wurden gegen `src/App.tsx`, `src/auth/`, `src/pages/`, `src/components/`, `src/data/`, `src/services/`, `src/utils/` und die bestehenden Bausteine B1, F2, F3, D1, D2, S1 und N1 geprüft. Es wurden keine fachlichen oder technischen Entscheidungen ergänzt. Nachtrag (2026-07-26, Claude Sonnet 5): zwei Abweichungszeilen korrigiert, die QR-Format und Statusführung noch als offen führten, obwohl sie in AF-04/N2.8 bzw. N2.6 entschieden sind. Aktualisierung (2026-07-28, Codex): Validierungsbedarf an die bewussten Festlegungen und Nicht-Festlegungen aus D2/N1 angeglichen. Redundanzkorrektur (2026-07-28, Codex): Wiederholung offener und bereits entschiedener Spezifikationspunkte durch einen Verweis auf B1.8 ersetzt. Finaler Hygienecheck (2026-07-29, Codex): Testabweichung an die bestehende manuelle MVP-Prüfung aus N1 und P1 angeglichen und B1-Verweis aktualisiert. Aktualisierung (2026-07-29, Codex): Sortierung sowie konsistente lokale Beitritts-, Teilnehmer- und Check-in-Zustände gegen B1/F3 geprüft und den aktuellen Prototyp-Abgleich nachgezogen. Aktualisierung (2026-08-16, Codex): die Abweichungstabelle und Strukturübersicht gegen die Frontend-Änderungen aus PR #49 bis #52 geprüft; lokale Mock-Persistenz klar von Backend- beziehungsweise serverseitiger Persistenz abgegrenzt. Aktualisierung (2026-08-18, Codex): Court-Picker, Nominatim-Service, Fehlerzustände und lokale Court-Persistenz gegen B1 DLG-05 und S1.5/S1.6 geprüft; ein realer Reverse-Geocoding-Aufruf wurde im Browser erfolgreich getestet. |
