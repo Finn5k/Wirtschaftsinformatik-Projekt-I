@@ -5,14 +5,15 @@
 Der Frontend-Prototyp bildet die acht in
 [B1 — Dialogspezifikation](spec/B1-dialogspezifikation.md) beschriebenen
 MVP-Dialoge als mobile-first React-Anwendung ab. Die Oberflächen sind klickbar
-und zentrale Dialogzustände können simuliert werden. Dabei werden ausschließlich
-Mockdaten und lokaler React-Zustand verwendet.
+und zentrale Dialogzustände können simuliert werden. Dabei werden Mockdaten,
+lokaler React-Zustand und `localStorage` für ausgewählte simulierte Zustände
+verwendet.
 
 Alle nachfolgend als realisiert bezeichneten Funktionen sind daher
-**im UI-Prototyp realisiert, aber noch ohne Backend beziehungsweise
-Persistenz**. Der Prototyp belegt die Benutzerführung und Darstellung, nicht
-die vollständige fachliche und technische Umsetzung der beschriebenen
-Anwendungsfälle.
+**im UI-Prototyp realisiert, teilweise mit lokaler Mock-Persistenz, aber noch
+ohne Backend beziehungsweise serverseitige Persistenz**. Der Prototyp belegt
+die Benutzerführung und Darstellung, nicht die vollständige fachliche und
+technische Umsetzung der beschriebenen Anwendungsfälle.
 
 ## Verwendete Technologien
 
@@ -22,6 +23,7 @@ Anwendungsfälle.
 - Tailwind CSS
 - React Router
 - Leaflet / react-leaflet mit OpenStreetMap
+- qrcode.react für die clientseitige QR-Code-Erzeugung
 - lucide-react für Icons
 
 ## Starten des Frontends
@@ -54,12 +56,12 @@ http://localhost:5173
 
 | B1-Dialog | Route | Im UI-Prototyp realisiert |
 |---|---|---|
-| DLG-01 Anmelden / Registrieren | `/login` | Umschaltung zwischen Anmeldung und Registrierung, E-Mail-/Passwortfelder, Anzeigename bei Registrierung und clientseitige Validierung |
+| DLG-01 Anmelden / Registrieren | `/login` | Umschaltung zwischen Anmeldung und Registrierung, E-Mail-/Passwortfelder, Anzeigename bei Registrierung, clientseitige Validierung und simulierte lokale Anmeldesitzung |
 | DLG-02 Session entdecken | `/discover` | Textsuche, Sportartenfilter, hervorgehobene nächste Session, weitere Session-Karten und Leerzustand |
 | DLG-03 Session-Karte | `/map` | echte Leaflet-/OpenStreetMap-Karte, Sportartenfilter, Session-Marker, Popup, Auswahlkarte und Navigation zum Detail |
-| DLG-04 Session-Detail | `/sessions/:sessionId` | Kerndaten, Status, Belegung, Teilnehmerliste, Organisatoransicht mit QR-/PIN-Platzhalter, Beitrittszustand, Check-in-Aktion und Read-only-Zustand |
-| DLG-05 Session erstellen | `/sessions/new` | Sportart, Titel, Beschreibung, Datum, Uhrzeit, Dauer, Court-Auswahl oder lokale Neuerfassung, Teilnehmerlimit, Validierung und Erfolgsvorschau mit lokal erzeugter PIN |
-| DLG-06 Check-in | `/check-in?session=<id>&pin=<pin>` | Statusprüfung, Deep-Link-Einstieg mit vorbelegter PIN, QR-Platzhalter, manuelle PIN-Eingabe, PIN-Validierung sowie Erfolgs- und Sperrzustände |
+| DLG-04 Session-Detail | `/sessions/:sessionId` | Kerndaten, abgeleiteter Status, Belegung, Teilnehmerliste, Organisatoransicht mit echtem QR-Code und PIN, Beitrittszustand, Check-in-Aktion und Read-only-Zustand |
+| DLG-05 Session erstellen | `/sessions/new` | Sportart, Titel, Beschreibung, Datum, Uhrzeit, Dauer, Court-Auswahl oder lokale Neuerfassung, Teilnehmerlimit, Validierung, lokal gespeicherte Session samt Organisator-Teilnahme und Navigation zur neuen Detailansicht |
+| DLG-06 Check-in | `/check-in?session=<id>&pin=<pin>` | Statusprüfung, Deep-Link-Einstieg mit vorbelegter PIN, Hinweis auf Scan per Kamera-App, manuelle PIN-Eingabe, PIN-Validierung sowie Erfolgs- und Sperrzustände |
 | DLG-07 Meine Sessions | `/my-sessions` | Tabs für bevorstehende und vergangene Sessions, Rollenkennzeichnung, Check-in-Information und Leerzustände |
 | DLG-08 Profil | `/profile` | Profilansicht, lokaler Bearbeitungszustand für Anzeigename, Ort und Sportpräferenzen sowie Abmelden-Navigation |
 
@@ -83,6 +85,7 @@ src/components/layout/
   TopBar.tsx
 
 src/components/sessions/
+  CheckInQrCode.tsx
   CreateSessionForm.tsx
   SessionCard.tsx
   StatusBadge.tsx
@@ -100,6 +103,15 @@ src/pages/
   CheckInPage.tsx
   MySessionsPage.tsx
   ProfilePage.tsx
+
+src/auth/
+  AuthProvider.tsx
+  ProtectedRoute.tsx
+  authContext.ts
+
+src/utils/
+  checkInUrl.ts
+  sessionTime.ts
 ```
 
 ## Mockdaten und Service-Schicht
@@ -119,10 +131,12 @@ src/services/sessionService.ts
 src/services/userService.ts
 ```
 
-Die Services liefern synchron Mockdaten. Schreibende Aktionen wie Beitritt,
-Session-Erstellung, Check-in und Profiländerung verändern nur lokalen
-Komponenten-Zustand oder zeigen eine Vorschau. Sie werden weder dauerhaft
-gespeichert noch zwischen Seiten geteilt.
+Die Services liefern synchron Mockdaten und teilen Sessionänderungen zwischen
+den Seiten. Neu erstellte Sessions sowie nachfolgende Beitritts- und
+Check-in-Änderungen an diesen Sessions werden zu Demonstrationszwecken in
+`localStorage` gespeichert. Änderungen an den fest eingebauten Sessions und am
+Profil bleiben flüchtig. Eine Backend- oder serverseitige Persistenz besteht
+nicht.
 
 ## Demonstrierbare Abläufe
 
@@ -135,7 +149,7 @@ Entdecken oder Karte → Session-Detail → Beitreten → Check-in → Erfolg
 ```
 
 ```txt
-Session erstellen → Formularvalidierung → Erfolgsvorschau mit PIN
+Session erstellen → Formularvalidierung → neue Detailansicht mit QR-Code und PIN
 ```
 
 ```txt
@@ -150,16 +164,14 @@ Profil → Bearbeiten → lokale Ansicht aktualisieren
 
 | Bereich | Aktueller Prototypstand | Soll-/Klärungsbedarf |
 |---|---|---|
-| Backend und Persistenz | ausschließlich Mockdaten und lokaler Zustand | Anbindung an die in P2/S1 vorgesehene Backend- und Auth-Infrastruktur |
-| Authentifizierung | Formularvalidierung und direkte Navigation nach `/discover` | echte Anmeldung/Registrierung, Sitzung, Abmeldung und Behandlung von Auth-Fehlern |
-| Zugriffsschutz | geschützte Routen sind direkt aufrufbar | Weiterleitung nicht angemeldeter Nutzer und Rückkehr zur ursprünglich gewünschten Funktion gemäß B1.5.2 |
-| Session-Beitritt | gemeinsamer lokaler Mockzustand aktualisiert Teilnehmerliste, Teilnehmerzahl und „Meine Sessions“ konsistent | persistenter, atomarer Beitritt nach AF-01 über das Backend |
-| Session-Erstellung | Erfolgsvorschau ohne neuen Datensatz | persistente Session samt Court, Organisator-Teilnahme und anschließender Navigation zur neuen Detailansicht |
+| Backend und Persistenz | Mockdaten, gemeinsamer Laufzeitzustand und lokale Mock-Persistenz für erstellte Sessions | Anbindung an die in P2/S1 vorgesehene Backend- und Auth-Infrastruktur sowie serverseitige Persistenz |
+| Authentifizierung | simulierte lokale Anmeldesitzung mit Anmeldung, Abmeldung und Erhalt über Seiten-Reloads | echte Anmeldung/Registrierung und Behandlung von Auth-Fehlern über NB-02 |
+| Zugriffsschutz | geschützte Routen leiten zu DLG-01 und nach der simulierten Anmeldung zum ursprünglichen Ziel zurück | Schutz anhand einer echten Anmeldesitzung und Nutzeridentität gemäß B1.5.2 |
+| Session-Beitritt | gemeinsamer lokaler Mockzustand aktualisiert Teilnehmerliste, Teilnehmerzahl und „Meine Sessions“ konsistent; bei vorgegebenen Mock-Sessions nicht reloadfest | serverseitig persistenter, atomarer Beitritt nach AF-01 |
+| Session-Erstellung | neuer Datensatz mit Organisator-Teilnahme, lokal erzeugter PIN, `localStorage`-Speicherung und Navigation zur Detailansicht | serverseitige Session- und Court-Persistenz samt atomarer Organisator-Teilnahme |
 | Court-Neuerfassung | nur Bestandteil des Formularzustands, ohne Kartenpin | persistente Erfassung mit verpflichtendem Kartenpin und Reverse-Geocoding für Ort/Adresse (S1.5/S1.6); automatische Dublettenprüfung ist kein MVP |
-| QR-Code | Symbol beziehungsweise Platzhalter | echte QR-Erzeugung im festgelegten Deep-Link-Format (AF-04, N2.8) |
-| QR-Check-in | Schaltfläche bestätigt ohne Scan oder Merkmalsprüfung | tatsächlicher QR-Einstieg und dieselbe fachliche Prüfung wie beim PIN-Weg |
-| PIN-Check-in | prüft lokal Teilnahme, Zeitfenster und PIN und aktualisiert den Check-in-Status im gemeinsamen Mockzustand | serverseitige Prüfung und Persistenz nach AF-02 |
-| Status einer Sport-Session | Status ist fest in den Mockdaten hinterlegt | abgeleitete Statusführung gemäß [AF-03](spec/F3-anwendungsfunktionen.md#af-03--status-einer-sport-session), bei jeder Abfrage berechnet |
+| QR-/PIN-Check-in | QR-Deep-Link und manuelle PIN-Eingabe führen in dieselbe lokale Prüfung; der QR-Code wird clientseitig erzeugt und per Kamera-App des Geräts geöffnet | serverseitige Prüfung, Idempotenz und Persistenz nach AF-02 |
+| Status einer Sport-Session | Status wird aus Startzeit und Dauer abgeleitet | künftig serverseitig maßgebliche Berechnung gemäß [AF-03](spec/F3-anwendungsfunktionen.md#af-03--status-einer-sport-session) |
 | Profil | Änderungen gelten nur bis zum Verlassen der Seite; Profilbild ist read-only | persistente Änderung von Anzeigename, Ort und Präferenzen; Profilbild-Upload und -Bearbeitung sind kein MVP |
 | Karte | OSM-Karte ist real eingebunden | spezifizierte Graceful Degradation bei nicht erreichbarem Kartendienst fehlt |
 | Lade-/Netzwerkfehler | keine asynchronen Anfragen vorhanden | Ladeanzeigen, während laufender Anfragen deaktivierte Aktionen, verständliche Fehlermeldungen und Wiederholungsmöglichkeiten gemäß B1.5.4 |
@@ -187,5 +199,5 @@ Festlegungen stehen in den dort verlinkten Spezifikationsbausteinen.
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | ChatGPT / Codex |
-| Verwendung | Abgleich der Frontend-Dokumentation mit den vorhandenen Routen, Seiten, Komponenten, Mockdaten und Services; Codex aktualisierte am 2026-07-29 Statusumfang, Profilbildabgrenzung, Court-Reverse-Geocoding, Check-in-Deep-Link sowie die bestätigten Festlegungen zu Court-Dubletten und Fehlertexten. |
-| Prüfung | Angaben wurden gegen `src/App.tsx`, `src/pages/`, `src/components/`, `src/data/`, `src/services/` und die bestehenden Bausteine B1, F2, F3, D1, D2 und N1 geprüft. Es wurden keine fachlichen oder technischen Entscheidungen ergänzt. Nachtrag (2026-07-26, Claude Sonnet 5): zwei Abweichungszeilen korrigiert, die QR-Format und Statusführung noch als offen führten, obwohl sie in AF-04/N2.8 bzw. N2.6 entschieden sind. Aktualisierung (2026-07-28, Codex): Validierungsbedarf an die bewussten Festlegungen und Nicht-Festlegungen aus D2/N1 angeglichen. Redundanzkorrektur (2026-07-28, Codex): Wiederholung offener und bereits entschiedener Spezifikationspunkte durch einen Verweis auf B1.8 ersetzt. Finaler Hygienecheck (2026-07-29, Codex): Testabweichung an die bestehende manuelle MVP-Prüfung aus N1 und P1 angeglichen und B1-Verweis aktualisiert. Aktualisierung (2026-07-29, Codex): Sortierung sowie konsistente lokale Beitritts-, Teilnehmer- und Check-in-Zustände gegen B1/F3 geprüft und den aktuellen Prototyp-Abgleich nachgezogen. |
+| Verwendung | Abgleich der Frontend-Dokumentation mit den vorhandenen Routen, Seiten, Komponenten, Mockdaten und Services; Codex aktualisierte am 2026-07-29 Statusumfang, Profilbildabgrenzung, Court-Reverse-Geocoding, Check-in-Deep-Link sowie die bestätigten Festlegungen zu Court-Dubletten und Fehlertexten. Am 2026-08-16 glich Codex den dokumentierten Prototypstand mit der inzwischen realisierten simulierten Authentifizierung, lokalen Session-Persistenz, Statusableitung und QR-Code-Erzeugung ab. |
+| Prüfung | Angaben wurden gegen `src/App.tsx`, `src/auth/`, `src/pages/`, `src/components/`, `src/data/`, `src/services/`, `src/utils/` und die bestehenden Bausteine B1, F2, F3, D1, D2 und N1 geprüft. Es wurden keine fachlichen oder technischen Entscheidungen ergänzt. Nachtrag (2026-07-26, Claude Sonnet 5): zwei Abweichungszeilen korrigiert, die QR-Format und Statusführung noch als offen führten, obwohl sie in AF-04/N2.8 bzw. N2.6 entschieden sind. Aktualisierung (2026-07-28, Codex): Validierungsbedarf an die bewussten Festlegungen und Nicht-Festlegungen aus D2/N1 angeglichen. Redundanzkorrektur (2026-07-28, Codex): Wiederholung offener und bereits entschiedener Spezifikationspunkte durch einen Verweis auf B1.8 ersetzt. Finaler Hygienecheck (2026-07-29, Codex): Testabweichung an die bestehende manuelle MVP-Prüfung aus N1 und P1 angeglichen und B1-Verweis aktualisiert. Aktualisierung (2026-07-29, Codex): Sortierung sowie konsistente lokale Beitritts-, Teilnehmer- und Check-in-Zustände gegen B1/F3 geprüft und den aktuellen Prototyp-Abgleich nachgezogen. Aktualisierung (2026-08-16, Codex): die Abweichungstabelle und Strukturübersicht gegen die Frontend-Änderungen aus PR #49 bis #52 geprüft; lokale Mock-Persistenz klar von Backend- beziehungsweise serverseitiger Persistenz abgegrenzt. |
