@@ -2,7 +2,7 @@
 
 E1 ist eine **Leseanleitung** für die Spezifikation von LocalCourt. Der Baustein trifft selbst keine fachlichen Entscheidungen und führt keine neuen Anforderungen ein. Er erklärt, wie die Bausteine P1–P2, F1–F3, D1–D2, B1–B3, S1–S3 und N1–N2 zusammenhängen, welche Zielgruppe welchen Baustein in welcher Reihenfolge liest, welche ID- und Namenskonventionen gelten und wie sich ein einzelner Use Case von der Spezifikation über die Architektur und den Code bis in die Tests nachverfolgen lässt.
 
-Der Spezifikationsindex [README.md](README.md) bleibt die maßgebliche **Statusübersicht** (welcher Baustein ist fertig, geplant oder nicht anwendbar) und **Versionshistorie**. E1 ergänzt diesen Index um den narrativen Leitfaden: *warum* die Bausteine so aufeinander aufbauen und *wie* man sich als Leser darin orientiert.
+Der Spezifikationsindex [README.md](README.md) bleibt die maßgebliche **Statusübersicht**: welcher Baustein ist fertig, geplant oder nicht anwendbar. Wer die Änderungen eines Bausteins nachvollziehen will, nutzt die Git-Historie. E1 ergänzt den Index um den narrativen Leitfaden: *warum* die Bausteine so aufeinander aufbauen und *wie* man sich als Leser darin orientiert.
 
 ---
 
@@ -179,7 +179,6 @@ Für die gesamte Spezifikation gelten unabhängig vom einzelnen Baustein folgend
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | Claude Code |
-| Verwendung | Entwurf und redaktionelle Überarbeitung des E1-Bausteins, insbesondere Zielgruppen, Lesereihenfolge, ID-Konventionen, Diagrammübersicht und Traceability-Kette. |
-| Prüfung | Inhalte wurden gegen README, P1, P2, F1, F2, F3, D1, D2, B1, S1, N1, N2 und die Architekturdokumentation geprüft. Relative Links, Abschnittsanker, IDs und Statusangaben wurden manuell abgeglichen. Aktualisierung (2026-07-29, Codex): Lesereihenfolge, Diagrammübersicht und Traceability an die fertiggestellte `docs/arch/README.md` angepasst. |
-| Fachliche Verantwortung | Bleibt beim Team. |
+| Werkzeug | Claude Code, Codex |
+| Verwendung | Entwurf von Zielgruppen, Lesereihenfolge, ID-Konventionen, Diagrammübersicht und Traceability-Kette. |
+| Prüfung | Abgeglichen mit dem Spezifikationsindex, allen Bausteinen und der [Architekturdokumentation](../arch/README.md); relative Links, Abschnittsanker und IDs wurden manuell geprüft. |

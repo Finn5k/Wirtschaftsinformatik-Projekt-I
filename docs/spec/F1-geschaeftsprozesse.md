@@ -344,6 +344,6 @@ Jeder Prozess besteht aus **Akteuren** (Mensch & IT), **Aktivitäten** (zeitlich
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | GitHub Copilot, Claude (Claude Code), Codex |
-| Verwendung | Entwurf der Geschäftsprozesse (GP-01–GP-03), Aktivitäten, Dokumente, Daten-Stores und Ablaufdiagramme. Codex ergänzte am 2026-07-29 Nominatim und Reverse-Geocoding in der Court-Erfassung. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitungen wurden zusätzlich gegen F2/F3 und D1/D2 geprüft. Check-in-Aufrufe, QR-Deep-Link, E-Mail-/Passwort-Authentifizierung, manuelle Ortssuche ohne Geräte-Geolocation und die Court-Erfassung mit Reverse-Geocoding entsprechen dem aktuellen Stand der maßgeblichen Bausteine. |
+| Werkzeug | GitHub Copilot, Claude Code, Codex |
+| Verwendung | Entwurf der Geschäftsprozesse GP-01–GP-03 mit Aktivitäten, Dokumenten, Daten-Stores und Ablaufdiagrammen. |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md) und [S1](S1-nachbarsysteme.md); Check-in-Ablauf, Authentifizierung, Ortssuche und Court-Erfassung entsprechen den dort geltenden Festlegungen. |

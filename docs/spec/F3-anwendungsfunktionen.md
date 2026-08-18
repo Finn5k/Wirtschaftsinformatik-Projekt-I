@@ -106,7 +106,6 @@ Bezug: [F1](F1-geschaeftsprozesse.md) GP-02 A8; [UC-06](F2-anwendungsfaelle.md#u
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | Claude Code (Claude Sonnet 5) / Codex |
-| Verwendung | Entwurf und Straffung von F3: Ableitung der Anwendungsfunktionen aus F2, Entscheidungstabellen, AF-03-Zustandsdiagramm, Reduktion auf die Herold-Gliederung (Katalog, Beschreibung, Abgrenzung, Querverweise) gemäß Professor-Feedback vom 2026-07-30. |
-| Prüfung | Inhalte gegen [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [N1](N1-nichtfunktionale-anforderungen.md), [N2](N2-querschnittskonzepte.md), [E2](E2-glossar.md) und die Herold-Referenz (nur als Vorbild für Struktur und Prägnanz, keine inhaltliche Übernahme) geprüft; alle eingehenden Verweise auf F3-Anker wurden repositoryweit gegengeprüft und aktualisiert. |
-| Fachliche Verantwortung | Bleibt beim Team. |
+| Werkzeug | Claude Code, Codex |
+| Verwendung | Ableitung der Anwendungsfunktionen AF-01–AF-04 aus F2 samt Entscheidungstabellen und AF-03-Zustandsdiagramm; Straffung auf Katalog, Beschreibung, Abgrenzung und Querverweise. |
+| Prüfung | Abgeglichen mit [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [N1](N1-nichtfunktionale-anforderungen.md), [N2](N2-querschnittskonzepte.md) und [E2](E2-glossar.md); eingehende Verweise auf F3-Anker wurden repositoryweit geprüft. |

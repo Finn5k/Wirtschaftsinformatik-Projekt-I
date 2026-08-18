@@ -255,42 +255,6 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 
 ---
 
-## Versionshistorie
-
-| Datum | Autor | Änderung |
-|-------|-------|----------|
-| 2026-06-19 | Finn Belk, mit Copilot-Unterstützung | P1 und P2 Spezifikationsdokumente erstellt |
-| 2026-06-30 | Finn Belk, mit Copilot-Unterstützung | F1 Geschäftsprozesse nach Siedersleben ergänzt |
-| 2026-07-09 | Afrem Aydin, mit KI-Unterstützung | F2 Anwendungsfälle erstellt |
-| 2026-07-10 | Finn Belk, mit Copilot-Unterstützung | F3 Anwendungsfunktionen ergänzt |
-| 2026-07-10 | Finn Belk, mit Copilot-Unterstützung | P1/F2 fachlich angepasst und Wartelisten aus dem Scope entfernt |
-| 2026-07-11 | Finn Belk, mit Claude-Code-Unterstützung | D1 Datenmodell erstellt |
-| 2026-07-11 | Finn Belk, mit Claude-Code-Unterstützung | D2 Datentypenverzeichnis erstellt |
-| 2026-07-11 | Finn Belk, mit KI-Unterstützung | Spezifikationsindex für D1/D2 aktualisiert und KI-Disclosure ergänzt |
-| 2026-07-12 | Finn Belk, mit Claude-Code-Unterstützung | B1 Dialogspezifikation erstellt und im Spezifikationsindex als fertig markiert |
-| 2026-07-14 | Afrem Aydin, mit KI-Unterstützung | P1 bereinigt |
-| 2026-07-14 | Afrem Aydin, mit KI-Unterstützung | F2 Use-Case-Diagramme und Verweise überarbeitet |
-| 2026-07-14 | Afrem Aydin, mit KI-Unterstützung | N1 Nichtfunktionale Anforderungen ergänzt |
-| 2026-07-14 | Afrem Aydin, mit Claude-Code-/ChatGPT-Unterstützung | Spezifikationsindex aktualisiert: B2/B3/S2/S3/E1 ergänzt, N1-Status korrigiert, veraltete Verweise entfernt |
-| 2026-07-16 | Chevron Rustler, mit Codex-Unterstützung | B1 mit dem Frontend-Prototyp abgeglichen, `docs/frontend.md` überarbeitet, AGENTS.md ergänzt |
-| 2026-07-19 | Finn Belk, mit Claude-Code-Unterstützung | Prototyp-Screenshots in B1 eingebettet |
-| 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | Konsistenz-Fixes: toter Link in F3.1, P1.4-Widersprüche zu Scope (Bearbeiten/Löschen, Teilnehmerlimit, Profil-Sichtbarkeit) aufgelöst, Terminologie-Nit in F1, B2/B3/S2 final als nicht anwendbar dokumentiert |
-| 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | S1 Nachbarsysteme vollständig ausgearbeitet; N2-Status im Index nachgetragen; tote Anker in D1/N2 korrigiert |
-| 2026-07-26 | Finn Belk, mit Claude-Code-Unterstützung | F1 auf die fachliche Ebene umgestellt; offene Punkte über alle Bausteine konsolidiert; `profile.city` spezifiziert; E1/E2-Status im Index nachgetragen und S3 auf „nach der Implementierung" gesetzt |
-| 2026-07-28 | Chevron Rustler, mit Codex-Unterstützung | Veraltete Status- und Offenheitsformulierungen an bereits getroffene Entscheidungen in S1, N1 und N2 angeglichen |
-| 2026-07-28 | Chevron Rustler, mit Codex-Unterstützung | Eindeutige Konsistenzfehler bei Geolocation, Beitrittsaktion, Löschverweis, F2-/N1-Statuszeilen und Verweisen auf bereits entschiedene Umsetzungsfragen bereinigt |
-| 2026-07-28 | Chevron Rustler, mit Codex-Unterstützung | Doppelte Statusangaben, Entscheidungstabellen, Frontend-Offenpunktlisten und dezentrale Versionshistorie durch Verweise auf die jeweils maßgeblichen Stellen ersetzt |
-| 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Beschlossene MVP-Abgrenzungen zu Session-Änderungen und Profilbildern eingearbeitet, `cancelled` entfernt, Nominatim-Reverse-Geocoding spezifiziert und Check-in-Deep-Link im Prototyp angeglichen |
-| 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Bereits entschiedene Sichtbarkeit von Anzeigename und optionalem Profilbild in Teilnehmerlisten über B1, F2, D1, N1, N2 und S1 konsistent nachgezogen |
-| 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Teamentscheidungen zu Sortierung, Court-Dubletten, Organisator-Ergebnisdaten, Fehlertexten sowie DSGVO-Auskunft und -Löschung konsistent eingearbeitet |
-| 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Schlanke arc42-Architekturdokumentation mit Baustein-, Laufzeit- und Deployment-Sichten, Querschnittskonzepten, ADRs und Prototyp-Abgleich ergänzt |
-| 2026-07-29 | Chevron Rustler, mit Codex-Unterstützung | Finalen Link-, Redundanz- und Konsistenzdurchlauf durchgeführt; P2-Kurzindex, Testabgrenzung und abgeschlossene Entscheidungsstände vereinheitlicht |
-| 2026-08-16 | Chevron Rustler, mit Codex-Unterstützung | Frontend-Abgleich nach PR #49 bis #52 aktualisiert: simulierte Authentifizierung, lokale Session-Persistenz, Statusableitung und QR-Code-Erzeugung korrekt dokumentiert |
-| 2026-08-18 | Chevron Rustler, mit Codex-Unterstützung | Court-Neuerfassung im UI-Prototyp mit Kartenpin, Nominatim-Reverse-Geocoding, Wiederholungszustand und lokaler Mock-Persistenz umgesetzt und dokumentiert |
-| 2026-08-18 | Chevron Rustler, mit Codex-Unterstützung | Profiländerungen lokal persistiert und Anzeigename, Ort sowie Sportpräferenzen dialogübergreifend konsistent angebunden |
-
----
-
 ## Hinweise
 
 - Alle Dokumente sollten in **Deutsch** geschrieben sein (konsistent mit TEAMINFO.md und Hochschul-Kontext).
@@ -304,6 +268,6 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | GitHub Copilot, Claude Code, ChatGPT — soweit im jeweiligen Bearbeitungsschritt verwendet |
-| Verwendung | Strukturierung, Formulierungsvorschläge, Konsistenzprüfung, Pflege des Spezifikationsindex und Verknüpfung der ergänzenden arc42-Architekturdokumentation |
-| Prüfung | Inhalte wurden gegen die vorhandenen Spezifikationsbausteine, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Die fachliche Verantwortung bleibt beim Team. Jeder Baustein weist die konkrete KI-Nutzung zusätzlich im eigenen Abschnitt „Eingesetzte KI-Werkzeuge" aus. Redundanzkorrektur (2026-07-28, Codex): Status im Index nur noch in den Überschriften geführt; wiederholte Entscheidungen und dezentrale Status-/Historienangaben auf ihre maßgeblichen Fundstellen reduziert. Finaler Hygienecheck (2026-07-29, Codex): relative Linkziele, Abschnittsverweise, Offenheitsformulierungen und Kurzbeschreibungen erneut repositoryweit abgeglichen. Aktualisierung (2026-08-16, Codex): B1-Kurzbeschreibung und zentrale Historie gegen den implementierten Frontendstand aus PR #49 bis #52 geprüft. Aktualisierung (2026-08-18, Codex): B1-Kurzbeschreibung und Historie nach Umsetzung der spezifizierten Court-Neuerfassung sowie der lokalen Profilpersistenz aktualisiert. |
+| Werkzeug | GitHub Copilot, Claude Code, ChatGPT, Codex — soweit im jeweiligen Bearbeitungsschritt verwendet |
+| Verwendung | Strukturierung, Formulierungsvorschläge, Konsistenzprüfung und Pflege dieses Index. |
+| Prüfung | Abgeglichen mit den Spezifikationsbausteinen, Repository-Vorgaben und Teamentscheidungen; jeder Baustein weist die konkrete KI-Nutzung zusätzlich im eigenen Abschnitt „Eingesetzte KI-Werkzeuge" aus. Die fachliche Verantwortung für alle Bausteine bleibt beim Team. |

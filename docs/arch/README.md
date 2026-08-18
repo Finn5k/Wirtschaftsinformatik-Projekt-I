@@ -358,6 +358,6 @@ als zusätzliche ADR-Zeile mit Status und Begründung ergänzt.
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | ChatGPT / Codex |
-| Verwendung | Strukturierung nach arc42, Ableitung der Baustein-, Laufzeit- und Deployment-Sichten aus P2, S1, D1, N1/N2 sowie Abgleich mit dem aktuellen React-Prototyp. Codex aktualisierte am 2026-08-18 den Implementierungsstand nach Umsetzung der Court-Neuerfassung und Profilpersistenz. |
-| Prüfung | Inhalte wurden gegen die vorhandene Spezifikation, `package.json`, `src/`, `vite.config.ts` und `vercel.json` geprüft. Es wurden keine neuen fachlichen Funktionen eingeführt. Die Verantwortung für Architektur und Freigabe verbleibt beim Team. Aktualisierung (2026-08-18, Codex): Auth-Simulation, lokale Mock-Persistenz einschließlich Profil, Statusableitung, QR-Code-Erzeugung und Court-Reverse-Geocoding gegen den aktuellen Code geprüft. |
+| Werkzeug | ChatGPT, Codex |
+| Verwendung | Strukturierung nach arc42, Ableitung der Baustein-, Laufzeit- und Deployment-Sichten aus P2, S1, D1 und N1/N2 sowie Abgleich mit dem aktuellen React-Prototyp. |
+| Prüfung | Abgeglichen mit der Spezifikation sowie `package.json`, `src/`, `vite.config.ts` und `vercel.json`. Es wurden keine neuen fachlichen Funktionen eingeführt. |

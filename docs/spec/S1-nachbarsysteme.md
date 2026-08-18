@@ -196,6 +196,6 @@ ebenfalls nicht Teil des MVP.
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | GitHub Copilot (ursprüngliche Stub-Struktur), Claude Code (Claude Sonnet 5, Ausarbeitung), Codex |
-| Verwendung | Vollständige Ausarbeitung des Bausteins nach dem Vorbild der Referenz-Dokumentation (Herold S1): Operationen, Ein-/Ausgaben, Semantik und Fehlerbehandlung je Nachbarsystem. Codex ergänzte am 2026-07-29 Reverse-Geocoding und glich Pagination, Wiederholungsverhalten und Court-Dubletten mit der fertiggestellten Architektur ab. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [N1](N1-nichtfunktionale-anforderungen.md) und [N2](N2-querschnittskonzepte.md). Die zuvor im Stub genannten Endpunkt-URLs wurden entfernt, weil sie teils nicht den tatsächlichen Schnittstellen entsprachen und die Endpunkt-Ebene laut Referenz-Vorbild in die Architekturdokumentation gehört. Aktualisierung (2026-07-28, Codex): Veraltete Kennzeichnung der in UC-02 bereits ausgeschlossenen Geolocation als offenen Punkt entfernt. Die fachliche Verantwortung bleibt beim Team. |
+| Werkzeug | GitHub Copilot, Claude Code, Codex |
+| Verwendung | Ausarbeitung der Schnittstellen-Contracts je Nachbarsystem: Operationen, Ein- und Ausgaben, Semantik und Fehlerbehandlung. |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [N1](N1-nichtfunktionale-anforderungen.md) und [N2](N2-querschnittskonzepte.md). Konkrete Endpunkt-URLs sind bewusst nicht aufgeführt; diese Ebene gehört in die [Architekturdokumentation](../arch/README.md). |

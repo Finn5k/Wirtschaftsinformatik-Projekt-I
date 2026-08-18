@@ -155,6 +155,6 @@ die technischen Entscheidungen zu PIN, QR-Inhalt und Identifiern in
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | Claude Code (Opus 4.8) / Codex |
-| Verwendung | Entwurf des D2-Datentypenverzeichnisses: Katalogisierung der trivialen und nicht-trivialen Typen, Definition von Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. Codex entfernte am 2026-07-29 `cancelled` aus `SessionStatus` und konkretisierte `GeoCoordinate` für Kartenpin und Reverse-Geocoding. |
-| Prüfung | Inhalte wurden gegen [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md), [S1](S1-nachbarsysteme.md), N1/N2 und die Herold-Referenz geprüft und mit dem Team abgestimmt. Wertebereiche, Statusumfang, Kartenpin, Reverse-Geocoding, PIN und QR-Inhalt entsprechen den aktuellen Festlegungen. Finaler Hygienecheck (2026-07-29, Codex): den abgeschlossenen Abschnitt D2.11 als Entscheidungsstand bezeichnet und betroffene Verweise aktualisiert. |
+| Werkzeug | Claude Code, Codex |
+| Verwendung | Katalogisierung der trivialen und nicht-trivialen Datentypen mit Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. |
+| Prüfung | Abgeglichen mit [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md) und [N2](N2-querschnittskonzepte.md); Wertebereiche, Statusumfang, Kartenpin, PIN und QR-Inhalt entsprechen den geltenden Festlegungen. |

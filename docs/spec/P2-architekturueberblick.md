@@ -79,6 +79,6 @@ Der Ablauf einzelner Anwendungsfälle über mehrere Systeme hinweg (z. B. Sessio
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | GitHub Copilot, Claude (Claude Code, Claude Sonnet 5), Codex |
-| Verwendung | Entwurf des Architekturüberblicks: Systemkontext, Nachbarsysteme und Abgrenzung zu Architektur/Laufzeitsicht. Codex ergänzte am 2026-07-29 Nominatim und glich den Verweis auf die arc42-Architekturdokumentation ab. Claude Sonnet 5 (Claude Code) hat P2 am 2026-08-12 nach Professor-Feedback zu einer reinen Blackbox-Systemkontextsicht überarbeitet: interne Bestandteile (Frontend-Komponenten, Deployment-Tiers, Laufzeit-Sequenzdiagramme) entfernt und auf die bestehende Architekturdokumentation (§5/§6) verwiesen; Teilnehmer und Organisator als externe Akteure ergänzt; Supabase auf seine beiden Schnittstellen (Auth, Daten) als Blackbox reduziert. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [S1](S1-nachbarsysteme.md) und [docs/arch/README.md](../arch/README.md). Dadurch ungültig gewordene Verweise auf entfallene P2-Detailinhalte wurden in S1, N2, N1 und E1 minimal korrigiert; die konkreten Free-Tier-Grenzen wurden nach [arch §6](../arch/README.md#6-verteilung-und-deployment) verschoben, damit keine technische Information verloren geht. Fachliche Verantwortung bleibt beim Team. |
+| Werkzeug | GitHub Copilot, Claude Code, Codex |
+| Verwendung | Entwurf des Systemkontexts und der Nachbarsysteme sowie Zuschnitt auf eine reine Blackbox-Sicht; interne Bestandteile und Laufzeitsichten bleiben der Architekturdokumentation vorbehalten. |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [S1](S1-nachbarsysteme.md) und [docs/arch/README.md](../arch/README.md). |

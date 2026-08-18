@@ -79,7 +79,6 @@ Die Begriffe in [E2.3](#e23-alphabetisches-glossar) sind **alphabetisch geordnet
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | Claude Code / Codex |
-| Verwendung | Ermittlung, Strukturierung und redaktionelle Vereinheitlichung der in der bestehenden Spezifikation verwendeten Begriffe; Codex aktualisierte am 2026-07-29 die Begriffe Profil und Sessionstatus gemäß den Teamentscheidungen. |
-| Prüfung | Begriffe und Definitionen wurden gegen README, E1, P1, P2, F1, F2, F3, D1, D2, B1, S1, N1 und N2 geprüft, mit den vorhandenen Benennungen abgeglichen und manuell überarbeitet. Nachtrag (2026-07-26, Claude Sonnet 5): Einträge „Profil" und „Ortssuche" um den neu spezifizierten Heimatort (`profile.city`) ergänzt. |
-| Fachliche Verantwortung | Bleibt beim Team. |
+| Werkzeug | Claude Code, Codex |
+| Verwendung | Ermittlung, Strukturierung und redaktionelle Vereinheitlichung der in der Spezifikation verwendeten Begriffe. |
+| Prüfung | Begriffe und Definitionen wurden gegen alle Bausteine abgeglichen und auf einheitliche Benennung geprüft. |

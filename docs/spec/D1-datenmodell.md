@@ -264,6 +264,6 @@ Statuspersistenz stehen ausschließlich in
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | Claude Code (Opus 4.8) / Codex |
-| Verwendung | Entwurf des D1-Bausteins: Ableitung der Entitätstypen, Attribute und Beziehungen aus den „Bezug zu Daten"-Angaben in F2/F3, Erstellung des ER-Diagramms und der Invarianten. Codex konkretisierte am 2026-07-29 die Court-Invariante, Profilsichtbarkeit und Löschwirkung des bestätigten administrativen DSGVO-Prozesses. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und die Herold-Referenz geprüft und mit dem Team abgestimmt. Richtungsentscheidungen (fachliche Abstraktion, Sportart als Katalog, englische Feldnamen, Mermaid-ER-Diagramm) wurden vorab bestätigt. Nachtrag (2026-07-26, Claude Sonnet 5): initialer Sportarten-Katalog dokumentiert, abgeglichen mit den im Prototyp verwendeten Werten. Nachtrag (2026-07-26, Claude Sonnet 5): `profile.city` als optionales Attribut aufgenommen (Heimatort, Vorbelegung der Ortssuche, für andere Nutzer nicht sichtbar). Redundanzkorrektur (2026-07-28, Codex): Wiederholte N2-Entscheidungen aus D1.9 entfernt und durch einen Verweis ersetzt. Finaler Hygienecheck (2026-07-29, Codex): den abgeschlossenen Abschnitt D1.9 als Entscheidungsstand bezeichnet und betroffene Verweise aktualisiert. |
+| Werkzeug | Claude Code, Codex |
+| Verwendung | Ableitung der Entitätstypen, Attribute, Beziehungen und Invarianten aus den „Bezug zu Daten"-Angaben in F2/F3 sowie Erstellung des ER-Diagramms. |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und [D2](D2-datentypen.md); die Richtungsentscheidungen (fachliche Abstraktion, Sportart als Katalog, englische Feldnamen) hat das Team vorab bestätigt. |

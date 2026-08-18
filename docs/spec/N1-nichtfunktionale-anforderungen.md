@@ -275,8 +275,8 @@ Im Review lässt sich damit für jede Qualitätsanforderung erklären: welcher U
 
 ## N1.10 Eingesetzte KI-Werkzeuge
 
-| Punkt | Beschreibung |
+| Aspekt | Inhalt |
 |---|---|
-| Werkzeug | Claude Code / ChatGPT |
-| Verwendung | Entwurf, Strukturierung, Formulierungsvorschläge, Konsistenzprüfung und Akzeptanzkriterien für den N1-Baustein. Codex ergänzte am 2026-07-29 Robustheits-, Datenschutz- und Fehlerkriterien und verknüpfte die Wartbarkeitsanforderung mit der fertiggestellten Architektur-Bausteinsicht. |
-| Prüfung | Inhalte wurden gegen P1, P2, F1, F2, F3, D1, D2, B1, S1, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Vor dem Merge erfolgt zusätzlich ein Team-Review. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. Nachtrag (2026-07-26, Claude Sonnet 5): veralteter Hinweis auf S1 als Stub in N1.8 korrigiert. Konsolidierung der offenen Punkte (2026-07-26, Claude Sonnet 5): Feldlängen, maximale Session-Dauer und Check-in-Zeittoleranz in N1.7 als bewusst nicht festgelegt aufgenommen und begründet; damit endet der zirkuläre Verweis zwischen D2.11, N1.8 und N2.15. Aktualisierung (2026-07-28, Codex): Bereits entschiedene oder ausgeschlossene Aussagen in N1-QA-03, N1-QA-05 und N1-QA-06 korrekt als Festlegung beziehungsweise Abgrenzung bezeichnet. Finaler Hygienecheck (2026-07-29, Codex): veralteten B1-Offenheitsverweis korrigiert und die bereits geltende manuelle MVP-Prüfung von optionalen automatisierten Tests abgegrenzt. |
+| Werkzeug | Claude Code, ChatGPT, Codex |
+| Verwendung | Entwurf und Strukturierung der Qualitätsanforderungen N1-QA-01 bis N1-QA-09 samt Prüfkriterien und Akzeptanzkriterien. |
+| Prüfung | Abgeglichen mit P1, P2, F1, F2, F3, D1, D2, B1 und S1; die bewusst nicht festgelegten Größen sind in [N1.7](#n17-bewusst-nicht-festgelegte-qualitätsanforderungen) begründet. |
