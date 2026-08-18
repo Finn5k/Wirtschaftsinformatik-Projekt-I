@@ -175,7 +175,7 @@ LocalCourt ist ein Greenfield-Projekt (siehe NG-09); es gibt keine Altdaten und 
 ---
 
 ### **S3 — Inbetriebnahme** 🔄 (nach der Implementierung)
-Installation, Umgebungseinrichtung, Betrieb auf Supabase/Vercel sowie Start- und Betriebsablauf lassen sich erst beschreiben, wenn die Anwendung tatsächlich betrieben wird. S3 wird deshalb bewusst nach der Implementierungsphase gepflegt und ist konsequenterweise auch nicht Teil der in [P1](P1-ziele-rahmenbedingungen.md) CON-O-03 als verpflichtend genannten Bausteine.
+Installation, Umgebungseinrichtung, Betrieb auf Supabase/Vercel sowie Start- und Betriebsablauf lassen sich erst beschreiben, wenn die Anwendung tatsächlich betrieben wird. S3 wird deshalb bewusst nach der Implementierungsphase gepflegt.
 
 ---
 
@@ -184,7 +184,7 @@ Installation, Umgebungseinrichtung, Betrieb auf Supabase/Vercel sowie Start- und
 
 **Inhalte**:
 - Performance, Skalierbarkeit im Free-Tier, Verfügbarkeit
-- Sicherheit (PIN-Niveau, DSGVO), Usability, Datenschutz
+- Sicherheit (PIN-Niveau), Usability, Datensparsamkeit
 - begründete Nicht-Festlegungen zu Feldlängen und fachlichen Obergrenzen
 
 ---

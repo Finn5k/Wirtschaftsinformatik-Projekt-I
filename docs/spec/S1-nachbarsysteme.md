@@ -73,7 +73,7 @@ Fachlicher Datenzugriff. Jede Operation wird durch Row-Level-Security auf die Ze
 | `eigeneSessionsLesen() → Sessionliste` | [UC-05](F2-anwendungsfaelle.md#uc-05--eigene-sessions-anzeigen), [UC-11](F2-anwendungsfaelle.md#uc-11--session-historie-ansehen) | Sessions, an denen der angemeldete Nutzer teilnimmt oder die er organisiert — bevorstehende und vergangene, unterschieden über den abgeleiteten Status. |
 | `courtsLesen(suchbegriff?) → Courtliste` | [UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen) | Sportorte des Verzeichnisses mit Name, Ort, optionaler Adressangabe und optionalen Koordinaten. Für alle angemeldeten Nutzer lesbar. |
 | `sportartenLesen() → Sportartenliste` | UC-02, UC-06, UC-12 | Der Sportartenkatalog als Referenzdaten ([D1.3](D1-datenmodell.md#d13-entitätstypen-im-überblick)). Für alle angemeldeten Nutzer lesbar, unveränderlich aus Anwendungssicht. |
-| `profilLesen(user_id) → Profil` | [UC-12](F2-anwendungsfaelle.md#uc-12--profil-und-sportpräferenzen-verwalten), UC-03, UC-07 | Anzeigename und Profilbild. Andere Nutzer sehen ausschließlich diese Basisfelder; Auth-Daten sind grundsätzlich nicht enthalten ([N1-QA-04](N1-nichtfunktionale-anforderungen.md#n1-qa-04--datenschutz--dsgvo)). |
+| `profilLesen(user_id) → Profil` | [UC-12](F2-anwendungsfaelle.md#uc-12--profil-und-sportpräferenzen-verwalten), UC-03, UC-07 | Anzeigename und Profilbild. Andere Nutzer sehen ausschließlich diese Basisfelder; Auth-Daten sind grundsätzlich nicht enthalten ([N1-QA-04](N1-nichtfunktionale-anforderungen.md#n1-qa-04--datensparsamkeit)). |
 | `sportpraeferenzenLesen(user_id) → Sportartenliste` | [UC-12](F2-anwendungsfaelle.md#uc-12--profil-und-sportpräferenzen-verwalten) | Die Sportarten-Interessen eines Profils. |
 
 ### Schreibende Operationen — fachlich geprüft und atomar
@@ -157,7 +157,7 @@ Bewusst **nicht** genutzte Fähigkeiten der bestehenden Nachbarsysteme — hier 
 | Passwort-Zurücksetzen und E-Mail-Bestätigung | Beide setzen E-Mail-Versand voraus, der außerhalb des MVP liegt. **Folge, bewusst in Kauf genommen:** Ein vergessenes Passwort kann im MVP nicht selbst zurückgesetzt werden. |
 | Fremdanbieter-Anmeldung (OAuth / Social Login) | Im MVP nur E-Mail und Passwort. |
 | Kamera-Schnittstelle des Browsers | Der QR-Code wird mit der Kamera-App des Geräts gescannt, die den Deep-Link im Browser öffnet ([B1 DLG-06](B1-dialogspezifikation.md#b146-dlg-06--check-in)). LocalCourt braucht deshalb keinen eigenen Scanner, keine Kameraberechtigung und keine Scanner-Bibliothek. Steht keine Kamera zur Verfügung, greift die gleichwertige PIN-Eingabe ([UC-09](F2-anwendungsfaelle.md#uc-09--check-in-per-pin-durchführen)). |
-| Standortermittlung des Geräts (Geolocation) | Die Ortssuche erfolgt gemäß [F1](F1-geschaeftsprozesse.md) GP-01 A2 und [UC-02](F2-anwendungsfaelle.md#uc-02--session-suchen) über eine Eingabe des Nutzers, nicht über die Geräteposition — datenschutzseitig die zurückhaltendere Variante ([N1-QA-04](N1-nichtfunktionale-anforderungen.md#n1-qa-04--datenschutz--dsgvo)). |
+| Standortermittlung des Geräts (Geolocation) | Die Ortssuche erfolgt gemäß [F1](F1-geschaeftsprozesse.md) GP-01 A2 und [UC-02](F2-anwendungsfaelle.md#uc-02--session-suchen) über eine Eingabe des Nutzers, nicht über die Geräteposition — datenschutzseitig die zurückhaltendere Variante ([N1-QA-04](N1-nichtfunktionale-anforderungen.md#n1-qa-04--datensparsamkeit)). |
 
 Ebenfalls **nicht** Gegenstand von S1:
 
@@ -170,7 +170,7 @@ Ebenfalls **nicht** Gegenstand von S1:
 
 | Baustein | Bezug zu S1 |
 |---|---|
-| [P1](P1-ziele-rahmenbedingungen.md) | Die Free-Tier-Rahmenbedingungen (CON-T-01–CON-T-05) begrenzen die Auswahl der Nachbarsysteme; CON-D-03 („Authentifizierung ohne SMS") stützt das Verfahren in S1.3. |
+| [P1](P1-ziele-rahmenbedingungen.md) | Die Free-Tier-Rahmenbedingungen (CON-T-01–CON-T-05) begrenzen die Auswahl der Nachbarsysteme und damit auch das Anmeldeverfahren in S1.3: E-Mail und Passwort statt eines kostenpflichtigen SMS-Gateways. |
 | [P2](P2-architekturueberblick.md) | P2.2 zählt die Nachbarsysteme auf; jeder dortige NB-Eintrag wird hier in genau einem Abschnitt detailliert. Die [Architekturdokumentation §5](../arch/README.md#5-laufzeitsichten) zeigt die Aufrufreihenfolge, S1 die Operationen selbst. |
 | [F1](F1-geschaeftsprozesse.md) | Die Akteure „Supabase", „OpenStreetMap" und „Nominatim" entsprechen NB-02/NB-03, NB-04 und NB-05. |
 | [F2](F2-anwendungsfaelle.md) | Jede Operation ist einem Anwendungsfall zugeordnet („Ausgelöst durch"); UC-01 wird durch S1.3, UC-02–UC-12 durch S1.4, die Kartenanteile von UC-02/UC-03/UC-10 zusätzlich durch S1.5 und das Reverse-Geocoding von UC-10 durch S1.6 erbracht. |

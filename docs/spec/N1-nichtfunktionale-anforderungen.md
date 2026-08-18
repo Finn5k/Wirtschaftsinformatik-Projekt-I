@@ -29,7 +29,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | N1-QA-01 | Performance | Kernabläufe (Suche, Beitritt, Check-in) reagieren unter normalen Entwicklungs-/Testbedingungen in einer für Nutzer akzeptablen Zeit. | UC-02, UC-03, UC-04, UC-06, UC-07, UC-08, UC-09 | P1 (SC-02, SC-03), F3 (AF-01, AF-02), S1 (NB-03, NB-04) | Soll | manuelle Messung im Review, keine Lasttest-Pflicht |
 | N1-QA-02 | Mobile Nutzbarkeit / Responsive Design | Zentrale MVP-Dialoge sind auf mobilen Geräten ohne horizontales Scrollen und mit bedienbaren Elementen nutzbar. | UC-02, UC-03, UC-04, UC-06, UC-07, UC-08, UC-09, UC-12 | P1 (CON-T-04, SC-05), B1 (alle Dialoge) | Muss | Browser-DevTools-Test auf Mobil-Viewport |
 | N1-QA-03 | Bedienbarkeit / Usability | Kernworkflows (Session finden, erstellen, beitreten) sind mit niedriger Einstiegshürde und ohne Vorwissen bedienbar. | UC-02, UC-04, UC-06 | P1 (G-03, SC-02, SC-03), B1 (DLG-02, DLG-04, DLG-05) | Muss | manuelle Durchführung des Workflows im Browser |
-| N1-QA-04 | Datenschutz / DSGVO | Personenbezogene Daten werden nur angezeigt oder gespeichert, wenn sie für den jeweiligen Use Case erforderlich sind. | UC-01, UC-03, UC-07, UC-12 | P1 (CON-D-01), D1 (`profile`), B1 (DLG-04, DLG-08) | Muss | Review der angezeigten/gespeicherten Felder gegen D1 |
+| N1-QA-04 | Datensparsamkeit | Personenbezogene Daten werden nur angezeigt oder gespeichert, wenn sie für den jeweiligen Use Case erforderlich sind. | UC-01, UC-03, UC-07, UC-12 | D1 (`profile`), B1 (DLG-04, DLG-08) | Muss | Review der angezeigten/gespeicherten Felder gegen D1 |
 | N1-QA-05 | Sicherheit | Geschützte Aktionen erfordern Anmeldung; Check-in-Geheimnisse sind angemessen, aber nicht überdimensioniert abgesichert; keine Secrets im Repository. | UC-01, UC-04, UC-08, UC-09 | F3 (AF-01, AF-02, AF-04), S1 (NB-02, NB-03) | Muss | Code-Review, Repository-Scan, manuelle Prüfung der Zugriffsregeln |
 | N1-QA-06 | Zuverlässigkeit / Fehlerrobustheit | Kapazitäts- und Check-in-Regeln bleiben auch bei parallelen Zugriffen konsistent; nicht verfügbare Nachbarsysteme führen zu kontrollierter Degradation statt Absturz. | UC-02, UC-04, UC-08, UC-09 | F3 (AF-01, AF-02), P2 (Fehlerbehandlung), S1 (NB-04) | Muss | Code-Walkthrough der Atomarität, manueller Test der Kartendarstellung ohne Kartendienst |
 | N1-QA-07 | Wartbarkeit | Modulstruktur, Benennung und Datenobjekte folgen den in D1/D2/P2 festgelegten Namen und Zuständigkeiten. | alle | P2 (Architekturüberblick), D1, D2 | Soll | Code-Review gegen D1/D2-Benennung |
@@ -84,21 +84,19 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Prüfmethode | Manuelle Durchführung der drei Workflows im Browser, Zeitmessung durch das Team im Review. |
 | Abgrenzung | Formale Usability-Tests mit externen Testpersonen sind nicht vorgesehen (siehe [N1.7](#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)). |
 
-### N1-QA-04 — Datenschutz / DSGVO
+### N1-QA-04 — Datensparsamkeit
 
 | Abschnitt | Inhalt |
 |---|---|
 | ID | N1-QA-04 |
-| Name | Datenschutz / DSGVO |
-| Beschreibung | Personenbezogene Daten dürfen nur angezeigt werden, wenn sie für den jeweiligen Use Case erforderlich sind. Profildaten bleiben auf die in D1 definierten Basisangaben begrenzt. |
-| Begründung | P1 legt DSGVO-Compliance als Constraint fest (CON-D-01). D1 begrenzt `profile` bewusst auf MVP-relevante Felder (`display_name`, `city`, `avatar_url`) und gibt für andere Nutzer ausschließlich `display_name` und optional `avatar_url` frei. |
-| Begründung (Fortsetzung) | UC-03 und UC-07 fordern ausdrücklich, dass keine nicht benötigten privaten Profildaten anderer Nutzer angezeigt werden. |
+| Name | Datensparsamkeit |
+| Beschreibung | Personenbezogene Daten werden nur angezeigt und gespeichert, wenn sie für den jeweiligen Use Case erforderlich sind. Profildaten bleiben auf die in D1 definierten Basisangaben begrenzt. |
+| Begründung | D1 begrenzt `profile` auf `display_name`, `city` und `avatar_url` und gibt für andere Nutzer ausschließlich `display_name` und optional `avatar_url` frei. UC-03 und UC-07 fordern ausdrücklich, dass keine darüber hinausgehenden Profildaten anderer Nutzer sichtbar werden. |
 | Betroffene Use Cases | UC-01, UC-03, UC-07, UC-12 |
-| Betroffene Datenobjekte / Datentypen | `profile` (D1: `display_name`, `city`, `avatar_url`); E-Mail/Passwort liegen bewusst außerhalb des Datenmodells beim Nachbarsystem Supabase Auth (D1.4, S1 NB-02). |
+| Betroffene Datenobjekte / Datentypen | `profile` (D1: `display_name`, `city`, `avatar_url`); E-Mail und Passwort liegen bewusst außerhalb des Datenmodells beim Nachbarsystem Supabase Auth (D1.4, S1 NB-02). |
 | Betroffene Dialoge | DLG-04 (Teilnehmerliste), DLG-07 (Rollenanzeige), DLG-08 (Profil) |
-| Akzeptanzkriterien | Given eine Teilnehmerliste (DLG-04), When sie angezeigt wird, Then erscheinen als Profildaten ausschließlich `display_name` und optional `avatar_url` und keine Auth-internen Daten (Passwort, Token). Given ein Nutzer betrachtet oder bearbeitet sein eigenes Profil (DLG-08), Then bleiben die dort vorgesehenen eigenen Profilfelder verfügbar. Given eine bestätigte Löschanfrage, When ein Administrator das Auth-Konto entfernt, Then werden Profil, Präferenzen, Teilnahmen und organisierte Sessions gemäß [D1.4](D1-datenmodell.md#d14-entitätstypen-im-detail) gelöscht. |
-| Prüfmethode | Review der in der Teilnehmerliste angezeigten Felder gegen D1/B1; Prüfung, dass `city` und Auth-Rohdaten weder dort noch in dafür bestimmten Antworten sichtbar sind. |
-| Festlegung | Auskunfts- und Löschanfragen werden im MVP über die in der Datenschutzerklärung genannte Kontaktadresse nach Identitätsprüfung administrativ bearbeitet; Datenumfang und Löschwirkung stehen in [D1.4](D1-datenmodell.md#d14-entitätstypen-im-detail). |
+| Akzeptanzkriterien | Given eine Teilnehmerliste (DLG-04), When sie angezeigt wird, Then erscheinen als Profildaten ausschließlich `display_name` und optional `avatar_url` und keine Auth-internen Daten (Passwort, Token). Given ein Nutzer betrachtet oder bearbeitet sein eigenes Profil (DLG-08), Then bleiben die dort vorgesehenen eigenen Profilfelder verfügbar. |
+| Prüfmethode | Review der in der Teilnehmerliste angezeigten Felder gegen D1/B1; Prüfung, dass `city` und Auth-Rohdaten weder dort noch in den Antworten der Leseoperationen sichtbar sind. |
 
 ### N1-QA-05 — Sicherheit
 
@@ -212,10 +210,8 @@ Folgende in P1 dokumentierte Randbedingungen sind für N1 unmittelbar relevant:
 
 | P1-Randbedingung | Bezug in N1 |
 |---|---|
-| CON-D-01 Datenschutz/DSGVO | N1-QA-04 |
 | CON-T-02, CON-T-05 Free-/Student-Tier | N1-QA-10 |
 | CON-T-04 Responsive Web-UI, kein Native App | N1-QA-02 |
-| CON-D-03 Authentifizierung ohne SMS | N1-QA-05 (Auth über Supabase, keine SMS-Kosten) |
 | NG-01, NG-02, NG-08 (kein Payment, kein Messaging, keine KI-Integration) | Grenzen für N1-QA-10: keine zusätzlichen kostenpflichtigen Dienste dieser Art vorzusehen |
 
 ## N1.6 Testbarkeit und Akzeptanzkriterien
@@ -225,7 +221,7 @@ Folgende in P1 dokumentierte Randbedingungen sind für N1 unmittelbar relevant:
 | N1-QA-01 Performance | Manuelle Durchführung der Kernworkflows im Browser | Sichtbare Reaktion ohne wahrnehmbaren Hänger; Ladeanzeige bei längeren Anfragen | Frontend-Komponenten der Dialoge DLG-02–DLG-06, Supabase PostgREST (P2 NB-03) |
 | N1-QA-02 Mobile Nutzbarkeit | Browser-DevTools, Geräteemulation | Kein horizontales Scrollen, alle Muss-Aktionen bedienbar | Responsive Layout aller Dialoge (B1) |
 | N1-QA-03 Usability | Manuelle Zeitmessung der Workflows Suche/Erstellung/Beitritt | Erstellung < 2 Min. (SC-02), Suche < 3 Min. (SC-03) | DLG-02, DLG-05 |
-| N1-QA-04 Datenschutz | Feldabgleich angezeigter Daten gegen D1 | Nur in D1 definierte Profilfelder sichtbar | DLG-04, DLG-08, `profile`-Zugriff |
+| N1-QA-04 Datensparsamkeit | Feldabgleich angezeigter Daten gegen D1 | Nur in D1 definierte Profilfelder sichtbar | DLG-04, DLG-08, `profile`-Zugriff |
 | N1-QA-05 Sicherheit | Code-Review Zugriffsprüfung, Repository-Scan | Geschützte Aktionen nur für angemeldete/berechtigte Nutzer; keine Secrets im Repo | Auth-Prüfung (AF-01/AF-02), Repository-Historie |
 | N1-QA-06 Zuverlässigkeit | Code-Walkthrough Atomarität, Test ohne Kartendienst | Keine Überbuchung; kontrollierte Degradation der Kartenansicht | AF-01-Umsetzung, DLG-03-Fehlerfall |
 | N1-QA-07 Wartbarkeit | Stichprobenartiger Namensabgleich Code ↔ D1/D2/P2 | Konsistente Benennung von Entitäten und Modulen | gesamte Codebasis |
@@ -242,7 +238,7 @@ Folgende Punkte sind bewusst **nicht** Teil der Qualitätsanforderungen von Loca
 | Verbindliche 24/7-Produktivverfügbarkeit | Hochschulprojekt im Free-Tier (P1 CON-T-02); ein Verfügbarkeits-SLA wäre ohne dedizierte Infrastruktur nicht seriös zusagbar. |
 | Garantierte Antwortzeiten unter realer Produktionslast | Reale Lastprofile sind unbekannt; N1-QA-01 nennt daher ein Ziel unter Entwicklungs-/Testbedingungen statt eines SLA-Werts. |
 | Barrierefreiheitszertifizierung (z. B. WCAG-Konformitätsnachweis) | Nicht in P1 als Ziel oder Erfolgskriterium genannt; N1-QA-02 deckt nur responsive Mobile-Nutzbarkeit ab, keine formale Zertifizierung. |
-| Vollständige Security-Audit-Abdeckung | Kein Budget/Zeitrahmen für ein externes Audit im Hochschulprojekt (P1 CON-O-02); N1-QA-05 beschränkt sich auf grundlegende Zugriffs- und Secret-Prüfung. |
+| Vollständige Security-Audit-Abdeckung | Kein Budget und kein Zeitrahmen für ein externes Audit im Hochschulprojekt; N1-QA-05 beschränkt sich auf grundlegende Zugriffs- und Secret-Prüfung. |
 | Professionelle Monitoring-/Alerting-Pflichten | Professionelles Monitoring ist im MVP nicht vorgesehen; die Provider-eigenen Logs (Supabase, Vercel) genügen. |
 | Payment- oder Benachrichtigungsanforderungen | In P1 ausdrücklich ausgeschlossen (NG-01, NG-02); daher auch keine zugehörigen Qualitätsanforderungen (z. B. Zustellzuverlässigkeit von E-Mails). |
 | Feldlängen für `title`, `display_name`, `description` | Es gibt keinen fachlichen Grenzwert, der sich begründen ließe; die Felder werden von Nutzern für Nutzer gefüllt, und eine zu knappe Grenze schadet mehr als sie nützt. Die Datenbank speichert sie ohne feste Längenbegrenzung. Sollte sich im Betrieb Missbrauch zeigen, ist eine Obergrenze nachträglich ohne Datenmigration ergänzbar. |
@@ -265,7 +261,7 @@ Folgende Punkte sind bewusst **nicht** Teil der Qualitätsanforderungen von Loca
 
 ## N1.9 Weiterverwendung in Architektur, Tests und Code
 
-- **Datenschutz/Sicherheit** (N1-QA-04, N1-QA-05) sollen später als arc42-Qualitätsszenarien übernommen werden und Architekturentscheidungen zu Authentifizierung, Datenzugriff (Row-Level-Security) und Secret-Management beeinflussen; im Code sichtbar als Zugriffsprüfungen vor Beitritt/Check-in und als Abwesenheit von Secrets im Repository.
+- **Datensparsamkeit und Sicherheit** (N1-QA-04, N1-QA-05) sollen später als arc42-Qualitätsszenarien übernommen werden und Architekturentscheidungen zu Authentifizierung, Datenzugriff (Row-Level-Security) und Secret-Management beeinflussen; im Code sichtbar als Zugriffsprüfungen vor Beitritt/Check-in und als Abwesenheit von Secrets im Repository.
 - **Performance** (N1-QA-01) soll spätere Entscheidungen zu Datenabfragen (Indizierung, Filterlogik der Suche) und zur Karten-/Listenansicht beeinflussen; im Code sichtbar als Ladezustände und Antwortverhalten der Suche.
 - **Usability** (N1-QA-02, N1-QA-03) soll unmittelbar in den B1-Dialogen sichtbar werden: Fehlermeldungen, mobile Layouts und die Kürze der Erstellungs-/Beitrittswege.
 - **Wartbarkeit** (N1-QA-07) soll die Modulstruktur und Benennung im Code prägen: Wiederverwendung der D1/D2-Namen, Zuordnung von Code-Modulen zu den P2-Architekturkomponenten.

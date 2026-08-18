@@ -356,7 +356,7 @@ Der Ablauf verzweigt sich zwischen Auswahl eines vorhandenen Courts und Neuerfas
 
 | Use Case | Geschäftsprozess aus F1 | P1-Ziel oder Scope-Bezug | P2-Nachbarsysteme | Bemerkung zur Konsistenz |
 |---|---|---|---|---|
-| UC-01 | GP-02 A2; Voraussetzung für geschützte Aktionen | Authentifizierung, Profile, DSGVO | NB-01, NB-02 | Passt zu Supabase Auth und Web-UI. |
+| UC-01 | GP-02 A2; Voraussetzung für geschützte Aktionen | Authentifizierung, Profile, Datensparsamkeit | NB-01, NB-02 | Passt zu Supabase Auth und Web-UI. |
 | UC-02 | GP-01 A2-A7, GP-03 A1-A7 | G-02, G-03, Session-Discovery | NB-01, NB-03, NB-04 | Kernfunktion für Finden lokaler Sportaktivitäten. |
 | UC-03 | GP-01 A8, A14; GP-02 A11-A12 | Web-UI für Session-Verwaltung | NB-01, NB-03, NB-04 | Detailansicht verbindet Suche, Beitritt und Organisation. |
 | UC-04 | GP-01 A9-A13 | Teilnehmer-Verwaltung, Kapazität | NB-01, NB-02, NB-03 | Kapazität ist harte Grenze ohne Warteliste (P1 NG-10). Beitritts- und Kapazitätslogik ist in F3 AF-01 präzisiert. |

@@ -101,9 +101,9 @@ erDiagram
 
 **Assoziationen:** organisiert 0..* `session` (als `organizer_id`); besitzt 0..* `participant` (als `user_id`); bevorzugt 0..* `sport` über `sport_preference`; erfasst optional 0..* `court` (als `created_by`).
 
-**Datenschutz:** Profildaten werden auf MVP-relevante Basisangaben begrenzt (UC-12, [P1](P1-ziele-rahmenbedingungen.md) CON-D-01). Für andere Nutzer sichtbar sind ausschließlich `display_name` und optional `avatar_url` ([N2.2](N2-querschnittskonzepte.md#n22-row-level-security-rls)); `city` dient nur der eigenen Ortsvorbelegung. Weitere Profil- oder Authentifizierungsdaten werden nicht angezeigt.
+**Datenschutz:** Profildaten werden auf MVP-relevante Basisangaben begrenzt (UC-12). Für andere Nutzer sichtbar sind ausschließlich `display_name` und optional `avatar_url` ([N2.2](N2-querschnittskonzepte.md#n22-row-level-security-rls)); `city` dient nur der eigenen Ortsvorbelegung. Weitere Profil- oder Authentifizierungsdaten werden nicht angezeigt.
 
-**Löschung:** Bei einer administrativ bestätigten DSGVO-Löschung werden Profil, Sportpräferenzen, Teilnahmen sowie vom Nutzer organisierte Sessions einschließlich ihrer abhängigen Teilnahmen entfernt. Bei erfassten Courts wird lediglich `created_by` geleert; der nicht personenbezogene Sportort bleibt erhalten.
+**Löschung:** Wird ein Nutzerkonto entfernt, entfallen Profil, Sportpräferenzen, Teilnahmen sowie die vom Nutzer organisierten Sessions einschließlich ihrer abhängigen Teilnahmen. Bei erfassten Courts wird lediglich `created_by` geleert; der nicht personenbezogene Sportort bleibt erhalten.
 
 ### `sport` — Sportart (Katalog)
 
@@ -231,7 +231,7 @@ Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#
 | Warteliste / `waiting`-Status | Out of scope (P1 NG-10). AF-01 kennt keine Warteliste; `participant.status` hat daher nur `confirmed`/`checked_in`, kein `waiting`. |
 | Benachrichtigungen, Nachrichten, Kommentare | Out of scope (P1 NG-02, F1-Grenzen, F2.6). Kein Daten­objekt im MVP. |
 | Ratings / Reviews | Out of scope (P1 NG-04). |
-| Zahlungs-/Buchungsdaten | Out of scope (P1 NG-01, CON-D-02). |
+| Zahlungs-/Buchungsdaten | Out of scope (P1 NG-01). |
 | Session-Serien / wiederkehrende Termine | F1 modelliert keine Serien; jede `session` ist eigenständig (F2.6). |
 | Auth-Nutzer, Sitzungen, Tokens | Gehören zum Nachbarsystem Supabase Auth ([S1](S1-nachbarsysteme.md)); im Modell nur als externe `user_id` referenziert. |
 | Rollen/Berechtigungen als eigene Entität | Rollen sind im MVP fachlich durch die Aktion bestimmt (UC-01): Organisator ist, wer eine Session erstellt (`organizer_id`). Keine eigene Rollen-Entität. |
@@ -241,7 +241,7 @@ Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#
 
 | Baustein | Relevanz für D1 |
 |---|---|
-| [P1](P1-ziele-rahmenbedingungen.md) | Scope der Datenobjekte; Ausschluss von Warteliste (NG-10), Zahlung (NG-01), Messaging (NG-02); Datenschutz (CON-D-01). |
+| [P1](P1-ziele-rahmenbedingungen.md) | Scope der Datenobjekte; Ausschluss von Warteliste (NG-10), Zahlung (NG-01), Messaging (NG-02). |
 | [P2](P2-architekturueberblick.md) | Nennt die Datenobjekte in den Datenflüssen (Sessions, Courts, Participants, Profiles); `user_id` stammt aus Supabase Auth (NB-02). |
 | [F1](F1-geschaeftsprozesse.md) | Liefert fachliche Herkunft der Attribute (Beitritt, Check-in, QR/PIN, Organisator-als-Teilnehmer GP-02 A7). |
 | [F2](F2-anwendungsfaelle.md) | Jeder „Bezug zu Daten" der Use Cases wird hier durch eine Entität abgedeckt (Profile, Session, Court, Participant, Sportart). |

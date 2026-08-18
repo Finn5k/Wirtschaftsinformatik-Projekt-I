@@ -138,7 +138,7 @@ Attribut- und Entitätsnamen sind in **englischem `snake_case`** gehalten (konsi
 |---|---|
 | [D1](D1-datenmodell.md) | Verwendet die hier definierten Typen für alle Attribute; jede Typreferenz in D1 wird hier aufgelöst. |
 | [F3](F3-anwendungsfunktionen.md) | Definiert die Regeln über den Werten: `SessionStatus` (AF-03), `Pin`/`QrContent` (AF-02, AF-04), `ParticipantStatus` (AF-01, AF-02). |
-| [P1](P1-ziele-rahmenbedingungen.md) | Scope-Grenzen prägen die Wertebereiche (kein `waiting`, NG-10; DSGVO CON-D-01). |
+| [P1](P1-ziele-rahmenbedingungen.md) | Scope-Grenzen prägen die Wertebereiche (kein `waiting`, NG-10). |
 | [S1](S1-nachbarsysteme.md) | `Identifier` (`user_id`) stammt aus Supabase Auth (NB-02); `GeoCoordinate` entsteht über die Kartenansicht (NB-04) und wird für Reverse-Geocoding an NB-05 übergeben. |
 | N1 / N2 | Feldlängen, Obergrenzen, technische Typzuordnung, Constraints, PIN-Speicherung, Zeittoleranz beim Check-in. |
 | B1 | Ein-/Ausgabeformate und Feldvalidierung in den Dialogen. |
