@@ -1,7 +1,7 @@
 import { mockSessions } from "../data/mockSessions";
-import { mockUser } from "../data/mockUser";
 import type { Court, SportSession, SportType } from "../types/session";
 import { getSessionStatus } from "../utils/sessionTime";
+import { getCurrentUser } from "./userService";
 
 const CREATED_SESSIONS_STORAGE_KEY = "localcourt.mock-created-sessions";
 
@@ -54,6 +54,54 @@ function updateCreatedSession(updatedSession: SportSession) {
   persistCreatedSessions();
 }
 
+function synchronizeCurrentUserDisplay() {
+  const currentUser = getCurrentUser();
+  let hasChanges = false;
+
+  sessions = sessions.map((session) => {
+    const organizerName =
+      session.organizerId === currentUser.id
+        ? currentUser.name
+        : session.organizerName;
+    const participants = session.participants.map((participant) => {
+      if (participant.id !== currentUser.id) {
+        return participant;
+      }
+
+      if (
+        participant.name === currentUser.name &&
+        participant.avatarUrl === currentUser.avatarUrl
+      ) {
+        return participant;
+      }
+
+      hasChanges = true;
+      return {
+        ...participant,
+        name: currentUser.name,
+        avatarUrl: currentUser.avatarUrl,
+      };
+    });
+
+    if (organizerName !== session.organizerName) {
+      hasChanges = true;
+    }
+
+    return organizerName === session.organizerName &&
+      participants.every(
+        (participant, index) => participant === session.participants[index],
+      )
+      ? session
+      : { ...session, organizerName, participants };
+  });
+
+  if (hasChanges) {
+    const createdSessionIds = new Set(createdSessions.map((session) => session.id));
+    createdSessions = sessions.filter((session) => createdSessionIds.has(session.id));
+    persistCreatedSessions();
+  }
+}
+
 export interface CreateSessionInput {
   sportType: SportType;
   title: string;
@@ -69,6 +117,7 @@ function generatePin(): string {
 }
 
 export function createSession(input: CreateSessionInput): SportSession {
+  const currentUser = getCurrentUser();
   const session: SportSession = {
     id: crypto.randomUUID(),
     title: input.title.trim(),
@@ -81,14 +130,14 @@ export function createSession(input: CreateSessionInput): SportSession {
     durationMin: input.durationMin,
     participantsCount: 1,
     maxParticipants: input.maxParticipants,
-    organizerId: mockUser.id,
-    organizerName: mockUser.name,
+    organizerId: currentUser.id,
+    organizerName: currentUser.name,
     pin: generatePin(),
     participants: [
       {
-        id: mockUser.id,
-        name: mockUser.name,
-        avatarUrl: mockUser.avatarUrl,
+        id: currentUser.id,
+        name: currentUser.name,
+        avatarUrl: currentUser.avatarUrl,
         status: "confirmed",
       },
     ],
@@ -103,6 +152,7 @@ export function createSession(input: CreateSessionInput): SportSession {
 }
 
 export function getSessions(): SportSession[] {
+  synchronizeCurrentUserDisplay();
   return sessions;
 }
 
@@ -113,12 +163,14 @@ export function getSessionById(
     return undefined;
   }
 
+  synchronizeCurrentUserDisplay();
   return sessions.find((session) => session.id === sessionId);
 }
 
 // Entdecken/Karte zeigen nur zukünftige oder laufende Sessions (B1 DLG-02/DLG-03);
 // abgeschlossene Sessions erscheinen ausschließlich unter "Meine Sessions" (UC-11).
 export function getDiscoverableSessions(): SportSession[] {
+  synchronizeCurrentUserDisplay();
   return sessions
     .filter(
       (session) => getSessionStatus(session) !== "completed",
@@ -152,14 +204,16 @@ export function getSessionsBySportType(
 }
 
 function isMySession(session: SportSession): boolean {
+  const currentUser = getCurrentUser();
   return (
-    session.organizerId === mockUser.id ||
-    session.participants.some((participant) => participant.id === mockUser.id)
+    session.organizerId === currentUser.id ||
+    session.participants.some((participant) => participant.id === currentUser.id)
   );
 }
 
 // "Meine Sessions" (B1 DLG-07): bevorstehende Sessions mit eigener Beteiligung (UC-05).
 export function getMyUpcomingSessions(): SportSession[] {
+  synchronizeCurrentUserDisplay();
   return sessions
     .filter(
       (session) =>
@@ -175,6 +229,7 @@ export function getMyUpcomingSessions(): SportSession[] {
 
 // "Meine Sessions", Tab Vergangen (B1 DLG-07): read-only Historie (UC-11).
 export function getMyPastSessions(): SportSession[] {
+  synchronizeCurrentUserDisplay();
   return sessions
     .filter(
       (session) => isMySession(session) && getSessionStatus(session) === "completed",
@@ -192,12 +247,13 @@ export function getMyPastSessions(): SportSession[] {
 }
 
 export function joinSession(sessionId: string): SportSession | undefined {
+  const currentUser = getCurrentUser();
   const session = getSessionById(sessionId);
 
   if (
     !session ||
     getSessionStatus(session) === "completed" ||
-    session.participants.some((participant) => participant.id === mockUser.id) ||
+    session.participants.some((participant) => participant.id === currentUser.id) ||
     session.participantsCount >= session.maxParticipants
   ) {
     return session;
@@ -209,9 +265,9 @@ export function joinSession(sessionId: string): SportSession | undefined {
     participants: [
       ...session.participants,
       {
-        id: mockUser.id,
-        name: mockUser.name,
-        avatarUrl: mockUser.avatarUrl,
+        id: currentUser.id,
+        name: currentUser.name,
+        avatarUrl: currentUser.avatarUrl,
         status: "confirmed",
       },
     ],
@@ -226,9 +282,10 @@ export function joinSession(sessionId: string): SportSession | undefined {
 }
 
 export function checkIn(sessionId: string): SportSession | undefined {
+  const currentUser = getCurrentUser();
   const session = getSessionById(sessionId);
   const participation = session?.participants.find(
-    (participant) => participant.id === mockUser.id,
+    (participant) => participant.id === currentUser.id,
   );
 
   if (!session || getSessionStatus(session) !== "active" || !participation) {
@@ -238,7 +295,7 @@ export function checkIn(sessionId: string): SportSession | undefined {
   const updatedSession: SportSession = {
     ...session,
     participants: session.participants.map((participant) =>
-      participant.id === mockUser.id
+      participant.id === currentUser.id
         ? { ...participant, status: "checked_in" }
         : participant,
     ),
