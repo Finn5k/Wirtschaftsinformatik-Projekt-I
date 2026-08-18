@@ -115,7 +115,7 @@ Fachliches, konzeptionelles Datenmodell nach Siedersleben: Entitätstypen, Attri
 ### **D2 — Datentypen (Datentypenverzeichnis)** ✅ (fertig)
 **Datei**: [D2-datentypen.md](D2-datentypen.md)
 
-Fachliches Datentypenverzeichnis: Wertebereiche, Aufzählungen und Validierungsregeln der in D1 verwendeten Typen. Technische Typzuordnung (PostgreSQL) bleibt in N2.
+Fachliches Datentypenverzeichnis: Wertebereiche, Aufzählungen und Validierungsregeln der in D1 verwendeten Typen.
 
 **Inhalte**:
 - Triviale Typen (`Text`, `Integer`, `Boolean`, `Timestamp`, `Url`) + Katalogübersicht
@@ -142,12 +142,12 @@ Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste)
 ---
 
 ### **B2 — Batch** ❌ (nicht anwendbar)
-LocalCourt sieht keine klassischen Batchprozesse (zeitgesteuerte Massenverarbeitung) vor: Der Session-Status wird laut [N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03) bewusst bei jeder Abfrage berechnet statt per Scheduler/Cron gepflegt, gerade um eine zusätzliche Batch-Komponente im Free-Tier zu vermeiden (CON-T-02). Sollte sich dies ändern, wird B2 nachgezogen.
+LocalCourt sieht keine klassischen Batchprozesse (zeitgesteuerte Massenverarbeitung) vor: Der Session-Status wird laut [AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session) bewusst bei jeder Abfrage berechnet statt per Scheduler/Cron gepflegt, gerade um eine zusätzliche Batch-Komponente im Free-Tier zu vermeiden (CON-T-02). Sollte sich dies ändern, wird B2 nachgezogen.
 
 ---
 
 ### **B3 — Druckausgaben** ❌ (nicht anwendbar)
-LocalCourt sieht keine Druckausgaben vor; der QR-Code für den Check-in wird ausschließlich am Bildschirm angezeigt und gescannt (F1 GP-02, [N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04)). Sollte sich dies ändern, wird B3 nachgezogen.
+LocalCourt sieht keine Druckausgaben vor; der QR-Code für den Check-in wird ausschließlich am Bildschirm angezeigt und gescannt (F1 GP-02, [AF-04](F3-anwendungsfunktionen.md#af-04--pin--und-qr-code-erzeugung)). Sollte sich dies ändern, wird B3 nachgezogen.
 
 ---
 
@@ -189,16 +189,13 @@ Installation, Umgebungseinrichtung, Betrieb auf Supabase/Vercel sowie Start- und
 
 ---
 
-### **N2 — Querschnittskonzepte / Umsetzung** ✅ (fertig)
+### **N2 — Querschnittskonzepte** ✅ (fertig)
 **Datei**: [N2-querschnittskonzepte.md](N2-querschnittskonzepte.md)
 
-Technische Umsetzung der in D1, D2 und F3 bewusst offengelassenen Fragen auf dem Technologie-Stack aus P1/P2.
+Systemweit geltende Konzepte, die mehrere Anwendungsfälle und Datenobjekte zugleich betreffen:
 
-**Inhalte**:
-- Technische Typzuordnung (D2 → PostgreSQL), Schlüssel, Constraints, Indizes
-- Atomarität des Beitritts, Statuspersistenz und Zählstrategie
-- PIN-Erzeugung und -Speicherung, QR-Inhalt, Identifier-Strategie
-- Row-Level-Security, Fehler-Mapping der Ergebniscodes auf HTTP, Testing und Monitoring
+- Row-Level-Security: Zugriffsregeln je Tabelle
+- Fehler-Mapping der fachlichen Ergebniscodes aus F3 auf HTTP-Antworten
 
 ---
 

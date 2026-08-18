@@ -153,8 +153,8 @@ wird nie an den Browser ausgeliefert.
 | `join_session` | Kapazität prüfen und Teilnahme atomar anlegen |
 | `check_in` | Teilnahme, PIN und Zeitfenster prüfen und Status atomar aktualisieren |
 
-Die konkreten Constraints, Schlüssel, Ergebniscodes und HTTP-Abbildungen stehen
-in [N2.2–N2.12](../spec/N2-querschnittskonzepte.md#n22-technische-typzuordnung).
+Die Zugriffsregeln und die Abbildung der Ergebniscodes auf HTTP-Antworten stehen
+in [N2](../spec/N2-querschnittskonzepte.md).
 
 ### 4.4 Karten und Reverse-Geocoding
 
@@ -301,14 +301,14 @@ Konkrete Kontingente der genutzten Dienste (P1 CON-T-02, CON-T-05; N1-QA-10):
 | Konzept | Architekturregel | Maßgebliche Fundstelle |
 |---|---|---|
 | Authentifizierung | Geschützte Aktionen benötigen ein gültiges Supabase-JWT; nach Login wird zum ursprünglichen Ziel zurückgekehrt. | B1.5.2, S1.3 |
-| Autorisierung | Tabellenzugriffe werden über RLS auf `auth.uid()` begrenzt; sensible PIN-Daten werden nicht in Discovery-Antworten geliefert. | N2.11 |
-| Atomarität | Kapazitätskritische und statusändernde Abläufe werden als PostgreSQL-RPC ausgeführt. | F3 AF-01/AF-02, N2.4/N2.10 |
-| Status und Zählung | `status` und `confirmed_count` werden bei Abfragen berechnet, nicht redundant persistiert. | N2.5/N2.6 |
-| Fehlerbehandlung | Services übersetzen HTTP- und fachliche Ergebniscodes in typisierte Ergebnisse; Seiten zeigen die verbindlichen B1-Texte. | B1 DLG-04/DLG-06, N2.12 |
+| Autorisierung | Tabellenzugriffe werden über RLS auf `auth.uid()` begrenzt; sensible PIN-Daten werden nicht in Discovery-Antworten geliefert. | N2.2 |
+| Atomarität | Kapazitätskritische und statusändernde Abläufe werden als PostgreSQL-RPC ausgeführt. | F3 AF-01/AF-02, S1.4 |
+| Status und Zählung | `status` und `confirmed_count` werden bei Abfragen berechnet, nicht redundant persistiert. | F3 AF-03, D1.6 |
+| Fehlerbehandlung | Services übersetzen HTTP- und fachliche Ergebniscodes in typisierte Ergebnisse; Seiten zeigen die verbindlichen B1-Texte. | B1 DLG-04/DLG-06, N2.3 |
 | Ausfallverhalten | Keine automatischen Retries; Nutzer erhält eine Wiederholmöglichkeit. Kartenfehler führen zur Listenansicht. | B1.5.4, S1.1 |
-| Datenschutz | Nur erforderliche Profilfelder werden übertragen; Auskunft und Löschung folgen dem administrativen Prozess. | N1-QA-04, N2.15 |
+| Datenschutz | Nur erforderliche Profilfelder werden übertragen; Auskunft und Löschung folgen dem administrativen Prozess. | N1-QA-04, D1.4 |
 | Protokollierung | Keine Tokens, PINs, personenbezogenen Payloads oder technischen Interna in nutzerseitigen Meldungen. | N1-QA-05/N1-QA-09 |
-| Testbarkeit | F2-Akzeptanzkriterien und F3-Entscheidungstabellen bilden die Testgrundlage; RPCs haben höchste Testpriorität. | N1.6, N2.13 |
+| Testbarkeit | F2-Akzeptanzkriterien und F3-Entscheidungstabellen bilden die Testgrundlage; RPCs haben höchste Testpriorität. | N1.6 |
 
 ## 8. Aktueller Implementierungsstand
 
@@ -320,7 +320,7 @@ Konkrete Kontingente der genutzten Dienste (P1 CON-T-02, CON-T-05; N1-QA-10):
 | Sessionstatus/Zählung | Status aus Start und Dauer abgeleitet; Teilnehmerzahl im Mockobjekt geführt | serverseitig berechnete Werte |
 | Court-Erfassung | Kartenpin, Nominatim-Reverse-Geocoding und lokale Court-Persistenz | serverseitige, atomare Speicherung |
 | QR/PIN | echte clientseitige QR-Erzeugung und gemeinsame lokale Prüfung | serverseitige `check_in`-RPC |
-| RLS | nicht vorhanden | Policies gemäß N2.11 |
+| RLS | nicht vorhanden | Policies gemäß N2.2 |
 
 Damit ist die aktuelle Ordnerstruktur ein UI-Prototyp der Bausteinsicht, aber
 noch keine vollständige Implementierung der Cloud- und Persistenzbausteine.

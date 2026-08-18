@@ -101,9 +101,9 @@ erDiagram
 
 **Assoziationen:** organisiert 0..* `session` (als `organizer_id`); besitzt 0..* `participant` (als `user_id`); bevorzugt 0..* `sport` über `sport_preference`; erfasst optional 0..* `court` (als `created_by`).
 
-**Datenschutz:** Profildaten werden auf MVP-relevante Basisangaben begrenzt (UC-12, [P1](P1-ziele-rahmenbedingungen.md) CON-D-01). Für andere Nutzer sichtbar sind ausschließlich `display_name` und optional `avatar_url` ([N2.11](N2-querschnittskonzepte.md#n211-row-level-security-rls)); `city` dient nur der eigenen Ortsvorbelegung. Weitere Profil- oder Authentifizierungsdaten werden nicht angezeigt.
+**Datenschutz:** Profildaten werden auf MVP-relevante Basisangaben begrenzt (UC-12, [P1](P1-ziele-rahmenbedingungen.md) CON-D-01). Für andere Nutzer sichtbar sind ausschließlich `display_name` und optional `avatar_url` ([N2.2](N2-querschnittskonzepte.md#n22-row-level-security-rls)); `city` dient nur der eigenen Ortsvorbelegung. Weitere Profil- oder Authentifizierungsdaten werden nicht angezeigt.
 
-**Löschung:** Bei einer administrativ bestätigten DSGVO-Löschung werden Profil, Sportpräferenzen, Teilnahmen sowie vom Nutzer organisierte Sessions einschließlich ihrer abhängigen Teilnahmen entfernt. Bei erfassten Courts wird lediglich `created_by` geleert; der nicht personenbezogene Sportort bleibt erhalten (N2.15).
+**Löschung:** Bei einer administrativ bestätigten DSGVO-Löschung werden Profil, Sportpräferenzen, Teilnahmen sowie vom Nutzer organisierte Sessions einschließlich ihrer abhängigen Teilnahmen entfernt. Bei erfassten Courts wird lediglich `created_by` geleert; der nicht personenbezogene Sportort bleibt erhalten.
 
 ### `sport` — Sportart (Katalog)
 
@@ -255,10 +255,6 @@ Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#
 ## D1.9 Entscheidungsstand
 
 Keine offenen Punkte am Datenmodell selbst. In Teilnehmerlisten sind ausschließlich `display_name` und optional `avatar_url` sichtbar (UC-03, UC-07); `avatar_url` bleibt ein reiner Anzeigewert, dessen Upload und Bearbeitung im MVP ausgeschlossen sind.
-
-Die technischen Entscheidungen zu Schlüsseln, Zählstrategie und
-Statuspersistenz stehen ausschließlich in
-[N2.3–N2.6](N2-querschnittskonzepte.md#n23-schlüssel-constraints-und-indizes).
 
 ## D1.10 Eingesetzte KI-Werkzeuge
 

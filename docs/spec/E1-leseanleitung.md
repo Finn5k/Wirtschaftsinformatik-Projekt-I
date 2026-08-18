@@ -82,7 +82,7 @@ Zentrale spezifizierte Elemente wie Ziele, Geschäftsprozesse, Use Cases, Anwend
 | Datentypname in Backticks (z. B. `` `SessionStatus` ``) | Fachlicher Datentyp | [D2](D2-datentypen.md#katalogübersicht) | `` `Pin` `` |
 | `DLG-nn` | Dialog | [B1.2](B1-dialogspezifikation.md#dialog-index) | `DLG-06` Check-in |
 | `N1-QA-nn` | Qualitätsziel (nichtfunktional) | [N1.2](N1-nichtfunktionale-anforderungen.md#n12-qualitätsziele-im-überblick) | `N1-QA-05` Sicherheit |
-| `<Baustein>.<n>` (z. B. `N2.7`) | Abschnittsnummer innerhalb eines Bausteins, kein eigenständiges ID-Schema | jeder Baustein | `N2.7` PIN-Erzeugung und -Speicherung |
+| `<Baustein>.<n>` (z. B. `N2.2`) | Abschnittsnummer innerhalb eines Bausteins, kein eigenständiges ID-Schema | jeder Baustein | `N2.2` Row-Level-Security |
 
 Beim Verweis auf einen Baustein wird immer die Baustein-Kurzform verwendet (`P1`, `F2`, `D2`, `B1`, `S1`, `N2` usw.), nicht der ausgeschriebene Titel; das hält Querverweise kurz und eindeutig grep-bar.
 
@@ -135,7 +135,6 @@ Jeder Schritt in dieser Kette **verfeinert**, ohne den vorherigen Schritt zu wid
 | Anwendungsfunktion | [F3.2 AF-01](F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel) | Fachliche Kapazitätsregel, die UC-04 zugrunde liegt. |
 | Datenmodell | [D1.4 `participant`](D1-datenmodell.md#participant--teilnahme) | Entität, die den Beitritt persistiert. |
 | Schnittstelle | [S1.4 NB-03](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) | Atomare Operation `join_session`. |
-| Technische Umsetzung | [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01) | Atomarität des Beitritts auf PostgreSQL-Ebene. |
 | Architektur | [Baustein- und Laufzeitsicht](../arch/README.md#5-laufzeitsichten) | Frontend-Service ruft `join_session` auf; PostgreSQL prüft und schreibt atomar. |
 | Code | Implementierung des Beitritts-Flows | — |
 | Test | Testfall zu UC-04 (Kapazität voll/frei) | — |
@@ -152,7 +151,7 @@ In LocalCourt betrifft das aktuell:
 
 | Baustein | Status | Kurzbegründung |
 |---|---|---|
-| **B2 — Batch** | ❌ Nicht anwendbar | Keine zeitgesteuerte Massenverarbeitung; Session-Status wird laut [N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03) bei jeder Abfrage berechnet statt per Scheduler gepflegt (siehe [README](README.md#b2--batch--nicht-anwendbar)). |
+| **B2 — Batch** | ❌ Nicht anwendbar | Keine zeitgesteuerte Massenverarbeitung; Session-Status wird laut [AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session) bei jeder Abfrage berechnet statt per Scheduler gepflegt (siehe [README](README.md#b2--batch--nicht-anwendbar)). |
 | **B3 — Druckausgaben** | ❌ Nicht anwendbar | Der Check-in-QR-Code wird ausschließlich am Bildschirm angezeigt und gescannt, keine Druckausgabe vorgesehen (siehe [README](README.md#b3--druckausgaben--nicht-anwendbar)). |
 | **S2 — Datenmigration** | ❌ Nicht anwendbar | Greenfield-Projekt ohne Altdaten (NG-09, siehe [README](README.md#s2--datenmigration--nicht-anwendbar)). |
 

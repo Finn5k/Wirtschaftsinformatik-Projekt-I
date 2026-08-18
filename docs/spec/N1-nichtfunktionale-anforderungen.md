@@ -96,9 +96,9 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Use Cases | UC-01, UC-03, UC-07, UC-12 |
 | Betroffene Datenobjekte / Datentypen | `profile` (D1: `display_name`, `city`, `avatar_url`); E-Mail/Passwort liegen bewusst außerhalb des Datenmodells beim Nachbarsystem Supabase Auth (D1.4, S1 NB-02). |
 | Betroffene Dialoge | DLG-04 (Teilnehmerliste), DLG-07 (Rollenanzeige), DLG-08 (Profil) |
-| Akzeptanzkriterien | Given eine Teilnehmerliste (DLG-04), When sie angezeigt wird, Then erscheinen als Profildaten ausschließlich `display_name` und optional `avatar_url` und keine Auth-internen Daten (Passwort, Token). Given ein Nutzer betrachtet oder bearbeitet sein eigenes Profil (DLG-08), Then bleiben die dort vorgesehenen eigenen Profilfelder verfügbar. Given eine bestätigte Löschanfrage, When ein Administrator das Auth-Konto entfernt, Then werden Profil, Präferenzen, Teilnahmen und organisierte Sessions gemäß N2.15 gelöscht. |
+| Akzeptanzkriterien | Given eine Teilnehmerliste (DLG-04), When sie angezeigt wird, Then erscheinen als Profildaten ausschließlich `display_name` und optional `avatar_url` und keine Auth-internen Daten (Passwort, Token). Given ein Nutzer betrachtet oder bearbeitet sein eigenes Profil (DLG-08), Then bleiben die dort vorgesehenen eigenen Profilfelder verfügbar. Given eine bestätigte Löschanfrage, When ein Administrator das Auth-Konto entfernt, Then werden Profil, Präferenzen, Teilnahmen und organisierte Sessions gemäß [D1.4](D1-datenmodell.md#d14-entitätstypen-im-detail) gelöscht. |
 | Prüfmethode | Review der in der Teilnehmerliste angezeigten Felder gegen D1/B1; Prüfung, dass `city` und Auth-Rohdaten weder dort noch in dafür bestimmten Antworten sichtbar sind. |
-| Festlegung | Auskunfts- und Löschanfragen werden im MVP über die in der Datenschutzerklärung genannte Kontaktadresse nach Identitätsprüfung administrativ bearbeitet; Datenumfang und Löschwirkung sind in [N2.15](N2-querschnittskonzepte.md#n215-dsgvo-auskunft-und-löschung) festgelegt. |
+| Festlegung | Auskunfts- und Löschanfragen werden im MVP über die in der Datenschutzerklärung genannte Kontaktadresse nach Identitätsprüfung administrativ bearbeitet; Datenumfang und Löschwirkung stehen in [D1.4](D1-datenmodell.md#d14-entitätstypen-im-detail). |
 
 ### N1-QA-05 — Sicherheit
 
@@ -113,7 +113,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Dialoge | DLG-01, DLG-04 (QR/PIN-Anzeige, nur Organisator-Zustand), DLG-06 |
 | Akzeptanzkriterien | Given ein nicht angemeldeter Nutzer, When er eine geschützte Aktion auslöst, Then wird er zu DLG-01 geleitet und die Aktion wird nicht ausgeführt (B1.5.2). Given eine falsche PIN oder ein QR-Code einer anderen Session, When ein Check-in versucht wird, Then bleibt der Teilnahmestatus unverändert (`INVALID_CREDENTIAL`, AF-02). Given das Repository, When es durchsucht wird, Then enthält es keine echten API-Keys, Tokens oder Passwörter. |
 | Prüfmethode | Code-Review der Zugriffsprüfungen gegen F3 AF-01/AF-02; Repository-Scan auf Secrets (z. B. Suche nach typischen Schlüsselmustern, `.env`-Dateien im Git-Verlauf); manuelle Prüfung, dass QR/PIN nur im Organisator-Zustand von DLG-04 sichtbar sind. |
-| Festlegung / Abgrenzung | Die PIN wird im Klartext gespeichert ([N2.7](N2-querschnittskonzepte.md#n27-pin-erzeugung-und--speicherung-af-04)). Eine vollständige Security-Audit-Abdeckung ist nicht vorgesehen (siehe [N1.7](#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)). |
+| Festlegung / Abgrenzung | Die PIN wird im Klartext gespeichert ([D2.4](D2-datentypen.md#d24-pin)). Eine vollständige Security-Audit-Abdeckung ist nicht vorgesehen (siehe [N1.7](#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)). |
 
 ### N1-QA-06 — Zuverlässigkeit / Fehlerrobustheit
 
@@ -128,7 +128,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Dialoge | DLG-02, DLG-03 (Fehlerfall Karte), DLG-04, DLG-05 (Court-Erfassung), DLG-06 |
 | Akzeptanzkriterien | Given eine Session mit einem letzten freien Platz, When zwei Nutzer nahezu gleichzeitig beitreten, Then wird höchstens einer bestätigt und der andere erhält `SESSION_FULL` (AF-01 – Kapazitätsinvariante und Atomarität). Given ein nicht erreichbarer Kartendienst, When DLG-03 geöffnet wird, Then erscheint ein Hinweis mit Verweis auf DLG-02 statt eines Fehlerabbruchs. Given Karte oder Reverse-Geocoding sind bei der Court-Erfassung nicht verfügbar, When der Nutzer speichern möchte, Then wird kein Court angelegt und eine Wiederholmöglichkeit angezeigt. Given ein wiederholter gültiger Check-in-Versuch, When er erneut ausgeführt wird, Then bleibt der ursprüngliche Check-in-Zeitpunkt erhalten (`ALREADY_CHECKED_IN`, [AF-02 – Idempotenz bei wiederholtem Check-in](F3-anwendungsfunktionen.md#af-02--check-in-validierung)). |
 | Prüfmethode | Code-Walkthrough der Atomaritäts-Umsetzung gegen die AF-01-Entscheidungstabelle; manuelle Tests mit deaktiviertem Karten- beziehungsweise Nominatim-Zugriff in den Browser-DevTools. |
-| Festlegung | Die technische Umsetzung der Atomarität ist in [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01) als unteilbare serverseitige Operation entschieden. |
+| Festlegung | Beitritt und Check-in laufen als unteilbare serverseitige Operationen ([S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)). |
 
 ### N1-QA-07 — Wartbarkeit
 
@@ -158,7 +158,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Dialoge | keine dialogspezifische Wirkung |
 | Akzeptanzkriterien | Given ein Use Case aus F2, When sein Hauptszenario im Browser durchgeführt wird, Then entspricht das beobachtete Verhalten den dort formulierten Akzeptanzkriterien. Given eine Anwendungsfunktion aus F3, When ihre Entscheidungstabelle durchgespielt wird, Then stimmt das Systemverhalten mit jeder Tabellenzeile überein. |
 | Prüfmethode | Manueller Abgleich Akzeptanzkriterium ↔ Verhalten im Review; ergänzend einfache automatisierte Tests, soweit vom Team eingeführt. |
-| Abgrenzung | Für das MVP sind weder ein Testframework noch eine Test-CI vorgegeben (P1 SC-07, N2.11). Die spezifizierte Prüfung erfolgt deshalb manuell; automatisierte Tests sind eine optionale Ergänzung und keine offene Spezifikationsentscheidung. |
+| Abgrenzung | Für das MVP sind weder ein Testframework noch eine Test-CI vorgegeben (P1 SC-07). Die spezifizierte Prüfung erfolgt deshalb manuell; automatisierte Tests sind eine optionale Ergänzung und keine offene Spezifikationsentscheidung. |
 
 ### N1-QA-09 — Nachvollziehbarkeit / Logging ohne sensible Daten
 
@@ -245,9 +245,9 @@ Folgende Punkte sind bewusst **nicht** Teil der Qualitätsanforderungen von Loca
 | Vollständige Security-Audit-Abdeckung | Kein Budget/Zeitrahmen für ein externes Audit im Hochschulprojekt (P1 CON-O-02); N1-QA-05 beschränkt sich auf grundlegende Zugriffs- und Secret-Prüfung. |
 | Professionelle Monitoring-/Alerting-Pflichten | Professionelles Monitoring ist im MVP nicht vorgesehen; die Provider-eigenen Logs (Supabase, Vercel) genügen. |
 | Payment- oder Benachrichtigungsanforderungen | In P1 ausdrücklich ausgeschlossen (NG-01, NG-02); daher auch keine zugehörigen Qualitätsanforderungen (z. B. Zustellzuverlässigkeit von E-Mails). |
-| Feldlängen für `title`, `display_name`, `description` | Es gibt keinen fachlichen Grenzwert, der sich begründen ließe; die Felder werden von Nutzern für Nutzer gefüllt, und eine zu knappe Grenze schadet mehr als sie nützt. Die Datenbank speichert sie ohne feste Längenbegrenzung ([N2.2](N2-querschnittskonzepte.md#n22-technische-typzuordnung)). Sollte sich im Betrieb Missbrauch zeigen, ist eine Obergrenze nachträglich ohne Datenmigration ergänzbar. |
+| Feldlängen für `title`, `display_name`, `description` | Es gibt keinen fachlichen Grenzwert, der sich begründen ließe; die Felder werden von Nutzern für Nutzer gefüllt, und eine zu knappe Grenze schadet mehr als sie nützt. Die Datenbank speichert sie ohne feste Längenbegrenzung. Sollte sich im Betrieb Missbrauch zeigen, ist eine Obergrenze nachträglich ohne Datenmigration ergänzbar. |
 | Maximale Session-Dauer | Eine Obergrenze hätte im MVP keinen Schutzzweck: Sessions legen Menschen für sich selbst an, eine unrealistische Dauer schadet niemandem außer dem Ersteller. Die Untergrenze `≥ 1` aus [D2.6](D2-datentypen.md#d26-duration) verhindert widersprüchliche Zeitfenster und genügt damit. |
-| Technische Zeittoleranz beim Check-in | Am Rand des `active`-Fensters wird **keine** zusätzliche Toleranz eingeräumt; maßgeblich ist ausschließlich die Serverzeit ([N2.10](N2-querschnittskonzepte.md#n210-zeitfenster-und-zeittoleranz-beim-check-in-af-02)). Eine Toleranz von Sekunden würde die Nutzbarkeit nicht messbar verbessern, aber die Regel aus AF-02 aufweichen. |
+| Technische Zeittoleranz beim Check-in | Am Rand des `active`-Fensters wird **keine** zusätzliche Toleranz eingeräumt; maßgeblich ist ausschließlich die Serverzeit ([AF-02](F3-anwendungsfunktionen.md#af-02--check-in-validierung)). Eine Toleranz von Sekunden würde die Nutzbarkeit nicht messbar verbessern, aber die Regel aus AF-02 aufweichen. |
 
 ## N1.8 Konsistenzprüfung mit anderen Bausteinen
 
