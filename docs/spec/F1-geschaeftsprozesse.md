@@ -1,349 +1,101 @@
 # F1 — Geschäftsprozesse
 
-Reale (IT-unabhängige) Workflows, an denen LocalCourt teilnimmt. Nach Siedersleben (Kapitel 4.3): Ein Geschäftsprozess ist eine zeitliche und logische Folge von Arbeitsschritten (Aktivitäten), durchgeführt von Akteuren (Menschen & IT-Systeme). Ein Prozess kann ganz, teilweise oder gar nicht von IT-Systemen unterstützt werden.
+Ein Geschäftsprozess ist nach Siedersleben eine zeitlich und logisch geordnete Folge von Aktivitäten, die von Akteuren ausgeführt wird und **unabhängig von jedem IT-System** existiert. F1 beschreibt daher, was fachlich geschieht — nicht, wie Nutzer mit LocalCourt interagieren. Letzteres ist Gegenstand von [F2](F2-anwendungsfaelle.md).
 
-LocalCourt unterstützt **zwei Hauptprozesse** und eine **Variante**:
-
-1. **GP-01**: Spontan Sportaktivitäten in der Nähe finden (Participant)
-2. **GP-02**: Regelmäßige Treffen / Club organisieren (Organizer)
-3. **GP-03**: Neue Sportarten entdecken (Participant, Variant von GP-01)
-
-Diese Prozesse existieren mit oder ohne LocalCourt. LocalCourt ist der **IT-Unterstützer für die Koordinationsphase** — aber der Sport selbst findet außerhalb statt.
+LocalCourt unterstützt **einen** Geschäftsprozess: Menschen finden zu einer gemeinsamen Sportgelegenheit zusammen. Dieser Prozess läuft heute ohne Software ab — über Bekanntenkreis, Gruppenchats oder das Glück, am Platz genug Leute anzutreffen. LocalCourt unterstützt drei Schritte darin; die übrigen bleiben außerhalb.
 
 ---
 
-## F1.1 Geschäftsprozess: Spontan Sportaktivitäten finden (GP-01)
-
-Ein Teilnehmer möchte spontan wissen, welche Sportaktivitäten es in der Nähe gibt, und teilnehmen.
+## F1.1 Geschäftsprozess: Sportgelegenheit zustande bringen (GP-01)
 
 ### F1.1.1 Akteure
 
-| Akteur | Typ | Rolle |
-|--------|-----|-------|
-| **Teilnehmer (Participant)** | Mensch | Initiiert den Prozess; sucht, entscheidet, tritt bei. |
-| **Browser / React-Frontend** | IT-System (Client) | Rendert UI, erfasst Nutzer-Input (Ort, Sportart), zeigt Ergebnisse. |
-| **LocalCourt** | IT-System | Orchestriert die Suche, verwaltet Session-Daten. |
-| **Supabase PostgREST** | IT-System (Third Party) | Liefert Session-Datensätze gefiltert nach Ort & Sportart. |
-| **OpenStreetMap / Leaflet** | IT-System (Third Party) | Kartendarstellung, visualisiert Court-Positionen. |
-| **PostgreSQL Datenbank** | IT-System (Daten-Store) | Speichert sessions, courts, participants. |
+| Akteur | Typ | Rolle im Prozess |
+|---|---|---|
+| **Organisator** | Mensch | Legt Sportart, Zeit und Sportort fest und macht die Gelegenheit bekannt. Die Rolle entsteht durch die Handlung, nicht durch eine Berechtigung. |
+| **Teilnehmer** | Mensch | Sagt zu, erscheint am Sportort und treibt Sport. Der Organisator ist zugleich Teilnehmer seiner eigenen Gelegenheit. |
+| **LocalCourt** | IT-System | Unterstützt die Koordinationsphase: bekannt machen, zusagen, Anwesenheit feststellen. |
+
+Bewusst **nicht** als Akteure geführt sind Browser, Datenbank und Kartendienste. Sie sind technische Mittel und stehen als Nachbarsysteme in [P2.2](P2-architekturueberblick.md#p22-nachbarsysteme).
 
 ### F1.1.2 Aktivitäten
 
-Zeitliche und logische Reihenfolge. Die **Support**-Spalte benennt, wer die Aktivität materialiter durchführt.
+| # | Aktivität | Akteur | Unterstützung durch LocalCourt |
+|---|---|---|---|
+| A1 | Wunsch nach Sport zu einer bestimmten Zeit entsteht | Organisator | keine — Entscheidung des Menschen |
+| A2 | Sportart, Zeit, Dauer, Sportort und Gruppengröße festlegen | Organisator | [UC-06](F2-anwendungsfaelle.md#uc-06--session-erstellen), [UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen) |
+| A3 | Gelegenheit über den eigenen Bekanntenkreis hinaus bekannt machen | Organisator, Teilnehmer | [UC-02](F2-anwendungsfaelle.md#uc-02--session-suchen), [UC-03](F2-anwendungsfaelle.md#uc-03--session-detail-ansehen) |
+| A4 | Verbindlich zusagen, solange die Gruppe nicht voll ist | Teilnehmer | [UC-04](F2-anwendungsfaelle.md#uc-04--session-beitreten) |
+| A5 | Zum Sportort anreisen | Teilnehmer | keine |
+| A6 | Am Sportort feststellen, wer tatsächlich da ist | Organisator, Teilnehmer | [UC-08](F2-anwendungsfaelle.md#uc-08--check-in-per-qr-code-durchführen), [UC-09](F2-anwendungsfaelle.md#uc-09--check-in-per-pin-durchführen), [UC-07](F2-anwendungsfaelle.md#uc-07--teilnehmerliste-anzeigen) |
+| A7 | Sport findet statt | Teilnehmer | keine |
+| A8 | Später nachvollziehen, woran man teilgenommen hat | Teilnehmer, Organisator | [UC-11](F2-anwendungsfaelle.md#uc-11--session-historie-ansehen), [UC-05](F2-anwendungsfaelle.md#uc-05--eigene-sessions-anzeigen) |
 
-| # | Aktivität | Support | Notizen |
-|---|-----------|---------|---------|
-| A1 | Teilnehmer hat Lust auf Sport, öffnet LocalCourt | Participant, Browser | Pre-IT: Nutzer-Entscheidung, keine System-Unterstützung. |
-| A2 | Teilnehmer gibt Stadt/Region ein | Browser + Participant | Nutzer-Input über ein Textfeld; vorbelegt aus `profile.city` (UC-02). Keine automatische Geolocation (S1.7). |
-| A3 | Teilnehmer filtert nach Sportart (optional) | Browser + Participant | Dropdown-Auswahl oder Multi-Select. |
-| A4 | Frontend fragt passende Sessions an | Browser → LocalCourt | Suchkriterien: Ort und optional Sportart (UC-02). |
-| A5 | LocalCourt liefert die gefilterte Session-Liste | LocalCourt, Supabase PostgREST | Nur bevorstehende und laufende Sessions, je Session Sportort, Sportart, Status und bestätigte Teilnehmerzahl (S1.4). |
-| A6 | LocalCourt lädt Court-Positionen und rendert Kartendarstellung | LocalCourt, OpenStreetMap, Browser | Leaflet-Karte mit Pins für jeden Court. Asynchrone Karte-Rendering. |
-| A7 | Teilnehmer sieht Session-Liste & Karte | Browser (UI Rendering) | List View (Title, DateTime, Participants/Max, Location) + Map View. |
-| A8 | Teilnehmer wählt interessante Session aus (Click) | Participant, Browser | Zeigt Session-Detail-View (Beschreibung, Organisator, Teilnehmer-Liste). |
-| A9 | Teilnehmer klickt „Beitreten" | Participant, Browser | Explizite Nutzeraktion gemäß UC-04. |
-| A10 | Frontend löst den Beitritt aus | Browser → LocalCourt | Beitrittswunsch zur gewählten Session (UC-04). |
-| A11 | LocalCourt prüft Kapazität und legt die Teilnahme an | LocalCourt → PostgreSQL | Prüfung und Anlage erfolgen unteilbar, damit die Kapazität auch bei gleichzeitigen Beitritten eingehalten wird ([AF-01](F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel), S1.4). Ist die Session voll, wird abgelehnt — keine Warteliste (NG-10). |
-| A12 | Teilnehmer sieht Bestätigung "Du bist dabei!" | Browser (UI Feedback) | Toast-Nachricht oder Modal mit Session-Details. |
-| A13 | Session wird in "Meine Sessions" angezeigt | Browser (UI) | Frontend-State aktualisiert, Participant-Count erhöht sich. |
-| A14 | Teilnehmer navigiert zur Session-Detail & wartet auf Start | Participant, LocalCourt | Session-Timeline, Organisator-Infos, andere Teilnehmer-Namen sichtbar. |
-| A15 | Zum Startzeitpunkt: Session gilt als "aktiv" | LocalCourt | Statusübergang `scheduled` → `active`, zeitbasiert abgeleitet ([AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session)); kein Scheduler und keine Benachrichtigung (N2.6, F1.4). |
-| A16 | Teilnehmer erscheint zum Event und beteiligt sich physisch | Participant (Real-World) | **Post-IT**: Sport findet statt, LocalCourt nicht mehr involviert. |
-| A17 | Nach Session-Ende: Session gilt als abgeschlossen | LocalCourt | Statusübergang `active` → `completed`, abgeleitet aus Startzeitpunkt + Dauer ([AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session)). |
-| A18 | Teilnehmer kann später Session-Historie anschauen | Participant, LocalCourt | Vergangene Sessions read-only in „Meine Sessions" (UC-11); keine Auswertungen oder Statistiken (F1.4). |
+Ohne Software hat dieser Prozess drei Schwachstellen, an denen LocalCourt ansetzt ([P1](P1-ziele-rahmenbedingungen.md)): A3 erreicht nur den eigenen Bekanntenkreis, in A4 weiß niemand verlässlich, wie viele kommen, und in A6 bleibt offen, wer tatsächlich erschienen ist.
+
+Die Anmeldung eines Nutzers ([UC-01](F2-anwendungsfaelle.md#uc-01--registrieren--anmelden)) und die Pflege des Profils ([UC-12](F2-anwendungsfaelle.md#uc-12--profil-und-sportpräferenzen-verwalten)) sind keine Aktivitäten dieses Prozesses. Sie sind Voraussetzung beziehungsweise Hilfsmittel für A2 bis A4 und A6.
 
 ### F1.1.3 Dokumente
 
-Konkrete Artefakte, die durch den Prozess fließen.
+| Dokument | Entsteht in | Inhalt |
+|---|---|---|
+| **Ankündigung der Gelegenheit** | A2 | Sportart, Zeit, Dauer, Sportort und Gruppengröße; als Entität `session` in [D1](D1-datenmodell.md#d14-entitätstypen-im-detail) modelliert. |
+| **Zusage** | A4 | Die verbindliche Teilnahme einer Person an einer Gelegenheit (`participant`). |
+| **Anwesenheitsvermerk** | A6 | Feststellung, dass eine zugesagte Person vor Ort war (`participant.status`, `checked_in_at`). |
 
-| Dokument | Erzeugt in | Inhalt |
-|----------|-----------|--------|
-| **Suchkriterien** | A2–A3 | Ort und optional Sportart; nur für die laufende Suche relevant, nicht dauerhaft aufbewahrt. |
-| **Session-Liste** | A5 | Die gefundenen Sessions mit den in [D1](D1-datenmodell.md) modellierten Merkmalen. |
-| **Kartenansicht** | A6 | Darstellung der Sportorte anhand ihrer Koordinaten (S1.5); nichts davon wird gespeichert. |
-| **Session-Detail** | A8 | Eine Session samt Sportort, Organisator und Teilnehmerliste. |
-| **Teilnahme** | A11 | Die angelegte Teilnahme des Nutzers an der Session (Entität `participant` in [D1](D1-datenmodell.md)). |
-| **Session-Historie** | A18 | Vergangene Sessions des Nutzers, read-only (UC-11). |
+### F1.1.4 Daten-Stores
 
-### F1.1.4 Daten-Stores (Information-/Datenspeicher)
+Die fachlichen Datenobjekte des Prozesses — `session`, `participant`, `court`, `profile`, `sport` — sind vollständig in [D1](D1-datenmodell.md#d14-entitätstypen-im-detail) modelliert und werden hier nicht wiederholt.
 
-Die fachlichen Datenobjekte, die dieser Prozess liest und schreibt — `session`, `participant`, `court`, `profile`, `sport` —, sind vollständig in [D1](D1-datenmodell.md#d14-entitätstypen-im-detail) modelliert und werden hier nicht wiederholt. Die technische Ablage (Tabellen, Schlüssel, Constraints) steht in [N2.3](N2-querschnittskonzepte.md#n23-schlüssel-constraints-und-indizes).
+Fachlich bemerkenswert ist nur, dass der Prozess **keine Rollenzuordnung** speichert: Organisator ist, wer eine Gelegenheit festgelegt hat; Teilnehmer ist, wer zugesagt hat. Beides ergibt sich aus den Aktivitäten A2 und A4.
 
-Außerhalb des eigenen Datenbestands berührt der Prozess:
+### F1.1.5 Aktivitätsdiagramm
 
-| Store | Besitzer | Inhalt |
-|-------|----------|--------|
-| **Zugangstoken im Browser** | Browser | Sitzung des angemeldeten Nutzers (S1.3); einzige Ablage von LocalCourt-Daten im Browser. |
-| **Kartenkacheln** | OpenStreetMap (extern) | Vom Browser zwischengespeicherte Kacheln des Kachel-Dienstes (S1.5). |
+[![Geschäftsprozess GP-01](diagrams-png/F1-gp01-sportgelegenheit.png)](diagrams-png/F1-gp01-sportgelegenheit.png)
 
-### F1.1.5 Ablaufdiagramm (Mermaid)
-
-```mermaid
-sequenceDiagram
-    actor T as Teilnehmer
-    participant B as Browser
-    participant LC as LocalCourt
-    participant S as Supabase
-    participant OSM as OpenStreetMap
-
-    T->>B: A1 öffnet LocalCourt
-    T->>B: A2 Ort/Region eingeben
-    T->>B: A3 Sportart filtern (optional)
-    B->>LC: A4 Suchanfrage
-    LC->>S: GET /sessions?city&sport
-    S-->>LC: A5 Session-Liste (nur zukünftige)
-    LC->>OSM: A6 Court-Positionen rendern
-    OSM-->>LC: Tiles
-    LC-->>B: A7 Liste + Karte
-    B-->>T: Anzeige
-    T->>B: A8 Session wählen
-    B->>LC: Detail anfragen
-    LC->>S: GET Session-Detail
-    S-->>LC: Session JSON
-    LC-->>B: A8 Detailansicht
-    T->>B: A9 "Beitreten"
-    B->>LC: A10 Join-Request
-    LC->>S: A11 INSERT participant (confirmed)
-    S-->>LC: 201 Created
-    LC-->>B: A12 Bestätigung
-    B-->>T: A13 "Du bist dabei!" · in "Meine Sessions"
-    Note over LC: A15 Start erreicht → scheduled → active (AF-03)
-    Note over T: A16 Sport findet statt (außerhalb LocalCourt)
-    Note over LC: A17 Ende erreicht → active → completed (Auto-Close)
-    T->>B: A18 Session-Historie ansehen
-```
-
-**Hinweise zum Diagramm**:
-- A1, A16 sind **Pre-/Post-LocalCourt** (reale Welt), A17 ist systemautomatisch.
-- A2–A14, A18 sind **LocalCourt-unterstützt**.
-- Der Statuswechsel (A15/A17) ist zeitbasiert abgeleitet; die Regel steht in [F3 AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session).
+Quelle: [`diagrams/F1-gp01-sportgelegenheit.puml`](diagrams/F1-gp01-sportgelegenheit.puml).
 
 ---
 
-## F1.2 Geschäftsprozess: Regelmäßige Treffen / Club organisieren (GP-02)
+## F1.2 Varianten desselben Prozesses
 
-Ein Organisator (z.B. Running-Club-Leiter) möchte regelmäßige Trainings-Sessions koordinieren.
+Zwei Situationen sehen wie eigene Prozesse aus, sind aber Ausprägungen von GP-01 und werden deshalb nicht getrennt modelliert:
 
-### F1.2.1 Akteure
+- **Wiederkehrende Treffen.** Eine feste Laufgruppe durchläuft denselben Ablauf wöchentlich erneut. Jede Wiederholung ist eine eigene Gelegenheit; eine Serienfunktion ist nicht Teil des MVP ([P1](P1-ziele-rahmenbedingungen.md) NG-Liste).
+- **Eine neue Sportart ausprobieren.** Hier ist allein A3 anders gefärbt: Gesucht wird ohne Festlegung auf eine bestimmte Sportart. Die Aktivitätenfolge bleibt unverändert.
 
-| Akteur | Typ | Rolle |
-|--------|-----|-------|
-| **Organisator (Organizer)** | Mensch | Initiiert, erstellt Sessions, macht Check-In, verwaltet. |
-| **Browser / React-Frontend** | IT-System (Client) | Rendert Organisator-UI, Forms, QR-Code, Participant-Liste. |
-| **LocalCourt** | IT-System | Orchestriert Session-Erstellung, Check-In, Auto-Close. |
-| **Supabase PostgREST** | IT-System (Third Party) | CRUD für Sessions, Participants, Check-Ins. |
-| **Supabase Auth** | IT-System (Third Party) | Authentifizierung (Organisator-Login). |
-| **OpenStreetMap / Leaflet** | IT-System (Third Party) | Kartendarstellung und Setzen des Court-Pins. |
-| **Nominatim** | IT-System (Third Party) | Ermittelt Ort und optionale Adresse aus dem Court-Pin. |
-| **PostgreSQL Datenbank** | IT-System (Daten-Store) | Speichert Sessions, Participants, Check-In-Records. |
-| **QR-Code-Library** (z.B. qrcode.js) | IT-System (Client) | Generiert QR-Code auf Frontend. |
+---
 
-### F1.2.2 Aktivitäten
+## F1.3 Grenzen
 
-Zeitliche und logische Reihenfolge.
+Der Prozess endet an folgenden Stellen bewusst, weil die zugehörigen Funktionen nicht zum MVP gehören:
 
-| # | Aktivität | Support | Notizen |
-|---|-----------|---------|---------|
-| **Pre-Setup** | | | |
-| A1 | Organisator möchte Trainings-Session organisieren (z.B. jeden Mittwoch Fußball um 19:00) | Organizer | Geschäfts-Entscheidung, keine IT. |
-| A2 | Organisator öffnet LocalCourt & loggt sich ein | Organizer, Browser, Supabase Auth | Authentifizierung per E-Mail und Passwort (kein OAuth, S1.3). |
-| **Session-Erstellung** | | | |
-| A3 | Organisator füllt Session-Form aus | Organizer, Browser, OpenStreetMap, Nominatim | Felder: Titel, Sportart, Court, Startzeitpunkt, Dauer, Teilnehmerlimit und Beschreibung. Bei einem neuen Court setzt er einen Kartenpin; LocalCourt übernimmt Ort und optionale Adresse aus dem Reverse-Geocoding (UC-10). |
-| A4 | Organisator klickt "Session erstellen" | Organizer | Form Submission. |
-| A5 | Frontend übergibt die Session-Angaben an LocalCourt | Browser → LocalCourt | Sportart, Sportort, Titel, Beschreibung, Startzeitpunkt, Dauer und Teilnehmerlimit (UC-06). |
-| A6 | LocalCourt legt die Session an und erzeugt die PIN | LocalCourt → PostgreSQL | Status ergibt sich zeitbasiert als `scheduled` ([AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session)); die vierstellige PIN entsteht bei der Anlage ([AF-04](F3-anwendungsfunktionen.md#af-04--pin--und-qr-code-erzeugung)). |
-| A7 | LocalCourt führt den Organisator als Teilnehmer | LocalCourt → PostgreSQL | Geschieht gemeinsam mit der Anlage aus A6, sodass keine Session ohne ihren Organisator entstehen kann (D1-Invariante, S1.4). Der Organisator belegt damit einen Platz (AF-01 R4). |
-| A8 | Frontend zeigt QR-Code & PIN | Browser (UI) | QR-Code wird clientseitig aus Session-Bezug und PIN erzeugt und trägt den Check-in-Deep-Link ([AF-04](F3-anwendungsfunktionen.md#af-04--pin--und-qr-code-erzeugung), N2.8); er wird nicht als Bild gespeichert. |
-| A9 | Organisator hält QR-Code + PIN für den Treffpunkt bereit | Organizer | Anzeige am Bildschirm; es gibt keine Druckausgabe (siehe Spezifikationsindex, Baustein B3). |
-| **Vor Session-Start** | | | |
-| A10 | Potenzielle Teilnehmer öffnen LocalCourt (GP-01: Suche & Beitreten) | Participant, Browser, LocalCourt | Sessions sind für alle sichtbar (public discovery). Participants treten bei. |
-| A11 | Organisator sieht die wachsende Teilnehmer-Liste | Organizer, Browser → LocalCourt | Teilnehmerliste wird beim Aufruf bzw. Neuladen gelesen (kein Echtzeit-Kanal, S1.7). |
-| **Session-Start (Check-In Phase)** | | | |
-| A12 | Zum Startzeitpunkt: Organisator öffnet Check-In-Screen | Organizer, Browser, LocalCourt | Status sichtbar: "aktiv", QR-Code + PIN prominent angezeigt. |
-| A13 | Teilnehmer scannt QR-Code mit der Kamera-App des Geräts | Participant | QR-Code enkodiert: Redirect zu LocalCourt/check-in?session=<id>&pin=<pin>. LocalCourt selbst nutzt keine Kamera-Schnittstelle (S1.2). |
-| A14 | QR-Code-Scan führt zu Browser-Seite mit automatischem Check-In | Browser (Participant) | LocalCourt erkennt session_id & pin aus URL und ruft die atomare Check-in-Operation auf (S1.4, AF-02). |
-| A15 | LocalCourt markiert die Teilnahme als `checked_in` | LocalCourt → PostgreSQL | Mit Zeitstempel; maßgeblich ist die Serverzeit, nicht die Uhr des Geräts ([AF-02](F3-anwendungsfunktionen.md#af-02--check-in-validierung), N2.10). |
-| A16 | Participant sieht Bestätigung "✓ Check-in erfolgreich!" | Browser (UI Feedback) | Toast oder Modal mit checked_in-Status. |
-| A17 | Organisator sieht in Participant-Liste: "X / Y Checked in" | Organizer, Browser | Aktualisierung beim Aufruf bzw. Neuladen der Liste (kein Echtzeit-Kanal, S1.7). Grüne Häkchen für checked_in, Grau für "confirmed aber nicht checked_in". |
-| **Fallback: PIN-Eingabe (falls QR-Scan fehlschlägt)** | | | |
-| A18 | Teilnehmer kann alternativ 4-stellige PIN manuell eingeben | Participant, Browser | Form: "Check-In PIN" → LocalCourt verifiziert PIN. |
-| A19 | LocalCourt validiert PIN & markiert als checked_in | LocalCourt → PostgreSQL | Dieselbe atomare Check-in-Operation wie beim QR-Weg (S1.4, AF-02): Teilnahme, PIN und Zeitfenster werden serverseitig geprüft. |
-| **Session-Laufzeit** | | | |
-| A20 | Sport findet statt (physisch, außerhalb LocalCourt) | Participant, Organizer | Real-World Activity. LocalCourt inaktiv. |
-| **Nach Session-Zeit** | | | |
-| A21 | Nach DateTime + Duration verstrichen: LocalCourt auto-schließt Session | LocalCourt (Scheduler/Trigger) | Status-Transition: 'active' → 'completed'. Zeitgesteuert (Database Trigger oder Background Job). |
-| A22 | Organisator kann Session-Ergebnis anschauen (optional) | Organizer, LocalCourt | Session-Historie: "X checked_in, Y didn't check in". Stats anschauen. |
-| A23 | Teilnehmer sehen Session in "Vergangene Sessions" archiviert | Participant, LocalCourt | Session bleibt sichtbar, ist aber "read-only". |
-
-### F1.2.3 Dokumente
-
-| Dokument | Erzeugt in | Inhalt |
-|----------|-----------|--------|
-| **Session-Angaben** | A3 | Eingaben des Organisators; erst mit A6 dauerhaft. |
-| **Session** | A6 | Die angelegte Session (Entität `session` in [D1](D1-datenmodell.md)), inklusive PIN. |
-| **QR-Code** | A8 | Zur Anzeige erzeugter Code mit dem Check-in-Deep-Link; wird nicht gespeichert ([AF-04](F3-anwendungsfunktionen.md#af-04--pin--und-qr-code-erzeugung), N2.8). |
-| **PIN** | A6 | Vierstelliges Check-in-Geheimnis, Bestandteil der Session ([D2.4](D2-datentypen.md#d24-pin)). |
-| **Teilnehmerliste** | A11 | Die Teilnahmen der Session mit ihrem jeweiligen Status. |
-| **Check-in** | A15 | Statuswechsel der Teilnahme auf `checked_in` mit Zeitstempel (`checked_in_at`). |
-| **Session-Ergebnis-Report** | A22 | JSON (Check-In Stats) | Browser Memory, Optional: Persistiert in reports-Tabelle (Out-of-Scope Admin-Feature) |
-
-### F1.2.4 Daten-Stores
-
-Die berührten Datenobjekte (`session`, `participant`, `court`, `profile`) sind in [D1](D1-datenmodell.md#d14-entitätstypen-im-detail) modelliert; die technische Ablage steht in [N2.3](N2-querschnittskonzepte.md#n23-schlüssel-constraints-und-indizes).
-
-Zwei Punkte, die für diesen Prozess besonders sind:
-
-| Punkt | Inhalt |
+| Nicht Teil des Prozesses | Begründung |
 |---|---|
-| **Keine Rollenspalte** | Die Rolle ergibt sich aus der Aktion: Organisator ist, wer die Session erstellt hat (`session.organizer_id`, D1). Es gibt kein Rollenattribut am Profil. |
-| **Keine Ablage von PIN oder QR-Code im Browser** | Beide werden nur zur Anzeige aus den geladenen Session-Daten gebildet. Die einzige Browser-Ablage ist das Zugangstoken (S1.2, S1.3). |
+| Benachrichtigungen (E-Mail, Push, SMS) | Teilnehmer erfahren Änderungen beim nächsten Aufruf; ohne Benachrichtigungskanal ist auch keine Warteliste sinnvoll führbar. |
+| Warteliste bei voller Gruppe | A4 endet mit einer Absage, sobald die Gruppe voll ist. |
+| Bewertungen und Statistiken | A8 ist reines Nachschlagen, kein Reporting. |
+| Absprachen innerhalb der Gruppe | Kommunikation findet außerhalb statt; LocalCourt ersetzt keinen Gruppenchat. |
+| Platzbuchung und Bezahlung | Der Sportort wird benannt, nicht reserviert oder abgerechnet. |
 
-### F1.2.5 Ablaufdiagramm (Mermaid)
-
-```mermaid
-sequenceDiagram
-    actor O as Organisator
-    participant B as Browser
-    participant LC as LocalCourt
-    participant S as Supabase
-    actor P as Teilnehmer
-
-    O->>B: A2 Login
-    B->>S: Auth (E-Mail/Passwort)
-    S-->>B: authentifiziert (JWT)
-    O->>B: A3 Session-Formular ausfüllen
-    O->>B: A4 "Session erstellen"
-    B->>LC: A5 Session-Daten
-    LC->>S: A6 INSERT session (status=scheduled)
-    LC->>S: A7 INSERT participant (Organisator, confirmed)
-    S-->>LC: Session { id }
-    LC->>LC: A8 QR-Code + PIN erzeugen (AF-04)
-    LC-->>B: QR-Code + PIN
-    B-->>O: A8 Anzeige QR + PIN
-    O->>O: A9 QR/PIN speichern/drucken
-    Note over P,LC: A10 Teilnehmer treten bei (GP-01)
-    O->>B: A11 Teilnehmerliste ansehen
-    B->>LC: GET participants
-    LC->>S: SELECT participants
-    S-->>LC: Liste
-    LC-->>O: A11 Live-Teilnehmerzahl
-    Note over O,P: A12 Start erreicht → active, Check-in-Fenster offen
-    P->>B: A13 QR scannen ODER A18 PIN eingeben
-    B->>LC: A14 Check-in-Request (session, pin)
-    LC->>S: A15/A19 UPDATE participant status=checked_in
-    S-->>LC: OK
-    LC-->>P: A16 "✓ Check-in erfolgreich"
-    LC-->>O: A17 "X / Y eingecheckt"
-    Note over P: A20 Sport findet statt (außerhalb LocalCourt)
-    Note over LC: A21 Nach Ende → active → completed (Auto-Close)
-    O->>B: A22 Ergebnis/Historie ansehen
-    Note over P: A23 Session in "Vergangene Sessions" (read-only)
-```
-
-**Hinweise zum Diagramm**:
-- A1, A20 sind **Pre-/Post-LocalCourt** (reale Welt); A21 ist systemautomatisch (Auto-Close, AF-03).
-- Check-in hat zwei gleichwertige Pfade: QR-Scan (A13–A16) oder PIN-Eingabe (A18–A19); die Prüfung ist in [F3 AF-02](F3-anwendungsfunktionen.md#af-02--check-in-validierung) spezifiziert.
+Die zugehörigen Nicht-Ziele sind in [P1](P1-ziele-rahmenbedingungen.md) als NG-nn geführt.
 
 ---
 
-## F1.3 Geschäftsprozess: Neue Sportarten entdecken (GP-03)
+## F1.4 Querverweise
 
-**Variant von GP-01**: Ein Teilnehmer möchte nicht nur in favorisierten Sportarten suchen, sondern auch neue Sportarten entdecken.
-
-### F1.3.1 Aktivitäten (Kurz)
-
-| Schritt | Beschreibung |
-|---------|-------------|
-| A1–A3 | Teilnehmer öffnet LocalCourt, gibt Stadt ein, aber wählt **"Alle Sportarten"** statt einzelne Auswahl. |
-| A4–A7 | LocalCourt liefert Ergebnisse für **alle** Sportarten in der Stadt. Karte zeigt bunte Pins pro Sportart-Kategorie (z.B. Rot=Fußball, Blau=Schwimmen, Grün=Tennis). |
-| A8–A13 | Teilnehmer browsed die Liste, sieht eine unbekannte Sportart (z.B. "Pickleball"), klickt, beitreten. |
-| A14+ | Wie GP-01: Session-Detail, Beitreten, Check-In. |
-
-**Differenziator zu GP-01**: Nur die **Filterung ist anders** (kein Sportart-Filter = Alle). Der technische Ablauf ist identisch.
+| Baustein | Bezug |
+|---|---|
+| [F2](F2-anwendungsfaelle.md) | Zerlegt die unterstützten Aktivitäten A2, A3, A4, A6 und A8 in die Anwendungsfälle UC-01 bis UC-12. |
+| [F3](F3-anwendungsfunktionen.md) | Hält die fachlichen Regeln hinter A4 (Kapazität) und A6 (Anwesenheit) fest. |
+| [D1](D1-datenmodell.md) | Modelliert die in F1.1.3 genannten Dokumente als Entitätstypen. |
 
 ---
 
-## F1.4 Grenzen (Boundaries) — Was NICHT modelliert wird
-
-### Explizit Ausgeschlossen
-
-| Concern | Grund | Referenz |
-|---------|-------|----------|
-| **Benachrichtigungen** | Out-of-Scope. MVP hat keine Email/SMS/Push-Notifications. Nutzer muss self-aktiv sein. | P1 NG-02, CON-T-05; F2.5 |
-| **Wartelisten** | Ohne Benachrichtigungskanal ("Platz frei") fachlich nicht sinnvoll; Kapazität ist harte Grenze. | P1 NG-10; F3 AF-01 |
-| **Nutzer-Bewertungen / Ratings** | Nicht modelliert. Keine 5-Sterne-Ratings oder Review-System. | P1 NG-04 |
-| **Admin-Reports** | Admin-Funktionen sind Out-of-Scope. Historie bleibt read-only, kein Reporting. | F2.5; UC-11 |
-| **Session-Modifikation nach Erstellung** | Vereinfacht: Organisator kann **nicht** Startzeit/Court/Teilnehmerlimit nach Erstellung ändern (würde Komplexität für MVP erhöhen). | F2.5 (Scope-Vereinfachung) |
-| **Messaging zwischen Organisator & Participant** | Kein Direct Chat. Koordination läuft extern (WhatsApp, Signal, etc.). | P1 NG-02 |
-| **Cross-Process Coordination** | Keine "Threads" von Sessions, keine Session-Serien-Verwaltung. Jede Session ist unabhängig. | F2.5 (Session-Serien) |
-| **Auszahlung / Spendensystem** | Kein Geld. LocalCourt kostenlos. | P1 NG-01 |
-
-### Post-LocalCourt (Nicht in Modellierung, aber erwähnt)
-
-- **Organisator-Planung** (A1 in GP-02): "Wann soll das Training sein?" — Geschäftsentscheidung, nicht IT.
-- **Sportevent** (A20 in GP-02): Der eigentliche Sport. LocalCourt hat keine Rolle.
-- **Post-Event Feedback** (A22 in GP-02): "War gut, nächstes Mal mehr Leute" — Optionales Feedback, nicht modelliert.
-
----
-
-## F1.5 Konsistenz mit P1, P2 & S1
-
-### Akteure in F1 ↔ Stakeholder in P1
-
-| F1 Akteur | P1 Stakeholder | Mapping |
-|-----------|----------------|---------|
-| Teilnehmer | Primäre Nutzer (18–30) | ✅ Match |
-| Organisator | Trainer-/Verein-Gruppen | ✅ Match (Subset von primären Nutzern) |
-| LocalCourt (System) | Operator-Team | ✅ Match (wir bauen es) |
-| Supabase, OpenStreetMap | Cloud-Provider, Externe APIs | ✅ Match (P2 NB-02, NB-03, NB-04) |
-
-### Nachbarsysteme in F1 ↔ P2
-
-| F1-Bezug | P2 System | Mapping |
-|----------|-----------|---------|
-| Browser-UI, User Interaction | NB-01: Browser | ✅ Match |
-| Authentifizierung (A2 in GP-02) | NB-02: Supabase Auth | ✅ Match |
-| Session/Participant Queries, CRUD | NB-03: Supabase PostgREST | ✅ Match |
-| Karte, Kartendarstellung | NB-04: OpenStreetMap/Leaflet | ✅ Match |
-
-### Constraints in F1 ↔ P1
-
-| Constraint | F1 Implikation | Referenz |
-|-----------|----------------|----------|
-| Free-Tier Budget | Keine Push-Notifications, keine Email-Service. Wartelisten entfernt (NG-10). | P1 CON-T-02, CON-T-05 |
-| Rollen durch Aktion | Nur Teilnehmer & Organisator; Rolle ergibt sich aus der Aktion, kein Admin-Tier im MVP. | P1 P1.3; UC-01 |
-| Responsive Web UI | F1-Prozesse laufen auf Mobile & Desktop (z.B. A13 QR-Scan auf Smartphone). | P1 CON-T-04 |
-
----
-
-## Zusammenfassung
-
-LocalCourt unterstützt **zwei Haupt-Geschäftsprozesse** und **eine Variante**:
-
-1. **GP-01: Spontan Sportaktivitäten finden** — Participant-Centric Discovery & Joining
-2. **GP-02: Regelmäßige Treffen organisieren** — Organizer-Centric Creation, Check-In, Auto-Close
-3. **GP-03: Neue Sportarten entdecken** — Variant von GP-01 (Filterung ändert sich)
-
-Jeder Prozess besteht aus **Akteuren** (Mensch & IT), **Aktivitäten** (zeitliche Folge), **Dokumenten** (Artefakte), und **Daten-Stores** (Persistierung). Die Prozesse sind **IT-unabhängig modelliert**, aber LocalCourt unterstützt den Koordinations- und Verwaltungsteil.
-
-**Bewusste Ausschlüsse** (Grenzen): Keine Benachrichtigungen, Wartelisten, Ratings, Admin, Messaging, oder Cross-Process-Serien. Dies vereinfacht den MVP und entspricht P1.
-
----
-
-## Referenzen
-
-- **P1 — Ziele und Rahmenbedingungen**: `P1-ziele-rahmenbedingungen.md`
-- **P2 — Architekturüberblick**: `P2-architekturueberblick.md`
-- **S1 — Nachbarsysteme**: `S1-nachbarsysteme.md` (Schnittstellen-Details)
-- **Siedersleben-Schema**: Kapitel 4.3 (Geschäftsprozesse)
-- **Herold F1 Reference** (English): [GitHub](https://github.com/carstenlucke/herold/blob/main/docs/spec/F1-geschaeftsprozesse.md)
-
----
-
-## F1.6 Eingesetzte KI-Werkzeuge
+## F1.5 Eingesetzte KI-Werkzeuge
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | GitHub Copilot, Claude (Claude Code), Codex |
-| Verwendung | Entwurf der Geschäftsprozesse (GP-01–GP-03), Aktivitäten, Dokumente, Daten-Stores und Ablaufdiagramme. Codex ergänzte am 2026-07-29 Nominatim und Reverse-Geocoding in der Court-Erfassung. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitungen wurden zusätzlich gegen F2/F3 und D1/D2 geprüft. Check-in-Aufrufe, QR-Deep-Link, E-Mail-/Passwort-Authentifizierung, manuelle Ortssuche ohne Geräte-Geolocation und die Court-Erfassung mit Reverse-Geocoding entsprechen dem aktuellen Stand der maßgeblichen Bausteine. Referenzkorrektur (2026-08-19, Claude Sonnet 5, Claude Code): Verweise auf F2.6 („Nicht als Use Case modelliert") an die Umnummerierung in [F2](F2-anwendungsfaelle.md) auf F2.5 angepasst. |
+| Werkzeug | GitHub Copilot, Claude Code, Codex |
+| Verwendung | Entwurf des Geschäftsprozesses auf fachlicher Ebene, Ableitung der Aktivitäten und Erstellung des Aktivitätsdiagramms. |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und [D1](D1-datenmodell.md); die Zuordnung Aktivität ↔ Use Case wurde in beide Richtungen geprüft. |

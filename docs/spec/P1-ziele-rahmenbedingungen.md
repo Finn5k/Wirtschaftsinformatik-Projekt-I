@@ -99,6 +99,6 @@ LocalCourt löst das Problem der dezentralisierten Koordination: Heute brauchen 
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | GitHub Copilot / Claude Code / Codex |
-| Verwendung | Entwurf des P1-Bausteins: Mission, Geschäftsziele, Stakeholder, Scope, Rahmenbedingungen und Erfolgskriterien. Claude Code (Claude Sonnet 5) zudem für zwei Konsistenz-Durchgänge (2026-07-26): Scope-Widersprüche zu F2/F3/D1/B1 in P1.4 (Bearbeiten/Löschen, Teilnehmerlimit-Platzhalter, Profil-Sichtbarkeit) aufgelöst; Authentifizierung auf E-Mail und Passwort festgelegt. Codex grenzte am 2026-07-29 Bearbeiten, Absagen, Löschen und Profilbildbearbeitung als Nicht-MVP ab und nahm Reverse-Geocoding in den Scope auf. |
-| Prüfung | Inhalte wurden gegen die Projektidee, [TEAMINFO](../../TEAMINFO.md), bestehende Spezifikationsbausteine, Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet. Die Stack-Angaben wurden insbesondere mit P2 und der Root-README abgeglichen. Die fachliche Verantwortung für Inhalt und Freigabe verbleibt beim Team. |
+| Werkzeug | GitHub Copilot, Claude Code, Codex |
+| Verwendung | Entwurf des Bausteins: Mission, Geschäftsziele, Stakeholder, Scope, Rahmenbedingungen und Erfolgskriterien. |
+| Prüfung | Abgeglichen mit der Projektidee, [TEAMINFO](../../TEAMINFO.md), den übrigen Bausteinen und den Repository-Vorgaben; Scope- und Stack-Angaben wurden gegen P2 und die Root-README geprüft und manuell überarbeitet. |

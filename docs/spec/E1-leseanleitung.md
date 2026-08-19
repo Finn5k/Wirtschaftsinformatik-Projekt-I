@@ -2,7 +2,7 @@
 
 E1 ist eine **Leseanleitung** für die Spezifikation von LocalCourt. Der Baustein trifft selbst keine fachlichen Entscheidungen und führt keine neuen Anforderungen ein. Er erklärt, wie die Bausteine P1–P2, F1–F3, D1–D2, B1–B3, S1–S3 und N1–N2 zusammenhängen, welche Zielgruppe welchen Baustein in welcher Reihenfolge liest, welche ID- und Namenskonventionen gelten und wie sich ein einzelner Use Case von der Spezifikation über die Architektur und den Code bis in die Tests nachverfolgen lässt.
 
-Der Spezifikationsindex [README.md](README.md) bleibt die maßgebliche **Statusübersicht** (welcher Baustein ist fertig, geplant oder nicht anwendbar) und **Versionshistorie**. E1 ergänzt diesen Index um den narrativen Leitfaden: *warum* die Bausteine so aufeinander aufbauen und *wie* man sich als Leser darin orientiert.
+Der Spezifikationsindex [README.md](README.md) bleibt die maßgebliche **Statusübersicht**: welcher Baustein ist fertig, geplant oder nicht anwendbar. Wer die Änderungen eines Bausteins nachvollziehen will, nutzt die Git-Historie. E1 ergänzt den Index um den narrativen Leitfaden: *warum* die Bausteine so aufeinander aufbauen und *wie* man sich als Leser darin orientiert.
 
 ---
 
@@ -73,8 +73,8 @@ Zentrale spezifizierte Elemente wie Ziele, Geschäftsprozesse, Use Cases, Anwend
 | `CON-T-nn`, `CON-O-nn`, `CON-D-nn` | Rahmenbedingung (technisch / organisatorisch / Datenschutz) | [P1.5](P1-ziele-rahmenbedingungen.md#p15-rahmenbedingungen-constraints) | `CON-T-01` Datenbank: PostgreSQL nur |
 | `SC-nn` | Erfolgskriterium | [P1.6](P1-ziele-rahmenbedingungen.md#p16-erfolgskriterien) | `SC-02` Session-Creation Workflow UX |
 | `NB-nn` | Nachbarsystem | [P2.2](P2-architekturueberblick.md#p22-nachbarsysteme), detailliert in [S1](S1-nachbarsysteme.md) | `NB-03` Supabase PostgREST API |
-| `GP-nn` | Geschäftsprozess (real, IT-unabhängig) | [F1](F1-geschaeftsprozesse.md) | `GP-02` Regelmäßige Treffen organisieren |
-| `A1…An` | Aktivität innerhalb eines Geschäftsprozesses | [F1](F1-geschaeftsprozesse.md) (je GP-nn eigene Zählung) | `GP-02 A12` |
+| `GP-nn` | Geschäftsprozess (real, IT-unabhängig) | [F1](F1-geschaeftsprozesse.md) | `GP-01` Sportgelegenheit zustande bringen |
+| `A1…An` | Aktivität innerhalb eines Geschäftsprozesses | [F1](F1-geschaeftsprozesse.md) (je GP-nn eigene Zählung) | `GP-01 A6` |
 | `UC-nn` | Anwendungsfall (Use Case) | [F2.3](F2-anwendungsfaelle.md#f23-use-case-index) | `UC-04` Session beitreten |
 | `AF-nn` | Anwendungsfunktion (fachliches Regelwerk) | [F3.1](F3-anwendungsfunktionen.md#f31-katalog-der-anwendungsfunktionen) | `AF-01` Beitritts- und Kapazitätsregel |
 | Entitätsname in Backticks (z. B. `` `session` ``) | Entitätstyp im Datenmodell | [D1.3](D1-datenmodell.md#d13-entitätstypen-im-überblick) | `` `participant` `` |
@@ -82,7 +82,7 @@ Zentrale spezifizierte Elemente wie Ziele, Geschäftsprozesse, Use Cases, Anwend
 | Datentypname in Backticks (z. B. `` `SessionStatus` ``) | Fachlicher Datentyp | [D2](D2-datentypen.md#katalogübersicht) | `` `Pin` `` |
 | `DLG-nn` | Dialog | [B1.2](B1-dialogspezifikation.md#dialog-index) | `DLG-06` Check-in |
 | `N1-QA-nn` | Qualitätsziel (nichtfunktional) | [N1.2](N1-nichtfunktionale-anforderungen.md#n12-qualitätsziele-im-überblick) | `N1-QA-05` Sicherheit |
-| `<Baustein>.<n>` (z. B. `N2.7`) | Abschnittsnummer innerhalb eines Bausteins, kein eigenständiges ID-Schema | jeder Baustein | `N2.7` PIN-Erzeugung und -Speicherung |
+| `<Baustein>.<n>` (z. B. `N2.2`) | Abschnittsnummer innerhalb eines Bausteins, kein eigenständiges ID-Schema | jeder Baustein | `N2.2` Row-Level-Security |
 
 Beim Verweis auf einen Baustein wird immer die Baustein-Kurzform verwendet (`P1`, `F2`, `D2`, `B1`, `S1`, `N2` usw.), nicht der ausgeschriebene Titel; das hält Querverweise kurz und eindeutig grep-bar.
 
@@ -90,14 +90,14 @@ Beim Verweis auf einen Baustein wird immer die Baustein-Kurzform verwendet (`P1`
 
 ## E1.6 Diagramme und Notationen
 
-Diagramme in der Spezifikation werden grundsätzlich als **versionierbare Quellen** gepflegt, damit sie im Diff nachvollziehbar bleiben. Der größte Teil ist als **Mermaid**-Codeblock direkt in Markdown eingebettet und wird so auf GitHub unmittelbar gerendert. Wo Mermaid für die gewünschte UML-Darstellung nicht ausreicht, beispielsweise bei Use-Case-Diagrammen mit expliziter Systemgrenze oder komplexeren Aktivitätsdiagrammen mit Verzweigungen, liegt die Quelle stattdessen als **PlantUML**-`.puml`-Datei unter `diagrams/` vor; die zugehörige gerenderte PNG-Datei unter `diagrams-png/` wird im Markdown eingebunden. Konkretes Beispiel dafür ist [F2](F2-anwendungsfaelle.md), dessen Use-Case- und UC-10-Aktivitätsdiagramm als PlantUML vorliegen.
+Diagramme in der Spezifikation werden grundsätzlich als **versionierbare Quellen** gepflegt, damit sie im Diff nachvollziehbar bleiben. Der größte Teil ist als **Mermaid**-Codeblock direkt in Markdown eingebettet und wird so auf GitHub unmittelbar gerendert. Wo Mermaid für die gewünschte UML-Darstellung nicht ausreicht, beispielsweise bei Use-Case-Diagrammen mit expliziter Systemgrenze oder komplexeren Aktivitätsdiagrammen mit Verzweigungen, liegt die Quelle stattdessen als **PlantUML**-`.puml`-Datei unter `diagrams/` vor; die zugehörige gerenderte PNG-Datei unter `diagrams-png/` wird im Markdown eingebunden. Als PlantUML liegen das Use-Case- und das UC-10-Aktivitätsdiagramm in [F2](F2-anwendungsfaelle.md), das Zustandsdiagramm in [F3](F3-anwendungsfunktionen.md) sowie das Systemkontext-Diagramm in [P2](P2-architekturueberblick.md) vor.
 
 | Diagrammtyp | Notation | Verwendet in | Zweck |
 |---|---|---|
-| Aktivitätsdiagramm mit Swimlanes | Mermaid `flowchart` mit `subgraph` je Akteur | [F1.1.5](F1-geschaeftsprozesse.md#f115-ablaufdiagramm-mermaid), [F1.2.5](F1-geschaeftsprozesse.md#f125-ablaufdiagramm-mermaid) | Ablauf eines Geschäftsprozesses je Akteur. |
+| Aktivitätsdiagramm eines Geschäftsprozesses | PlantUML (`diagrams/F1-gp01-sportgelegenheit.puml`, gerendert als `diagrams-png/F1-gp01-sportgelegenheit.png`) | [F1.1.5](F1-geschaeftsprozesse.md#f115-aktivitätsdiagramm) | Ablauf eines Geschäftsprozesses je Akteur. |
 | Use-Case-Diagramm | PlantUML `usecase`-Notation (`diagrams/F2-use-cases.puml`, gerendert als `diagrams-png/F2-use-cases.png`) | [F2.2](F2-anwendungsfaelle.md#f22-use-case-übersicht) | Zuordnung Use Cases ↔ Akteure mit expliziter Systemgrenze. |
 | Aktivitätsdiagramm mit Verzweigungen | PlantUML `if`/`else`-Aktivitätsnotation (`diagrams/F2-uc10-court-erfassen.puml`, gerendert als `diagrams-png/F2-uc10-court-erfassen.png`) | [F2.4 UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen) | Verzweigungen (Auswahl vs. Neuerfassung mit Geocoding-Fehlerfall), die Mermaid-Flowcharts hier weniger klar darstellen. |
-| Systemkontext-Diagramm | Mermaid `flowchart` (Blackbox, Akteure und Nachbarsysteme) | [P2.1](P2-architekturueberblick.md#p21-systemkontext) | Akteure (Teilnehmer, Organisator) und Nachbarsysteme im Systemkontext. |
+| Systemkontext-Diagramm | PlantUML (`diagrams/P2-systemkontext.puml`, gerendert als `diagrams-png/P2-systemkontext.png`) | [P2.1](P2-architekturueberblick.md#p21-systemkontext) | Akteure (Teilnehmer, Organisator) und Nachbarsysteme NB-01 bis NB-05 als Blackbox-Kontext. |
 | Deployment-Diagramm | Mermaid `flowchart` mit `subgraph` je Tier/System | [Architekturdokumentation §6](../arch/README.md#6-verteilung-und-deployment) | Hosting- und Deployment-Topologie. |
 | Sequenzdiagramm | Mermaid `sequenceDiagram` | [Architekturdokumentation §5](../arch/README.md#5-laufzeitsichten) | Ablauf kritischer Datenflüsse über mehrere Systeme hinweg. |
 | ER-Diagramm | Mermaid `erDiagram` | [D1.2](D1-datenmodell.md#d12-überblick-er-diagramm) | Entitätstypen und ihre Beziehungen. |
@@ -130,12 +130,11 @@ Jeder Schritt in dieser Kette **verfeinert**, ohne den vorherigen Schritt zu wid
 
 | Ebene | Fundstelle | Inhalt |
 |---|---|---|
-| Geschäftsprozess | [F1.1](F1-geschaeftsprozesse.md#f11-geschäftsprozess-spontan-sportaktivitäten-finden-gp-01) GP-01, Aktivitäten A9–A13 | Realer Ablauf: Teilnehmer findet Session und tritt bei. |
+| Geschäftsprozess | [F1.1](F1-geschaeftsprozesse.md#f11-geschäftsprozess-sportgelegenheit-zustande-bringen-gp-01) GP-01, Aktivität A4 | Realer Ablauf: Teilnehmer findet Session und tritt bei. |
 | Anwendungsfall | [F2.4 UC-04](F2-anwendungsfaelle.md#uc-04--session-beitreten) | Systemunterstützte Interaktion mit Vorbedingungen und Akzeptanzkriterien. |
 | Anwendungsfunktion | [F3.2 AF-01](F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel) | Fachliche Kapazitätsregel, die UC-04 zugrunde liegt. |
 | Datenmodell | [D1.4 `participant`](D1-datenmodell.md#participant--teilnahme) | Entität, die den Beitritt persistiert. |
 | Schnittstelle | [S1.4 NB-03](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) | Atomare Operation `join_session`. |
-| Technische Umsetzung | [N2.4](N2-querschnittskonzepte.md#n24-atomarität-des-beitritts-af-01) | Atomarität des Beitritts auf PostgreSQL-Ebene. |
 | Architektur | [Baustein- und Laufzeitsicht](../arch/README.md#5-laufzeitsichten) | Frontend-Service ruft `join_session` auf; PostgreSQL prüft und schreibt atomar. |
 | Code | Implementierung des Beitritts-Flows | — |
 | Test | Testfall zu UC-04 (Kapazität voll/frei) | — |
@@ -152,7 +151,7 @@ In LocalCourt betrifft das aktuell:
 
 | Baustein | Status | Kurzbegründung |
 |---|---|---|
-| **B2 — Batch** | ❌ Nicht anwendbar | Keine zeitgesteuerte Massenverarbeitung; Session-Status wird laut [N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03) bei jeder Abfrage berechnet statt per Scheduler gepflegt (siehe [README](README.md#b2--batch--nicht-anwendbar)). |
+| **B2 — Batch** | ❌ Nicht anwendbar | Keine zeitgesteuerte Massenverarbeitung; Session-Status wird laut [AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session) bei jeder Abfrage berechnet statt per Scheduler gepflegt (siehe [README](README.md#b2--batch--nicht-anwendbar)). |
 | **B3 — Druckausgaben** | ❌ Nicht anwendbar | Der Check-in-QR-Code wird ausschließlich am Bildschirm angezeigt und gescannt, keine Druckausgabe vorgesehen (siehe [README](README.md#b3--druckausgaben--nicht-anwendbar)). |
 | **S2 — Datenmigration** | ❌ Nicht anwendbar | Greenfield-Projekt ohne Altdaten (NG-09, siehe [README](README.md#s2--datenmigration--nicht-anwendbar)). |
 
@@ -179,7 +178,6 @@ Für die gesamte Spezifikation gelten unabhängig vom einzelnen Baustein folgend
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | Claude Code |
-| Verwendung | Entwurf und redaktionelle Überarbeitung des E1-Bausteins, insbesondere Zielgruppen, Lesereihenfolge, ID-Konventionen, Diagrammübersicht und Traceability-Kette. |
-| Prüfung | Inhalte wurden gegen README, P1, P2, F1, F2, F3, D1, D2, B1, S1, N1, N2 und die Architekturdokumentation geprüft. Relative Links, Abschnittsanker, IDs und Statusangaben wurden manuell abgeglichen. Aktualisierung (2026-07-29, Codex): Lesereihenfolge, Diagrammübersicht und Traceability an die fertiggestellte `docs/arch/README.md` angepasst. |
-| Fachliche Verantwortung | Bleibt beim Team. |
+| Werkzeug | Claude Code, Codex |
+| Verwendung | Entwurf von Zielgruppen, Lesereihenfolge, ID-Konventionen, Diagrammübersicht und Traceability-Kette. |
+| Prüfung | Abgeglichen mit dem Spezifikationsindex, allen Bausteinen und der [Architekturdokumentation](../arch/README.md); relative Links, Abschnittsanker und IDs wurden manuell geprüft. |

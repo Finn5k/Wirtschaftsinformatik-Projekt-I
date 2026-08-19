@@ -101,9 +101,9 @@ erDiagram
 
 **Assoziationen:** organisiert 0..* `session` (als `organizer_id`); besitzt 0..* `participant` (als `user_id`); bevorzugt 0..* `sport` über `sport_preference`; erfasst optional 0..* `court` (als `created_by`).
 
-**Datenschutz:** Profildaten werden auf MVP-relevante Basisangaben begrenzt (UC-12, [P1](P1-ziele-rahmenbedingungen.md) CON-D-01). Für andere Nutzer sichtbar sind ausschließlich `display_name` und optional `avatar_url` ([N2.11](N2-querschnittskonzepte.md#n211-row-level-security-rls)); `city` dient nur der eigenen Ortsvorbelegung. Weitere Profil- oder Authentifizierungsdaten werden nicht angezeigt.
+**Datenschutz:** Profildaten werden auf MVP-relevante Basisangaben begrenzt (UC-12). Für andere Nutzer sichtbar sind ausschließlich `display_name` und optional `avatar_url` ([N2.2](N2-querschnittskonzepte.md#n22-row-level-security-rls)); `city` dient nur der eigenen Ortsvorbelegung. Weitere Profil- oder Authentifizierungsdaten werden nicht angezeigt.
 
-**Löschung:** Bei einer administrativ bestätigten DSGVO-Löschung werden Profil, Sportpräferenzen, Teilnahmen sowie vom Nutzer organisierte Sessions einschließlich ihrer abhängigen Teilnahmen entfernt. Bei erfassten Courts wird lediglich `created_by` geleert; der nicht personenbezogene Sportort bleibt erhalten (N2.15).
+**Löschung:** Wird ein Nutzerkonto entfernt, entfallen Profil, Sportpräferenzen, Teilnahmen sowie die vom Nutzer organisierten Sessions einschließlich ihrer abhängigen Teilnahmen. Bei erfassten Courts wird lediglich `created_by` geleert; der nicht personenbezogene Sportort bleibt erhalten.
 
 ### `sport` — Sportart (Katalog)
 
@@ -153,7 +153,7 @@ erDiagram
 | Attribut | Typ | Mult. | Notiz |
 |---|---|---|---|
 | `session_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Primärschlüssel. Wird auch im QR-Inhalt referenziert (AF-04). |
-| `organizer_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Verweis auf das organisierende `profile`. Der Organisator zählt ab Erstellung als Teilnehmer (F1 GP-02 A7, siehe Invariante in [D1.5](#d15-beziehungen)). |
+| `organizer_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Verweis auf das organisierende `profile`. Der Organisator zählt ab Erstellung als Teilnehmer (F1 GP-01 A2, siehe Invariante in [D1.5](#d15-beziehungen)). |
 | `sport_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Verweis auf die Sportart (`sport`). |
 | `court_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Verweis auf den Sportort (`court`). |
 | `title` | [`Text`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 1 | Kurzbezeichnung der Session. |
@@ -200,7 +200,7 @@ erDiagram
 
 | # | Von | Nach | Kardinalität | Bedeutung | Bezug |
 |---|---|---|---|---|---|
-| B1 | `profile` | `session` | 1 : 0..* | Ein Profil organisiert beliebig viele Sessions; jede Session hat genau einen Organisator. | UC-06, F1 GP-02 |
+| B1 | `profile` | `session` | 1 : 0..* | Ein Profil organisiert beliebig viele Sessions; jede Session hat genau einen Organisator. | UC-06, F1 GP-01 A2 |
 | B2 | `session` | `participant` | 1 : 0..* | Eine Session hat beliebig viele Teilnahmen. | UC-04, UC-07 |
 | B3 | `profile` | `participant` | 1 : 0..* | Ein Profil kann an beliebig vielen Sessions teilnehmen. | UC-04, UC-05 |
 | B4 | `sport` | `session` | 1 : 0..* | Eine Sportart kategorisiert beliebig viele Sessions; jede Session hat genau eine Sportart. | UC-02, UC-06 |
@@ -210,7 +210,7 @@ erDiagram
 
 Die n:m-Beziehung zwischen `profile` und `session` (Teilnahme) wird durch die Entität `participant` aufgelöst (B2 + B3), weil die Teilnahme eigene Attribute trägt (`status`, `joined_at`, `checked_in_at`). Die n:m-Beziehung zwischen `profile` und `sport` (Präferenz) wird durch `sport_preference` aufgelöst (B6).
 
-**Organisator-als-Teilnehmer (Invariante über B1/B2/B3):** Nach F1 GP-02 A7 und F3 AF-01 zählt der Organisator einer Session ab Erstellung als Teilnehmer. Fachlich existiert damit für `organizer_id` einer Session **zusätzlich** ein `participant`-Eintrag mit demselben `user_id` und `status = confirmed`. `organizer_id` bleibt als eigenständiger Verweis erhalten (Rolle „Organisator"), während der Kapazitäts- und Check-in-Zustand über `participant` geführt wird.
+**Organisator-als-Teilnehmer (Invariante über B1/B2/B3):** Nach F1 GP-01 A2 und F3 AF-01 zählt der Organisator einer Session ab Erstellung als Teilnehmer. Fachlich existiert damit für `organizer_id` einer Session **zusätzlich** ein `participant`-Eintrag mit demselben `user_id` und `status = confirmed`. `organizer_id` bleibt als eigenständiger Verweis erhalten (Rolle „Organisator"), während der Kapazitäts- und Check-in-Zustand über `participant` geführt wird.
 
 ## D1.6 Abgeleitete Merkmale
 
@@ -231,7 +231,7 @@ Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#
 | Warteliste / `waiting`-Status | Out of scope (P1 NG-10). AF-01 kennt keine Warteliste; `participant.status` hat daher nur `confirmed`/`checked_in`, kein `waiting`. |
 | Benachrichtigungen, Nachrichten, Kommentare | Out of scope (P1 NG-02, F1-Grenzen, F2.5). Kein Daten­objekt im MVP. |
 | Ratings / Reviews | Out of scope (P1 NG-04). |
-| Zahlungs-/Buchungsdaten | Out of scope (P1 NG-01, CON-D-02). |
+| Zahlungs-/Buchungsdaten | Out of scope (P1 NG-01). |
 | Session-Serien / wiederkehrende Termine | F1 modelliert keine Serien; jede `session` ist eigenständig (F2.5). |
 | Auth-Nutzer, Sitzungen, Tokens | Gehören zum Nachbarsystem Supabase Auth ([S1](S1-nachbarsysteme.md)); im Modell nur als externe `user_id` referenziert. |
 | Rollen/Berechtigungen als eigene Entität | Rollen sind im MVP fachlich durch die Aktion bestimmt (UC-01): Organisator ist, wer eine Session erstellt (`organizer_id`). Keine eigene Rollen-Entität. |
@@ -241,9 +241,9 @@ Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#
 
 | Baustein | Relevanz für D1 |
 |---|---|
-| [P1](P1-ziele-rahmenbedingungen.md) | Scope der Datenobjekte; Ausschluss von Warteliste (NG-10), Zahlung (NG-01), Messaging (NG-02); Datenschutz (CON-D-01). |
+| [P1](P1-ziele-rahmenbedingungen.md) | Scope der Datenobjekte; Ausschluss von Warteliste (NG-10), Zahlung (NG-01), Messaging (NG-02). |
 | [P2](P2-architekturueberblick.md) | Nennt die Datenobjekte in den Datenflüssen (Sessions, Courts, Participants, Profiles); `user_id` stammt aus Supabase Auth (NB-02). |
-| [F1](F1-geschaeftsprozesse.md) | Liefert fachliche Herkunft der Attribute (Beitritt, Check-in, QR/PIN, Organisator-als-Teilnehmer GP-02 A7). |
+| [F1](F1-geschaeftsprozesse.md) | Liefert fachliche Herkunft der Attribute (Beitritt, Check-in, QR/PIN, Organisator-als-Teilnehmer GP-01 A2). |
 | [F2](F2-anwendungsfaelle.md) | Jeder „Bezug zu Daten" der Use Cases wird hier durch eine Entität abgedeckt (Profile, Session, Court, Participant, Sportart). |
 | [F3](F3-anwendungsfunktionen.md) | Nennt Felder wie `status`, `max_participants`, `checked_in_at`, `pin`; D1 bindet sie an Entitäten, F3 definiert die Regeln darüber. |
 | [D2](D2-datentypen.md) | Formale Definition aller in D1 verwendeten Datentypen und Wertebereiche. |
@@ -256,14 +256,10 @@ Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#
 
 Keine offenen Punkte am Datenmodell selbst. In Teilnehmerlisten sind ausschließlich `display_name` und optional `avatar_url` sichtbar (UC-03, UC-07); `avatar_url` bleibt ein reiner Anzeigewert, dessen Upload und Bearbeitung im MVP ausgeschlossen sind.
 
-Die technischen Entscheidungen zu Schlüsseln, Zählstrategie und
-Statuspersistenz stehen ausschließlich in
-[N2.3–N2.6](N2-querschnittskonzepte.md#n23-schlüssel-constraints-und-indizes).
-
 ## D1.10 Eingesetzte KI-Werkzeuge
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | Claude Code (Opus 4.8) / Codex |
-| Verwendung | Entwurf des D1-Bausteins: Ableitung der Entitätstypen, Attribute und Beziehungen aus den „Bezug zu Daten"-Angaben in F2/F3, Erstellung des ER-Diagramms und der Invarianten. Codex konkretisierte am 2026-07-29 die Court-Invariante, Profilsichtbarkeit und Löschwirkung des bestätigten administrativen DSGVO-Prozesses. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und die Herold-Referenz geprüft und mit dem Team abgestimmt. Richtungsentscheidungen (fachliche Abstraktion, Sportart als Katalog, englische Feldnamen, Mermaid-ER-Diagramm) wurden vorab bestätigt. Nachtrag (2026-07-26, Claude Sonnet 5): initialer Sportarten-Katalog dokumentiert, abgeglichen mit den im Prototyp verwendeten Werten. Nachtrag (2026-07-26, Claude Sonnet 5): `profile.city` als optionales Attribut aufgenommen (Heimatort, Vorbelegung der Ortssuche, für andere Nutzer nicht sichtbar). Redundanzkorrektur (2026-07-28, Codex): Wiederholte N2-Entscheidungen aus D1.9 entfernt und durch einen Verweis ersetzt. Finaler Hygienecheck (2026-07-29, Codex): den abgeschlossenen Abschnitt D1.9 als Entscheidungsstand bezeichnet und betroffene Verweise aktualisiert. Referenzkorrektur (2026-08-19, Claude Sonnet 5, Claude Code): Verweise auf F2.6 („Nicht als Use Case modelliert") an die Umnummerierung in [F2](F2-anwendungsfaelle.md) auf F2.5 angepasst. |
+| Werkzeug | Claude Code, Codex |
+| Verwendung | Ableitung der Entitätstypen, Attribute, Beziehungen und Invarianten aus den „Bezug zu Daten"-Angaben in F2/F3 sowie Erstellung des ER-Diagramms. |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und [D2](D2-datentypen.md); die Richtungsentscheidungen (fachliche Abstraktion, Sportart als Katalog, englische Feldnamen) hat das Team vorab bestätigt. |

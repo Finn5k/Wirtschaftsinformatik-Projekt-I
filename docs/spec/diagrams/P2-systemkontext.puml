@@ -1,0 +1,40 @@
+@startuml P2-systemkontext
+left to right direction
+skinparam backgroundColor White
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam ArrowFontSize 11
+skinparam actor {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam rectangle {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam nodesep 45
+skinparam ranksep 120
+
+actor "Teilnehmer" as Teilnehmer
+actor "Organisator" as Organisator
+
+rectangle "NB-01\nBrowser\n(Nutzerkanal)" as Browser
+
+rectangle "**LocalCourt**" as LocalCourt
+
+rectangle "NB-02\nSupabase Auth" as Auth
+rectangle "NB-03\nSupabase PostgREST" as Daten
+rectangle "NB-04\nOpenStreetMap" as OSM
+rectangle "NB-05\nNominatim" as Nominatim
+
+Teilnehmer --> Browser
+Organisator --> Browser
+
+Browser --> LocalCourt : Nutzeraktion
+
+LocalCourt --> Auth : Anmeldung,\nSitzung
+LocalCourt --> Daten : Sessions, Courts,\nTeilnahmen, Profile
+LocalCourt --> OSM : Kartenkacheln
+LocalCourt --> Nominatim : Ortsauflösung
+
+@enduml
