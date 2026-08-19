@@ -18,7 +18,7 @@ Quelle: [`diagrams/P2-systemkontext.puml`](diagrams/P2-systemkontext.puml).
 
 ### Kommunikationsrichtung
 
-- **Teilnehmer, Organisator → LocalCourt**: einzige Eingangsrichtung; jede Aktion geht von einem der beiden Akteure aus, es gibt keinen eingehenden Kanal von außen ([S1.7](S1-nachbarsysteme.md#s17-nicht-genutzte-schnittstellen-und-abgrenzung)).
+- **Teilnehmer, Organisator → LocalCourt**: einzige Eingangsrichtung; jede Aktion geht von einem der beiden Akteure aus, es gibt keinen eingehenden Kanal von außen ([S1.2](S1-nachbarsysteme.md#s12-nb-01--browser-nutzerkanal)).
 - **LocalCourt → Supabase**: Anmeldung sowie sämtlicher Datenzugriff auf Sessions, Courts, Teilnahmen und Profile.
 - **LocalCourt → OpenStreetMap**: Kartendarstellung der Courts.
 - **LocalCourt → Nominatim**: Ortsauflösung eines gesetzten Court-Pins bei der Court-Erfassung.
