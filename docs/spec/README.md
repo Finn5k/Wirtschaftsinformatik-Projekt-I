@@ -70,7 +70,7 @@ Systemunterstützte Interaktionen als stabile Use Cases UC-01 bis UC-12 (Suchen,
 ### **F3 — Anwendungsfunktionen** ✅ (fertig)
 **Datei**: [F3-anwendungsfunktionen.md](F3-anwendungsfunktionen.md)
 
-Nach Siedersleben: komplexe fachliche Regelwerke außerhalb der Anwendungsfälle. Enthält vier Anwendungsfunktionen mit Regeln, Entscheidungstabellen und einem Zustandsdiagramm (AF-03):
+Nach Siedersleben: komplexe fachliche Regelwerke außerhalb der Anwendungsfälle. Enthält vier Anwendungsfunktionen, je mit Zusicherungen und dem zugehörigen Algorithmus als Pseudocode; AF-03 zusätzlich als Zustandsdiagramm:
 - **AF-01 Beitritts- und Kapazitätsregel** (löst die Concurrency-/Kapazitätsfrage aus UC-04; keine Überbuchung, keine Warteliste)
 - **AF-02 Check-in-Validierung** (QR/PIN gleichwertig, Zeitfenster nur während `active`, Idempotenz)
 - **AF-03 Status einer Sport-Session** (zeitbasierte Ableitung scheduled → active → completed, Auto-Close)

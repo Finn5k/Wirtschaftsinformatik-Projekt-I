@@ -308,7 +308,7 @@ Konkrete Kontingente der genutzten Dienste (P1 CON-T-02, CON-T-05; N1-QA-10):
 | Ausfallverhalten | Keine automatischen Retries; Nutzer erhält eine Wiederholmöglichkeit. Kartenfehler führen zur Listenansicht. | B1.5.4, S1.1 |
 | Datensparsamkeit | Nur erforderliche Profilfelder werden übertragen; für andere Nutzer sind ausschließlich Anzeigename und optionales Profilbild sichtbar. | N1-QA-04, D1.4 |
 | Protokollierung | Keine Tokens, PINs, personenbezogenen Payloads oder technischen Interna in nutzerseitigen Meldungen. | N1-QA-05/N1-QA-09 |
-| Testbarkeit | F2-Akzeptanzkriterien und F3-Entscheidungstabellen bilden die Testgrundlage; RPCs haben höchste Testpriorität. | N1.6 |
+| Testbarkeit | F2-Akzeptanzkriterien und F3-Algorithmen bilden die Testgrundlage; RPCs haben höchste Testpriorität. | N1.6 |
 
 ## 8. Aktueller Implementierungsstand
 
@@ -349,7 +349,7 @@ als zusätzliche ADR-Zeile mit Status und Begründung ergänzt.
 |---|---|---|
 | Öffentliche OSM-/Nominatim-Dienste | Rate-Limit oder zeitweilige Nichterreichbarkeit | Attribution, höchstens eine Nominatim-Anfrage pro Sekunde, keine automatischen Retries, verständlicher Fallback |
 | Direkter Browser-zu-Supabase-Zugriff | Fehlerhafte RLS könnte Daten offenlegen | RLS-Review und Berechtigungstests vor Backend-Freigabe |
-| Fehlende automatisierte Tests | Regressionen in RPCs und Dialogzuständen | Entscheidungstabellen manuell prüfen; RPC-Integrationstests zuerst ergänzen |
+| Fehlende automatisierte Tests | Regressionen in RPCs und Dialogzuständen | Algorithmen aus F3 manuell nachvollziehen; RPC-Integrationstests zuerst ergänzen |
 | Keine Pagination | Größere Ergebnismengen erhöhen Antwortzeit | Indizes und Nutzungsdaten beobachten; später serverseitige Pagination ergänzen |
 | Free-Tier-Grenzen | Begrenzte Kapazität und Logs | Vercel-/Supabase-Dashboards beobachten; keine Zusatzdienste voraussetzen |
 | Prototyp nutzt Mockdaten | Architektur ist im Code noch nicht vollständig nachweisbar | Service-Schicht schrittweise austauschen; Abweichungen in `docs/frontend.md` aktuell halten |

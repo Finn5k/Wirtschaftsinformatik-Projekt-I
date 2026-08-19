@@ -33,7 +33,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | N1-QA-05 | Sicherheit | Geschützte Aktionen erfordern Anmeldung; Check-in-Geheimnisse sind angemessen, aber nicht überdimensioniert abgesichert; keine Secrets im Repository. | UC-01, UC-04, UC-08, UC-09 | F3 (AF-01, AF-02, AF-04), S1 (NB-02, NB-03) | Muss | Code-Review, Repository-Scan, manuelle Prüfung der Zugriffsregeln |
 | N1-QA-06 | Zuverlässigkeit / Fehlerrobustheit | Kapazitäts- und Check-in-Regeln bleiben auch bei parallelen Zugriffen konsistent; nicht verfügbare Nachbarsysteme führen zu kontrollierter Degradation statt Absturz. | UC-02, UC-04, UC-08, UC-09 | F3 (AF-01, AF-02), P2 (Fehlerbehandlung), S1 (NB-04) | Muss | Code-Walkthrough der Atomarität, manueller Test der Kartendarstellung ohne Kartendienst |
 | N1-QA-07 | Wartbarkeit | Modulstruktur, Benennung und Datenobjekte folgen den in D1/D2/P2 festgelegten Namen und Zuständigkeiten. | alle | P2 (Architekturüberblick), D1, D2 | Soll | Code-Review gegen D1/D2-Benennung |
-| N1-QA-08 | Testbarkeit | Use Cases und Anwendungsfunktionen besitzen prüfbare Akzeptanzkriterien, die manuell oder automatisiert nachvollzogen werden können. | alle MVP-Use-Cases | F2 (Akzeptanzkriterien), F3 (Entscheidungstabellen) | Soll | Abgleich Akzeptanzkriterien ↔ beobachtbares Verhalten |
+| N1-QA-08 | Testbarkeit | Use Cases und Anwendungsfunktionen besitzen prüfbare Akzeptanzkriterien, die manuell oder automatisiert nachvollzogen werden können. | alle MVP-Use-Cases | F2 (Akzeptanzkriterien), F3 (Algorithmen) | Soll | Abgleich Akzeptanzkriterien ↔ beobachtbares Verhalten |
 | N1-QA-09 | Nachvollziehbarkeit / Logging ohne sensible Daten | Fehlermeldungen und Logs sind für Nutzer verständlich und enthalten keine technischen Interna oder personenbezogenen Daten. | UC-01, UC-04, UC-06, UC-08, UC-09 | F2 (Ausnahmefälle), B1 (B1.5.4) | Muss | manuelle Prüfung der Fehlertexte im Browser |
 | N1-QA-10 | Betrieb im Free-/Student-Tier | Das System läuft innerhalb der Grenzen der genutzten Free-Tier-Dienste, ohne kostenpflichtige Zusatzdienste vorauszusetzen. | UC-02, UC-06 (mittelbar alle) | P1 (CON-T-02, CON-T-05, G-05), Architekturdokumentation (Deployment-Topologie, §6) | Muss | Review der Deployment-Konfiguration und genutzten Dienste |
 
@@ -125,7 +125,7 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 | Betroffene Datenobjekte / Datentypen | `session` (`max_participants`, abgeleitet `confirmed_count`), `participant` (`status`), `GeoCoordinate` (D2.7) |
 | Betroffene Dialoge | DLG-02, DLG-03 (Fehlerfall Karte), DLG-04, DLG-05 (Court-Erfassung), DLG-06 |
 | Akzeptanzkriterien | Given eine Session mit einem letzten freien Platz, When zwei Nutzer nahezu gleichzeitig beitreten, Then wird höchstens einer bestätigt und der andere erhält `SESSION_FULL` (AF-01 – Kapazitätsinvariante und Atomarität). Given ein nicht erreichbarer Kartendienst, When DLG-03 geöffnet wird, Then erscheint ein Hinweis mit Verweis auf DLG-02 statt eines Fehlerabbruchs. Given Karte oder Reverse-Geocoding sind bei der Court-Erfassung nicht verfügbar, When der Nutzer speichern möchte, Then wird kein Court angelegt und eine Wiederholmöglichkeit angezeigt. Given ein wiederholter gültiger Check-in-Versuch, When er erneut ausgeführt wird, Then bleibt der ursprüngliche Check-in-Zeitpunkt erhalten (`ALREADY_CHECKED_IN`, [AF-02 – Idempotenz bei wiederholtem Check-in](F3-anwendungsfunktionen.md#af-02--check-in-validierung)). |
-| Prüfmethode | Code-Walkthrough der Atomaritäts-Umsetzung gegen die AF-01-Entscheidungstabelle; manuelle Tests mit deaktiviertem Karten- beziehungsweise Nominatim-Zugriff in den Browser-DevTools. |
+| Prüfmethode | Code-Walkthrough der Atomaritäts-Umsetzung gegen den AF-01-Algorithmus; manuelle Tests mit deaktiviertem Karten- beziehungsweise Nominatim-Zugriff in den Browser-DevTools. |
 | Festlegung | Beitritt und Check-in laufen als unteilbare serverseitige Operationen ([S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)). |
 
 ### N1-QA-07 — Wartbarkeit
@@ -149,12 +149,12 @@ Die technische Umsetzung der hier formulierten Anforderungen (konkrete Konfigura
 |---|---|
 | ID | N1-QA-08 |
 | Name | Testbarkeit |
-| Beschreibung | Jeder MVP-Use-Case und jede Anwendungsfunktion besitzt in F2/F3 bereits formulierte Akzeptanzkriterien bzw. Entscheidungstabellen, die im Review nachvollzogen werden können — manuell oder, soweit vorgesehen, automatisiert. |
-| Begründung | F2 formuliert je Use Case Given/When/Then-Akzeptanzkriterien; F3 legt für AF-01 bis AF-04 vollständige Entscheidungstabellen fest. Diese Struktur existiert bereits und soll durch N1 nicht verdoppelt, sondern als Prüfgrundlage referenziert werden. |
+| Beschreibung | Jeder MVP-Use-Case und jede Anwendungsfunktion besitzt in F2/F3 bereits formulierte Akzeptanzkriterien bzw. Algorithmen, die im Review nachvollzogen werden können — manuell oder, soweit vorgesehen, automatisiert. |
+| Begründung | F2 formuliert je Use Case Given/When/Then-Akzeptanzkriterien; F3 legt für AF-01 bis AF-04 die vollständigen Algorithmen fest. Diese Struktur existiert bereits und soll durch N1 nicht verdoppelt, sondern als Prüfgrundlage referenziert werden. |
 | Betroffene Use Cases | alle MVP-Use-Cases (UC-01 bis UC-12) |
 | Betroffene Datenobjekte / Datentypen | alle, über die jeweiligen Akzeptanzkriterien |
 | Betroffene Dialoge | keine dialogspezifische Wirkung |
-| Akzeptanzkriterien | Given ein Use Case aus F2, When sein Hauptszenario im Browser durchgeführt wird, Then entspricht das beobachtete Verhalten den dort formulierten Akzeptanzkriterien. Given eine Anwendungsfunktion aus F3, When ihre Entscheidungstabelle durchgespielt wird, Then stimmt das Systemverhalten mit jeder Tabellenzeile überein. |
+| Akzeptanzkriterien | Given ein Use Case aus F2, When sein Hauptszenario im Browser durchgeführt wird, Then entspricht das beobachtete Verhalten den dort formulierten Akzeptanzkriterien. Given eine Anwendungsfunktion aus F3, When ihre Algorithmus durchgespielt wird, Then stimmt das Systemverhalten mit jeder Tabellenzeile überein. |
 | Prüfmethode | Manueller Abgleich Akzeptanzkriterium ↔ Verhalten im Review; ergänzend einfache automatisierte Tests, soweit vom Team eingeführt. |
 | Abgrenzung | Für das MVP sind weder ein Testframework noch eine Test-CI vorgegeben (P1 SC-07). Die spezifizierte Prüfung erfolgt deshalb manuell; automatisierte Tests sind eine optionale Ergänzung und keine offene Spezifikationsentscheidung. |
 
@@ -265,7 +265,7 @@ Folgende Punkte sind bewusst **nicht** Teil der Qualitätsanforderungen von Loca
 - **Performance** (N1-QA-01) soll spätere Entscheidungen zu Datenabfragen (Indizierung, Filterlogik der Suche) und zur Karten-/Listenansicht beeinflussen; im Code sichtbar als Ladezustände und Antwortverhalten der Suche.
 - **Usability** (N1-QA-02, N1-QA-03) soll unmittelbar in den B1-Dialogen sichtbar werden: Fehlermeldungen, mobile Layouts und die Kürze der Erstellungs-/Beitrittswege.
 - **Wartbarkeit** (N1-QA-07) soll die Modulstruktur und Benennung im Code prägen: Wiederverwendung der D1/D2-Namen, Zuordnung von Code-Modulen zu den P2-Architekturkomponenten.
-- **Testbarkeit** (N1-QA-08) soll über die vorhandenen F2-Akzeptanzkriterien und F3-Entscheidungstabellen hinaus als Grundlage für manuelle Test-Checklisten und, falls eingeführt, automatisierte Tests dienen.
+- **Testbarkeit** (N1-QA-08) soll über die vorhandenen F2-Akzeptanzkriterien und F3-Algorithmen hinaus als Grundlage für manuelle Test-Checklisten und, falls eingeführt, automatisierte Tests dienen.
 
 Im Review lässt sich damit für jede Qualitätsanforderung erklären: welcher Use Case betroffen ist (N1.2/N1.4), warum die Anforderung besteht (N1.3 „Begründung"), und wie sie geprüft wird (N1.3 „Prüfmethode", N1.6).
 
