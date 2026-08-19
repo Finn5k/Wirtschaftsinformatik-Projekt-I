@@ -1,19 +1,22 @@
 @startuml F3-af03-session-lifecycle
 skinparam backgroundColor White
+skinparam shadowing false
+skinparam ArrowColor Black
 skinparam state {
   BackgroundColor White
   BorderColor Black
 }
-skinparam ArrowColor Black
+skinparam note {
+  BackgroundColor White
+  BorderColor Black
+}
 
 [*] --> scheduled : Session erstellt
-scheduled --> active : jetzt erreicht Start
-active --> completed : jetzt erreicht Start + Dauer
+scheduled --> active : jetzt >= start_at
+active --> completed : jetzt >= start_at + duration_min
 completed --> [*]
 
 note right of scheduled : Beitritt möglich, kein Check-in
 note right of active : Beitritt und Check-in möglich
 note right of completed : nur Historie (read-only), Endzustand
-
-note "Status wird bei jeder Abfrage aus Start,\nDauer und aktueller Zeit berechnet –\nnicht persistiert, kein manueller Wechsel" as N
 @enduml

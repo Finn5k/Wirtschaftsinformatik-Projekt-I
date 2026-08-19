@@ -1,0 +1,87 @@
+@startuml D1-er-diagramm
+skinparam backgroundColor White
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam ArrowFontSize 11
+skinparam defaultFontSize 12
+skinparam entity {
+  BackgroundColor White
+  BorderColor Black
+}
+hide circle
+hide empty members
+
+entity "PROFILE" as profile {
+  * user_id : Identifier
+  --
+  display_name : Text
+  city : Text [0..1]
+  avatar_url : Url [0..1]
+  created_at : Timestamp
+}
+
+entity "SPORT" as sport {
+  * sport_id : Identifier
+  --
+  key : Text
+  display_name : Text
+}
+
+entity "COURT" as court {
+  * court_id : Identifier
+  --
+  name : Text
+  city : Text
+  address : Text [0..1]
+  coordinates : GeoCoordinate [0..1]
+  created_by : Identifier <<FK>> [0..1]
+  created_at : Timestamp
+}
+
+entity "SESSION" as session {
+  * session_id : Identifier
+  --
+  sport_id : Identifier <<FK>>
+  court_id : Identifier <<FK>>
+  title : Text
+  description : Text [0..1]
+  start_at : Timestamp
+  duration_min : Duration
+  max_participants : Integer
+  pin : Pin
+  created_at : Timestamp
+}
+
+entity "ORGANIZER" as organizer {
+  * organizer_id : Identifier
+  --
+  session_id : Identifier <<FK>>
+  user_id : Identifier <<FK>>
+}
+
+entity "PARTICIPANT" as participant {
+  * participant_id : Identifier
+  --
+  session_id : Identifier <<FK>>
+  user_id : Identifier <<FK>>
+  status : ParticipantStatus
+  joined_at : Timestamp
+  checked_in_at : Timestamp [0..1]
+}
+
+entity "SPORT_PREFERENCE" as sport_preference {
+  * user_id : Identifier <<FK>>
+  * sport_id : Identifier <<FK>>
+}
+
+profile         ||--o{ organizer         : organisiert (user_id)
+organizer       ||--||  session           : ist Organizer von (session_id)
+profile         ||--o{ participant       : nimmt teil (user_id)
+session         ||--o{ participant       : hat Teilnahme (session_id)
+sport           ||--o{ session           : kategorisiert (sport_id)
+court           ||--o{ session           : findet statt an (court_id)
+profile         ||--o{ sport_preference  : bevorzugt (user_id)
+sport           ||--o{ sport_preference  : wird bevorzugt (sport_id)
+profile         |o--o{ court             : erfasst (created_by)
+
+@enduml

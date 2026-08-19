@@ -14,8 +14,9 @@ Dieses Querschnittskonzept beschreibt die systemweit geltenden Zugriffsregeln au
 | Tabelle | Policy (fachliche Wirkung) | Bezug |
 |---|---|---|
 | `session` | Lesbar für alle angemeldeten Nutzer (Discovery, UC-02); kein Schreibzugriff außer über die Erstellungs-RPC. | UC-02, UC-06 |
-| `session.pin` (Spalten-Ebene) | Nur für `organizer_id = auth.uid()` oder Nutzer mit `participant`-Eintrag (`status ∈ {confirmed, checked_in}`) für diese Session sichtbar. | AF-02, AF-04 |
-| `participant` | Lesbar für `organizer_id` der zugehörigen Session (Teilnehmerliste, UC-07) und für den Nutzer selbst (`user_id = auth.uid()`, UC-05, UC-11). Schreibzugriff ausschließlich über die `join_session`/`check_in`-RPCs, nicht über direkte `INSERT`/`UPDATE`. | AF-01, AF-02, UC-04, UC-07, UC-08, UC-09 |
+| `session.pin` (Spalten-Ebene) | Nur sichtbar für Nutzer mit `organizer`-Eintrag (`organizer.user_id = auth.uid()`) oder `participant`-Eintrag (`status ∈ {confirmed, checked_in}`) für diese Session. | AF-02, AF-04 |
+| `organizer` | Lesbar für alle angemeldeten Nutzer (Anzeige „Organisator" in Session-Detail, UC-03); kein Schreibzugriff außer über die Erstellungs-RPC (`create_session`), die `organizer`- und `participant`-Eintrag atomar mit der Session anlegt. | UC-03, UC-06 |
+| `participant` | Lesbar für den Organisator der zugehörigen Session (`organizer.user_id = auth.uid()` für diese `session_id`, Teilnehmerliste, UC-07) und für den Nutzer selbst (`user_id = auth.uid()`, UC-05, UC-11). Schreibzugriff ausschließlich über die `join_session`/`check_in`-RPCs, nicht über direkte `INSERT`/`UPDATE`. | AF-01, AF-02, UC-04, UC-07, UC-08, UC-09 |
 | `profile` | Basisfelder (`display_name`, `avatar_url`) für alle angemeldeten Nutzer lesbar (Teilnehmerliste, UC-03/UC-07); `display_name` und `city` nur für `user_id = auth.uid()` schreibbar. `avatar_url` bleibt im MVP unverändert. | UC-12, D1.4 „Datenschutz" |
 | `court`, `sport`, `sport_preference` | `court`/`sport` lesbar für alle; `court`-Erstellung durch angemeldete Nutzer (UC-10, `created_by = auth.uid()`); `sport_preference` nur für den eigenen `user_id` schreibbar. | UC-10, UC-12 |
 
@@ -45,5 +46,5 @@ Alle `409`-Antworten sind fachliche Ablehnungen (kein Serverfehler) und werden i
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Claude (Claude Sonnet 5) / Codex |
-| Verwendung | Unterstützung bei der Erstellung und sprachlichen Überarbeitung des Bausteins N2. |
+| Verwendung | Unterstützung bei der Erstellung und sprachlichen Überarbeitung des Bausteins N2. RLS-Policies (N2.2) nach Einführung der `organizer`-Entität in D1 aktualisiert (`organizer_id`-Spalte auf `session` entfällt, ersetzt durch `organizer`-Tabelle). |
 | Prüfung | Alle Inhalte wurden anhand der übrigen Spezifikationsbausteine geprüft und anschließend manuell überarbeitet. |

@@ -1,0 +1,22 @@
+@startuml F2-uc08-checkin-qr
+skinparam backgroundColor White
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam ArrowColor Black
+
+start
+:Organisator zeigt QR-Code für die Session;
+:Teilnehmer scannt den QR-Code;
+:LocalCourt öffnet die Check-in-Ansicht;
+:LocalCourt prüft Zugehörigkeit\nund Sessionstatus;
+if (QR-Code gültig und Check-in-fähig?) then (ja)
+  :LocalCourt markiert den Teilnehmer\nals eingecheckt;
+  :Teilnehmer sieht eine Bestätigung;
+else (nein)
+  :LocalCourt zeigt Fehlermeldung;
+  :Teilnehmer kann alternativ\nUC-09 nutzen;
+endif
+stop
+@enduml

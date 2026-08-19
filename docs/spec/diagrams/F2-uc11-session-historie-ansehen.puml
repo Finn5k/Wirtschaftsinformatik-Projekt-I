@@ -1,0 +1,23 @@
+@startuml F2-uc11-session-historie-ansehen
+skinparam backgroundColor White
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam ArrowColor Black
+
+start
+:Nutzer öffnet die Historie;
+:LocalCourt lädt vergangene Sessions\nmit Bezug zum Nutzer;
+if (Vergangene Sessions vorhanden?) then (ja)
+  :LocalCourt zeigt die Sessions\nin read-only Übersicht;
+  if (Nutzer ist Organisator der Session?) then (ja)
+    :LocalCourt zeigt zusätzlich Teilnehmerzahl,\nCheck-in-Anzahl und Teilnehmerliste;
+  else (nein)
+  endif
+  :Nutzer kann eine Detailansicht öffnen;
+else (nein)
+  :LocalCourt zeigt leeren Zustand;
+endif
+stop
+@enduml
