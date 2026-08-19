@@ -27,7 +27,7 @@ Die folgenden Sektionen [D2.2–D2.8](#d22-identifier) definieren die **nicht-tr
 | [`Pin`](#d24-pin) | Format | Text (numerisch) | 4-stelliges Check-in-Geheimnis. | `session.pin` |
 | [`ParticipantStatus`](#d25-participantstatus) | Aufzählung | Enum | Teilnahmezustand (beigetreten / eingecheckt). | `participant.status` |
 | [`Duration`](#d26-duration) | Maß | Integer | Zeitspanne in Minuten. | `session.duration_min` |
-| [`GeoCoordinate`](#d27-geocoordinate) | Maß | Dezimalzahl | Geografische Koordinate (Breite/Länge). | `court.latitude`, `court.longitude` |
+| [`GeoCoordinate`](#d27-geocoordinate) | Maß | Dezimalzahlpaar | Geografisches Koordinatenpaar (Breite/Länge). | `court.coordinates` |
 | [`QrContent`](#d28-qrcontent) | Abgeleitet | Url/Text | Check-in-Verweis mit Session-Bezug und PIN. | abgeleitet auf `session` |
 
 ## D2.2 Identifier
@@ -98,13 +98,13 @@ Teilnahmezustand eines `participant`.
 
 ## D2.7 GeoCoordinate
 
-**Wertform:** Eine geografische Koordinate als **Dezimalzahl** im WGS84-Bezugssystem. `latitude` liegt im Bereich **−90 bis +90**, `longitude` im Bereich **−180 bis +180**.
+**Wertform:** Ein geografisches **Koordinatenpaar** (Breite, Länge) im WGS84-Bezugssystem, je als Dezimalzahl: Breite im Bereich **−90 bis +90**, Länge im Bereich **−180 bis +180**. Beide Werte gehören untrennbar zusammen und werden als **ein** Attribut geführt (`court.coordinates`), nicht als zwei unabhängige Felder.
 
-**Paarbildung:** Koordinaten treten je `court` **paarweise** auf. Für im MVP neu erfasste Courts sind beide Werte verpflichtend, da sie aus dem gesetzten Kartenpin entstehen (Invariante aus [D1.4](D1-datenmodell.md#court--sportort)). Ein einzelner Koordinatenwert ohne Partner ist fachlich ungültig.
+**Erzeugung:** Entsteht durch das Setzen eines Kartenpins bei der Court-Erfassung. Für im MVP neu erfasste Courts ist das Koordinatenpaar verpflichtend (Invariante aus [D1.4](D1-datenmodell.md#court--sportort)).
 
 **Verwendung:** Dient der Kartendarstellung über OpenStreetMap/Leaflet ([NB-04](P2-architekturueberblick.md#p22-nachbarsysteme)) und als Eingabe für das Reverse-Geocoding über Nominatim (NB-05).
 
-**Validierung:** Werte außerhalb der genannten Bereiche sind ungültig. Koordinaten entstehen durch das Setzen eines Kartenpins; Nominatim leitet daraus Ort und, sofern vorhanden, Adresse ab ([S1.6](S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)).
+**Validierung:** Beide Werte müssen innerhalb der genannten Bereiche liegen; ein unvollständiges Paar (nur Breite oder nur Länge) ist fachlich ungültig. Nominatim leitet aus dem Koordinatenpaar Ort und, sofern vorhanden, Adresse ab ([S1.6](S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)).
 
 ## D2.8 QrContent
 
@@ -154,5 +154,5 @@ Keine. Qualitätsbezogene Nicht-Festlegungen stehen in
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Claude Code, Codex |
-| Verwendung | Katalogisierung der trivialen und nicht-trivialen Datentypen mit Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. |
+| Verwendung | Katalogisierung der trivialen und nicht-trivialen Datentypen mit Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. Anschließend Überarbeitung von `GeoCoordinate` (D2.7) zu einem einzelnen Koordinatenpaar-Attribut (`court.coordinates`) statt zwei getrennter `latitude`/`longitude`-Felder, auf Wunsch des Teams. |
 | Prüfung | Abgeglichen mit [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md) und [N2](N2-querschnittskonzepte.md); Wertebereiche, Statusumfang, Kartenpin, PIN und QR-Inhalt entsprechen den geltenden Festlegungen. |

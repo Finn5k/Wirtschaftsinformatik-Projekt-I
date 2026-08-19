@@ -86,10 +86,10 @@ Schließt die in F2 offen gelassenen Punkte und hält Informatik-Algorithmen (Su
 Fachliches, konzeptionelles Datenmodell nach Siedersleben: Entitätstypen, Attribute und Beziehungen — unabhängig von der technischen Umsetzung.
 
 **Inhalte**:
-- ER-Diagramm (Mermaid) über 6 Entitätstypen: `profile`, `sport`, `court`, `session`, `participant`, `sport_preference`
+- ER-Diagramm (PlantUML) über 7 Entitätstypen: `profile`, `sport`, `court`, `session`, `organizer`, `participant`, `sport_preference`
 - Attributtabellen je Entität (Typ, Multiplizität, Notiz) mit Verweisen auf D2
 - Initialer Sportarten-Katalog mit `key` und `display_name`
-- Beziehungstabelle B1–B7; Auflösung der n:m-Beziehungen (Teilnahme, Präferenz)
+- Beziehungstabelle B1–B8; Auflösung der n:m-Beziehungen (Teilnahme, Präferenz) sowie der 1:1-Beziehung Organisation (`organizer`)
 - Abgeleitete Merkmale (`status`, `confirmed_count`, `qr_content`) statt gepflegter Felder
 - Invarianten (Organisator-als-Teilnehmer, Eindeutigkeit der Teilnahme, Check-in-Kopplung)
 - Bewusst nicht modellierte Objekte (Warteliste, Nachrichten, Auth-Nutzer)

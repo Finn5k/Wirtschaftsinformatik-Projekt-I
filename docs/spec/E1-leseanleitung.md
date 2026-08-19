@@ -78,7 +78,7 @@ Zentrale spezifizierte Elemente wie Ziele, Geschäftsprozesse, Use Cases, Anwend
 | `UC-nn` | Anwendungsfall (Use Case) | [F2.3](F2-anwendungsfaelle.md#f23-use-case-index) | `UC-04` Session beitreten |
 | `AF-nn` | Anwendungsfunktion (fachliches Regelwerk) | [F3.1](F3-anwendungsfunktionen.md#f31-katalog-der-anwendungsfunktionen) | `AF-01` Beitritts- und Kapazitätsregel |
 | Entitätsname in Backticks (z. B. `` `session` ``) | Entitätstyp im Datenmodell | [D1.3](D1-datenmodell.md#d13-entitätstypen-im-überblick) | `` `participant` `` |
-| `B1`–`B7` | Beziehung zwischen Entitätstypen | [D1.5](D1-datenmodell.md#d15-beziehungen) | `B2` Teilnahme (`session` → `participant`) |
+| `B1`–`B8` | Beziehung zwischen Entitätstypen | [D1.5](D1-datenmodell.md#d15-beziehungen) | `B2` Teilnahme (`session` → `participant`) |
 | Datentypname in Backticks (z. B. `` `SessionStatus` ``) | Fachlicher Datentyp | [D2](D2-datentypen.md#katalogübersicht) | `` `Pin` `` |
 | `DLG-nn` | Dialog | [B1.2](B1-dialogspezifikation.md#dialog-index) | `DLG-06` Check-in |
 | `N1-QA-nn` | Qualitätsziel (nichtfunktional) | [N1.2](N1-nichtfunktionale-anforderungen.md#n12-qualitätsziele-im-überblick) | `N1-QA-05` Sicherheit |
@@ -90,7 +90,7 @@ Beim Verweis auf einen Baustein wird immer die Baustein-Kurzform verwendet (`P1`
 
 ## E1.6 Diagramme und Notationen
 
-Diagramme in der Spezifikation werden grundsätzlich als **versionierbare Quellen** gepflegt, damit sie im Diff nachvollziehbar bleiben. Der größte Teil ist als **Mermaid**-Codeblock direkt in Markdown eingebettet und wird so auf GitHub unmittelbar gerendert. Wo Mermaid für die gewünschte UML-Darstellung nicht ausreicht, beispielsweise bei Use-Case-Diagrammen mit expliziter Systemgrenze oder komplexeren Aktivitätsdiagrammen mit Verzweigungen, liegt die Quelle stattdessen als **PlantUML**-`.puml`-Datei unter `diagrams/` vor; die zugehörige gerenderte PNG-Datei unter `diagrams-png/` wird im Markdown eingebunden. Als PlantUML liegen das Use-Case- und das UC-10-Aktivitätsdiagramm in [F2](F2-anwendungsfaelle.md), das Zustandsdiagramm in [F3](F3-anwendungsfunktionen.md) sowie das Systemkontext-Diagramm in [P2](P2-architekturueberblick.md) vor.
+Diagramme in der Spezifikation werden grundsätzlich als **versionierbare Quellen** gepflegt, damit sie im Diff nachvollziehbar bleiben. Der größte Teil ist als **Mermaid**-Codeblock direkt in Markdown eingebettet und wird so auf GitHub unmittelbar gerendert. Wo Mermaid für die gewünschte UML-Darstellung nicht ausreicht, beispielsweise bei Use-Case-Diagrammen mit expliziter Systemgrenze oder komplexeren Aktivitätsdiagrammen mit Verzweigungen, liegt die Quelle stattdessen als **PlantUML**-`.puml`-Datei unter `diagrams/` vor; die zugehörige gerenderte PNG-Datei unter `diagrams-png/` wird im Markdown eingebunden. Als PlantUML liegen das Use-Case- und das UC-10-Aktivitätsdiagramm in [F2](F2-anwendungsfaelle.md), das Zustandsdiagramm in [F3](F3-anwendungsfunktionen.md), das Systemkontext-Diagramm in [P2](P2-architekturueberblick.md) sowie das ER-Diagramm in [D1](D1-datenmodell.md) vor.
 
 | Diagrammtyp | Notation | Verwendet in | Zweck |
 |---|---|---|
@@ -100,7 +100,7 @@ Diagramme in der Spezifikation werden grundsätzlich als **versionierbare Quelle
 | Systemkontext-Diagramm | PlantUML (`diagrams/P2-systemkontext.puml`, gerendert als `diagrams-png/P2-systemkontext.png`) | [P2.1](P2-architekturueberblick.md#p21-systemkontext) | Akteure (Teilnehmer, Organisator) und Nachbarsysteme NB-01 bis NB-05 als Blackbox-Kontext. |
 | Deployment-Diagramm | Mermaid `flowchart` mit `subgraph` je Tier/System | [Architekturdokumentation §6](../arch/README.md#6-verteilung-und-deployment) | Hosting- und Deployment-Topologie. |
 | Sequenzdiagramm | Mermaid `sequenceDiagram` | [Architekturdokumentation §5](../arch/README.md#5-laufzeitsichten) | Ablauf kritischer Datenflüsse über mehrere Systeme hinweg. |
-| ER-Diagramm | Mermaid `erDiagram` | [D1.2](D1-datenmodell.md#d12-überblick-er-diagramm) | Entitätstypen und ihre Beziehungen. |
+| ER-Diagramm | PlantUML (`diagrams/D1-er-diagramm.puml`, gerendert als `diagrams-png/D1-er-diagramm.png`) | [D1.2](D1-datenmodell.md#d12-überblick-er-diagramm) | Entitätstypen und ihre Beziehungen. |
 | Dialoglandkarte | Mermaid `flowchart` mit `subgraph` je Navigationsbereich | [B1.2](B1-dialogspezifikation.md#b12-dialoglandkarte) | Navigation zwischen Dialogen (DLG-nn). |
 | Algorithmus einer Anwendungsfunktion | Pseudocode-Block | [F3.2](F3-anwendungsfunktionen.md#f32-beschreibung-der-anwendungsfunktionen) | Fachliche Prüf- und Entscheidungsfolge mit ihren Ergebniscodes. |
 | Architekturdiagramme nach arc42 | Mermaid `flowchart` und `sequenceDiagram` | [Architekturdokumentation](../arch/README.md) | Komponenten-, Deployment- und Laufzeitsichten, die laut [P2](P2-architekturueberblick.md#p2--architekturüberblick) bewusst nicht in P2 gehören. |
@@ -179,5 +179,5 @@ Für die gesamte Spezifikation gelten unabhängig vom einzelnen Baustein folgend
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Claude Code, Codex |
-| Verwendung | Entwurf von Zielgruppen, Lesereihenfolge, ID-Konventionen, Diagrammübersicht und Traceability-Kette. |
+| Verwendung | Entwurf von Zielgruppen, Lesereihenfolge, ID-Konventionen, Diagrammübersicht und Traceability-Kette. Diagrammübersicht und Beziehungs-ID-Bereich (`B1`–`B8`) nach Umstellung des D1-ER-Diagramms auf PlantUML und Einführung der `organizer`-Entität aktualisiert. |
 | Prüfung | Abgeglichen mit dem Spezifikationsindex, allen Bausteinen und der [Architekturdokumentation](../arch/README.md); relative Links, Abschnittsanker und IDs wurden manuell geprüft. |

@@ -159,7 +159,7 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 
 | Feld | Art | Datentyp | Bezug Datenmodell | Vorbelegung | Prüfung / Hinweise |
 |---|---|---|---|---|---|
-| Kartenansicht | Anzeige | Karte (OSM/Leaflet) | `court.latitude`/`longitude` | Standardregion | nur Courts mit Koordinaten; sonst nur Liste (Graceful Degradation, UC-02) |
+| Kartenansicht | Anzeige | Karte (OSM/Leaflet) | `court.coordinates` | Standardregion | nur Courts mit Koordinaten; sonst nur Liste (Graceful Degradation, UC-02) |
 | Sportart-Filter | Eingabe (Kann) | Auswahl | `sport` (Katalog) | „Alle" | wie DLG-02 |
 | Session-Marker | Anzeige | Marker je Session | `session` ↔ `court` | — | nur `scheduled`/`active` |
 | Vorschaukarte | Anzeige | Kachel | `session` (title, sport, status, start_at), abgeleitet Plätze | ausgeblendet | erscheint nach Marker-Auswahl |
@@ -206,7 +206,7 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 | Beschreibung | Anzeige | Text | `session.description` | — | leer möglich |
 | Datum / Uhrzeit / Dauer | Anzeige | Timestamp, Duration | `session.start_at`, `duration_min` | — | Ende = Start + Dauer |
 | Sportort | Anzeige | Text (+ Kartenausschnitt) | `court.name`, `city`; Karte nur bei Koordinaten | — | — |
-| Organisator | Anzeige | Text | `profile.display_name` via `organizer_id` | — | — |
+| Organisator | Anzeige | Text | `profile.display_name` via `organizer.user_id` | — | — |
 | Belegung | Anzeige | Text/Balken | abgeleitet `confirmed_count` / `max_participants` | — | — |
 | Teilnehmerliste | Anzeige | Liste | `participant` (→ `profile.display_name`, optional `profile.avatar_url`, `status`) | — | Für andere Nutzer sind ausschließlich Anzeigename und optionales Profilbild sichtbar; Check-in-Status nur für Organisator |
 | QR-Code + PIN | Anzeige | `QrContent`, `Pin` | abgeleitet `qr_content`, `session.pin` | — | **nur Organisator-Zustand** (AF-04) |
@@ -220,7 +220,7 @@ Der Zustand ergibt sich aus Anmeldung, Rolle, Teilnahme und Session-Status (AF-0
 | *Gast* | nicht angemeldet | → DLG-01 | nein | nein | nein |
 | *Offen* | angemeldet, nicht beigetreten, `scheduled`/`active` | ja (AF-01) | nein | nein | nein |
 | *Beigetreten* | Teilnahme `confirmed`, `scheduled`/`active` | nein (bereits Teilnehmer) | ja, bei `active` | nein | nein |
-| *Organisator* | Nutzer = `organizer_id` | nein (zählt bereits, AF-01 R3) | nein | ja | ja (UC-07) |
+| *Organisator* | Nutzer hat `organizer`-Eintrag für diese Session | nein (zählt bereits, AF-01 R3) | nein | ja | ja (UC-07) |
 | *Read-only* | `completed` | nein | nein | nein | ja für Organisator (UC-11) |
 
 **Dynamik**
@@ -264,7 +264,7 @@ Der Zustand ergibt sich aus Anmeldung, Rolle, Teilnahme und Session-Status (AF-0
 | Datum | Eingabe (Muss) | Datum | `session.start_at` (Datumsteil) | leer | zusammen mit Uhrzeit: in der Zukunft (UC-06) |
 | Uhrzeit | Eingabe (Muss) | Uhrzeit | `session.start_at` (Zeitteil) | leer | s. o. |
 | Dauer (Minuten) | Eingabe (Muss) | `Duration` | `session.duration_min` | 60 | ≥ 1; bestimmt Ende und Auto-Close (AF-03) |
-| Court / Sportort | Eingabe (Muss) | Auswahl oder Neuerfassung | `session.court_id` → `court` | leer | Auswahl aus Verzeichnis **oder** Neuerfassung (UC-10): `name` (Muss), Kartenpin (Muss) → `latitude`/`longitude`; `city` (Muss) und `address` (Kann) werden per Reverse-Geocoding ermittelt |
+| Court / Sportort | Eingabe (Muss) | Auswahl oder Neuerfassung | `session.court_id` → `court` | leer | Auswahl aus Verzeichnis **oder** Neuerfassung (UC-10): `name` (Muss), Kartenpin (Muss) → `coordinates`; `city` (Muss) und `address` (Kann) werden per Reverse-Geocoding ermittelt |
 | Teilnehmerlimit | Eingabe (Muss) | Integer | `session.max_participants` | 10 | ≥ 1; Hinweis im Dialog: Organisator belegt einen Platz (AF-01 R4) |
 
 Frühere Prototyp-Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht** Teil dieser Feldliste und im aktuellen Prototyp nicht mehr vorhanden.
@@ -352,7 +352,7 @@ Der Dialog hat zwei Zustände (Tabs): *Bevorstehend* (UC-05, Status `scheduled`/
 | Feld | Art | Datentyp | Bezug Datenmodell | Vorbelegung | Prüfung / Hinweise |
 |---|---|---|---|---|---|
 | Tab-Auswahl | Eingabe (Kann) | Umschalter | — | *Bevorstehend* | — |
-| Session-Liste | Anzeige | Liste | `session` (title, sport, start_at, `status`), Rolle (Organisator/Teilnehmer aus `organizer_id` bzw. `participant`) | — | nur Sessions mit eigener Teilnahme oder Organisatorrolle (UC-05); Rolle unterscheidbar; *Bevorstehend*: `start_at` aufsteigend, *Vergangen*: Ende absteigend |
+| Session-Liste | Anzeige | Liste | `session` (title, sport, start_at, `status`), Rolle (Organisator/Teilnehmer aus `organizer` bzw. `participant`) | — | nur Sessions mit eigener Teilnahme oder Organisatorrolle (UC-05); Rolle unterscheidbar; *Bevorstehend*: `start_at` aufsteigend, *Vergangen*: Ende absteigend |
 | Ergebnisdaten (nur *Vergangen*, Organisator) | Anzeige | Text/Liste | Session-Kerndaten, abgeleitet `confirmed_count`, Anzahl `checked_in`, Teilnehmerliste | — | Titel, Sportart, Court, Datum, Startzeit, Dauer, bestätigte Teilnehmerzahl, Check-in-Anzahl sowie Teilnehmerliste mit Check-in-Status; keine Statistiken, Exporte oder sessionübergreifenden Auswertungen |
 | Leerer Zustand | Anzeige | Text | — | — | je Tab ([B1.5.5](#b155-leere-zustände)) |
 
@@ -489,5 +489,5 @@ Keine offenen Punkte zum Dialogverhalten. Sortierung, Fehlertexte und der bewuss
 | Aspekt | Inhalt |
 |---|---|
 | Werkzeug | Claude Code, ChatGPT, Codex |
-| Verwendung | Ableitung der Dialoglandkarte sowie der Feld- und Aktionslisten aus F2/F3/D1/D2 und dem UI-Prototyp; systematischer Abgleich Prototyp ↔ MVP-Scope (B1.6). |
+| Verwendung | Ableitung der Dialoglandkarte sowie der Feld- und Aktionslisten aus F2/F3/D1/D2 und dem UI-Prototyp; systematischer Abgleich Prototyp ↔ MVP-Scope (B1.6). Felder mit Bezug auf `court.coordinates` und `organizer` nach der D1-Überarbeitung (Zusammenführung `latitude`/`longitude`, neue `organizer`-Entität) nachgezogen. |
 | Prüfung | Abgeglichen mit [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), [`../frontend.md`](../frontend.md) und dem aktuellen Prototyp-Code (`src/`); die Richtungsentscheidungen (Soll-Dialoge, UC-05/UC-11 als ein Dialog, normative Feldlisten) hat das Team vorab bestätigt. Der Prototyp-Abgleich trifft keine eigenen fachlichen Festlegungen. |
