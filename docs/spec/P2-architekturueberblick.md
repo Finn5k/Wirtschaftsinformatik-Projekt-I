@@ -8,27 +8,13 @@ P2 zeigt LocalCourt als **Blackbox im Systemkontext**: die Akteure, die das Syst
 
 ## P2.1 Systemkontext
 
-LocalCourt ist eine webbasierte Anwendung für die dezentrale Koordination lokaler Sportaktivitäten. Im Systemkontext ist LocalCourt eine einzige Blackbox: Zwei menschliche Akteure — **Teilnehmer** und **Organisator** ([F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md)) — nutzen das System; vier externe Nachbarsysteme stellen Anmeldung, Datenhaltung, Kartendarstellung und Ortsauflösung bereit ([P2.2](#p22-nachbarsysteme)).
+LocalCourt ist eine webbasierte Anwendung für die dezentrale Koordination lokaler Sportaktivitäten. Im Systemkontext ist LocalCourt eine einzige Blackbox: Zwei menschliche Akteure — **Teilnehmer** und **Organisator** ([F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md)) — erreichen das System über den Browser als Nutzerkanal (NB-01); vier weitere Nachbarsysteme stellen Anmeldung, Datenhaltung, Kartendarstellung und Ortsauflösung bereit ([P2.2](#p22-nachbarsysteme)).
 
 ### Kontext-Diagramm
 
-```mermaid
-flowchart LR
-    teilnehmer(["Teilnehmer"])
-    organisator(["Organisator"])
+[![Systemkontext LocalCourt](diagrams-png/P2-systemkontext.png)](diagrams-png/P2-systemkontext.png)
 
-    lc["LocalCourt"]
-
-    supabase["Supabase<br/>(Anmeldung & Daten)"]
-    osm["OpenStreetMap<br/>(Kartenkacheln)"]
-    nominatim["Nominatim<br/>(Ortsauflösung)"]
-
-    teilnehmer -->|nutzt| lc
-    organisator -->|nutzt| lc
-    lc -->|Anmeldung, Sessions,<br/>Courts, Profile| supabase
-    lc -->|Kartendarstellung| osm
-    lc -->|Reverse-Geocoding bei<br/>Court-Erfassung| nominatim
-```
+Quelle: [`diagrams/P2-systemkontext.puml`](diagrams/P2-systemkontext.puml).
 
 ### Kommunikationsrichtung
 
@@ -57,25 +43,7 @@ Supabase erscheint hier bewusst als zwei Schnittstellen (NB-02 Anmeldung, NB-03 
 
 ---
 
-## P2.3 Schnittstellen
-
-Die Schnittstellen-Contracts (Operationen, Ein-/Ausgaben, Fehlersemantik) je Nachbarsystem stehen vollständig in [S1 — Nachbarsysteme](S1-nachbarsysteme.md); die Zuordnung NB-nn → S1-Abschnitt steht dort in der Einleitung. P2 wiederholt diese Contracts nicht.
-
----
-
-## P2.4 Deployment
-
-Hosting, Infrastruktur-Tiers und die konkreten Free-Tier-Grenzen der genutzten Dienste sind interne Architekturentscheidungen und stehen in der [Architekturdokumentation, §6 Verteilung und Deployment](../arch/README.md#6-verteilung-und-deployment).
-
----
-
-## P2.5 Datenflüsse
-
-Der Ablauf einzelner Anwendungsfälle über mehrere Systeme hinweg (z. B. Session erstellen, beitreten, Check-in) ist eine Laufzeitsicht und steht in der [Architekturdokumentation, §5 Laufzeitsichten](../arch/README.md#5-laufzeitsichten). Die zugehörigen Ergebniscodes sind in [F3](F3-anwendungsfunktionen.md) definiert und in [N2.3](N2-querschnittskonzepte.md#n23-fehler-mapping-ergebniscodes--http) auf HTTP-Antworten abgebildet.
-
----
-
-## P2.6 Eingesetzte KI-Werkzeuge
+## P2.3 Eingesetzte KI-Werkzeuge
 
 | Aspekt | Inhalt |
 |---|---|
