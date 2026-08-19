@@ -1,0 +1,25 @@
+@startuml F2-uc01-registrieren-anmelden
+skinparam backgroundColor White
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam ArrowColor Black
+
+start
+:Nutzer öffnet Anmeldung oder Registrierung;
+if (Bereits gültige Sitzung?) then (ja)
+  :LocalCourt erkennt Nutzer\nals angemeldet;
+else (nein)
+  :Nutzer gibt Zugangsdaten ein;
+  :LocalCourt prüft Anmeldung\nüber Supabase Auth;
+  if (Zugangsdaten gültig?) then (ja)
+    :LocalCourt zeigt angemeldeten Zustand;
+  else (nein)
+    :LocalCourt zeigt Fehlermeldung;
+    stop
+  endif
+endif
+:Nutzer wird zur gewünschten Funktion\noder zur Startansicht geführt;
+stop
+@enduml

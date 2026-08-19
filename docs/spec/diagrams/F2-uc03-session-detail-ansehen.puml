@@ -1,0 +1,19 @@
+@startuml F2-uc03-session-detail-ansehen
+skinparam backgroundColor White
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam ArrowColor Black
+
+start
+:Nutzer wählt eine Session aus;
+:LocalCourt lädt die fachlichen Details;
+:LocalCourt zeigt Zeit, Sportart,\nCourt/Sportort, Beschreibung,\nKapazität und Status;
+if (Nutzer ist Organisator der Session?) then (ja)
+  :LocalCourt zeigt zusätzlich\nTeilnehmerliste und Check-in-Status;
+else (nein)
+endif
+:LocalCourt zeigt mögliche Aktionen\nabhängig vom Nutzerstatus;
+stop
+@enduml

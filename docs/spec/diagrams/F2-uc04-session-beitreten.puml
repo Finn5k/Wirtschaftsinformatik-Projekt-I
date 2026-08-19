@@ -1,0 +1,25 @@
+@startuml F2-uc04-session-beitreten
+skinparam backgroundColor White
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam ArrowColor Black
+
+start
+if (Nutzer angemeldet?) then (nein)
+  :Nutzer wird zu UC-01 geführt;
+  stop
+else (ja)
+endif
+:Teilnehmer öffnet eine Session;
+:Teilnehmer wählt "Beitreten";
+:LocalCourt prüft Sessionstatus\nund Kapazität;
+if (Session offen und Kapazität frei?) then (ja)
+  :LocalCourt trägt den Nutzer\nals Teilnehmer ein;
+  :LocalCourt bestätigt den Beitritt;
+else (nein)
+  :LocalCourt erklärt die Session\nals voll oder nicht beitretbar;
+endif
+stop
+@enduml

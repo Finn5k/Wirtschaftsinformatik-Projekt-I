@@ -1,0 +1,20 @@
+@startuml F2-uc09-checkin-pin
+skinparam backgroundColor White
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam ArrowColor Black
+
+start
+:Teilnehmer öffnet die\nPIN-Check-in-Ansicht;
+:Teilnehmer gibt die Session-PIN ein;
+:LocalCourt prüft PIN, Sessionstatus\nund Teilnahme;
+if (PIN korrekt und Check-in-fähig?) then (ja)
+  :LocalCourt markiert den Teilnehmer\nals eingecheckt;
+  :Teilnehmer sieht eine Bestätigung;
+else (nein)
+  :LocalCourt zeigt Fehlermeldung;
+endif
+stop
+@enduml

@@ -1,0 +1,22 @@
+@startuml F2-uc12-profil-verwalten
+skinparam backgroundColor White
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam ArrowColor Black
+
+start
+:Nutzer öffnet das Profil;
+:LocalCourt zeigt aktuelle Basisdaten\nund Sportpräferenzen;
+:Nutzer ändert zulässige Angaben;
+:LocalCourt prüft Pflichtfelder;
+if (Angaben gültig?) then (ja)
+  :LocalCourt speichert Änderungen;
+  :LocalCourt zeigt die aktualisierten Daten;
+else (nein)
+  :LocalCourt erklärt den Fehler;
+  :Bestehendes Profil bleibt erhalten;
+endif
+stop
+@enduml

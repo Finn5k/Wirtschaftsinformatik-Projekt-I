@@ -269,13 +269,13 @@ sequenceDiagram
 
 | Concern | Grund | Referenz |
 |---------|-------|----------|
-| **Benachrichtigungen** | Out-of-Scope. MVP hat keine Email/SMS/Push-Notifications. Nutzer muss self-aktiv sein. | P1 NG-02, CON-T-05; F2.6 |
+| **Benachrichtigungen** | Out-of-Scope. MVP hat keine Email/SMS/Push-Notifications. Nutzer muss self-aktiv sein. | P1 NG-02, CON-T-05; F2.5 |
 | **Wartelisten** | Ohne Benachrichtigungskanal ("Platz frei") fachlich nicht sinnvoll; Kapazität ist harte Grenze. | P1 NG-10; F3 AF-01 |
 | **Nutzer-Bewertungen / Ratings** | Nicht modelliert. Keine 5-Sterne-Ratings oder Review-System. | P1 NG-04 |
-| **Admin-Reports** | Admin-Funktionen sind Out-of-Scope. Historie bleibt read-only, kein Reporting. | F2.6; UC-11 |
-| **Session-Modifikation nach Erstellung** | Vereinfacht: Organisator kann **nicht** Startzeit/Court/Teilnehmerlimit nach Erstellung ändern (würde Komplexität für MVP erhöhen). | F2.6 (Scope-Vereinfachung) |
+| **Admin-Reports** | Admin-Funktionen sind Out-of-Scope. Historie bleibt read-only, kein Reporting. | F2.5; UC-11 |
+| **Session-Modifikation nach Erstellung** | Vereinfacht: Organisator kann **nicht** Startzeit/Court/Teilnehmerlimit nach Erstellung ändern (würde Komplexität für MVP erhöhen). | F2.5 (Scope-Vereinfachung) |
 | **Messaging zwischen Organisator & Participant** | Kein Direct Chat. Koordination läuft extern (WhatsApp, Signal, etc.). | P1 NG-02 |
-| **Cross-Process Coordination** | Keine "Threads" von Sessions, keine Session-Serien-Verwaltung. Jede Session ist unabhängig. | F2.6 (Session-Serien) |
+| **Cross-Process Coordination** | Keine "Threads" von Sessions, keine Session-Serien-Verwaltung. Jede Session ist unabhängig. | F2.5 (Session-Serien) |
 | **Auszahlung / Spendensystem** | Kein Geld. LocalCourt kostenlos. | P1 NG-01 |
 
 ### Post-LocalCourt (Nicht in Modellierung, aber erwähnt)
@@ -346,4 +346,4 @@ Jeder Prozess besteht aus **Akteuren** (Mensch & IT), **Aktivitäten** (zeitlich
 |---|---|
 | Werkzeug | GitHub Copilot, Claude (Claude Code), Codex |
 | Verwendung | Entwurf der Geschäftsprozesse (GP-01–GP-03), Aktivitäten, Dokumente, Daten-Stores und Ablaufdiagramme. Codex ergänzte am 2026-07-29 Nominatim und Reverse-Geocoding in der Court-Erfassung. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitungen wurden zusätzlich gegen F2/F3 und D1/D2 geprüft. Check-in-Aufrufe, QR-Deep-Link, E-Mail-/Passwort-Authentifizierung, manuelle Ortssuche ohne Geräte-Geolocation und die Court-Erfassung mit Reverse-Geocoding entsprechen dem aktuellen Stand der maßgeblichen Bausteine. |
+| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md) und [S1](S1-nachbarsysteme.md); spätere Überarbeitungen wurden zusätzlich gegen F2/F3 und D1/D2 geprüft. Check-in-Aufrufe, QR-Deep-Link, E-Mail-/Passwort-Authentifizierung, manuelle Ortssuche ohne Geräte-Geolocation und die Court-Erfassung mit Reverse-Geocoding entsprechen dem aktuellen Stand der maßgeblichen Bausteine. Referenzkorrektur (2026-08-19, Claude Sonnet 5, Claude Code): Verweise auf F2.6 („Nicht als Use Case modelliert") an die Umnummerierung in [F2](F2-anwendungsfaelle.md) auf F2.5 angepasst. |
