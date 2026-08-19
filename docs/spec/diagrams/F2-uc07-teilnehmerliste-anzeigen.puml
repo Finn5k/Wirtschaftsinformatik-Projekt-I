@@ -1,0 +1,23 @@
+@startuml F2-uc07-teilnehmerliste-anzeigen
+skinparam backgroundColor White
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam ArrowColor Black
+
+start
+:Organisator öffnet eine eigene Session;
+:LocalCourt prüft die Berechtigung;
+if (Organisator der Session?) then (ja)
+  if (Teilnehmer vorhanden?) then (ja)
+    :LocalCourt zeigt Teilnehmer und\nderen Check-in-Status;
+  else (nein)
+    :LocalCourt zeigt leere Liste\nmit Teilnehmerzahl 0;
+  endif
+  :Organisator kann die Liste erneut\nladen oder aktualisiert sehen;
+else (nein)
+  :LocalCourt verweigert den Zugriff;
+endif
+stop
+@enduml

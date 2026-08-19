@@ -1,0 +1,21 @@
+@startuml F2-uc02-session-suchen
+skinparam backgroundColor White
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam ArrowColor Black
+
+start
+:Teilnehmer öffnet die Suche;
+:Teilnehmer gibt Ort/Region ein;
+:Teilnehmer wählt optional eine Sportart\noder "Alle Sportarten";
+:LocalCourt ermittelt passende\nzukünftige Sessions;
+if (Treffer vorhanden?) then (ja)
+  :LocalCourt zeigt Ergebnisliste;
+else (nein)
+  :LocalCourt zeigt leere Ergebnisansicht;
+endif
+:LocalCourt zeigt, soweit möglich,\nCourt-Positionen auf einer Karte;
+stop
+@enduml

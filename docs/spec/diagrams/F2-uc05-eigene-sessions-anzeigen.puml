@@ -1,0 +1,19 @@
+@startuml F2-uc05-eigene-sessions-anzeigen
+skinparam backgroundColor White
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam ArrowColor Black
+
+start
+:Nutzer öffnet "Meine Sessions";
+:LocalCourt ermittelt Sessions mit\nTeilnahme- oder Organisatorrolle;
+if (Eigene Sessions vorhanden?) then (ja)
+  :LocalCourt zeigt bevorstehende Sessions;
+  :Nutzer kann eine\nSession-Detailansicht öffnen;
+else (nein)
+  :LocalCourt zeigt leeren Zustand;
+endif
+stop
+@enduml

@@ -1,0 +1,22 @@
+@startuml F2-uc06-session-erstellen
+skinparam backgroundColor White
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam ArrowColor Black
+
+start
+:Organisator öffnet das Formular\nzur Session-Erstellung;
+:Organisator gibt Sessiondaten ein;
+:Organisator wählt oder erfasst\nden Sportort (UC-10);
+:LocalCourt prüft Pflichtangaben\nund fachliche Grenzen;
+if (Angaben vollständig und gültig?) then (ja)
+  :LocalCourt erstellt die Session;
+  :LocalCourt zeigt die Detailansicht\nmit Bestätigung;
+else (nein)
+  :LocalCourt erklärt die fehlenden\noder ungültigen Eingaben;
+  stop
+endif
+stop
+@enduml

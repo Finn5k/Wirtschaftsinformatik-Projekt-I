@@ -10,7 +10,7 @@ Nach Siedersleben beschreibt D2 die Datentypen **fachlich**, nicht technisch. Di
 
 | Typ | Bedeutung | Fachliche Form |
 |---|---|---|
-| `Text` | Zeichenkette | Nicht-leerer UTF-8-Text; im MVP gelten keine festen fachlichen Maximallängen ([N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)). |
+| `Text` | Zeichenkette | Nicht-leerer UTF-8-Text; im MVP gelten keine festen fachlichen Maximallängen ([N1.3](N1-nichtfunktionale-anforderungen.md#n13-bewusst-nicht-verfolgte-qualitätsziele)). |
 | `Integer` | Ganzzahl | Vorzeichenbehaftete Ganzzahl; feldspezifische Wertebereiche siehe unten. |
 | `Boolean` | Wahrheitswert | `true` / `false`. |
 | `Timestamp` | Zeitpunkt | Datum + Uhrzeit mit Zeitzonenbezug (UTC-normalisiert). Grundlage von Zeitvergleichen (AF-03). |
@@ -27,14 +27,14 @@ Die folgenden Sektionen [D2.2–D2.8](#d22-identifier) definieren die **nicht-tr
 | [`Pin`](#d24-pin) | Format | Text (numerisch) | 4-stelliges Check-in-Geheimnis. | `session.pin` |
 | [`ParticipantStatus`](#d25-participantstatus) | Aufzählung | Enum | Teilnahmezustand (beigetreten / eingecheckt). | `participant.status` |
 | [`Duration`](#d26-duration) | Maß | Integer | Zeitspanne in Minuten. | `session.duration_min` |
-| [`GeoCoordinate`](#d27-geocoordinate) | Maß | Dezimalzahl | Geografische Koordinate (Breite/Länge). | `court.latitude`, `court.longitude` |
+| [`GeoCoordinate`](#d27-geocoordinate) | Maß | Dezimalzahlpaar | Geografisches Koordinatenpaar (Breite/Länge). | `court.coordinates` |
 | [`QrContent`](#d28-qrcontent) | Abgeleitet | Url/Text | Check-in-Verweis mit Session-Bezug und PIN. | abgeleitet auf `session` |
 
 ## D2.2 Identifier
 
 **Wertform:** Eine opake, systemweit eindeutige und über die Lebensdauer eines Objekts **stabile** Kennung. Fachlich wird der Identifier als undurchsichtiger Wert behandelt: Er trägt keine fachliche Bedeutung, wird nicht interpretiert und nicht aus anderen Attributen abgeleitet.
 
-**Erzeugung:** Wird bei der Anlage eines Objekts vergeben und danach nicht mehr verändert. Technisch werden gemäß [N2.9](N2-querschnittskonzepte.md#n29-identifier-strategie) UUIDs der Version 4 verwendet.
+**Erzeugung:** Wird bei der Anlage eines Objekts vergeben und danach nicht mehr verändert. Technisch werden UUIDs der Version 4 verwendet.
 
 **Sonderfall `profile.user_id`:** Diese Kennung entspricht der **externen Auth-Kennung** aus Supabase Auth ([S1](S1-nachbarsysteme.md), NB-02). Sie wird nicht von LocalCourt vergeben, sondern übernommen; fachlich gelten dieselben Regeln (opak, stabil, eindeutig).
 
@@ -53,7 +53,7 @@ Fachlicher Status einer Session. Der Wert wird **abgeleitet** (siehe [D1.6](D1-d
 | `completed` | Beendet (`jetzt ≥ start_at + duration_min`). Read-only, nur Historie. |
 **Ableitung & Ordnung:** Der Status ergibt sich allein aus der Zeit (Ableitungstabelle in AF-03). Die fachliche Reihenfolge ist **monoton vorwärts**: `scheduled → active → completed`. Rücksprünge sind unzulässig; `completed` wird nicht verlassen.
 
-**Handhabung:** Konsumenten (UI, Prüfungen in AF-01/AF-02) müssen den bereitgestellten abgeleiteten Wert verwenden. Der Status wird gemäß [N2.6](N2-querschnittskonzepte.md#n26-statuspersistenz-af-03) bei jeder Abfrage berechnet und nicht zeitgesteuert materialisiert.
+**Handhabung:** Konsumenten (UI, Prüfungen in AF-01/AF-02) müssen den bereitgestellten abgeleiteten Wert verwenden. Der Status wird bei jeder Abfrage berechnet und nicht zeitgesteuert materialisiert ([AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session)).
 
 **Validierung:** Nur die drei genannten Werte sind gültig. Ein direkter, fachlich unzulässiger Übergang (z. B. `completed → active`) ist ungültig und darf nicht auftreten.
 
@@ -69,7 +69,7 @@ Fachlicher Status einer Session. Der Wert wird **abgeleitet** (siehe [D1.6](D1-d
 
 **Validierung:** Eine Eingabe ist formal gültig, wenn sie aus genau vier Ziffern besteht; sie ist fachlich gültig, wenn sie mit der PIN der betreffenden Session übereinstimmt (AF-02). Formfehler (z. B. Buchstaben, falsche Länge) werden vor dem fachlichen Vergleich abgewiesen.
 
-**Sicherheitsniveau (bewusst):** 4 Stellen = 10 000 Möglichkeiten, geringe Entropie. Akzeptabel, weil Check-in zusätzlich Anmeldung und vorherigen Beitritt voraussetzt und die Auswirkung gering ist (reine Anwesenheitsmarkierung). Die PIN wird gemäß [N2.7](N2-querschnittskonzepte.md#n27-pin-erzeugung-und--speicherung-af-04) im Klartext gespeichert.
+**Sicherheitsniveau (bewusst):** 4 Stellen = 10 000 Möglichkeiten, geringe Entropie. Akzeptabel, weil Check-in zusätzlich Anmeldung und vorherigen Beitritt voraussetzt und die Auswirkung gering ist (reine Anwesenheitsmarkierung). Die PIN wird im Klartext gespeichert.
 
 ## D2.5 ParticipantStatus
 
@@ -90,7 +90,7 @@ Teilnahmezustand eines `participant`.
 
 **Wertform:** Eine Zeitspanne als **positive Ganzzahl in Minuten** (`Integer`, Einheit Minuten). Die Einheit ist fachlich fixiert (Minuten), damit `start_at + duration_min` das Session-Ende eindeutig bestimmt (AF-03).
 
-**Wertebereich:** ≥ 1 Minute. Eine fachliche Obergrenze ist für das MVP bewusst nicht festgelegt ([N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)).
+**Wertebereich:** ≥ 1 Minute. Eine fachliche Obergrenze ist für das MVP bewusst nicht festgelegt ([N1.3](N1-nichtfunktionale-anforderungen.md#n13-bewusst-nicht-verfolgte-qualitätsziele)).
 
 **Gleichheit & Ordnung:** Numerischer Vergleich; kleinere Werte bedeuten kürzere Sessions.
 
@@ -98,19 +98,19 @@ Teilnahmezustand eines `participant`.
 
 ## D2.7 GeoCoordinate
 
-**Wertform:** Eine geografische Koordinate als **Dezimalzahl** im WGS84-Bezugssystem. `latitude` liegt im Bereich **−90 bis +90**, `longitude` im Bereich **−180 bis +180**.
+**Wertform:** Ein geografisches **Koordinatenpaar** (Breite, Länge) im WGS84-Bezugssystem, je als Dezimalzahl: Breite im Bereich **−90 bis +90**, Länge im Bereich **−180 bis +180**. Beide Werte gehören untrennbar zusammen und werden als **ein** Attribut geführt (`court.coordinates`), nicht als zwei unabhängige Felder.
 
-**Paarbildung:** Koordinaten treten je `court` **paarweise** auf. Für im MVP neu erfasste Courts sind beide Werte verpflichtend, da sie aus dem gesetzten Kartenpin entstehen (Invariante aus [D1.4](D1-datenmodell.md#court--sportort)). Ein einzelner Koordinatenwert ohne Partner ist fachlich ungültig.
+**Erzeugung:** Entsteht durch das Setzen eines Kartenpins bei der Court-Erfassung. Für im MVP neu erfasste Courts ist das Koordinatenpaar verpflichtend (Invariante aus [D1.4](D1-datenmodell.md#court--sportort)).
 
 **Verwendung:** Dient der Kartendarstellung über OpenStreetMap/Leaflet ([NB-04](P2-architekturueberblick.md#p22-nachbarsysteme)) und als Eingabe für das Reverse-Geocoding über Nominatim (NB-05).
 
-**Validierung:** Werte außerhalb der genannten Bereiche sind ungültig. Koordinaten entstehen durch das Setzen eines Kartenpins; Nominatim leitet daraus Ort und, sofern vorhanden, Adresse ab ([S1.6](S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)).
+**Validierung:** Beide Werte müssen innerhalb der genannten Bereiche liegen; ein unvollständiges Paar (nur Breite oder nur Länge) ist fachlich ungültig. Nominatim leitet aus dem Koordinatenpaar Ort und, sofern vorhanden, Adresse ab ([S1.6](S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)).
 
 ## D2.8 QrContent
 
 **Wertform:** Ein **abgeleiteter** Verweis (`Url`/`Text`), der auf die Check-in-Ansicht einer Session zeigt und `session_id` sowie `pin` kodiert (konzeptionell `…/check-in?session=<session_id>&pin=<pin>`, AF-04 – QR-Inhalt).
 
-**Erzeugung & Stabilität:** Wird aus `session_id` und `pin` abgeleitet (nicht unabhängig gepflegt) und ist über die Lebensdauer der Session stabil, da beide Bestandteile unverändert bleiben (AF-04 – Stabilität). Der QR-Inhalt wird gemäß [N2.8](N2-querschnittskonzepte.md#n28-qr-inhalt-af-04) bei Bedarf clientseitig erzeugt und nicht als Feld oder Bild gespeichert.
+**Erzeugung & Stabilität:** Wird aus `session_id` und `pin` abgeleitet (nicht unabhängig gepflegt) und ist über die Lebensdauer der Session stabil, da beide Bestandteile unverändert bleiben (AF-04 – Stabilität). Der QR-Inhalt wird bei Bedarf clientseitig erzeugt und nicht als Feld oder Bild gespeichert.
 
 **Fachliche Gleichwertigkeit zu Pin:** Der QR-Inhalt trägt dieselbe PIN, die AF-02 prüft; QR-Scan (UC-08) und manuelle PIN-Eingabe (UC-09) sind daher fachlich gleichwertig.
 
@@ -138,7 +138,7 @@ Attribut- und Entitätsnamen sind in **englischem `snake_case`** gehalten (konsi
 |---|---|
 | [D1](D1-datenmodell.md) | Verwendet die hier definierten Typen für alle Attribute; jede Typreferenz in D1 wird hier aufgelöst. |
 | [F3](F3-anwendungsfunktionen.md) | Definiert die Regeln über den Werten: `SessionStatus` (AF-03), `Pin`/`QrContent` (AF-02, AF-04), `ParticipantStatus` (AF-01, AF-02). |
-| [P1](P1-ziele-rahmenbedingungen.md) | Scope-Grenzen prägen die Wertebereiche (kein `waiting`, NG-10; DSGVO CON-D-01). |
+| [P1](P1-ziele-rahmenbedingungen.md) | Scope-Grenzen prägen die Wertebereiche (kein `waiting`, NG-10). |
 | [S1](S1-nachbarsysteme.md) | `Identifier` (`user_id`) stammt aus Supabase Auth (NB-02); `GeoCoordinate` entsteht über die Kartenansicht (NB-04) und wird für Reverse-Geocoding an NB-05 übergeben. |
 | N1 / N2 | Feldlängen, Obergrenzen, technische Typzuordnung, Constraints, PIN-Speicherung, Zeittoleranz beim Check-in. |
 | B1 | Ein-/Ausgabeformate und Feldvalidierung in den Dialogen. |
@@ -147,14 +147,12 @@ Attribut- und Entitätsnamen sind in **englischem `snake_case`** gehalten (konsi
 ## D2.11 Entscheidungsstand
 
 Keine. Qualitätsbezogene Nicht-Festlegungen stehen in
-[N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen);
-die technischen Entscheidungen zu PIN, QR-Inhalt und Identifiern in
-[N2.7–N2.10](N2-querschnittskonzepte.md#n27-pin-erzeugung-und--speicherung-af-04).
+[N1.3](N1-nichtfunktionale-anforderungen.md#n13-bewusst-nicht-verfolgte-qualitätsziele).
 
 ## D2.12 Eingesetzte KI-Werkzeuge
 
 | Aspekt | Inhalt |
 |---|---|
-| Werkzeug | Claude Code (Opus 4.8) / Codex |
-| Verwendung | Entwurf des D2-Datentypenverzeichnisses: Katalogisierung der trivialen und nicht-trivialen Typen, Definition von Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. Codex entfernte am 2026-07-29 `cancelled` aus `SessionStatus` und konkretisierte `GeoCoordinate` für Kartenpin und Reverse-Geocoding. |
-| Prüfung | Inhalte wurden gegen [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md), [S1](S1-nachbarsysteme.md), N1/N2 und die Herold-Referenz geprüft und mit dem Team abgestimmt. Wertebereiche, Statusumfang, Kartenpin, Reverse-Geocoding, PIN und QR-Inhalt entsprechen den aktuellen Festlegungen. Finaler Hygienecheck (2026-07-29, Codex): den abgeschlossenen Abschnitt D2.11 als Entscheidungsstand bezeichnet und betroffene Verweise aktualisiert. |
+| Werkzeug | Claude Code, Codex |
+| Verwendung | Katalogisierung der trivialen und nicht-trivialen Datentypen mit Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. Anschließend Überarbeitung von `GeoCoordinate` (D2.7) zu einem einzelnen Koordinatenpaar-Attribut (`court.coordinates`) statt zwei getrennter `latitude`/`longitude`-Felder, auf Wunsch des Teams. |
+| Prüfung | Abgeglichen mit [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md) und [N2](N2-querschnittskonzepte.md); Wertebereiche, Statusumfang, Kartenpin, PIN und QR-Inhalt entsprechen den geltenden Festlegungen. |
