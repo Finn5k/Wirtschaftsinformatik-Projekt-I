@@ -81,6 +81,7 @@ export function SessionDetailPage() {
         <div className="absolute inset-x-0 top-0 p-4">
           <button
             type="button"
+            aria-label="Zurück"
             onClick={() => navigate(-1)}
             className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/90 text-slate-800 shadow-sm backdrop-blur"
           >

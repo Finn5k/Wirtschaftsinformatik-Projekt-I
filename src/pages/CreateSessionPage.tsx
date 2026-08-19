@@ -10,6 +10,7 @@ export function CreateSessionPage() {
       <header className="mb-5 flex items-center justify-between">
         <button
           type="button"
+          aria-label="Session-Erstellung schließen"
           onClick={() => navigate(-1)}
           className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white text-slate-700 shadow-sm"
         >

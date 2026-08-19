@@ -61,7 +61,11 @@ export function CourtLocationPicker({
         </div>
       </div>
 
-      <div className="h-64 w-full" aria-label="Karte zur Auswahl des Sportorts">
+      <div
+        role="region"
+        className="h-64 w-full"
+        aria-label="Karte zur Auswahl des Sportorts"
+      >
         <MapContainer
           center={defaultCenter}
           zoom={13}
@@ -76,6 +80,7 @@ export function CourtLocationPicker({
           <MapClickHandler onSelect={onSelect} />
           {coordinates && (
             <Marker
+              title="Ausgewählter Sportort"
               position={[coordinates.latitude, coordinates.longitude]}
               icon={courtMarkerIcon}
             />
