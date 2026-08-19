@@ -1,5 +1,5 @@
 import L from "leaflet";
-import { LocateFixed, Navigation } from "lucide-react";
+import { AlertTriangle, LocateFixed, Navigation, RefreshCw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
@@ -55,6 +55,8 @@ export function MapPage() {
   const [selectedSession, setSelectedSession] = useState<SportSession | null>(
     null,
   );
+  const [mapUnavailable, setMapUnavailable] = useState(false);
+  const [tileLayerKey, setTileLayerKey] = useState(0);
 
   // Nur zukünftige/laufende Sessions, gefiltert nach Sportart (B1 DLG-03, UC-02).
   const sessions = getSessionsBySportType(activeFilter);
@@ -70,6 +72,11 @@ export function MapPage() {
   function selectFilter(filter: SessionFilter) {
     setActiveFilter(filter);
     setSelectedSession(null);
+  }
+
+  function retryMapLoading() {
+    setMapUnavailable(false);
+    setTileLayerKey((currentKey) => currentKey + 1);
   }
 
   return (
@@ -118,8 +125,15 @@ export function MapPage() {
           className="h-full w-full"
         >
           <TileLayer
+            key={tileLayerKey}
             attribution='&copy; OpenStreetMap contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            eventHandlers={{
+              tileerror: () => {
+                setMapUnavailable(true);
+                setSelectedSession(null);
+              },
+            }}
           />
 
           <MapFlyTo center={mapCenter} />
@@ -151,16 +165,52 @@ export function MapPage() {
         </MapContainer>
       </div>
 
-      <button
-        type="button"
-        aria-label="Kartenauswahl zurücksetzen"
-        onClick={() => setSelectedSession(null)}
-        className="absolute right-4 top-44 z-[1000] flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-lg"
-      >
-        <LocateFixed size={22} />
-      </button>
+      {mapUnavailable && (
+        <section
+          role="alert"
+          className="absolute inset-x-4 top-40 z-[1100] rounded-[2rem] bg-white p-6 text-center shadow-2xl"
+        >
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 text-amber-700">
+            <AlertTriangle size={26} />
+          </div>
 
-      {selectedSession && (
+          <h2 className="mt-4 text-xl font-extrabold text-slate-950">
+            Karte derzeit nicht verfügbar
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            Die Kartendaten konnten nicht geladen werden. Du kannst es erneut
+            versuchen oder die Sessions in der Listenansicht entdecken.
+          </p>
+
+          <button
+            type="button"
+            onClick={retryMapLoading}
+            className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 py-3 font-extrabold text-white"
+          >
+            <RefreshCw size={18} />
+            Erneut versuchen
+          </button>
+          <Link
+            to="/discover"
+            className="mt-3 block w-full rounded-2xl border border-slate-200 py-3 font-bold text-slate-700"
+          >
+            Zur Listenansicht
+          </Link>
+        </section>
+      )}
+
+      {!mapUnavailable && (
+        <button
+          type="button"
+          aria-label="Kartenauswahl zurücksetzen"
+          onClick={() => setSelectedSession(null)}
+          className="absolute right-4 top-44 z-[1000] flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-lg"
+        >
+          <LocateFixed size={22} />
+        </button>
+      )}
+
+      {selectedSession && !mapUnavailable && (
         <section className="absolute bottom-24 left-4 right-4 z-[1000] rounded-[2rem] bg-white p-4 shadow-2xl">
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
