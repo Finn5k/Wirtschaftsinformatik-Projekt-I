@@ -1,0 +1,53 @@
+@startuml F1-gp01-sportgelegenheit
+skinparam backgroundColor White
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam defaultFontSize 12
+skinparam activity {
+  BackgroundColor White
+  BorderColor Black
+  DiamondBackgroundColor White
+  DiamondBorderColor Black
+}
+skinparam note {
+  BackgroundColor White
+  BorderColor Black
+}
+
+start
+:A1 Wunsch nach Sport
+zu einer bestimmten Zeit;
+note right: ohne IT
+
+:A2 Sportart, Zeit, Dauer, Sportort
+und Gruppengröße festlegen;
+note right: LocalCourt: UC-06, UC-10
+
+:A3 Gelegenheit über den eigenen
+Bekanntenkreis hinaus bekannt machen;
+note right: LocalCourt: UC-02, UC-03
+
+:A4 Verbindlich zusagen;
+note right: LocalCourt: UC-04
+
+if (Gruppe bereits voll?) then (ja)
+  :Absage – keine Warteliste;
+  stop
+else (nein)
+endif
+
+:A5 Zum Sportort anreisen;
+note right: ohne IT
+
+:A6 Feststellen, wer tatsächlich da ist;
+note right: LocalCourt: UC-07, UC-08, UC-09
+
+:A7 Sport findet statt;
+note right: ohne IT
+
+:A8 Später nachvollziehen,
+woran man teilgenommen hat;
+note right: LocalCourt: UC-05, UC-11
+
+stop
+@enduml

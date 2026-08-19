@@ -153,7 +153,7 @@ erDiagram
 | Attribut | Typ | Mult. | Notiz |
 |---|---|---|---|
 | `session_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Primärschlüssel. Wird auch im QR-Inhalt referenziert (AF-04). |
-| `organizer_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Verweis auf das organisierende `profile`. Der Organisator zählt ab Erstellung als Teilnehmer (F1 GP-02 A7, siehe Invariante in [D1.5](#d15-beziehungen)). |
+| `organizer_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Verweis auf das organisierende `profile`. Der Organisator zählt ab Erstellung als Teilnehmer (F1 GP-01 A2, siehe Invariante in [D1.5](#d15-beziehungen)). |
 | `sport_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Verweis auf die Sportart (`sport`). |
 | `court_id` | [`Identifier`](D2-datentypen.md#d22-identifier) | 1 | Verweis auf den Sportort (`court`). |
 | `title` | [`Text`](D2-datentypen.md#d21-zweck-und-geltungsbereich) | 1 | Kurzbezeichnung der Session. |
@@ -200,7 +200,7 @@ erDiagram
 
 | # | Von | Nach | Kardinalität | Bedeutung | Bezug |
 |---|---|---|---|---|---|
-| B1 | `profile` | `session` | 1 : 0..* | Ein Profil organisiert beliebig viele Sessions; jede Session hat genau einen Organisator. | UC-06, F1 GP-02 |
+| B1 | `profile` | `session` | 1 : 0..* | Ein Profil organisiert beliebig viele Sessions; jede Session hat genau einen Organisator. | UC-06, F1 GP-01 A2 |
 | B2 | `session` | `participant` | 1 : 0..* | Eine Session hat beliebig viele Teilnahmen. | UC-04, UC-07 |
 | B3 | `profile` | `participant` | 1 : 0..* | Ein Profil kann an beliebig vielen Sessions teilnehmen. | UC-04, UC-05 |
 | B4 | `sport` | `session` | 1 : 0..* | Eine Sportart kategorisiert beliebig viele Sessions; jede Session hat genau eine Sportart. | UC-02, UC-06 |
@@ -210,7 +210,7 @@ erDiagram
 
 Die n:m-Beziehung zwischen `profile` und `session` (Teilnahme) wird durch die Entität `participant` aufgelöst (B2 + B3), weil die Teilnahme eigene Attribute trägt (`status`, `joined_at`, `checked_in_at`). Die n:m-Beziehung zwischen `profile` und `sport` (Präferenz) wird durch `sport_preference` aufgelöst (B6).
 
-**Organisator-als-Teilnehmer (Invariante über B1/B2/B3):** Nach F1 GP-02 A7 und F3 AF-01 zählt der Organisator einer Session ab Erstellung als Teilnehmer. Fachlich existiert damit für `organizer_id` einer Session **zusätzlich** ein `participant`-Eintrag mit demselben `user_id` und `status = confirmed`. `organizer_id` bleibt als eigenständiger Verweis erhalten (Rolle „Organisator"), während der Kapazitäts- und Check-in-Zustand über `participant` geführt wird.
+**Organisator-als-Teilnehmer (Invariante über B1/B2/B3):** Nach F1 GP-01 A2 und F3 AF-01 zählt der Organisator einer Session ab Erstellung als Teilnehmer. Fachlich existiert damit für `organizer_id` einer Session **zusätzlich** ein `participant`-Eintrag mit demselben `user_id` und `status = confirmed`. `organizer_id` bleibt als eigenständiger Verweis erhalten (Rolle „Organisator"), während der Kapazitäts- und Check-in-Zustand über `participant` geführt wird.
 
 ## D1.6 Abgeleitete Merkmale
 
@@ -243,7 +243,7 @@ Diese Merkmale erscheinen deshalb **nicht** in den Attributtabellen von [D1.4](#
 |---|---|
 | [P1](P1-ziele-rahmenbedingungen.md) | Scope der Datenobjekte; Ausschluss von Warteliste (NG-10), Zahlung (NG-01), Messaging (NG-02). |
 | [P2](P2-architekturueberblick.md) | Nennt die Datenobjekte in den Datenflüssen (Sessions, Courts, Participants, Profiles); `user_id` stammt aus Supabase Auth (NB-02). |
-| [F1](F1-geschaeftsprozesse.md) | Liefert fachliche Herkunft der Attribute (Beitritt, Check-in, QR/PIN, Organisator-als-Teilnehmer GP-02 A7). |
+| [F1](F1-geschaeftsprozesse.md) | Liefert fachliche Herkunft der Attribute (Beitritt, Check-in, QR/PIN, Organisator-als-Teilnehmer GP-01 A2). |
 | [F2](F2-anwendungsfaelle.md) | Jeder „Bezug zu Daten" der Use Cases wird hier durch eine Entität abgedeckt (Profile, Session, Court, Participant, Sportart). |
 | [F3](F3-anwendungsfunktionen.md) | Nennt Felder wie `status`, `max_participants`, `checked_in_at`, `pin`; D1 bindet sie an Entitäten, F3 definiert die Regeln darüber. |
 | [D2](D2-datentypen.md) | Formale Definition aller in D1 verwendeten Datentypen und Wertebereiche. |

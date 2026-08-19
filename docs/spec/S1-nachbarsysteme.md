@@ -157,7 +157,7 @@ Bewusst **nicht** genutzte Fähigkeiten der bestehenden Nachbarsysteme — hier 
 | Passwort-Zurücksetzen und E-Mail-Bestätigung | Beide setzen E-Mail-Versand voraus, der außerhalb des MVP liegt. **Folge, bewusst in Kauf genommen:** Ein vergessenes Passwort kann im MVP nicht selbst zurückgesetzt werden. |
 | Fremdanbieter-Anmeldung (OAuth / Social Login) | Im MVP nur E-Mail und Passwort. |
 | Kamera-Schnittstelle des Browsers | Der QR-Code wird mit der Kamera-App des Geräts gescannt, die den Deep-Link im Browser öffnet ([B1 DLG-06](B1-dialogspezifikation.md#b146-dlg-06--check-in)). LocalCourt braucht deshalb keinen eigenen Scanner, keine Kameraberechtigung und keine Scanner-Bibliothek. Steht keine Kamera zur Verfügung, greift die gleichwertige PIN-Eingabe ([UC-09](F2-anwendungsfaelle.md#uc-09--check-in-per-pin-durchführen)). |
-| Standortermittlung des Geräts (Geolocation) | Die Ortssuche erfolgt gemäß [F1](F1-geschaeftsprozesse.md) GP-01 A2 und [UC-02](F2-anwendungsfaelle.md#uc-02--session-suchen) über eine Eingabe des Nutzers, nicht über die Geräteposition — datenschutzseitig die zurückhaltendere Variante ([N1-QA-04](N1-nichtfunktionale-anforderungen.md#n1-qa-04--datensparsamkeit)). |
+| Standortermittlung des Geräts (Geolocation) | Die Ortssuche erfolgt gemäß [F1](F1-geschaeftsprozesse.md) GP-01 A3 und [UC-02](F2-anwendungsfaelle.md#uc-02--session-suchen) über eine Eingabe des Nutzers, nicht über die Geräteposition — datenschutzseitig die zurückhaltendere Variante ([N1-QA-04](N1-nichtfunktionale-anforderungen.md#n1-qa-04--datensparsamkeit)). |
 
 Ebenfalls **nicht** Gegenstand von S1:
 

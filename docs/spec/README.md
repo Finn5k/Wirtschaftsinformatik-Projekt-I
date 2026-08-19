@@ -48,31 +48,15 @@ Beschreibt aus Anwendungssicht, wie sich LocalCourt in seine Umgebung einbettet:
 ### **F1 — Geschäftsprozesse** ✅ (fertig)
 **Datei**: [F1-geschaeftsprozesse.md](F1-geschaeftsprozesse.md)
 
-Nach Siedersleben (Kapitel 4.3): Reale (IT-unabhängige) Workflows mit temporaler und logischer Folge von Aktivitäten, durchgeführt von Akteuren (Menschen & IT-Systeme).
+Nach Siedersleben: der reale, IT-unabhängige Ablauf, den LocalCourt unterstützt — beschrieben ohne Bezug auf Systeminteraktion, die in F2 gehört.
 
 **Inhalte**:
-- **F1.1 GP-01: Spontan Sportaktivitäten finden** (Participant-Sicht)
-  - Akteure: Teilnehmer, Browser, LocalCourt, Supabase, OpenStreetMap
-  - Aktivitäten A1–A18: Von "Lust auf Sport" → Suche → Karte → Beitreten → Session-Start
-  - Activity Diagram mit Swimlanes
-
-- **F1.2 GP-02: Regelmäßige Treffen organisieren** (Organizer-Sicht)
-  - Akteure: Organisator, Browser, LocalCourt, QR-Code-Library
-  - Aktivitäten A1–A23: Session-Erstellung → QR+PIN Generation → Check-in (QR oder PIN) → Auto-Close
-  - Check-in-Details: QR-Code-Scan + Fallback PIN-Eingabe
-  - Activity Diagram mit Swimlanes
-
-- **F1.3 GP-03: Neue Sportarten entdecken** (Variante von GP-01)
-  - Vereinfachte Beschreibung: Filterung auf "Alle Sportarten" statt einzelne
-
-- **F1.4 Grenzen (Boundaries)**:
-  - ❌ KEINE Benachrichtigungen (E-Mail, SMS, Push)
-  - ❌ KEINE Wartelisten (würden Notifications brauchen)
-  - ❌ KEINE Ratings/Reviews
-  - ❌ KEINE Admin-Reports
-  - ❌ KEINE Direct Messaging
-
-- **F1.5 Konsistenz-Check**: Mapping F1-Akteure ↔ P1-Stakeholder, P2-Nachbarsysteme, P1-Constraints
+- **GP-01 „Sportgelegenheit zustande bringen"** als einziger Geschäftsprozess, mit den Aktivitäten A1 bis A8 von der Idee bis zum Nachschlagen im Nachhinein
+- Akteure ausschließlich auf fachlicher Ebene: Organisator, Teilnehmer, LocalCourt
+- Zuordnung, welche Aktivität LocalCourt unterstützt und welche außerhalb bleibt (Anreise, Sport selbst)
+- Aktivitätsdiagramm (PlantUML) mit sichtbarer Systemgrenze
+- Varianten desselben Prozesses (wiederkehrende Treffen, neue Sportart) statt eigener Prozesse
+- Grenzen: keine Benachrichtigungen, keine Warteliste, keine Bewertungen, keine Absprachen im System, keine Platzbuchung
 
 ---
 
@@ -147,7 +131,7 @@ LocalCourt sieht keine klassischen Batchprozesse (zeitgesteuerte Massenverarbeit
 ---
 
 ### **B3 — Druckausgaben** ❌ (nicht anwendbar)
-LocalCourt sieht keine Druckausgaben vor; der QR-Code für den Check-in wird ausschließlich am Bildschirm angezeigt und gescannt (F1 GP-02, [AF-04](F3-anwendungsfunktionen.md#af-04--pin--und-qr-code-erzeugung)). Sollte sich dies ändern, wird B3 nachgezogen.
+LocalCourt sieht keine Druckausgaben vor; der QR-Code für den Check-in wird ausschließlich am Bildschirm angezeigt und gescannt (F1 GP-01 A6, [AF-04](F3-anwendungsfunktionen.md#af-04--pin--und-qr-code-erzeugung)). Sollte sich dies ändern, wird B3 nachgezogen.
 
 ---
 

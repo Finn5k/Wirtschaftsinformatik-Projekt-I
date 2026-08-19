@@ -18,18 +18,18 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 
 | UC-ID | Name | Gruppe | Primärer Akteur | Zugehöriger Geschäftsprozess aus F1 | Zugehörige F1-Aktivitäten | Kurzbeschreibung | Status |
 |---|---|---|---|---|---|---|---|
-| UC-01 | Registrieren / Anmelden | Zugriff | Teilnehmer, Organisator | GP-02, indirekt GP-01 | GP-02 A2 | Nutzer authentifizieren sich, damit Beitritt, Session-Erstellung, Check-in und Profilfunktionen eindeutig zugeordnet werden können. | MVP |
-| UC-02 | Session suchen | Session Discovery | Teilnehmer | GP-01, GP-03 | GP-01 A2-A7, GP-03 A1-A7 | Teilnehmer suchen Sessions nach Ort und optional nach Sportart; Karte und Liste zeigen passende zukünftige Sessions. | MVP |
-| UC-03 | Session-Detail ansehen | Session Discovery | Teilnehmer, Organisator | GP-01, GP-02 | GP-01 A8, A14; GP-02 A11-A12 | Nutzer öffnen eine Session und sehen fachlich relevante Details wie Sportart, Ort, Zeit, Kapazität, Organisator und Teilnehmerstatus. | MVP |
-| UC-04 | Session beitreten | Teilnahme | Teilnehmer | GP-01 | GP-01 A9-A13 | Ein angemeldeter Teilnehmer tritt einer noch offenen Session bei und erscheint danach in der Teilnehmerliste sowie unter eigenen Sessions. | MVP |
-| UC-05 | Eigene Sessions anzeigen | Teilnahme / Organisation | Teilnehmer, Organisator | GP-01, GP-02 | GP-01 A13-A14, GP-02 A11, A22-A23 | Nutzer sehen Sessions, an denen sie teilnehmen oder die sie organisieren. | MVP |
-| UC-06 | Session erstellen | Organisation | Organisator | GP-02 | GP-02 A3-A9 | Ein Organisator erstellt eine neue Session mit Sportart, Court/Sportort, Zeit, Dauer, Teilnehmerlimit und Beschreibung. | MVP |
-| UC-07 | Teilnehmerliste anzeigen | Organisation | Organisator | GP-02 | GP-02 A11, A17, A22 | Der Organisator sieht die Liste der beigetretenen und eingecheckten Teilnehmer einer Session. | MVP |
-| UC-08 | Check-in per QR-Code durchführen | Check-in | Teilnehmer | GP-02 | GP-02 A12-A17 | Ein Teilnehmer checkt über einen vom Organisator bereitgestellten QR-Code für eine Session ein. | MVP |
-| UC-09 | Check-in per PIN durchführen | Check-in | Teilnehmer | GP-02 | GP-02 A18-A19 | Ein Teilnehmer checkt alternativ per PIN ein, falls QR-Scan nicht möglich ist. | MVP |
-| UC-10 | Court / Sportort erfassen oder auswählen | Organisation / Datenpflege | Organisator | GP-02, indirekt GP-01 | GP-02 A3; GP-01 A6-A8 indirekt | Ein Organisator wählt einen vorhandenen Court aus oder erfasst einen neuen Sportort für eine Session. | MVP, begrenzt |
-| UC-11 | Session-Historie ansehen | Historie | Teilnehmer, Organisator | GP-01, GP-02 | GP-01 A18, GP-02 A22-A23 | Nutzer sehen vergangene Sessions als read-only Historie. | MVP, einfach |
-| UC-12 | Profil und Sportpräferenzen verwalten | Profil | Teilnehmer, Organisator | GP-01, GP-03 | GP-01 A2-A3, GP-03 A1-A3 | Nutzer verwalten Basisprofil und bevorzugte Sportarten, soweit dies für Suche, Anzeige und Teilnahme nötig ist. | MVP, einfach |
+| UC-01 | Registrieren / Anmelden | Zugriff | Teilnehmer, Organisator | GP-01 | keine eigene Aktivität | Nutzer authentifizieren sich, damit Beitritt, Session-Erstellung, Check-in und Profilfunktionen eindeutig zugeordnet werden können. | MVP |
+| UC-02 | Session suchen | Session Discovery | Teilnehmer | GP-01 | A3 | Teilnehmer suchen Sessions nach Ort und optional nach Sportart; Karte und Liste zeigen passende zukünftige Sessions. | MVP |
+| UC-03 | Session-Detail ansehen | Session Discovery | Teilnehmer, Organisator | GP-01 | A3 | Nutzer öffnen eine Session und sehen fachlich relevante Details wie Sportart, Ort, Zeit, Kapazität, Organisator und Teilnehmerstatus. | MVP |
+| UC-04 | Session beitreten | Teilnahme | Teilnehmer | GP-01 | A4 | Ein angemeldeter Teilnehmer tritt einer noch offenen Session bei und erscheint danach in der Teilnehmerliste sowie unter eigenen Sessions. | MVP |
+| UC-05 | Eigene Sessions anzeigen | Teilnahme / Organisation | Teilnehmer, Organisator | GP-01 | A4, A8 | Nutzer sehen Sessions, an denen sie teilnehmen oder die sie organisieren. | MVP |
+| UC-06 | Session erstellen | Organisation | Organisator | GP-01 | A2 | Ein Organisator erstellt eine neue Session mit Sportart, Court/Sportort, Zeit, Dauer, Teilnehmerlimit und Beschreibung. | MVP |
+| UC-07 | Teilnehmerliste anzeigen | Organisation | Organisator | GP-01 | A4, A6 | Der Organisator sieht die Liste der beigetretenen und eingecheckten Teilnehmer einer Session. | MVP |
+| UC-08 | Check-in per QR-Code durchführen | Check-in | Teilnehmer | GP-01 | A6 | Ein Teilnehmer checkt über einen vom Organisator bereitgestellten QR-Code für eine Session ein. | MVP |
+| UC-09 | Check-in per PIN durchführen | Check-in | Teilnehmer | GP-01 | A6 | Ein Teilnehmer checkt alternativ per PIN ein, falls QR-Scan nicht möglich ist. | MVP |
+| UC-10 | Court / Sportort erfassen oder auswählen | Organisation / Datenpflege | Organisator | GP-01 | A2 | Ein Organisator wählt einen vorhandenen Court aus oder erfasst einen neuen Sportort für eine Session. | MVP, begrenzt |
+| UC-11 | Session-Historie ansehen | Historie | Teilnehmer, Organisator | GP-01 | A8 | Nutzer sehen vergangene Sessions als read-only Historie. | MVP, einfach |
+| UC-12 | Profil und Sportpräferenzen verwalten | Profil | Teilnehmer, Organisator | GP-01 | keine eigene Aktivität | Nutzer verwalten Basisprofil und bevorzugte Sportarten, soweit dies für Suche, Anzeige und Teilnahme nötig ist. | MVP, einfach |
 
 **Status-Legende:** `MVP` bezeichnet Use Cases, die für den ersten funktionsfähigen Produktstand vorgesehen sind. `MVP, begrenzt` bedeutet fachlich relevant, aber mit bewusst reduziertem Umfang. `MVP, einfach` bedeutet, dass nur eine schlanke, nicht erweiterte Basisversion modelliert wird.
 
@@ -54,7 +54,7 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 | Alternative Szenarien | Nutzer hat bereits eine gültige Sitzung und wird direkt als angemeldet erkannt. |
 | Ausnahmefälle | Ungültige Zugangsdaten, bereits verwendete E-Mail-Adresse, schwaches Passwort oder nicht erreichbarer Auth-Dienst werden verständlich angezeigt. |
 | Fachliche Regeln | Geschützte Aktionen dürfen nur angemeldeten Nutzern zugeordnet werden. Rollen sind im MVP fachlich durch die Aktion bestimmt: Wer eine Session erstellt, ist für diese Session Organisator. |
-| Bezug zu F1 | GP-02 A2; Voraussetzung für GP-01 A9-A13 und GP-02 A3-A19. |
+| Bezug zu F1 | Keine eigene Aktivität; Voraussetzung für A2, A3, A4, A6 und A8. |
 | Bezug zu Daten | Profile, Auth-Nutzerkennung |
 | Bezug zu Benutzerschnittstelle | Anmelde- und Registrierungsansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Sicherheit, Datenschutz, einfache Bedienbarkeit, klare Fehlermeldungen. |
@@ -80,7 +80,7 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 | Alternative Szenarien | Ohne Sportartfilter werden Sessions mehrerer Sportarten angezeigt. Bei fehlender Karte bleibt die Listenansicht nutzbar. |
 | Ausnahmefälle | Keine passenden Sessions vorhanden, Kartendienst nicht verfügbar oder Netzwerkfehler. |
 | Fachliche Regeln | Standardmäßig werden nur zukünftige oder aktive Sessions angezeigt. Abgeschlossene Sessions gehören in UC-11. |
-| Bezug zu F1 | GP-01 A2-A7; GP-03 A1-A7. |
+| Bezug zu F1 | GP-01 A3. |
 | Bezug zu Daten | Session, Court, Sportart, Participant-Zählung |
 | Bezug zu Benutzerschnittstelle | Suchformular, Filter, Ergebnisliste, Kartenansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Performance bei Suche, mobile Nutzbarkeit, Graceful Degradation der Karte. |
@@ -107,7 +107,7 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 | Alternative Szenarien | Organisator sieht zusätzliche Informationen wie Teilnehmerliste oder Check-in-Status. Abgeschlossene Sessions werden read-only angezeigt. |
 | Ausnahmefälle | Session existiert nicht, ist nicht zugreifbar oder Daten können nicht geladen werden. |
 | Fachliche Regeln | Detailansicht darf keine nicht benötigten privaten Profildaten anderer Nutzer anzeigen. Aktionen richten sich nach Status, Rolle und Teilnahmezustand. |
-| Bezug zu F1 | GP-01 A8, A14; GP-02 A11-A12. |
+| Bezug zu F1 | GP-01 A3. |
 | Bezug zu Daten | Session, Court, Participant, Profile |
 | Bezug zu Benutzerschnittstelle | Session-Detailansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Datenschutz, Verständlichkeit, mobile Bedienbarkeit. |
@@ -133,7 +133,7 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 | Alternative Szenarien | Nutzer ist nicht angemeldet und wird zuerst zu UC-01 geführt. |
 | Ausnahmefälle | Session ist voll, abgeschlossen, nicht mehr sichtbar oder Nutzer ist bereits beigetreten. |
 | Fachliche Regeln | Ein Nutzer darf derselben Session nicht mehrfach beitreten. Kapazitätsgrenzen werden eingehalten. Wartelisten sind out of scope (P1 NG-10). Die vollständige Beitritts- und Kapazitätsregel ist in F3 AF-01 spezifiziert. |
-| Bezug zu F1 | GP-01 A9-A13. |
+| Bezug zu F1 | GP-01 A4. |
 | Bezug zu Daten | Session, Participant, Profile |
 | Bezug zu Benutzerschnittstelle | Beitrittsaktion in der Session-Detailansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Konsistenz bei parallelen Beitritten, verständliche Fehler, Datenschutz. |
@@ -159,7 +159,7 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 | Alternative Szenarien | Wenn keine eigenen Sessions vorhanden sind, zeigt LocalCourt einen leeren Zustand. Vergangene Sessions verweisen auf UC-11. |
 | Ausnahmefälle | Nutzer ist nicht angemeldet oder Daten können nicht geladen werden. |
 | Fachliche Regeln | Nutzer sehen nur Sessions, zu denen sie fachlich berechtigt sind. Organisierte und beigetretene Sessions dürfen unterscheidbar sein. |
-| Bezug zu F1 | GP-01 A13-A14; GP-02 A11, A22-A23. |
+| Bezug zu F1 | GP-01 A4, A8. |
 | Bezug zu Daten | Session, Participant, Profile |
 | Bezug zu Benutzerschnittstelle | Übersicht "Meine Sessions"; siehe B1. |
 | Bezug zu NFR / Qualität | Übersichtlichkeit, mobile Nutzbarkeit, Performance. |
@@ -185,7 +185,7 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 | Alternative Szenarien | Organisator bricht die Erstellung ab; es wird keine Session gespeichert. |
 | Ausnahmefälle | Pflichtangaben fehlen, Zeitpunkt liegt in der Vergangenheit, Teilnehmerlimit ist ungültig, Court-Daten sind unvollständig oder Nutzer ist nicht angemeldet. |
 | Fachliche Regeln | Sessions benötigen Sportart, Zeitpunkt, Dauer, Court/Sportort und Teilnehmerlimit. Bearbeiten, Absagen und Löschen nach der Erstellung sind nicht Teil des MVP (P1 NG-11). |
-| Bezug zu F1 | GP-02 A3-A9. |
+| Bezug zu F1 | GP-01 A2. |
 | Bezug zu Daten | Session, Court, Sportart, Participant, Profile |
 | Bezug zu Benutzerschnittstelle | Session-Erstellformular; siehe B1. |
 | Bezug zu NFR / Qualität | Erstellung soll mit niedriger Einstiegshürde möglich sein; P1 SC-02 nennt unter 2 Minuten als Ziel. |
@@ -211,7 +211,7 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 | Alternative Szenarien | Bei keiner Teilnahme zeigt LocalCourt eine leere Liste mit Teilnehmerzahl 0. |
 | Ausnahmefälle | Nutzer ist nicht Organisator, Session existiert nicht oder Daten können nicht geladen werden. |
 | Fachliche Regeln | Teilnehmerlisten sind nicht als öffentliches soziales Verzeichnis zu verstehen. Sichtbarkeit folgt Datenschutz- und Berechtigungsregeln. |
-| Bezug zu F1 | GP-02 A11, A17, A22. |
+| Bezug zu F1 | GP-01 A4, A6. |
 | Bezug zu Daten | Session, Participant, Profile |
 | Bezug zu Benutzerschnittstelle | Teilnehmerliste in der Session-Detail- oder Organisatoransicht; siehe B1. |
 | Bezug zu NFR / Qualität | Datenschutz, klare Statusanzeige, Aktualität. |
@@ -237,7 +237,7 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 | Alternative Szenarien | Falls der QR-Scan nicht funktioniert, nutzt der Teilnehmer UC-09. |
 | Ausnahmefälle | QR-Code ist ungültig, Session ist nicht check-in-fähig, Teilnehmer ist nicht beigetreten, Nutzer ist nicht angemeldet oder der Check-in wurde bereits durchgeführt. |
 | Fachliche Regeln | Check-in setzt Teilnahme voraus. Mehrfacher Check-in ändert den fachlichen Endzustand nicht. |
-| Bezug zu F1 | GP-02 A12-A17. |
+| Bezug zu F1 | GP-01 A6. |
 | Bezug zu Daten | Session, Participant, Check-in-Zeitpunkt |
 | Bezug zu Benutzerschnittstelle | Check-in-Ansicht und Bestätigung; siehe B1. |
 | Bezug zu NFR / Qualität | Schnelle mobile Bedienbarkeit, Sicherheit gegen falsche Session-Zuordnung, verständliche Fehlermeldungen. |
@@ -263,7 +263,7 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 | Alternative Szenarien | Teilnehmer kehrt zum QR-Code-Check-in zurück. |
 | Ausnahmefälle | PIN ist falsch, Session ist nicht check-in-fähig, Teilnehmer ist nicht beigetreten oder Nutzer ist nicht angemeldet. |
 | Fachliche Regeln | PIN-Check-in ist fachlich gleichwertig zum QR-Check-in. Falsche PINs dürfen keinen Check-in erzeugen. |
-| Bezug zu F1 | GP-02 A18-A19. |
+| Bezug zu F1 | GP-01 A6. |
 | Bezug zu Daten | Session, Participant, Check-in-Zeitpunkt |
 | Bezug zu Benutzerschnittstelle | PIN-Eingabe und Bestätigung; siehe B1. |
 | Bezug zu NFR / Qualität | Usability als Fallback, Sicherheit, klare Fehlertexte. |
@@ -289,7 +289,7 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 | Alternative Szenarien | Organisator erfasst einen neuen Court: Er vergibt einen Namen, setzt einen Pin auf der Karte und LocalCourt ermittelt Ort und Adresse per Reverse-Geocoding. Danach steht der Court für die Session-Erstellung zur Verfügung. |
 | Ausnahmefälle | Name oder Kartenpin fehlen, Reverse-Geocoding liefert keine verwertbare Ortsangabe oder Karte beziehungsweise Geocoding-Dienst ist nicht erreichbar. |
 | Fachliche Regeln | Ein neu erfasster Court benötigt einen Namen, ein Koordinatenpaar und den daraus per Reverse-Geocoding bestimmten Ort. Die ermittelte Adresse wird gespeichert, sofern der Dienst eine liefert; Ort und Adresse werden nicht als widersprüchliche Freitexte erfasst. |
-| Bezug zu F1 | GP-02 A3; indirekt relevant für GP-01 A6-A8, weil Court-Daten dort zur Anzeige und Auffindbarkeit genutzt werden. |
+| Bezug zu F1 | GP-01 A2; die erfassten Court-Daten werden in A3 zur Anzeige und Auffindbarkeit genutzt. |
 | Bezug zu Daten | Court, Sportart, Session |
 | Bezug zu Benutzerschnittstelle | Court-Auswahl und einfache Erfassungsmaske; siehe B1. |
 | Bezug zu NFR / Qualität | Datenqualität, einfache Bedienbarkeit, verständliche Fehlerbehandlung bei Karten- oder Geocoding-Ausfall. |
@@ -319,7 +319,7 @@ Der Ablauf verzweigt sich zwischen Auswahl eines vorhandenen Courts und Neuerfas
 | Alternative Szenarien | Organisator sieht bei eigenen vergangenen Sessions die Session-Kerndaten, bestätigte Teilnehmerzahl, Check-in-Anzahl und Teilnehmerliste mit Check-in-Status. |
 | Ausnahmefälle | Nutzer ist nicht angemeldet oder Daten können nicht geladen werden. |
 | Fachliche Regeln | Vergangene Sessions werden nach ihrem Ende absteigend sortiert. Die Historie ist kein Admin-Report, kein Rating und keine Statistikplattform; Diagramme, Exporte und sessionübergreifende Auswertungen sind ausgeschlossen. |
-| Bezug zu F1 | GP-01 A18; GP-02 A22-A23. |
+| Bezug zu F1 | GP-01 A8. |
 | Bezug zu Daten | Session, Participant, Check-in-Zeitpunkt |
 | Bezug zu Benutzerschnittstelle | Historienübersicht und read-only Detailansicht; siehe B1. |
 | Bezug zu NFR / Qualität | Datenschutz, Übersichtlichkeit, Nachvollziehbarkeit. |
@@ -345,7 +345,7 @@ Der Ablauf verzweigt sich zwischen Auswahl eines vorhandenen Courts und Neuerfas
 | Alternative Szenarien | Nutzer bricht die Bearbeitung ab; es werden keine Änderungen gespeichert. |
 | Ausnahmefälle | Pflichtangaben fehlen, Datenformat ist ungültig oder Speichern schlägt fehl. |
 | Fachliche Regeln | Profilinformationen werden auf notwendige Basisdaten begrenzt. Sportpräferenzen dürfen die Suche unterstützen, ersetzen aber nicht die manuelle Filterung. `avatar_url` ist im MVP ausschließlich ein optionaler Anzeigewert; Upload und Bearbeitung sind ausgeschlossen. |
-| Bezug zu F1 | GP-01 A2-A3; GP-03 A1-A3. |
+| Bezug zu F1 | Keine eigene Aktivität; unterstützt A3. |
 | Bezug zu Daten | Profile, Sportart |
 | Bezug zu Benutzerschnittstelle | Profileinstellungen; siehe B1. |
 | Bezug zu NFR / Qualität | Datenschutz, einfache Bedienbarkeit, Datenminimierung. |
@@ -356,18 +356,18 @@ Der Ablauf verzweigt sich zwischen Auswahl eines vorhandenen Courts und Neuerfas
 
 | Use Case | Geschäftsprozess aus F1 | P1-Ziel oder Scope-Bezug | P2-Nachbarsysteme | Bemerkung zur Konsistenz |
 |---|---|---|---|---|
-| UC-01 | GP-02 A2; Voraussetzung für geschützte Aktionen | Authentifizierung, Profile, Datensparsamkeit | NB-01, NB-02 | Passt zu Supabase Auth und Web-UI. |
-| UC-02 | GP-01 A2-A7, GP-03 A1-A7 | G-02, G-03, Session-Discovery | NB-01, NB-03, NB-04 | Kernfunktion für Finden lokaler Sportaktivitäten. |
-| UC-03 | GP-01 A8, A14; GP-02 A11-A12 | Web-UI für Session-Verwaltung | NB-01, NB-03, NB-04 | Detailansicht verbindet Suche, Beitritt und Organisation. |
-| UC-04 | GP-01 A9-A13 | Teilnehmer-Verwaltung, Kapazität | NB-01, NB-02, NB-03 | Kapazität ist harte Grenze ohne Warteliste (P1 NG-10). Beitritts- und Kapazitätslogik ist in F3 AF-01 präzisiert. |
-| UC-05 | GP-01 A13-A14, GP-02 A11, A22-A23 | Session-Verwaltung, Nutzerübersicht | NB-01, NB-03 | Unterstützt Orientierung nach Beitritt und Erstellung. |
-| UC-06 | GP-02 A3-A9 | Session-Erstellung, SC-02 | NB-01, NB-02, NB-03 | Kernfunktion des Organisators. |
-| UC-07 | GP-02 A11, A17, A22 | Teilnehmer-Verwaltung, Check-in | NB-01, NB-03 | Keine Admin-Reports; nur Session-bezogene Liste. |
-| UC-08 | GP-02 A12-A17 | Check-in | NB-01, NB-02, NB-03 | QR-Code-Library ist clientseitige Hilfsfunktion, kein eigenes Nachbarsystem in P2. |
-| UC-09 | GP-02 A18-A19 | Check-in-Fallback | NB-01, NB-02, NB-03 | Fallback für mobile Nutzbarkeit. |
-| UC-10 | GP-02 A3; indirekt relevant für GP-01 A6-A8 | Court-/Sportplatz-Verzeichnis | NB-01, NB-03, NB-04 | Primär Teil der Session-Erstellung; GP-01 nutzt Court-Daten nur für Anzeige und Auffindbarkeit. |
-| UC-11 | GP-01 A18, GP-02 A22-A23 | Session-Historie, keine Reports | NB-01, NB-03 | Read-only Historie, kein Bewertungs- oder Reportingmodul. |
-| UC-12 | GP-01 A2-A3, GP-03 A1-A3 | Nutzer-Profile, Sportpräferenzen | NB-01, NB-02, NB-03 | Beschränkt auf MVP-relevante Profilangaben. |
+| UC-01 | Voraussetzung für alle unterstützten Aktivitäten | Authentifizierung, Profile, Datensparsamkeit | NB-01, NB-02 | Passt zu Supabase Auth und Web-UI. |
+| UC-02 | GP-01 A3 | G-02, G-03, Session-Discovery | NB-01, NB-03, NB-04 | Kernfunktion für Finden lokaler Sportaktivitäten. |
+| UC-03 | GP-01 A3 | Web-UI für Session-Verwaltung | NB-01, NB-03, NB-04 | Detailansicht verbindet Suche, Beitritt und Organisation. |
+| UC-04 | GP-01 A4 | Teilnehmer-Verwaltung, Kapazität | NB-01, NB-02, NB-03 | Kapazität ist harte Grenze ohne Warteliste (P1 NG-10). Beitritts- und Kapazitätslogik ist in F3 AF-01 präzisiert. |
+| UC-05 | GP-01 A4, A8 | Session-Verwaltung, Nutzerübersicht | NB-01, NB-03 | Unterstützt Orientierung nach Beitritt und Erstellung. |
+| UC-06 | GP-01 A2 | Session-Erstellung, SC-02 | NB-01, NB-02, NB-03 | Kernfunktion des Organisators. |
+| UC-07 | GP-01 A4, A6 | Teilnehmer-Verwaltung, Check-in | NB-01, NB-03 | Keine Admin-Reports; nur Session-bezogene Liste. |
+| UC-08 | GP-01 A6 | Check-in | NB-01, NB-02, NB-03 | QR-Code-Library ist clientseitige Hilfsfunktion, kein eigenes Nachbarsystem in P2. |
+| UC-09 | GP-01 A6 | Check-in-Fallback | NB-01, NB-02, NB-03 | Fallback für mobile Nutzbarkeit. |
+| UC-10 | GP-01 A2 | Court-/Sportplatz-Verzeichnis | NB-01, NB-03, NB-04 | Primär Teil der Session-Erstellung; GP-01 nutzt Court-Daten nur für Anzeige und Auffindbarkeit. |
+| UC-11 | GP-01 A8 | Session-Historie, keine Reports | NB-01, NB-03 | Read-only Historie, kein Bewertungs- oder Reportingmodul. |
+| UC-12 | unterstützt GP-01 A3 | Nutzer-Profile, Sportpräferenzen | NB-01, NB-02, NB-03 | Beschränkt auf MVP-relevante Profilangaben. |
 
 ## F2.6 Nicht als Use Case modelliert
 

@@ -23,8 +23,8 @@ F3 enthält fachliche Berechnungs-, Prüf- und Entscheidungslogik, die für eine
 | Eingaben | Angemeldeter Nutzer; Session mit Status und Teilnehmerlimit `max_participants`; Anzahl bestätigter Teilnahmen (`confirmed_count`); vorhandene Teilnahme des Nutzers. |
 | Ergebnis | Neuer Participant-Eintrag mit Status `confirmed` **oder** Ablehnung mit Ergebniscode; bei Ablehnung bleibt der Datenbestand unverändert. |
 | Ergebniscodes | `OK`, `NOT_AUTHENTICATED`, `SESSION_NOT_JOINABLE`, `ALREADY_JOINED`, `SESSION_FULL` |
-| Regeln | **Freie Plätze** = `max_participants` − `confirmed_count`. **Kapazitätsinvariante:** `confirmed_count` überschreitet `max_participants` nie; keine Warteliste (P1 NG-10), der Organisator zählt ab Erstellung als Teilnehmer (F1 GP-02 A7). **Atomarität statt Reihenfolgegarantie:** Prüfung und Anlage sind unteilbar (technisch: [N2](N2-querschnittskonzepte.md)); eine bestimmte Eingangsreihenfolge wird nicht zugesichert, garantiert ist nur die Kapazitätsinvariante. **Idempotenz:** ein wiederholter Beitritt derselben Person führt zu `ALREADY_JOINED`, nicht zu einem Fehlerzustand. |
-| Bezug | [F1](F1-geschaeftsprozesse.md) GP-01 A9-A13; [UC-04](F2-anwendungsfaelle.md#uc-04--session-beitreten); Daten `session`, `participant` ([D1](D1-datenmodell.md)). |
+| Regeln | **Freie Plätze** = `max_participants` − `confirmed_count`. **Kapazitätsinvariante:** `confirmed_count` überschreitet `max_participants` nie; keine Warteliste (P1 NG-10), der Organisator zählt ab Erstellung als Teilnehmer (F1 GP-01 A2). **Atomarität statt Reihenfolgegarantie:** Prüfung und Anlage sind unteilbar (technisch: [N2](N2-querschnittskonzepte.md)); eine bestimmte Eingangsreihenfolge wird nicht zugesichert, garantiert ist nur die Kapazitätsinvariante. **Idempotenz:** ein wiederholter Beitritt derselben Person führt zu `ALREADY_JOINED`, nicht zu einem Fehlerzustand. |
+| Bezug | [F1](F1-geschaeftsprozesse.md) GP-01 A4; [UC-04](F2-anwendungsfaelle.md#uc-04--session-beitreten); Daten `session`, `participant` ([D1](D1-datenmodell.md)). |
 
 #### Entscheidungstabelle (AF-01)
 
@@ -47,7 +47,7 @@ Auswertung von oben nach unten; die erste zutreffende Regel bestimmt das Ergebni
 | Ergebnis | Teilnahme-Status wird auf `checked_in` gesetzt und der Zeitpunkt festgehalten **oder** Ablehnung mit Ergebniscode; bei Ablehnung bleibt der Status unverändert. |
 | Ergebniscodes | `OK`, `NOT_JOINED`, `INVALID_CREDENTIAL`, `OUTSIDE_WINDOW`, `ALREADY_CHECKED_IN` |
 | Regeln | **Gleichwertigkeit QR/PIN:** beide Wege lösen sich auf dieselbe Prüfung gegen die PIN der Session auf (siehe AF-04). **Idempotenz:** der erste erfolgreiche Check-in setzt Status und Zeitpunkt; weitere gültige Versuche melden `ALREADY_CHECKED_IN`, ohne den Zeitpunkt zu ändern. **Keine Statusrücknahme:** ein gesetzter `checked_in`-Status wird nicht zurückgenommen. Maßgeblich für das Zeitfenster ist ausschließlich der Status `active` (AF-03), ohne zusätzliche Toleranz. |
-| Bezug | [F1](F1-geschaeftsprozesse.md) GP-02 A12-A19; [UC-08](F2-anwendungsfaelle.md#uc-08--check-in-per-qr-code-durchführen), [UC-09](F2-anwendungsfaelle.md#uc-09--check-in-per-pin-durchführen); Daten `session`, `participant` ([D1](D1-datenmodell.md)). |
+| Bezug | [F1](F1-geschaeftsprozesse.md) GP-01 A6; [UC-08](F2-anwendungsfaelle.md#uc-08--check-in-per-qr-code-durchführen), [UC-09](F2-anwendungsfaelle.md#uc-09--check-in-per-pin-durchführen); Daten `session`, `participant` ([D1](D1-datenmodell.md)). |
 
 #### Entscheidungstabelle (AF-02)
 
@@ -73,13 +73,13 @@ Der Status einer Session (`scheduled`, `active`, `completed`) wird bei jeder Abf
 | Start ≤ jetzt < Ende | `active` |
 | jetzt ≥ Ende | `completed` |
 
-Bezug: [F1](F1-geschaeftsprozesse.md) GP-01 A15, A17; GP-02 A21; [UC-02](F2-anwendungsfaelle.md#uc-02--session-suchen), UC-03, UC-04, UC-08, UC-09, UC-11; Daten `session` ([D1](D1-datenmodell.md)).
+Bezug: [F1](F1-geschaeftsprozesse.md) GP-01 A2, A6, A8; [UC-02](F2-anwendungsfaelle.md#uc-02--session-suchen), UC-03, UC-04, UC-08, UC-09, UC-11; Daten `session` ([D1](D1-datenmodell.md)).
 
 ### AF-04 — PIN- und QR-Code-Erzeugung
 
 Erzeugt bei der Session-Erstellung eine vierstellige, numerische PIN sowie einen QR-Inhalt, der Session-Kennung und PIN kodiert, damit AF-02 Check-ins prüfen kann. PIN und QR-Inhalt entstehen einmalig bei der Erstellung, bleiben über die Lebensdauer der Session unverändert und sind nur je Session (nicht global) eindeutig. Format, Erzeugung, Stabilität und das bewusst niedrige Sicherheitsniveau der PIN sind abschließend in [D2.4 `Pin`](D2-datentypen.md#d24-pin) und [D2.8 `QrContent`](D2-datentypen.md#d28-qrcontent) festgelegt; F3 nennt AF-04 nur, weil AF-02 auf ihrem Ergebnis aufbaut.
 
-Bezug: [F1](F1-geschaeftsprozesse.md) GP-02 A8; [UC-06](F2-anwendungsfaelle.md#uc-06--session-erstellen).
+Bezug: [F1](F1-geschaeftsprozesse.md) GP-01 A2; [UC-06](F2-anwendungsfaelle.md#uc-06--session-erstellen).
 
 ## F3.3 Nicht Teil von F3
 
@@ -95,7 +95,7 @@ Bezug: [F1](F1-geschaeftsprozesse.md) GP-02 A8; [UC-06](F2-anwendungsfaelle.md#u
 
 | Baustein | Relevanz für F3 |
 |---|---|
-| [F1](F1-geschaeftsprozesse.md) | Liefert die fachliche Herkunft: GP-01 A9-A13 (AF-01), GP-02 A12-A21 (AF-02, AF-03), GP-02 A8 (AF-04). |
+| [F1](F1-geschaeftsprozesse.md) | Liefert die fachliche Herkunft: GP-01 A4 (AF-01), A6 (AF-02), A2/A6/A8 (AF-03), A2 (AF-04). |
 | [F2](F2-anwendungsfaelle.md) | UC-04, UC-08, UC-09 nutzen AF-01/AF-02 unmittelbar; UC-02, UC-03, UC-06, UC-11 setzen AF-03 beziehungsweise AF-04 voraus. |
 | [D1](D1-datenmodell.md) / [D2](D2-datentypen.md) | Binden die in F3 genannten Felder (`max_participants`, `status`, `pin`, `checked_in_at`) an Entitäten und Datentypen; D2.4/D2.8 sind für AF-04 maßgeblich. |
 | [P1](P1-ziele-rahmenbedingungen.md) | Kapazität als harte Grenze ohne Warteliste (NG-10) und Ausschluss nachträglicher Session-Änderungen (NG-11) sind Grundlage von AF-01 beziehungsweise AF-03. |

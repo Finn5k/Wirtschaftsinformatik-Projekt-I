@@ -131,7 +131,7 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 | Feld | Art | Datentyp | Bezug Datenmodell | Vorbelegung | Prüfung / Hinweise |
 |---|---|---|---|---|---|
 | Ort / Region | Eingabe (Kann) | Text | `court.city` (Filterkriterium) | `profile.city`, sonst letzter Suchort, sonst leer | leer = keine Ortseinschränkung |
-| Sportart-Filter | Eingabe (Kann) | Auswahl | `sport` (Katalog) | „Alle" | Werteliste aus `sport`-Katalog + „Alle" (GP-03) |
+| Sportart-Filter | Eingabe (Kann) | Auswahl | `sport` (Katalog) | „Alle" | Werteliste aus `sport`-Katalog + „Alle" (UC-02) |
 | Ergebnisliste | Anzeige | Liste | `session` (title, sport, start_at, status), `court` (name, city), abgeleitet `confirmed_count`/`max_participants` | — | nur Sessions mit Status `scheduled`/`active` (AF-03); laufende vor bevorstehenden Sessions, je Gruppe `start_at` aufsteigend, bei Gleichstand Titel aufsteigend; abgeschlossene nur in DLG-07 |
 | Leerer Zustand | Anzeige | Text | — | — | erscheint bei 0 Treffern ([B1.5.5](#b155-leere-zustände)) |
 

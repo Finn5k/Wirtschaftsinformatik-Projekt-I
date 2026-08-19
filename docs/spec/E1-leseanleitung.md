@@ -73,8 +73,8 @@ Zentrale spezifizierte Elemente wie Ziele, Geschäftsprozesse, Use Cases, Anwend
 | `CON-T-nn`, `CON-O-nn`, `CON-D-nn` | Rahmenbedingung (technisch / organisatorisch / Datenschutz) | [P1.5](P1-ziele-rahmenbedingungen.md#p15-rahmenbedingungen-constraints) | `CON-T-01` Datenbank: PostgreSQL nur |
 | `SC-nn` | Erfolgskriterium | [P1.6](P1-ziele-rahmenbedingungen.md#p16-erfolgskriterien) | `SC-02` Session-Creation Workflow UX |
 | `NB-nn` | Nachbarsystem | [P2.2](P2-architekturueberblick.md#p22-nachbarsysteme), detailliert in [S1](S1-nachbarsysteme.md) | `NB-03` Supabase PostgREST API |
-| `GP-nn` | Geschäftsprozess (real, IT-unabhängig) | [F1](F1-geschaeftsprozesse.md) | `GP-02` Regelmäßige Treffen organisieren |
-| `A1…An` | Aktivität innerhalb eines Geschäftsprozesses | [F1](F1-geschaeftsprozesse.md) (je GP-nn eigene Zählung) | `GP-02 A12` |
+| `GP-nn` | Geschäftsprozess (real, IT-unabhängig) | [F1](F1-geschaeftsprozesse.md) | `GP-01` Sportgelegenheit zustande bringen |
+| `A1…An` | Aktivität innerhalb eines Geschäftsprozesses | [F1](F1-geschaeftsprozesse.md) (je GP-nn eigene Zählung) | `GP-01 A6` |
 | `UC-nn` | Anwendungsfall (Use Case) | [F2.3](F2-anwendungsfaelle.md#f23-use-case-index) | `UC-04` Session beitreten |
 | `AF-nn` | Anwendungsfunktion (fachliches Regelwerk) | [F3.1](F3-anwendungsfunktionen.md#f31-katalog-der-anwendungsfunktionen) | `AF-01` Beitritts- und Kapazitätsregel |
 | Entitätsname in Backticks (z. B. `` `session` ``) | Entitätstyp im Datenmodell | [D1.3](D1-datenmodell.md#d13-entitätstypen-im-überblick) | `` `participant` `` |
@@ -94,7 +94,7 @@ Diagramme in der Spezifikation werden grundsätzlich als **versionierbare Quelle
 
 | Diagrammtyp | Notation | Verwendet in | Zweck |
 |---|---|---|
-| Aktivitätsdiagramm mit Swimlanes | Mermaid `flowchart` mit `subgraph` je Akteur | [F1.1.5](F1-geschaeftsprozesse.md#f115-ablaufdiagramm-mermaid), [F1.2.5](F1-geschaeftsprozesse.md#f125-ablaufdiagramm-mermaid) | Ablauf eines Geschäftsprozesses je Akteur. |
+| Aktivitätsdiagramm eines Geschäftsprozesses | PlantUML (`diagrams/F1-gp01-sportgelegenheit.puml`, gerendert als `diagrams-png/F1-gp01-sportgelegenheit.png`) | [F1.1.5](F1-geschaeftsprozesse.md#f115-aktivitätsdiagramm) | Ablauf eines Geschäftsprozesses je Akteur. |
 | Use-Case-Diagramm | PlantUML `usecase`-Notation (`diagrams/F2-use-cases.puml`, gerendert als `diagrams-png/F2-use-cases.png`) | [F2.2](F2-anwendungsfaelle.md#f22-use-case-übersicht) | Zuordnung Use Cases ↔ Akteure mit expliziter Systemgrenze. |
 | Aktivitätsdiagramm mit Verzweigungen | PlantUML `if`/`else`-Aktivitätsnotation (`diagrams/F2-uc10-court-erfassen.puml`, gerendert als `diagrams-png/F2-uc10-court-erfassen.png`) | [F2.4 UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen) | Verzweigungen (Auswahl vs. Neuerfassung mit Geocoding-Fehlerfall), die Mermaid-Flowcharts hier weniger klar darstellen. |
 | Systemkontext-Diagramm | PlantUML (`diagrams/P2-systemkontext.puml`, gerendert als `diagrams-png/P2-systemkontext.png`) | [P2.1](P2-architekturueberblick.md#p21-systemkontext) | Akteure (Teilnehmer, Organisator) und Nachbarsysteme NB-01 bis NB-05 als Blackbox-Kontext. |
@@ -130,7 +130,7 @@ Jeder Schritt in dieser Kette **verfeinert**, ohne den vorherigen Schritt zu wid
 
 | Ebene | Fundstelle | Inhalt |
 |---|---|---|
-| Geschäftsprozess | [F1.1](F1-geschaeftsprozesse.md#f11-geschäftsprozess-spontan-sportaktivitäten-finden-gp-01) GP-01, Aktivitäten A9–A13 | Realer Ablauf: Teilnehmer findet Session und tritt bei. |
+| Geschäftsprozess | [F1.1](F1-geschaeftsprozesse.md#f11-geschäftsprozess-sportgelegenheit-zustande-bringen-gp-01) GP-01, Aktivität A4 | Realer Ablauf: Teilnehmer findet Session und tritt bei. |
 | Anwendungsfall | [F2.4 UC-04](F2-anwendungsfaelle.md#uc-04--session-beitreten) | Systemunterstützte Interaktion mit Vorbedingungen und Akzeptanzkriterien. |
 | Anwendungsfunktion | [F3.2 AF-01](F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel) | Fachliche Kapazitätsregel, die UC-04 zugrunde liegt. |
 | Datenmodell | [D1.4 `participant`](D1-datenmodell.md#participant--teilnahme) | Entität, die den Beitritt persistiert. |
