@@ -326,7 +326,7 @@ Frühere Prototyp-Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht*
 | `OUTSIDE_WINDOW` | „Der Check-in ist nur während der laufenden Session möglich.“ |
 | `ALREADY_CHECKED_IN` | „Du bist bereits eingecheckt.“ (Bestätigung ohne Änderung, [AF-02 – Idempotenz bei wiederholtem Check-in](F3-anwendungsfunktionen.md#af-02--check-in-validierung)) |
 
-Kann eine Aktion wegen eines nicht näher bestimmbaren technischen Fehlers nicht ausgeführt werden, lautet der Rückfalltext: „Die Aktion konnte nicht ausgeführt werden. Bitte versuche es erneut.“ Technische Details, interne IDs und Datenbankmeldungen werden nicht angezeigt (N1-QA-09).
+Kann eine Aktion wegen eines nicht näher bestimmbaren technischen Fehlers nicht ausgeführt werden, lautet der Rückfalltext: „Die Aktion konnte nicht ausgeführt werden. Bitte versuche es erneut.“ Technische Details, interne IDs und Datenbankmeldungen werden nicht angezeigt.
 
 ### B1.4.7 DLG-07 — Meine Sessions
 

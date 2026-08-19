@@ -286,7 +286,7 @@ Database-Logs. Eine zusätzliche Monitoring-Plattform ist kein MVP-Bestandteil.
 
 ### 6.1 Free-Tier-Grenzen
 
-Konkrete Kontingente der genutzten Dienste (P1 CON-T-02, CON-T-05; N1-QA-10):
+Konkrete Kontingente der genutzten Dienste (P1 CON-T-02, CON-T-05):
 
 | Komponente | Anbieter | Tier | Grenze |
 |---|---|---|---|
@@ -306,9 +306,9 @@ Konkrete Kontingente der genutzten Dienste (P1 CON-T-02, CON-T-05; N1-QA-10):
 | Status und Zählung | `status` und `confirmed_count` werden bei Abfragen berechnet, nicht redundant persistiert. | F3 AF-03, D1.6 |
 | Fehlerbehandlung | Services übersetzen HTTP- und fachliche Ergebniscodes in typisierte Ergebnisse; Seiten zeigen die verbindlichen B1-Texte. | B1 DLG-04/DLG-06, N2.3 |
 | Ausfallverhalten | Keine automatischen Retries; Nutzer erhält eine Wiederholmöglichkeit. Kartenfehler führen zur Listenansicht. | B1.5.4, S1.1 |
-| Datensparsamkeit | Nur erforderliche Profilfelder werden übertragen; für andere Nutzer sind ausschließlich Anzeigename und optionales Profilbild sichtbar. | N1-QA-04, D1.4 |
-| Protokollierung | Keine Tokens, PINs, personenbezogenen Payloads oder technischen Interna in nutzerseitigen Meldungen. | N1-QA-05/N1-QA-09 |
-| Testbarkeit | F2-Akzeptanzkriterien und F3-Algorithmen bilden die Testgrundlage; RPCs haben höchste Testpriorität. | N1.6 |
+| Datensparsamkeit | Nur erforderliche Profilfelder werden übertragen; für andere Nutzer sind ausschließlich Anzeigename und optionales Profilbild sichtbar. | N1-QA-03, D1.4 |
+| Protokollierung | Keine Tokens, PINs, personenbezogenen Payloads oder technischen Interna in nutzerseitigen Meldungen. | N1-QA-03, B1.5.4 |
+| Testbarkeit | F2-Akzeptanzkriterien und F3-Algorithmen bilden die Testgrundlage; RPCs haben höchste Testpriorität. | N1.2 |
 
 ## 8. Aktueller Implementierungsstand
 

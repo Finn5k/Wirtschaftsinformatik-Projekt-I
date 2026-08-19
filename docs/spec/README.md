@@ -166,10 +166,12 @@ Installation, Umgebungseinrichtung, Betrieb auf Supabase/Vercel sowie Start- und
 ### **N1 — Nichtfunktionale Anforderungen** ✅ (fertig)
 **Datei**: [N1-nichtfunktionale-anforderungen.md](N1-nichtfunktionale-anforderungen.md)
 
-**Inhalte**:
-- Performance, Skalierbarkeit im Free-Tier, Verfügbarkeit
-- Sicherheit (PIN-Niveau), Usability, Datensparsamkeit
-- begründete Nicht-Festlegungen zu Feldlängen und fachlichen Obergrenzen
+Drei Qualitätsziele, jedes an einem konkreten Verhalten überprüfbar:
+- **N1-QA-01 Konsistenz von Beitritt und Check-in** (keine Überbuchung bei Parallelzugriff, kontrollierte Degradation)
+- **N1-QA-02 Mobile Nutzbarkeit** (alle acht Dialoge bis 768 px)
+- **N1-QA-03 Zugriffsschutz und Datensparsamkeit** (Anmeldung, sichtbare Profilfelder, keine Secrets im Repository)
+
+Alle weiteren denkbaren Qualitätsmerkmale sind in N1.3 mit Begründung ausgeschlossen.
 
 ---
 

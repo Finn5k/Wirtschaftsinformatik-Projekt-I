@@ -81,7 +81,7 @@ Zentrale spezifizierte Elemente wie Ziele, Geschäftsprozesse, Use Cases, Anwend
 | `B1`–`B8` | Beziehung zwischen Entitätstypen | [D1.5](D1-datenmodell.md#d15-beziehungen) | `B2` Teilnahme (`session` → `participant`) |
 | Datentypname in Backticks (z. B. `` `SessionStatus` ``) | Fachlicher Datentyp | [D2](D2-datentypen.md#katalogübersicht) | `` `Pin` `` |
 | `DLG-nn` | Dialog | [B1.2](B1-dialogspezifikation.md#dialog-index) | `DLG-06` Check-in |
-| `N1-QA-nn` | Qualitätsziel (nichtfunktional) | [N1.2](N1-nichtfunktionale-anforderungen.md#n12-qualitätsziele-im-überblick) | `N1-QA-05` Sicherheit |
+| `N1-QA-nn` | Qualitätsziel (nichtfunktional) | [N1.2](N1-nichtfunktionale-anforderungen.md#n12-qualitätsziele) | `N1-QA-03` Zugriffsschutz und Datensparsamkeit |
 | `<Baustein>.<n>` (z. B. `N2.2`) | Abschnittsnummer innerhalb eines Bausteins, kein eigenständiges ID-Schema | jeder Baustein | `N2.2` Row-Level-Security |
 
 Beim Verweis auf einen Baustein wird immer die Baustein-Kurzform verwendet (`P1`, `F2`, `D2`, `B1`, `S1`, `N2` usw.), nicht der ausgeschriebene Titel; das hält Querverweise kurz und eindeutig grep-bar.

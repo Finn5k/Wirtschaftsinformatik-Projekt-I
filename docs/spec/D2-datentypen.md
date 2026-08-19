@@ -10,7 +10,7 @@ Nach Siedersleben beschreibt D2 die Datentypen **fachlich**, nicht technisch. Di
 
 | Typ | Bedeutung | Fachliche Form |
 |---|---|---|
-| `Text` | Zeichenkette | Nicht-leerer UTF-8-Text; im MVP gelten keine festen fachlichen Maximallängen ([N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)). |
+| `Text` | Zeichenkette | Nicht-leerer UTF-8-Text; im MVP gelten keine festen fachlichen Maximallängen ([N1.3](N1-nichtfunktionale-anforderungen.md#n13-bewusst-nicht-verfolgte-qualitätsziele)). |
 | `Integer` | Ganzzahl | Vorzeichenbehaftete Ganzzahl; feldspezifische Wertebereiche siehe unten. |
 | `Boolean` | Wahrheitswert | `true` / `false`. |
 | `Timestamp` | Zeitpunkt | Datum + Uhrzeit mit Zeitzonenbezug (UTC-normalisiert). Grundlage von Zeitvergleichen (AF-03). |
@@ -90,7 +90,7 @@ Teilnahmezustand eines `participant`.
 
 **Wertform:** Eine Zeitspanne als **positive Ganzzahl in Minuten** (`Integer`, Einheit Minuten). Die Einheit ist fachlich fixiert (Minuten), damit `start_at + duration_min` das Session-Ende eindeutig bestimmt (AF-03).
 
-**Wertebereich:** ≥ 1 Minute. Eine fachliche Obergrenze ist für das MVP bewusst nicht festgelegt ([N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen)).
+**Wertebereich:** ≥ 1 Minute. Eine fachliche Obergrenze ist für das MVP bewusst nicht festgelegt ([N1.3](N1-nichtfunktionale-anforderungen.md#n13-bewusst-nicht-verfolgte-qualitätsziele)).
 
 **Gleichheit & Ordnung:** Numerischer Vergleich; kleinere Werte bedeuten kürzere Sessions.
 
@@ -147,7 +147,7 @@ Attribut- und Entitätsnamen sind in **englischem `snake_case`** gehalten (konsi
 ## D2.11 Entscheidungsstand
 
 Keine. Qualitätsbezogene Nicht-Festlegungen stehen in
-[N1.7](N1-nichtfunktionale-anforderungen.md#n17-bewusst-nicht-festgelegte-qualitätsanforderungen).
+[N1.3](N1-nichtfunktionale-anforderungen.md#n13-bewusst-nicht-verfolgte-qualitätsziele).
 
 ## D2.12 Eingesetzte KI-Werkzeuge
 

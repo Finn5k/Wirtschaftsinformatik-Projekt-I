@@ -179,7 +179,7 @@ Profil → Bearbeiten → lokale Ansicht aktualisieren
 | Karte | OSM-Karte ist real eingebunden | spezifizierte Graceful Degradation bei nicht erreichbarem Kartendienst fehlt |
 | Lade-/Netzwerkfehler | Court-Geocoding zeigt Lade-, Fehler- und Wiederholungszustand; übrige Datenzugriffe sind synchron | Muster aus B1.5.4 bei der späteren Backend-Anbindung auf alle asynchronen Aktionen übertragen |
 | Validierung | zentrale Formulare validieren ausgewählte Pflichtangaben | vollständige Umsetzung der Regeln aus D2/N1 und der verbindlichen Fehlertexte aus B1 |
-| Tests | kein Testskript und keine automatisierten UI-Tests | manuelle Prüfung anhand der Akzeptanzkriterien aus F2/F3; automatisierte Tests bleiben optional, da für das MVP weder Testframework noch Test-CI vorgegeben sind (N1-QA-08, P1 SC-07) |
+| Tests | kein Testskript und keine automatisierten UI-Tests | manuelle Prüfung anhand der Akzeptanzkriterien aus F2/F3; automatisierte Tests bleiben optional, da für das MVP weder Testframework noch Test-CI vorgegeben sind (P1 SC-07, N1.3) |
 
 ## Offene fachliche und technische Entscheidungen
 
