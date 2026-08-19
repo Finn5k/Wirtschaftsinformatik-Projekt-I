@@ -120,7 +120,13 @@ export function CheckInPage() {
 
   if (view === "pin") {
     return (
-      <div className="flex min-h-[780px] flex-col items-center justify-center bg-slate-950 px-4 text-white">
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          submitPin();
+        }}
+        className="flex min-h-[780px] flex-col items-center justify-center bg-slate-950 px-4 text-white"
+      >
         <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-300">
           Check-in aktiv
         </span>
@@ -141,6 +147,10 @@ export function CheckInPage() {
             </div>
 
             <input
+              id="check-in-pin"
+              aria-label="Vierstellige Check-in-PIN"
+              aria-invalid={Boolean(pinError)}
+              aria-describedby={pinError ? "check-in-pin-error" : undefined}
               value={pinInput}
               onChange={(event) => {
                 setPinInput(event.target.value.replace(/\D/g, "").slice(0, 4));
@@ -153,7 +163,11 @@ export function CheckInPage() {
           </div>
 
           {pinError && (
-            <p className="mt-4 flex items-center gap-2 text-sm font-bold text-red-600">
+            <p
+              id="check-in-pin-error"
+              role="alert"
+              className="mt-4 flex items-center gap-2 text-sm font-bold text-red-600"
+            >
               <XCircle size={16} />
               {pinError}
             </p>
@@ -161,8 +175,7 @@ export function CheckInPage() {
         </div>
 
         <button
-          type="button"
-          onClick={submitPin}
+          type="submit"
           className="mt-6 w-full rounded-2xl bg-emerald-500 py-3 font-bold text-white"
         >
           Teilnahme bestätigen
@@ -186,7 +199,7 @@ export function CheckInPage() {
         >
           Abbrechen
         </Link>
-      </div>
+      </form>
     );
   }
 

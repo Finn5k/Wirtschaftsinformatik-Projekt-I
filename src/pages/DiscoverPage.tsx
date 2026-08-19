@@ -53,7 +53,11 @@ export function DiscoverPage() {
 
       <div className="mb-4 flex items-center gap-2 rounded-2xl bg-white px-3 py-3 shadow-sm">
         <Search size={18} className="text-slate-400" />
+        <label htmlFor="session-search" className="sr-only">
+          Sessions durchsuchen
+        </label>
         <input
+          id="session-search"
           value={searchTerm}
           onChange={(event) => setSearchTerm(event.target.value)}
           className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-slate-400"
@@ -70,6 +74,7 @@ export function DiscoverPage() {
               key={filter}
               type="button"
               onClick={() => setActiveFilter(filter)}
+              aria-pressed={isActive}
               className={[
                 "whitespace-nowrap rounded-2xl px-4 py-2 text-sm font-bold shadow-sm transition",
                 isActive

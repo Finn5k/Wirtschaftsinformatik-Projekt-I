@@ -36,7 +36,11 @@ export function MySessionsPage() {
         </p>
       </header>
 
-      <div className="mb-5 grid grid-cols-2 gap-2 rounded-2xl bg-white p-1.5 shadow-sm">
+      <div
+        role="tablist"
+        aria-label="Session-Zeitraum"
+        className="mb-5 grid grid-cols-2 gap-2 rounded-2xl bg-white p-1.5 shadow-sm"
+      >
         <TabButton
           label="Bevorstehend"
           isActive={activeTab === "upcoming"}
@@ -101,6 +105,8 @@ function TabButton({ label, isActive, onClick }: TabButtonProps) {
   return (
     <button
       type="button"
+      role="tab"
+      aria-selected={isActive}
       onClick={onClick}
       className={[
         "rounded-xl py-2.5 text-sm font-bold transition",

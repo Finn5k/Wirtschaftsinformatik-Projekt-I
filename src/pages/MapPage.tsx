@@ -93,6 +93,7 @@ export function MapPage() {
                 key={filter}
                 type="button"
                 onClick={() => selectFilter(filter)}
+                aria-pressed={isActive}
                 className={[
                   "whitespace-nowrap rounded-2xl px-4 py-2 text-sm font-bold shadow-sm backdrop-blur",
                   isActive
@@ -129,6 +130,7 @@ export function MapPage() {
             return (
               <Marker
                 key={session.id}
+                title={`${session.title} – ${session.locationName}`}
                 position={[session.latitude, session.longitude]}
                 icon={createSessionMarkerIcon(isSelected)}
                 eventHandlers={{
@@ -151,6 +153,7 @@ export function MapPage() {
 
       <button
         type="button"
+        aria-label="Kartenauswahl zurücksetzen"
         onClick={() => setSelectedSession(null)}
         className="absolute right-4 top-44 z-[1000] flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-lg"
       >

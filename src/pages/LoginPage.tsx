@@ -82,10 +82,17 @@ export function LoginPage() {
           </p>
         </div>
 
-        <div className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleSubmit();
+          }}
+          className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm"
+        >
           <div className="mb-5 grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1.5">
             <button
               type="button"
+              aria-pressed={mode === "login"}
               onClick={() => switchMode("login")}
               className={[
                 "rounded-xl py-2.5 text-sm font-bold transition",
@@ -96,6 +103,7 @@ export function LoginPage() {
             </button>
             <button
               type="button"
+              aria-pressed={isRegister}
               onClick={() => switchMode("register")}
               className={[
                 "rounded-xl py-2.5 text-sm font-bold transition",
@@ -109,6 +117,7 @@ export function LoginPage() {
           <div className="space-y-3">
             {isRegister && (
               <AuthInput
+                id="display-name"
                 icon={<User size={18} />}
                 label="Anzeigename"
                 value={displayName}
@@ -122,6 +131,7 @@ export function LoginPage() {
             )}
 
             <AuthInput
+              id="email"
               icon={<Mail size={18} />}
               label="E-Mail"
               value={email}
@@ -135,6 +145,7 @@ export function LoginPage() {
             />
 
             <AuthInput
+              id="password"
               icon={<KeyRound size={18} />}
               label="Passwort"
               value={password}
@@ -149,8 +160,7 @@ export function LoginPage() {
           </div>
 
           <button
-            type="button"
-            onClick={handleSubmit}
+            type="submit"
             className="mt-5 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-emerald-400 py-3.5 font-extrabold text-white shadow-lg shadow-blue-100"
           >
             {isRegister ? "Konto erstellen" : "Anmelden"}
@@ -160,13 +170,14 @@ export function LoginPage() {
             UI-Prototyp: Die Anmeldung erfolgt im finalen System über
             Supabase Auth.
           </p>
-        </div>
+        </form>
       </div>
     </div>
   );
 }
 
 interface AuthInputProps {
+  id: string;
   icon: ReactNode;
   label: string;
   value: string;
@@ -177,6 +188,7 @@ interface AuthInputProps {
 }
 
 function AuthInput({
+  id,
   icon,
   label,
   value,
@@ -185,6 +197,8 @@ function AuthInput({
   placeholder,
   type = "text",
 }: AuthInputProps) {
+  const errorId = `${id}-error`;
+
   return (
     <label
       className={[
@@ -205,16 +219,27 @@ function AuthInput({
         <div className="min-w-0 flex-1">
           <p className="text-xs font-semibold text-slate-500">{label}</p>
           <input
+            id={id}
             type={type}
             value={value}
             onChange={(event) => onChange(event.target.value)}
             placeholder={placeholder}
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? errorId : undefined}
             className="mt-1 w-full bg-transparent text-sm font-bold text-slate-950 outline-none placeholder:text-slate-400"
           />
         </div>
       </div>
 
-      {error && <p className="mt-3 text-xs font-bold text-red-600">{error}</p>}
+      {error && (
+        <p
+          id={errorId}
+          role="alert"
+          className="mt-3 text-xs font-bold text-red-600"
+        >
+          {error}
+        </p>
+      )}
     </label>
   );
 }

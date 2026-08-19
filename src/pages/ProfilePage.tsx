@@ -72,6 +72,7 @@ export function ProfilePage() {
           {!isEditing && (
             <button
               type="button"
+              aria-label="Profil bearbeiten"
               onClick={startEditing}
               className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/15 backdrop-blur"
             >
@@ -101,7 +102,13 @@ export function ProfilePage() {
       </section>
 
       {isEditing ? (
-        <section className="space-y-4 px-4 pt-5">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            saveChanges();
+          }}
+          className="space-y-4 px-4 pt-5"
+        >
           <div className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
             <h2 className="font-extrabold text-slate-950">Profil bearbeiten</h2>
 
@@ -110,6 +117,8 @@ export function ProfilePage() {
                 Anzeigename
               </p>
               <input
+                aria-invalid={Boolean(nameError)}
+                aria-describedby={nameError ? "profile-name-error" : undefined}
                 value={draftName}
                 onChange={(event) => {
                   setDraftName(event.target.value);
@@ -121,7 +130,11 @@ export function ProfilePage() {
                 ].join(" ")}
               />
               {nameError && (
-                <p className="mt-2 text-xs font-bold text-red-600">
+                <p
+                  id="profile-name-error"
+                  role="alert"
+                  className="mt-2 text-xs font-bold text-red-600"
+                >
                   {nameError}
                 </p>
               )}
@@ -151,6 +164,7 @@ export function ProfilePage() {
                       key={sport}
                       type="button"
                       onClick={() => toggleSport(sport)}
+                      aria-pressed={isSelected}
                       className={[
                         "rounded-2xl px-4 py-2 text-sm font-bold transition",
                         isSelected
@@ -177,15 +191,14 @@ export function ProfilePage() {
             </button>
 
             <button
-              type="button"
-              onClick={saveChanges}
+              type="submit"
               className="flex items-center justify-center gap-2 rounded-2xl bg-blue-600 py-3 font-bold text-white"
             >
               <Check size={16} />
               Speichern
             </button>
           </div>
-        </section>
+        </form>
       ) : (
         <section className="px-4 pt-5">
           <div className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">

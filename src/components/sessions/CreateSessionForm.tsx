@@ -14,7 +14,7 @@ import {
   Zap,
 } from "lucide-react";
 import type { ReactNode } from "react";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { Link } from "react-router";
 import { sportTypes } from "../../data/sports";
 import { createCourt, getCourts } from "../../services/courtService";
@@ -313,7 +313,13 @@ export function CreateSessionForm() {
   }
 
   return (
-    <form className="space-y-4">
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        handleCreateSession();
+      }}
+      className="space-y-4"
+    >
       <FormSelect
         icon={<Zap size={18} />}
         label="Sportart"
@@ -411,7 +417,10 @@ export function CreateSessionForm() {
           )}
 
           {geocodingStatus === "loading" && (
-            <p className="flex items-center gap-2 rounded-2xl bg-white px-4 py-3 text-xs font-bold text-blue-700">
+            <p
+              role="status"
+              className="flex items-center gap-2 rounded-2xl bg-white px-4 py-3 text-xs font-bold text-blue-700"
+            >
               <LoaderCircle className="animate-spin" size={16} />
               Ort und Adresse werden ermittelt …
             </p>
@@ -438,7 +447,10 @@ export function CreateSessionForm() {
           )}
 
           {geocodingStatus === "error" && (
-            <section className="rounded-2xl border border-red-100 bg-red-50 p-4">
+            <section
+              role="alert"
+              className="rounded-2xl border border-red-100 bg-red-50 p-4"
+            >
               <p className="text-xs font-bold leading-5 text-red-700">
                 {geocodingError}
               </p>
@@ -456,7 +468,7 @@ export function CreateSessionForm() {
           )}
 
           {errors.newCourtLocation && (
-            <p className="px-1 text-xs font-bold text-red-600">
+            <p role="alert" className="px-1 text-xs font-bold text-red-600">
               {errors.newCourtLocation}
             </p>
           )}
@@ -473,8 +485,7 @@ export function CreateSessionForm() {
       />
 
       <button
-        type="button"
-        onClick={handleCreateSession}
+        type="submit"
         className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-emerald-400 py-3.5 font-extrabold text-white shadow-lg shadow-blue-100"
       >
         Session erstellen
@@ -502,6 +513,9 @@ function FormInput({
   placeholder,
   type = "text",
 }: FormInputProps) {
+  const inputId = useId();
+  const errorId = `${inputId}-error`;
+
   return (
     <label
       className={[
@@ -522,16 +536,27 @@ function FormInput({
         <div className="min-w-0 flex-1">
           <p className="text-xs font-semibold text-slate-500">{label}</p>
           <input
+            id={inputId}
             type={type}
             value={value}
             onChange={(event) => onChange(event.target.value)}
             placeholder={placeholder}
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? errorId : undefined}
             className="mt-1 w-full bg-transparent text-sm font-bold text-slate-950 outline-none placeholder:text-slate-400"
           />
         </div>
       </div>
 
-      {error && <p className="mt-3 text-xs font-bold text-red-600">{error}</p>}
+      {error && (
+        <p
+          id={errorId}
+          role="alert"
+          className="mt-3 text-xs font-bold text-red-600"
+        >
+          {error}
+        </p>
+      )}
     </label>
   );
 }
@@ -551,6 +576,8 @@ function FormTextarea({
   onChange,
   placeholder,
 }: FormTextareaProps) {
+  const inputId = useId();
+
   return (
     <label className="block rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
       <div className="flex items-start gap-3">
@@ -561,6 +588,7 @@ function FormTextarea({
         <div className="min-w-0 flex-1">
           <p className="text-xs font-semibold text-slate-500">{label}</p>
           <textarea
+            id={inputId}
             rows={3}
             value={value}
             onChange={(event) => onChange(event.target.value)}
@@ -597,6 +625,9 @@ function FormSelect({
   error,
   placeholder,
 }: FormSelectProps) {
+  const inputId = useId();
+  const errorId = `${inputId}-error`;
+
   return (
     <label
       className={[
@@ -617,8 +648,11 @@ function FormSelect({
         <div className="min-w-0 flex-1">
           <p className="text-xs font-semibold text-slate-500">{label}</p>
           <select
+            id={inputId}
             value={value}
             onChange={(event) => onChange(event.target.value)}
+            aria-invalid={Boolean(error)}
+            aria-describedby={error ? errorId : undefined}
             className="mt-1 w-full bg-transparent text-sm font-bold text-slate-950 outline-none"
           >
             {placeholder && (
@@ -635,7 +669,15 @@ function FormSelect({
         </div>
       </div>
 
-      {error && <p className="mt-3 text-xs font-bold text-red-600">{error}</p>}
+      {error && (
+        <p
+          id={errorId}
+          role="alert"
+          className="mt-3 text-xs font-bold text-red-600"
+        >
+          {error}
+        </p>
+      )}
     </label>
   );
 }
@@ -672,6 +714,7 @@ function StepperField({
         <div className="flex items-center gap-3">
           <button
             type="button"
+            aria-label={`${label} verringern`}
             onClick={onDecrease}
             className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100 text-slate-700"
           >
@@ -684,6 +727,7 @@ function StepperField({
 
           <button
             type="button"
+            aria-label={`${label} erhöhen`}
             onClick={onIncrease}
             className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-600 text-white"
           >
