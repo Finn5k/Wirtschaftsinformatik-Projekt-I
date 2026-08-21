@@ -1,0 +1,51 @@
+@startuml A06-session-beitreten
+skinparam backgroundColor White
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam ArrowFontSize 11
+skinparam sequence {
+  LifelineBorderColor Black
+  ParticipantBorderColor Black
+  ParticipantBackgroundColor White
+  ActorBorderColor Black
+  ActorBackgroundColor White
+}
+
+actor Teilnehmer
+
+participant "App-Shell &\nNavigation" as Shell
+participant "DLG-04\nSessionDetailPage" as Detail
+participant "sessionService" as Service
+participant "NB-02\nSupabase Auth" as Auth
+participant "NB-03 Supabase PostgREST\nRPC join_session" as API
+
+Teilnehmer -> Detail : "Beitreten" wählen
+activate Detail
+
+alt nicht angemeldet
+  Detail -> Shell : geschützte Aktion
+  Shell --> Teilnehmer : Redirect zu DLG-01 (B1.5.2)
+  Teilnehmer -> Auth : Anmeldung
+  Auth --> Shell : Sitzung mit JWT
+  Shell --> Detail : Rücksprung zu DLG-04
+end
+
+Detail -> Service : joinSession(session_id)
+activate Service
+Service -> API : RPC join_session (JWT)
+activate API
+API -> API : Status, Kapazität und\nDoppelbeitritt prüfen,\nTeilnahme anlegen\n(AF-01, atomar)
+API --> Service : Ergebniscode
+deactivate API
+
+alt OK
+  Service --> Detail : Teilnahme confirmed
+  Detail --> Teilnehmer : "Du bist der Session beigetreten."
+else SESSION_FULL / ALREADY_JOINED / SESSION_NOT_JOINABLE
+  Service --> Detail : Ergebniscode
+  Detail --> Teilnehmer : Ablehnungstext (B1 DLG-04)
+end
+deactivate Service
+deactivate Detail
+
+@enduml

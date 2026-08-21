@@ -1,0 +1,46 @@
+@startuml A06-check-in
+skinparam backgroundColor White
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam ArrowFontSize 11
+skinparam sequence {
+  LifelineBorderColor Black
+  ParticipantBorderColor Black
+  ParticipantBackgroundColor White
+  ActorBorderColor Black
+  ActorBackgroundColor White
+}
+
+actor Teilnehmer
+participant "NB-01\nBrowser\n(Nutzerkanal)" as NB01
+participant "DLG-06\nCheckInPage" as CheckIn
+participant "sessionService" as Service
+participant "NB-03 Supabase PostgREST\nRPC check_in" as API
+
+alt QR-Code (UC-08)
+  Teilnehmer -> NB01 : QR-Code mit Kamera-App\ndes Geräts scannen\n(außerhalb LocalCourt, S1.2)
+  NB01 -> CheckIn : Deep-Link öffnen:\n/check-in?session=..&pin=..\n(QR-Inhalt aus AF-04)
+else PIN (UC-09)
+  Teilnehmer -> CheckIn : DLG-06 öffnen, PIN eingeben
+end
+
+activate CheckIn
+CheckIn -> Service : checkIn(session_id, merkmal)
+activate Service
+Service -> API : RPC check_in (JWT, merkmal)
+activate API
+API -> API : Teilnahme, Merkmal und\nZeitfenster (Serverzeit) prüfen,\nStatus setzen (AF-02, atomar)
+API --> Service : Ergebniscode
+deactivate API
+
+alt OK / ALREADY_CHECKED_IN
+  Service --> CheckIn : checked_in
+  CheckIn --> Teilnehmer : "Check-in erfolgreich."
+else NOT_JOINED / INVALID_CREDENTIAL / OUTSIDE_WINDOW
+  Service --> CheckIn : Ergebniscode
+  CheckIn --> Teilnehmer : Ablehnungstext (B1 DLG-06)
+end
+deactivate Service
+deactivate CheckIn
+
+@enduml
