@@ -1,0 +1,55 @@
+@startuml A05-bausteinsicht-ebene1
+skinparam backgroundColor White
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam ArrowFontSize 11
+skinparam actor {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam rectangle {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam nodesep 30
+skinparam ranksep 70
+
+actor "Teilnehmer" as Teilnehmer
+actor "Organisator" as Organisator
+
+rectangle "NB-01\nBrowser\n(Nutzerkanal)" as NB01
+
+rectangle "**LocalCourt (Browser-SPA)**" {
+  rectangle "App-Shell &\nNavigation" as Shell
+  rectangle "Dialogseiten" as Pages
+  rectangle "UI-Komponenten" as UI
+  rectangle "Service-Schicht" as Services
+  rectangle "Fachliche Typen\n& Regeln" as Types
+
+  Shell --> Pages : rendert
+  Pages --> UI : bindet ein
+  Pages --> Services : ruft auf
+  Pages --> Types : verwendet
+  UI --> Types : verwendet
+  Services --> Types : verwendet
+}
+
+rectangle "NB-04\nOpenStreetMap" as NB04
+rectangle "NB-02\nSupabase Auth" as NB02
+rectangle "NB-03\nSupabase PostgREST" as NB03
+rectangle "NB-05\nNominatim" as NB05
+
+Teilnehmer --> NB01
+Organisator --> NB01
+NB01 --> Shell : Nutzeraktion
+
+UI -[#Black]-> NB04 : Kartenkacheln
+Services -[#Black]-> NB02 : Anmeldung, Sitzung
+Services -[#Black]-> NB03 : Lesen, RPC
+Services -[#Black]-> NB05 : Reverse-Geocoding
+
+NB04 -[hidden]- NB02
+NB02 -[hidden]- NB03
+NB03 -[hidden]- NB05
+
+@enduml
