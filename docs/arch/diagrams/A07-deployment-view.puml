@@ -1,0 +1,62 @@
+@startuml A07-deployment-view
+skinparam backgroundColor White
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam ArrowFontSize 11
+skinparam actor {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam node {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam cloud {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam artifact {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam rectangle {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam database {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam nodesep 40
+skinparam ranksep 70
+
+actor "Teilnehmer" as Teilnehmer
+actor "Organisator" as Organisator
+
+node "Endgerät\n(Browser)" as Browser {
+  artifact "LocalCourt\n(React-SPA)" as SPA
+}
+
+cloud "Vercel" as Vercel {
+  artifact "SPA-Build\n(statische Assets)" as Build
+}
+
+cloud "Supabase-Projekt" as Supabase {
+  rectangle "NB-02\nSupabase Auth" as Auth
+  rectangle "NB-03\nSupabase PostgREST" as Rest
+  database "PostgreSQL" as DB
+}
+
+cloud "NB-04\nOpenStreetMap-Tiles" as OSM
+cloud "NB-05\nNominatim" as Nominatim
+
+Teilnehmer --> Browser
+Organisator --> Browser
+
+Vercel --> Browser : Auslieferung\nSPA-Assets (HTTPS)
+SPA -[#Black]-> Auth : HTTPS
+SPA -[#Black]-> Rest : HTTPS
+SPA -[#Black]-> OSM : HTTPS
+SPA -[#Black]-> Nominatim : HTTPS
+
+@enduml
