@@ -1,0 +1,63 @@
+@startuml A06-session-und-court-erstellen
+skinparam backgroundColor White
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam ArrowFontSize 11
+skinparam sequence {
+  LifelineBorderColor Black
+  ParticipantBorderColor Black
+  ParticipantBackgroundColor White
+  ActorBorderColor Black
+  ActorBackgroundColor White
+}
+
+actor Organisator
+participant "DLG-05\nCreateSessionPage" as Create
+participant "CourtLocationPicker" as Map
+participant "geocodingService" as Geo
+participant "courtService" as CourtSvc
+participant "sessionService" as Service
+participant "NB-04\nOpenStreetMap-Tiles" as OSM
+participant "NB-05\nNominatim" as Nominatim
+participant "NB-03\nSupabase PostgREST" as API
+
+Organisator -> Create : Sportart, Titel, Zeit, Dauer,\nTeilnehmerlimit eingeben
+
+opt neuer Court (UC-10)
+  Create -> Map : Kartenpin setzen
+  Map -> OSM : Kacheln laden
+  OSM --> Map : Kartenbilder
+  Map --> Create : latitude, longitude
+  Create -> Geo : reverseGeocode(lat, lon)
+  Geo -> Nominatim : ortAufloesen
+  Nominatim --> Geo : city, address?
+  Geo --> Create : ermittelter Ort
+  note right of Create
+    Ohne verwertbaren Ort wird kein
+    unvollständiger Court übernommen
+    (UC-10 Ausnahmefall)
+  end note
+
+  Create -> CourtSvc : createCourt(name, coordinates,\ncity, address)
+  activate CourtSvc
+  CourtSvc -> API : courtAnlegen (JWT)\n(einfacher Schreibzugriff, S1.4)
+  activate API
+  API --> CourtSvc : Court mit id
+  deactivate API
+  CourtSvc --> Create : Court verfügbar
+  deactivate CourtSvc
+end
+
+Create -> Service : createSession(payload mit court_id)
+activate Service
+Service -> API : RPC create_session (JWT)
+activate API
+API -> API : Session mit PIN (AF-04) sowie\norganizer- und participant-Eintrag\natomar anlegen (N2.2, S1.4)
+API --> Service : Session mit PIN
+deactivate API
+Service --> Create : Erfolg
+deactivate Service
+
+Create --> Organisator : DLG-04 (Organisator-Zustand)\nmit QR-Code/PIN
+
+@enduml
