@@ -5,7 +5,7 @@ Die querschnittlichen Strategien dieses Kapitels sind, soweit spezifikationsseit
 | § | Konzept | Spezifikationsgrundlage |
 |---|---|---|
 | [8.1](#81-datenmodell-und-persistenz) | Datenmodell und Persistenz | [D1](../spec/D1-datenmodell.md), [D2](../spec/D2-datentypen.md) |
-| [8.2](#82-validierung) | Validierung | [F2](../spec/F2-anwendungsfaelle.md), [D2](../spec/D2-datentypen.md), [B1.5.4](../spec/B1-dialogspezifikation.md#b154-fehler--und-ladezustände) |
+| [8.2](#82-validierung) | Validierung | [F2](../spec/F2-anwendungsfaelle.md), [D2](../spec/D2-datentypen.md), [B1.5.3](../spec/B1-dialogspezifikation.md#b153-formular-validierung), [B1.5.4](../spec/B1-dialogspezifikation.md#b154-fehler--und-ladezustände) |
 | [8.3](#83-authentifizierung-und-zugriffsschutz) | Authentifizierung und Zugriffsschutz | [N1-QA-03](../spec/N1-nichtfunktionale-anforderungen.md#n1-qa-03--zugriffsschutz-und-datensparsamkeit), [N2.2](../spec/N2-querschnittskonzepte.md#n22-row-level-security-rls), [S1.3](../spec/S1-nachbarsysteme.md#s13-nb-02--supabase-auth) |
 | [8.4](#84-atomare-fachoperationen-und-datenzugriff-über-die-service-schicht) | Atomare Fachoperationen und Datenzugriff über die Service-Schicht | [F3](../spec/F3-anwendungsfunktionen.md) AF-01/AF-02, [S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest), [N1-QA-01](../spec/N1-nichtfunktionale-anforderungen.md#n1-qa-01--konsistenz-von-beitritt-und-check-in) |
 | [8.5](#85-fehlerbehandlung-und-ergebnisweitergabe) | Fehlerbehandlung und Ergebnisweitergabe | [N2.3](../spec/N2-querschnittskonzepte.md#n23-fehler-mapping-ergebniscodes--http), [S1.1](../spec/S1-nachbarsysteme.md#s11-konventionen) |
@@ -30,17 +30,82 @@ Die querschnittlichen Strategien dieses Kapitels sind, soweit spezifikationsseit
 
 ## 8.2 Validierung
 
-Jede Eingabeprüfung im aktuellen Code ist eine Bedienhilfe im Browser; eine zweite, autoritative Prüfebene existiert nicht, weil keine RPC-/Datenbankebene angebunden ist.
+### 8.2.1 Grundprinzip
 
-| Grenze | Realisierung im Code | Zielbild |
-|---|---|---|
-| Session-Erstellung (UC-06) | `validateForm()` in `src/components/sessions/CreateSessionForm.tsx:152` — Pflichtfelder (Titel, Datum, Uhrzeit, Court), Startzeitpunkt muss in der Zukunft liegen (`isStartInPast`), bei Court-Neuerfassung Name und erfolgreich abgeschlossene Geokodierung erforderlich | RPC `create_session` / DB-Constraints ([N2](../spec/N2-querschnittskonzepte.md), [D2](../spec/D2-datentypen.md)) |
-| Check-in-Merkmal (UC-09) | `submitPin()` in `src/pages/CheckInPage.tsx:71` — Formatprüfung (genau 4 Ziffern) und Wertevergleich gegen `session.pin` | RPC `check_in` prüft das Merkmal serverseitig als Teil von [F3 AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung) |
-| Court-Standort (UC-10) | `lookupCourtLocation()`/`geocodingStatus` in `CreateSessionForm.tsx:112` — ein Court wird nur mit erfolgreich aufgelöstem Ort übernommen | bleibt clientseitig, da NB-05 kein LocalCourt-eigenes Nachbarsystem mit Court-Autorität ist ([S1.6](../spec/S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)) |
+Eine Eingabeprüfung wird auf der Ebene vorgenommen, auf der sich die jeweilige Regel vollständig und zuverlässig ausdrücken lässt. Drei Ebenen werden unterschieden: **deklarative Eingabevalidierung im View** (HTML-/Formularattribute am Eingabeelement), **zusätzliche clientseitige fachliche Validierung** (TypeScript-Code im Validierungs-/Submit-Ablauf) und **autoritativ serverseitige Validierung** (Zielbild: RPC bzw. Datenbank-Constraint, siehe [8.4](#84-atomare-fachoperationen-und-datenzugriff-über-die-service-schicht)).
 
-**Abweichung.** Für Session-Erstellung und Check-in sieht das Zielbild ([N2](../spec/N2-querschnittskonzepte.md), [S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)) eine serverseitig autoritative Prüfung derselben Regeln vor. Diese existiert im Code nicht: Die oben genannten Funktionen sind die einzige Instanz, die die Eingabe prüft — es gibt keine Instanz, die eine manipulierte oder umgangene Client-Prüfung auffangen würde (vgl. [8.4](#84-atomare-fachoperationen-und-datenzugriff-über-die-service-schicht)).
+Im aktuellen Prototyp werden keine expliziten deklarativen Constraints wie `required`, `min`/`max`, `minLength`/`maxLength` oder `pattern` verwendet (Prüfung per Volltextsuche über `src/components/` und `src/pages/`; kein Formular trägt eines dieser Attribute, keines setzt `noValidate`). Die vorhandenen Input-Typen `type="email"` (`LoginPage.tsx:144`) sowie `type="password"`/`type="date"`/`type="time"` (`LoginPage.tsx:158`, `CreateSessionForm.tsx:354,363`) liefern browserseitige Eingabe- und teilweise Validierungssemantik — `type="email"` etwa lässt den Browser bei einem nicht-leeren, formal ungültigen Wert eine native Constraint-Verletzung melden, auch ohne `required`. Weil kein Formular `noValidate` setzt, bleibt diese native Prüfung wirksam. Die projektspezifischen Prüfregeln (Pflichtfeld, Format, Wertevergleich) werden aktuell jedoch zusätzlich bzw. überwiegend eigenständig in TypeScript umgesetzt: Erst wenn die native Prüfung nicht blockiert (bzw. mangels `required`/`pattern` gar nicht erst greift), löst der Browser das `submit`-Ereignis aus; jedes Formular ruft darin `event.preventDefault()` auf und prüft anschließend vollständig in TypeScript (`validateForm()` in `CreateSessionForm.tsx:152`, `handleSubmit()` in `LoginPage.tsx:36`, `submitPin()` in `CheckInPage.tsx:71`). Die dritte Ebene existiert im Code nicht, da kein Backend angebunden ist ([B1.6](../spec/B1-dialogspezifikation.md#b16-abweichungen-des-prototyps)); sie ist ausschließlich Zielbild.
 
-**Betroffene Bausteine ([A05](A05-building-block-view.md)):** Dialogseiten, UI-Komponenten (`CourtLocationPicker`).
+Die Abschnitte [8.2.2](#822-deklarative-view-validierung)–[8.2.5](#825-clientseitige-prüfung-und-serverseitige-autorität) formulieren die **Architekturregel für neue bzw. überarbeitete Eingaben** — unabhängig davon, ob das jeweilige Muster im aktuellen Prototyp schon durchgängig angewendet wird. [8.2.7](#827-beispiele-aus-dem-aktuellen-code) ordnet die bisher dokumentierten Fälle dieser Regel zu.
+
+### 8.2.2 Deklarative View-Validierung
+
+Lässt sich eine Regel vollständig am Eingabeelement ausdrücken, soll dafür das passende HTML-/React-Attribut verwendet werden, statt sie eigens in TypeScript nachzubilden:
+
+- **Pflichtfeld:** `required`.
+- **Einfaches Format:** ein passender `type` (`email`, `number`, …) bzw. `pattern`, wenn das Format eine feste Zeichenklasse ist (z. B. eine numerische Zeichenfolge fester Länge).
+- **Statischer Wertebereich:** `min`/`max` bei `type="number"` bzw. `minLength`/`maxLength` bei Text, sofern die Grenze fest ist und nicht von anderen Feldern oder Laufzeitdaten abhängt. Rein zur Erläuterung, ohne dass LocalCourt aktuell ein solches Feld besitzt: Ein Bewertungsfeld mit `min="0" max="20"` wäre auf diese Weise umzusetzen.
+
+Voraussetzung ist, dass die Regel **ohne weiteren Kontext** — kein Vergleich mit einem anderen Feld, keine Serverzeit, kein Ergebnis eines externen Aufrufs — vollständig geprüft werden kann. Ist das nicht der Fall, gehört die Prüfung nach [8.2.3](#823-zusätzliche-clientseitige-validierung).
+
+### 8.2.3 Zusätzliche clientseitige Validierung
+
+Zusätzlicher TypeScript-Code ist erforderlich, sobald eine Regel nicht als einfacher Input-Constraint formulierbar ist, insbesondere bei:
+
+- Vergleich mehrerer Felder,
+- zeitlichen Bedingungen,
+- Abhängigkeit vom Ergebnis eines externen Aufrufs,
+- fachlich abhängigen Prüfungen.
+
+Ein bestehendes Beispiel für eine zeitliche Bedingung ist `isStartInPast()` (`CreateSessionForm.tsx:58`): Datum und Uhrzeit sind für sich genommen nur Pflichtfelder, aber ob der daraus gebildete Zeitpunkt in der Zukunft liegt, lässt sich nicht als Attribut am `date`-/`time`-Feld ausdrücken. Solche Regeln werden im Code an **einer** Stelle geprüft — einer zentralen `validate…`-Funktion (`validateForm()`, `CreateSessionForm.tsx:152`) oder, bei kleineren Formularen, direkt im Submit-Ablauf (`handleSubmit()` in `LoginPage.tsx:36`, `submitPin()` in `CheckInPage.tsx:71`) — statt dieselbe Regel an mehreren UI-Stellen zu wiederholen. Das Ergebnis wird als Fehlerobjekt pro Feld gehalten (`FormErrors`, `CreateSessionForm.tsx:52`; gleichnamiger Typ in `LoginPage.tsx:12`) und beim Ändern des betroffenen Felds zurückgesetzt (`updateForm()`, `CreateSessionForm.tsx:92`).
+
+### 8.2.4 Fehlerbehandlung
+
+Bei ungültiger Eingabe gilt projektweit dasselbe Muster ([B1.5.3](../spec/B1-dialogspezifikation.md#b153-formular-validierung)):
+
+1. Die Aktion wird **nicht ausgeführt** — `validateForm()`/`submitPin()` geben bei einem Fehler zurück, bevor der eigentliche Aufruf (`createSession()`, `checkIn()`) ausgelöst wird (`CreateSessionForm.tsx:193`, `CheckInPage.tsx:71-81`).
+2. Der Fehler erscheint **feldbezogen** mit verständlichem Text direkt am betroffenen Feld, mit `role="alert"` sowie `aria-invalid`/`aria-describedby` (`FormInput`, `CreateSessionForm.tsx:551-559`; `pinError`, `CheckInPage.tsx:165-174`).
+3. Eine ungültige Eingabe wird nicht stillschweigend verworfen oder durch einen anderen Wert ersetzt. Eine bewusste Ausnahme ist die **Eingabeformatierung während der Eingabe** — die PIN-Eingabe filtert Nicht-Ziffern und begrenzt auf vier Zeichen, während getippt wird (`pinInput.replace(/\D/g, "").slice(0, 4)`, `CheckInPage.tsx:156`); das ist Bedienhilfe, keine Korrektur eines bereits abgeschickten, ungültigen Werts.
+4. Nach Korrektur kann der Nutzer die Aktion erneut auslösen: Der Fehler wird beim nächsten Ändern des Felds zurückgesetzt (`CreateSessionForm.tsx:98`; `setPinError(null)`, `CheckInPage.tsx:157`), ein erneutes Absenden ist ohne Seitenwechsel möglich.
+5. Angezeigt wird ausschließlich ein verständlicher, fachlicher Text — keine technischen Details. Auch der Geocoding-Fehlertext folgt diesem Muster (`"Der Ort konnte nicht ermittelt werden…"`, `CreateSessionForm.tsx:147`) statt einer rohen Nominatim-/Netzwerkmeldung.
+
+### 8.2.5 Clientseitige Prüfung und serverseitige Autorität
+
+Jede der hier beschriebenen Client-Prüfungen ist zunächst eine **Bedienhilfe**: Sie gibt dem Nutzer schnelles Feedback, verhindert aber nicht, dass ein manipulierter oder umgangener Client eine ungültige Anfrage absetzt. Ob eine Regel damit clientseitig ausreicht oder zusätzlich serverseitig autoritativ geprüft werden muss, hängt davon ab, was ihre Umgehung bewirken würde:
+
+- **Clientseitig ausreichend:** Regeln, deren Umgehung höchstens zu einer unnötigen, für sich genommen harmlosen Anfrage führt oder ausschließlich Darstellung/Bedienkomfort betrifft.
+- **Zusätzlich serverseitig erforderlich:** Regeln, deren Umgehung einen fachlich ungültigen Zustand erzeugen oder eine sicherheits-/integritätsrelevante Entscheidung verändern könnte — insbesondere jede Regel, die vor einem Schreibzugriff auf fachliche Daten steht.
+
+Im Zielbild von LocalCourt betrifft das die drei atomaren Fachoperationen aus [8.4](#84-atomare-fachoperationen-und-datenzugriff-über-die-service-schicht) — `create_session`, `join_session`, `check_in` — sowie geprüfte Schreibzugriffe wie `courtAnlegen` ([S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)): Die autoritative Prüfung erfolgt dort als RPC-Logik bzw. Datenbank-Constraint, ergänzt um Row-Level-Security für den Zugriffsteil der Regel ([N2.2](../spec/N2-querschnittskonzepte.md#n22-row-level-security-rls)). Der aktuelle Prototyp hat **keine** dieser zweiten Ebenen: Ohne Backend-Anbindung ist die jeweilige Client-Funktion die einzige Instanz, die die Eingabe prüft ([B1.6](../spec/B1-dialogspezifikation.md#b16-abweichungen-des-prototyps)); das ist eine Abweichung vom Zielbild, keine Zielarchitektur.
+
+### 8.2.6 Validierungsmatrix
+
+| Art der Regel | Bevorzugte Umsetzung | Zusätzliche Codeprüfung | Serverseitige Prüfung (Zielbild) |
+|---|---|---|---|
+| Pflichtfeld | `required` am Eingabeelement | nur bei zusätzlicher Abhängigkeit (z. B. nur im Registrierungs-Modus, vgl. `displayName` in `LoginPage.tsx:49`) | falls fachlich integritätsrelevant |
+| Einfaches Format | passender `type` bzw. `pattern` | wenn deklarativ nicht vollständig ausdrückbar (z. B. Wertevergleich gegen einen anderen Wert wie bei der PIN) | falls fachlich integritätsrelevant |
+| Statischer Wertebereich | `min`/`max`, `minLength`/`maxLength` | bei dynamischen bzw. fachlich abgeleiteten Grenzen | bei integritätsrelevanten Daten |
+| Feldübergreifende Regel | — | TypeScript-Validierung in einer benannten Funktion | wenn fachlich autoritativ erforderlich |
+| Zeit-/Statusregel | — | TypeScript für frühes Nutzerfeedback (z. B. `isStartInPast()`) | serverseitig, wenn die Geschäftsregel geschützt werden muss (z. B. Zeitfenster bei AF-02) |
+| Abhängig vom Ergebnis eines externen Aufrufs | — | TypeScript wartet auf das Ergebnis und blockiert bei Fehlschlag | falls das Ergebnis in fachliche Daten übernommen wird |
+
+Diese Tabelle ist eine Zielrichtung; im Einzelfall entscheidet [8.2.2](#822-deklarative-view-validierung)/[8.2.3](#823-zusätzliche-clientseitige-validierung), ob eine konkrete Regel vollständig deklarativ ausdrückbar ist.
+
+### 8.2.7 Beispiele aus dem aktuellen Code
+
+Die folgenden drei Fälle wenden die vorstehende Regel konkret an; sie sind Beispiele, nicht der Kern des Konzepts.
+
+**Session-Erstellung (UC-06).** `validateForm()` (`CreateSessionForm.tsx:152`) prüft mehrere Regeln unterschiedlicher Art in derselben Funktion: Die Pflichtfelder (Titel, Datum, Uhrzeit, Court) entsprächen nach [8.2.2](#822-deklarative-view-validierung) grundsätzlich `required`, sind im Code aber — wie in [8.2.1](#821-grundprinzip) festgehalten — noch nicht deklarativ ausgezeichnet, sondern ebenfalls in `validateForm()` geprüft; der zeitliche Vergleich `isStartInPast()` sowie die Abhängigkeit vom Geocoding-Ergebnis (`geocodingStatus !== "success"`) sind dagegen echte Fälle für [8.2.3](#823-zusätzliche-clientseitige-validierung), da sie nicht als reiner Input-Constraint ausdrückbar sind. Serverseitig ist im Zielbild `create_session` vorgesehen ([8.4](#84-atomare-fachoperationen-und-datenzugriff-über-die-service-schicht)); im Code prüft `createSession()` selbst nichts (`sessionService.ts:119`).
+
+**Check-in-PIN (UC-09).** `submitPin()` (`CheckInPage.tsx:71`) zeigt den Unterschied zwischen schnellem Client-Feedback und fachlicher Autorität besonders deutlich: Die Formatprüfung (`/^\d{4}$/`) wäre nach [8.2.2](#822-deklarative-view-validierung) grundsätzlich als `pattern` ausdrückbar; der anschließende Wertevergleich gegen `session.pin` ist dagegen fachlich abhängig und gehört nach [8.2.3](#823-zusätzliche-clientseitige-validierung). Beide Prüfungen sind im aktuellen Code ausschließlich clientseitig und damit reine Bedienhilfe — sie verhindern nicht, dass ein umgangener Client einen `checkIn()`-Aufruf mit falscher PIN absetzt, da `checkIn()` (`sessionService.ts:284`) die PIN nicht mitprüft (siehe [8.4](#84-atomare-fachoperationen-und-datenzugriff-über-die-service-schicht)). Im Zielbild übernimmt die RPC `check_in` exakt diese Merkmalsprüfung autoritativ, als Teil von [F3 AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung).
+
+**Court-Standort (UC-10).** `lookupCourtLocation()`/`geocodingStatus` (`CreateSessionForm.tsx:112`) ist ein Fall von [8.2.3](#823-zusätzliche-clientseitige-validierung) — abhängig vom Ergebnis eines externen Aufrufs: Ein Court wird nur mit erfolgreich aufgelöstem Ort übernommen. Die Geocoding-Prüfung selbst bleibt bewusst clientseitig, da NB-05 (Nominatim) kein LocalCourt-eigenes Nachbarsystem mit Court-Autorität, sondern ein externer Auskunftsdienst ist ([S1.6](../spec/S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)) — diese bestehende Architekturentscheidung ändert die Überarbeitung nicht. Die Wertebereichsprüfung des resultierenden Koordinatenpaars ([D2.7](../spec/D2-datentypen.md#d27-geocoordinate)) ist im Code nicht gesondert sichtbar; im Zielbild ist `courtAnlegen` ein geprüfter Schreibzugriff ([S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)), über den eine solche Prüfung serverseitig erfolgen würde.
+
+### 8.2.8 Zusammenfassung als Implementierungsregel
+
+Für eine neue oder überarbeitete Eingabe gilt: Zuerst wird geprüft, ob die Regel deklarativ am Eingabeelement ausdrückbar ist ([8.2.2](#822-deklarative-view-validierung)). Andernfalls wird sie zentral im clientseitigen Validierungs- bzw. Submit-Ablauf der betroffenen Dialogseite oder Komponente geprüft, ohne dieselbe Prüfung an mehreren Stellen zu duplizieren ([8.2.3](#823-zusätzliche-clientseitige-validierung)). Bei einem Fehler wird die Aktion abgebrochen und eine feldbezogene, verständliche Meldung angezeigt ([8.2.4](#824-fehlerbehandlung)). Regeln, deren Umgehung einen fachlich ungültigen Zustand erzeugen könnte, werden zusätzlich an der autoritativen serverseitigen Grenze geprüft — im Zielbild als RPC-Logik, Datenbank-Constraint oder RLS-Policy ([8.2.5](#825-clientseitige-prüfung-und-serverseitige-autorität)); im aktuellen Prototyp existiert diese zweite Ebene mangels Backend-Anbindung noch nicht.
+
+**Betroffene Bausteine ([A05](A05-building-block-view.md)):** Dialogseiten, UI-Komponenten.
 
 ## 8.3 Authentifizierung und Zugriffsschutz
 
@@ -54,7 +119,7 @@ Es findet an keiner Stelle ein Aufruf gegen Supabase Auth statt, es wird kein JW
 
 ## 8.4 Atomare Fachoperationen und Datenzugriff über die Service-Schicht
 
-Die UI-Schicht greift auf fachliche Daten und Aktionen über die Service-Schicht zu, nie direkt auf Persistenz oder Nachbarsysteme ([A05](A05-building-block-view.md#51-whitebox-localcourt--ebene-1)). Für die drei spezifizierten atomaren Fachoperationen — Session-Erstellung, Beitritt und Check-in — ist im Zielbild je eine atomare RPC vorgesehen ([S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)); im aktuellen Code entspricht dem je eine synchrone Funktion in `src/services/sessionService.ts`:
+Fachliche Datenzugriffe und Fachoperationen laufen über die Service-Schicht, nie direkt aus der UI-Schicht auf Persistenz oder ein fachliches Nachbarsystem ([A05](A05-building-block-view.md#51-whitebox-localcourt--ebene-1)). Rein darstellungsbezogene externe Zugriffe ohne fachliche Daten sind davon ausgenommen: Die Kartenkacheln von NB-04 OpenStreetMap werden über Leaflet/react-leaflet direkt aus der UI-Komponentenschicht bezogen (`CourtLocationPicker.tsx:75-79`, `MapPage.tsx:127-130`), nicht aus `src/services/` — NB-04 gehört deshalb nicht zur Service-Schicht ([A05 5.2](A05-building-block-view.md#52-bausteindiagramm)). Für die drei spezifizierten atomaren Fachoperationen — Session-Erstellung, Beitritt und Check-in — ist im Zielbild je eine atomare RPC vorgesehen ([S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)); im aktuellen Code entspricht dem je eine synchrone Funktion in `src/services/sessionService.ts`:
 
 | RPC (Zielbild) | Funktion (Code) | Prüfreihenfolge im Code |
 |---|---|---|
