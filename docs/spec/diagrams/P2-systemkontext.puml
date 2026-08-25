@@ -12,6 +12,10 @@ skinparam rectangle {
   BackgroundColor White
   BorderColor Black
 }
+skinparam package {
+  BackgroundColor White
+  BorderColor Black
+}
 skinparam nodesep 45
 skinparam ranksep 120
 
@@ -22,8 +26,10 @@ rectangle "NB-01\nBrowser\n(Nutzerkanal)" as Browser
 
 rectangle "**LocalCourt**" as LocalCourt
 
-rectangle "NB-02\nSupabase Auth" as Auth
-rectangle "NB-03\nSupabase PostgREST" as Daten
+package "Supabase" as Supabase {
+  rectangle "NB-02\nSupabase Auth" as Auth
+  rectangle "NB-03\nSupabase PostgREST" as Daten
+}
 rectangle "NB-04\nOpenStreetMap" as OSM
 rectangle "NB-05\nNominatim" as Nominatim
 

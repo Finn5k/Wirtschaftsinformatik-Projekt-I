@@ -2,7 +2,7 @@
 
 ## 3.1 Fachlicher Kontext
 
-LocalCourt ist im Systemkontext eine einzige Blackbox: Zwei menschliche Akteure — Teilnehmer und Organisator — erreichen das System über den Browser als Nutzerkanal (NB-01); vier weitere Nachbarsysteme stellen Anmeldung, Datenhaltung, Kartendarstellung und Ortsauflösung bereit ([P2.1](../spec/P2-architekturueberblick.md#p21-systemkontext), [P2.2](../spec/P2-architekturueberblick.md#p22-nachbarsysteme)).
+LocalCourt ist im Systemkontext eine einzige Blackbox: Zwei menschliche Akteure — Teilnehmer und Organisator — erreichen das System über den Browser als Nutzerkanal (NB-01); vier weitere Nachbarsysteme stellen Anmeldung und Datenhaltung (beide über die gemeinsame Plattform Supabase), Kartendarstellung und Ortsauflösung bereit ([P2.1](../spec/P2-architekturueberblick.md#p21-systemkontext), [P2.2](../spec/P2-architekturueberblick.md#p22-nachbarsysteme)).
 
 [![Systemkontext LocalCourt](../spec/diagrams-png/P2-systemkontext.png)](../spec/diagrams-png/P2-systemkontext.png)
 
