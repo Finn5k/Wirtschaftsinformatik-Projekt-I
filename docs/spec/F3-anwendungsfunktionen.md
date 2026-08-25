@@ -1,6 +1,6 @@
 # F3 — Anwendungsfunktionen
 
-F3 enthält fachliche Berechnungs-, Prüf- und Entscheidungslogik, die für eine Beschreibung innerhalb eines Anwendungsfalls ([F2](F2-anwendungsfaelle.md)) zu umfangreich wäre. Eine Anwendungsfunktion ist ein fachlicher Algorithmus aus Sicht des Anwenders, kein Informatik-Algorithmus — Suchen, Sortieren und Speichern gehören daher nicht hierher (siehe [F3.3](#f33-nicht-teil-von-f3)); die technische Umsetzung ist Sache von [N2](N2-querschnittskonzepte.md).
+F3 enthält fachliche Berechnungs-, Prüf- und Entscheidungslogik, die für eine Beschreibung innerhalb eines Anwendungsfalls ([F2](F2-anwendungsfaelle.md)) zu umfangreich wäre. Eine Anwendungsfunktion ist ein fachlicher Algorithmus aus Sicht des Anwenders, kein Informatik-Algorithmus — Suchen, Sortieren und Speichern gehören daher nicht hierher (siehe [F3.3](#f33-nicht-teil-von-f3)). Die technische Realisierung liegt außerhalb von F3: [N2](N2-querschnittskonzepte.md) beschreibt systemweite Zugriffs- und Mapping-Regeln, [S1](S1-nachbarsysteme.md) die Nachbarsystemschnittstellen und RPC-Verträge; die konkrete Persistenz- und Transaktionsrealisierung wird in der Architekturdokumentation beschrieben. F3 dokumentiert zusätzlich die für die jeweilige Anwendungsfunktion verbindliche Abbildung ihrer Ergebniscodes auf HTTP-Status als Teil des Schnittstellenvertrags.
 
 **Begriffsklärung:** Eine `Session` ist bei LocalCourt ein geplanter Sporttermin (siehe [E2](E2-glossar.md#e23-alphabetisches-glossar)), **keine** technische Anmelde- oder Authentifizierungssitzung — Letztere wird, wo nötig, als „Anmeldesitzung" beziehungsweise „Auth-Session" bezeichnet.
 
@@ -23,7 +23,7 @@ F3 enthält fachliche Berechnungs-, Prüf- und Entscheidungslogik, die für eine
 | Eingaben | Angemeldeter Nutzer; Session mit Status und Teilnehmerlimit `max_participants`; Anzahl bestätigter Teilnahmen (`confirmed_count`); vorhandene Teilnahme des Nutzers. |
 | Ergebnis | Neuer Participant-Eintrag mit Status `confirmed` **oder** Ablehnung mit Ergebniscode; bei Ablehnung bleibt der Datenbestand unverändert. |
 | Ergebniscodes | `OK`, `NOT_AUTHENTICATED`, `SESSION_NOT_JOINABLE`, `ALREADY_JOINED`, `SESSION_FULL` |
-| Zusicherungen | **Kapazitätsinvariante:** `confirmed_count` überschreitet `max_participants` nie; keine Warteliste (P1 NG-10), der Organisator zählt ab Erstellung als Teilnehmer (F1 GP-01 A2). **Atomarität statt Reihenfolgegarantie:** Prüfung und Anlage sind unteilbar (technisch: [N2](N2-querschnittskonzepte.md)); eine bestimmte Eingangsreihenfolge wird nicht zugesichert, garantiert ist nur die Kapazitätsinvariante. |
+| Zusicherungen | **Kapazitätsinvariante:** `confirmed_count` überschreitet `max_participants` nie; keine Warteliste (P1 NG-10), der Organisator zählt ab Erstellung als Teilnehmer (F1 GP-01 A2). **Atomarität statt Reihenfolgegarantie:** Prüfung und Anlage sind unteilbar (Zielbild: atomare RPC gemäß S1.4); eine bestimmte Eingangsreihenfolge wird nicht zugesichert, garantiert ist nur die Kapazitätsinvariante. |
 | Bezug | [F1](F1-geschaeftsprozesse.md) GP-01 A4; [UC-04](F2-anwendungsfaelle.md#uc-04--session-beitreten); Daten `session`, `participant` ([D1](D1-datenmodell.md)). |
 
 #### Algorithmus (AF-01)
@@ -42,6 +42,18 @@ beitreten(nutzer, session):
     lege teilnahme an mit status = confirmed
                                                  -> OK
 ```
+
+#### Ergebniscodes und HTTP-Mapping (AF-01)
+
+| Ergebniscode | HTTP-Status (RPC-Antwort) |
+|---|---|
+| `OK` | `200 OK` mit Participant-Datensatz |
+| `NOT_AUTHENTICATED` | `401 Unauthorized` |
+| `SESSION_NOT_JOINABLE` | `409 Conflict` |
+| `ALREADY_JOINED` | `409 Conflict` |
+| `SESSION_FULL` | `409 Conflict` |
+
+Die HTTP-Werte folgen der allgemeinen Mapping-Konvention aus [N2.3](N2-querschnittskonzepte.md#n23-ergebnisweitergabe-und-technisches-mapping).
 
 ### AF-02 — Check-in-Validierung
 
@@ -68,6 +80,17 @@ einchecken(nutzer, session, merkmal, jetzt):
     teilnahme.checked_in_at := jetzt
                                                  -> OK
 ```
+
+#### Ergebniscodes und HTTP-Mapping (AF-02)
+
+| Ergebniscode | HTTP-Status (RPC-Antwort) |
+|---|---|
+| `OK` / `ALREADY_CHECKED_IN` | `200 OK` (beide idempotent erfolgreich, siehe Zusicherungen „Keine Statusrücknahme") |
+| `NOT_JOINED` | `403 Forbidden` |
+| `INVALID_CREDENTIAL` | `400 Bad Request` |
+| `OUTSIDE_WINDOW` | `409 Conflict` |
+
+Die HTTP-Werte folgen der allgemeinen Mapping-Konvention aus [N2.3](N2-querschnittskonzepte.md#n23-ergebnisweitergabe-und-technisches-mapping).
 
 Der QR-Weg liefert dasselbe Merkmal wie die manuelle Eingabe (AF-04); beide Wege durchlaufen denselben Algorithmus.
 
@@ -103,7 +126,7 @@ Bezug: [F1](F1-geschaeftsprozesse.md) GP-01 A2; [UC-06](F2-anwendungsfaelle.md#u
 | Formularvalidierung | Teil der Use Cases ([F2](F2-anwendungsfaelle.md)) und der Datentypen ([D2](D2-datentypen.md)), kein eigenständiges fachliches Regelwerk. |
 | Authentifizierung | Wird durch Supabase Auth erbracht ([S1](S1-nachbarsysteme.md)); in AF-01/AF-02 nur als Vorbedingung referenziert. |
 | Warteliste | Out of scope ([P1](P1-ziele-rahmenbedingungen.md) NG-10); AF-01 modelliert bewusst keine Warteliste. |
-| Persistenz, Zugriffsregeln, Transaktionen | Technische Umsetzung, Sache von [N2](N2-querschnittskonzepte.md). |
+| Persistenz, Zugriffsregeln, Transaktionen | Technische Umsetzung außerhalb von F3: Zugriffsregeln in [N2](N2-querschnittskonzepte.md), Schnittstellen/RPCs in [S1](S1-nachbarsysteme.md), konkrete technische Realisierung in der Architekturdokumentation. |
 
 ## F3.4 Querverweise
 
