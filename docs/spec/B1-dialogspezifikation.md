@@ -483,11 +483,3 @@ Im aktuellen Prototyp sind keine früher dokumentierten Gamification-, Events-/C
 B1 ist der zuständige Baustein für alle Fragen des Dialogverhaltens — Feldlisten, Anzeigeumfang, Reihenfolge und Texte. Andere Bausteine verweisen hierher, statt eigene Kopien dieser Punkte zu führen.
 
 Keine offenen Punkte zum Dialogverhalten. Sortierung, Fehlertexte und der bewusste Verzicht auf eine Court-Dublettenprüfung sind in den jeweiligen Dialogen festgelegt.
-
-## B1.9 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Claude Code, ChatGPT, Codex |
-| Verwendung | Ableitung der Dialoglandkarte sowie der Feld- und Aktionslisten aus F2/F3/D1/D2 und dem UI-Prototyp; systematischer Abgleich Prototyp ↔ MVP-Scope (B1.6). Felder mit Bezug auf `court.coordinates` und `organizer` nach der D1-Überarbeitung (Zusammenführung `latitude`/`longitude`, neue `organizer`-Entität) nachgezogen. |
-| Prüfung | Abgeglichen mit [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), [`../frontend.md`](../frontend.md) und dem aktuellen Prototyp-Code (`src/`); die Richtungsentscheidungen (Soll-Dialoge, UC-05/UC-11 als ein Dialog, normative Feldlisten) hat das Team vorab bestätigt. Der Prototyp-Abgleich trifft keine eigenen fachlichen Festlegungen. |

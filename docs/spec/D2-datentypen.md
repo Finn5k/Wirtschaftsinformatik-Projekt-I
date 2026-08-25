@@ -148,11 +148,3 @@ Attribut- und Entitätsnamen sind in **englischem `snake_case`** gehalten (konsi
 
 Keine. Qualitätsbezogene Nicht-Festlegungen stehen in
 [N1.3](N1-nichtfunktionale-anforderungen.md#n13-bewusst-nicht-verfolgte-qualitätsziele).
-
-## D2.12 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Claude Code, Codex |
-| Verwendung | Katalogisierung der trivialen und nicht-trivialen Datentypen mit Wertebereichen, Aufzählungen und Validierungsregeln aus F3/D1. Anschließend Überarbeitung von `GeoCoordinate` (D2.7) zu einem einzelnen Koordinatenpaar-Attribut (`court.coordinates`) statt zwei getrennter `latitude`/`longitude`-Felder, auf Wunsch des Teams. |
-| Prüfung | Abgeglichen mit [D1](D1-datenmodell.md), [F3](F3-anwendungsfunktionen.md), [P1](P1-ziele-rahmenbedingungen.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md) und [N2](N2-querschnittskonzepte.md); Wertebereiche, Statusumfang, Kartenpin, PIN und QR-Inhalt entsprechen den geltenden Festlegungen. |

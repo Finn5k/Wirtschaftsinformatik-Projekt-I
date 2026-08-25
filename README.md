@@ -92,15 +92,8 @@ alle Bausteine und deren aktuellen Bearbeitungsstand.
 
 ## Eingesetzte KI-Werkzeuge
 
-Im Projekt werden KI-Werkzeuge zur Unterstützung eingesetzt und offengelegt:
-
-- **ChatGPT / Codex** — Dokumentations- und Spezifikationsentwürfe, Recherche
-- **Claude (Claude Code)** — Spezifikationsentwürfe, Konsistenzprüfung, Recherche
-- **GitHub Copilot** — Dokumentations- und Spezifikationsentwürfe, Code-Vervollständigung in der Implementierung (voraussichtlich), Recherche
-
-Auch das Frontend wird in der Implementierung mit Codex und GitHub Copilot
-umgesetzt.
-
-Alle KI-Beiträge werden manuell geprüft und überarbeitet; die einzelnen
-Spec-Bausteine weisen die konkrete Nutzung im Abschnitt „Eingesetzte
-KI-Werkzeuge" aus.
+Der Einsatz von KI-/Assistenzwerkzeugen ist zentral und projektweit in
+[docs/README.md, Abschnitt „Deklaration von Hilfsmitteln"](docs/README.md#deklaration-von-hilfsmitteln)
+dokumentiert (Werkzeuge, Einsatzbereiche, Prüfung/Verantwortung). Alle
+KI-Beiträge werden manuell geprüft und überarbeitet; die fachliche
+Verantwortung bleibt beim Team.

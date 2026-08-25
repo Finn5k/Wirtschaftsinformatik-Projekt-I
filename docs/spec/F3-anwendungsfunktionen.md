@@ -112,11 +112,3 @@ Bezug: [F1](F1-geschaeftsprozesse.md) GP-01 A2; [UC-06](F2-anwendungsfaelle.md#u
 | [F1](F1-geschaeftsprozesse.md) | Liefert die fachliche Herkunft: GP-01 A4 (AF-01), A6 (AF-02), A2/A6/A8 (AF-03), A2 (AF-04). |
 | [F2](F2-anwendungsfaelle.md) | UC-04, UC-08, UC-09 nutzen AF-01/AF-02 unmittelbar; UC-02, UC-03, UC-06, UC-11 setzen AF-03 beziehungsweise AF-04 voraus. |
 | [D1](D1-datenmodell.md) / [D2](D2-datentypen.md) | Binden die in F3 genannten Felder (`max_participants`, `status`, `pin`, `checked_in_at`) an Entitäten und Datentypen; D2.4/D2.8 sind für AF-04 maßgeblich. |
-
-## F3.5 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Claude Code, Codex |
-| Verwendung | Ableitung der Anwendungsfunktionen AF-01–AF-04 aus F2 samt Algorithmen und AF-03-Zustandsdiagramm; Umstellung der früheren Entscheidungstabellen auf Pseudocode nach Rückmeldung des Professors. |
-| Prüfung | Abgeglichen mit [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [N1](N1-nichtfunktionale-anforderungen.md), [N2](N2-querschnittskonzepte.md) und [E2](E2-glossar.md); eingehende Verweise auf F3-Anker wurden repositoryweit geprüft. |

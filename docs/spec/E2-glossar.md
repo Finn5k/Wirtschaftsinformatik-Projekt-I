@@ -74,11 +74,3 @@ Die Begriffe in [E2.3](#e23-alphabetisches-glossar) sind **alphabetisch geordnet
 | **Teilnehmerliste** | Die für den Organisator sichtbare Liste der Teilnehmer einer Session mit Anzeigename und Teilnahme- bzw. Check-in-Status (UC-07), dargestellt in DLG-04. | Kein öffentliches soziales Verzeichnis; Sichtbarkeit folgt Datenschutz- und Berechtigungsregeln — nur der Organisator sieht den vollständigen Check-in-Status aller Teilnehmer. | [F2 UC-07](F2-anwendungsfaelle.md#uc-07--teilnehmerliste-anzeigen), [B1 DLG-04](B1-dialogspezifikation.md#b144-dlg-04--session-detail) |
 | **Use Case** | Siehe Eintrag **Anwendungsfall** — „Use Case" ist die in IDs (UC-nn) verwendete englische Bezeichnung für denselben Begriff. | Beide Begriffe werden synonym verwendet; „Anwendungsfall" ist die deutsche Baustein-Bezeichnung, „UC-nn" das ID-Präfix. | siehe Anwendungsfall |
 | **Warteliste** | Ein Mechanismus, der Nutzer bei voller Session vormerken würde, um sie bei frei werdendem Platz zu benachrichtigen. In LocalCourt bewusst **nicht** vorgesehen. | Ohne Benachrichtigungskanal fachlich nicht sinnvoll. Kapazität ist daher eine harte Grenze: Eine volle Session lehnt weitere Beitritte endgültig ab (`SESSION_FULL`); es gibt keinen Warteliste-Status im Teilnahmestatus. | [P1](P1-ziele-rahmenbedingungen.md#p14-scope), [F3](F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel), [D1](D1-datenmodell.md#d17-nicht-modellierte-datenobjekte) |
-
-## E2.4 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Claude Code, Codex |
-| Verwendung | Ermittlung, Strukturierung und redaktionelle Vereinheitlichung der in der Spezifikation verwendeten Begriffe. Eintrag „Organisator" nach Einführung der `organizer`-Entität in D1 aktualisiert. |
-| Prüfung | Begriffe und Definitionen wurden gegen alle Bausteine abgeglichen und auf einheitliche Benennung geprüft. |

@@ -92,13 +92,3 @@ LocalCourt löst das Problem der dezentralisierten Koordination: Heute brauchen 
 | **SC-05** | **Mobile Usability** | Viewport ≤ 768px: Alle Kernworkflows (Session finden, beitreten, Profile sehen) sind intuitiv und ohne Brüche nutzbar. |
 | **SC-06** | **Team-Acceptance** | Spec, Implementation, QA, und Frontend signalisieren Zufriedenheit mit Feature-Vollständigkeit und Codequalität. |
 | **SC-07** | **Deployment Automation** | Deployment auf Production erfolgt automatisiert über die Git-Integration von Vercel: Ein Push auf `main` löst Build und Veröffentlichung aus, reine Dokumentationsänderungen werden übersprungen. Keine manuellen Deployment-Schritte. Eine darüber hinausgehende CI-Pipeline für Lint und Tests ist im MVP nicht eingerichtet. |
-
----
-
-## P1.7 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | GitHub Copilot, Claude Code, Codex |
-| Verwendung | Entwurf des Bausteins: Mission, Geschäftsziele, Stakeholder, Scope, Rahmenbedingungen und Erfolgskriterien. |
-| Prüfung | Abgeglichen mit der Projektidee, [TEAMINFO](../../TEAMINFO.md), den übrigen Bausteinen und den Repository-Vorgaben; Scope- und Stack-Angaben wurden gegen P2 und die Root-README geprüft und manuell überarbeitet. |

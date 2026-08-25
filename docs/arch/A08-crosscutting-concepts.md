@@ -102,11 +102,3 @@ export function getSessionStatus(
 Die Funktionssignatur nimmt den Referenzzeitpunkt als optionalen Parameter entgegen und ist insofern nicht an die Browser-Uhr gebunden; im aktuellen Code wird sie jedoch ausnahmslos mit dem Default `new Date()` aufgerufen — von `sessionService.ts` (Discovery-Filterung, „Meine Sessions“), `SessionDetailPage.tsx` und `CheckInPage.tsx` gleichermaßen, sodass innerhalb eines Browser-Tabs dieselbe Uhr für alle Ableitungen gilt. Eine Anbindung an eine Serverzeit existiert nicht, da keine RPC-Ebene vorhanden ist. Für die serverseitige Check-in-Prüfung sieht das Zielbild dagegen die maßgebliche Serverzeit vor, wie in der Check-in-Regel aus [F3 AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung) und [A06 6.2](A06-runtime-view.md#62-check-in-per-qr-code-oder-pin) festgelegt. Ein zusätzliches Toleranzfenster am Rand von `active` ist nicht implementiert, konsistent mit der dort festgehaltenen Zusicherung „Kein Toleranzfenster" ([F3 AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung); siehe auch [N1.3](../spec/N1-nichtfunktionale-anforderungen.md#n13-bewusst-nicht-verfolgte-qualitätsziele)).
 
 **Betroffene Bausteine ([A05](A05-building-block-view.md)):** Fachliche Typen & Regeln, Service-Schicht, Dialogseiten. **Betroffene Use Cases:** UC-02, UC-03, UC-04, UC-05, UC-08, UC-09, UC-11.
-
-## 8.7 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Claude Code |
-| Verwendung | Analyse von Spezifikation, bestehender Architektur und aktuellem Code sowie Prüfung auf vorhandene SQL-/Supabase-Realisierungen und Entwurf von Kapitel 8 „Querschnittskonzepte“. |
-| Prüfung | Konzepte und konkrete Realisierungen gegen N1/N2, F3, D1/D2, A03–A07 und den tatsächlichen Repository-Stand geprüft; keine unbelegten systemweiten Regeln oder Technologien ergänzt. |

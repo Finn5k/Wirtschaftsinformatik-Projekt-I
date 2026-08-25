@@ -23,11 +23,3 @@ Quelle: [`diagrams/A07-deployment-view.puml`](diagrams/A07-deployment-view.puml)
 | NB-05 Nominatim | Externes Nachbarsystem | Reverse-Geocoding ([S1.6](../spec/S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)); wird nicht von LocalCourt betrieben und ist kein Teil des eigenen Deployments. |
 
 Die deployment-relevanten Kommunikationsbeziehungen sind im Diagramm dargestellt; die vollständigen Schnittstellen-Contracts und technischen Eigenschaften sind in [S1](../spec/S1-nachbarsysteme.md) und [A03.2](A03-context-and-scope.md#32-technischer-kontext) dokumentiert.
-
-## 7.2 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Claude Code |
-| Verwendung | Analyse von Spezifikation, bestehender Architektur, Deployment-Konfiguration und aktuellem Code sowie Entwurf von Kapitel 7 „Verteilungssicht" und des zugehörigen PlantUML-Diagramms. |
-| Prüfung | Deployment-Knoten und Kommunikationsbeziehungen gegen A02–A06, S1 und den tatsächlichen Repository-Stand geprüft; keine unbelegten Infrastrukturdetails oder zusätzlichen Deployment-Ebenen (Docker, Staging, Release-Pipeline) ergänzt. |

@@ -89,13 +89,3 @@ Die zugehörigen Nicht-Ziele sind in [P1](P1-ziele-rahmenbedingungen.md) als NG-
 | [F2](F2-anwendungsfaelle.md) | Zerlegt die unterstützten Aktivitäten A2, A3, A4, A6 und A8 in die Anwendungsfälle UC-01 bis UC-12. |
 | [F3](F3-anwendungsfunktionen.md) | Hält die fachlichen Regeln hinter A4 (Kapazität) und A6 (Anwesenheit) fest. |
 | [D1](D1-datenmodell.md) | Modelliert die in F1.1.3 genannten Dokumente als Entitätstypen. |
-
----
-
-## F1.5 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | GitHub Copilot, Claude Code, Codex |
-| Verwendung | Entwurf des Geschäftsprozesses auf fachlicher Ebene, Ableitung der Aktivitäten und Erstellung des Aktivitätsdiagramms. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und [D1](D1-datenmodell.md); die Zuordnung Aktivität ↔ Use Case wurde in beide Richtungen geprüft. |

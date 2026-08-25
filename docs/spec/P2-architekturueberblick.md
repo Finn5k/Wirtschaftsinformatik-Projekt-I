@@ -40,13 +40,3 @@ Vollständige Aufzählung aller Systeme, mit denen LocalCourt kommuniziert:
 | **NB-05** | **Nominatim** ([S1.6](S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)) | Reverse-Geocoding eines gesetzten Court-Pins | Bidirektional | Synchron, einmal je Pin-Setzen/-Verschieben | OpenStreetMap Foundation |
 
 Supabase erscheint hier bewusst als zwei Schnittstellen (NB-02 Anmeldung, NB-03 Daten), weil beide unterschiedliche Contracts haben ([S1](S1-nachbarsysteme.md)); interne Supabase-Dienste wie Datenbank oder Edge Functions sind aus Sicht von LocalCourt kein eigenes Nachbarsystem und werden hier nicht gesondert ausmodelliert.
-
----
-
-## P2.3 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | GitHub Copilot, Claude Code, Codex |
-| Verwendung | Entwurf des Systemkontexts und der Nachbarsysteme sowie Zuschnitt auf eine reine Blackbox-Sicht; interne Bestandteile und Laufzeitsichten bleiben der Architekturdokumentation vorbehalten. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [S1](S1-nachbarsysteme.md) und [docs/arch/README.md](../arch/README.md). |

@@ -81,11 +81,3 @@ Bestimmt bei der Court-Neuerfassung aus dem gesetzten Kartenpin die nächstgeleg
 | NB-03 Supabase PostgREST | 8 lesende Operationen; `create_session`, `join_session`, `check_in`; `courtAnlegen`, `profilAktualisieren`, `sportpraeferenzSetzen`/`-Entfernen` |
 | NB-04 OpenStreetMap | `kachelnLaden` |
 | NB-05 Nominatim | `ortAufloesen` |
-
-## S1.8 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | GitHub Copilot, Claude Code, Codex |
-| Verwendung | Ausarbeitung der Schnittstellen-Contracts je Nachbarsystem (Operationen, ausgetauschte Daten, Abgrenzung). Nach Rückmeldung des Professors auf das Kontextdiagramm aus P2 und knappe Contracts gekürzt, ohne fachliche Schnittstelleninformationen zu verlieren; ausführliche UC-Zuordnungen, interne Frontend-Details und Wiederholungen aus P2/arch entfernt. |
-| Prüfung | Abgeglichen mit [P2](P2-architekturueberblick.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [N1](N1-nichtfunktionale-anforderungen.md) und [N2](N2-querschnittskonzepte.md). Repositoryweite Querverweise auf entfernte S1-Abschnitte wurden geprüft und angepasst. |

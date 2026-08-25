@@ -57,11 +57,3 @@ Die folgenden Merkmale werden **nicht** als Qualitätsziel geführt. Das grenzt 
 | Feldlängen für `title`, `display_name`, `description` | Es gibt keinen fachlichen Grenzwert, der sich begründen ließe; die Felder werden von Nutzern für Nutzer gefüllt. |
 | Maximale Session-Dauer | Eine Obergrenze hätte keinen Schutzzweck: Eine unrealistische Dauer schadet niemandem außer dem Ersteller. |
 | Zeittoleranz beim Check-in | Am Rand des `active`-Fensters gilt keine zusätzliche Toleranz; maßgeblich ist ausschließlich die Serverzeit ([AF-02](F3-anwendungsfunktionen.md#af-02--check-in-validierung)). |
-
-## N1.4 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Claude Code, ChatGPT, Codex |
-| Verwendung | Entwurf der Qualitätsziele samt Akzeptanzkriterien und Prüfmethoden; Zuschnitt auf drei prüfbare Kernziele nach Rückmeldung des Professors. |
-| Prüfung | Abgeglichen mit P1, F1, F2, F3, D1, D2, B1 und S1; für jedes Ziel wurde geprüft, ob es sich an einem beobachtbaren Verhalten nachweisen lässt. |

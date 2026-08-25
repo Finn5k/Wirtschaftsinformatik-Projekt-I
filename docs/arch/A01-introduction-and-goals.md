@@ -51,11 +51,3 @@ Die Begründung je Ziel — u. a. die harte Kapazitätsgrenze ohne Warteliste ([
 | Trainings-/Vereinsgruppen | Strukturierte Sportgruppen (z. B. Hochschulsport, lokale Clubs), die LocalCourt für regelmäßige Sessions nutzen und Teilnehmerlisten verwalten. | [P1.3](../spec/P1-ziele-rahmenbedingungen.md#p13-stakeholder-und-nutzer) |
 | Cloud-Provider (Free-Tier) | Stellt Hosting- und Datenbankinfrastruktur im kostenlosen Segment bereit und begrenzt damit maximale Nutzerzahl und API-Aufrufe. | [P1.3](../spec/P1-ziele-rahmenbedingungen.md#p13-stakeholder-und-nutzer) |
 | External APIs | Externe Dienste, über die LocalCourt Daten bereitstellt bzw. austauscht; einzeln aufgeführt in [P2.2](../spec/P2-architekturueberblick.md#p22-nachbarsysteme). | [P1.3](../spec/P1-ziele-rahmenbedingungen.md#p13-stakeholder-und-nutzer) |
-
-## 1.4 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Claude Code |
-| Verwendung | Entwurf von arc42-Kapitel 1 (Aufgabenstellung, Qualitätsziele, Stakeholder) ausschließlich auf Basis von [P1](../spec/P1-ziele-rahmenbedingungen.md), [N1](../spec/N1-nichtfunktionale-anforderungen.md), [F1](../spec/F1-geschaeftsprozesse.md), [F2](../spec/F2-anwendungsfaelle.md) und [E2](../spec/E2-glossar.md); Struktur und Detailgrad an [Herold A01](https://github.com/carstenlucke/herold/blob/main/docs/arch/A01-introduction-and-goals.md) angelehnt, ohne dessen fachliche Inhalte zu übernehmen. |
-| Prüfung | Jede Aussage gegen die genannten Spezifikationsbausteine abgeglichen; Begriffe und Rollen mit E2/F2 verglichen; keine Architekturbausteine, Kontextdiagramme, ADRs oder ein vollständiger Qualitätskatalog vorweggenommen. |

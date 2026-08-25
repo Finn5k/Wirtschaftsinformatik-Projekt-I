@@ -42,6 +42,6 @@ LocalCourt ist eine Webanwendung zur Organisation spontaner Sport-Sessions auf l
 
 ## Eingesetzte KI-Werkzeuge
 
-- ChatGPT / Codex für Dokumentationsentwürfe, Architekturideen und Refactoring
-- GitHub Copilot für Code-Vervollständigung in der Implementierung
-- Claude (Claude Code) für Spezifikationsentwürfe, Konsistenzprüfung und Recherche
+Der projektweite Einsatz von KI- und Assistenzwerkzeugen wird zentral in
+[docs/README.md, Abschnitt „Deklaration von Hilfsmitteln“](docs/README.md#deklaration-von-hilfsmitteln)
+dokumentiert.

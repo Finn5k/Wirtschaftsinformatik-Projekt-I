@@ -40,11 +40,3 @@ Die Service-Schicht besteht aus vier Modulen mit unterschiedlicher fachlicher Ve
 | `courtService` | Courts lesen und anlegen. | UC-10. | NB-03 Supabase PostgREST — Lesen sowie `courtAnlegen` ([S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)). | `src/services/courtService.ts` |
 | `userService` | Profil lesen und aktualisieren. | UC-12. | NB-02 Supabase Auth (Nutzerkennung); NB-03 Supabase PostgREST (`profilAktualisieren`, [S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)). | `src/services/userService.ts` |
 | `geocodingService` | Reverse-Geocoding eines gesetzten Kartenpins. | UC-10. | NB-05 Nominatim (`ortAufloesen`, [S1.6](../spec/S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding)). | `src/services/geocodingService.ts` |
-
-## 5.5 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-| ------ | ------ |
-| Werkzeug | Claude Code |
-| Verwendung | Analyse von Spezifikation ([F2](../spec/F2-anwendungsfaelle.md), [F3](../spec/F3-anwendungsfunktionen.md), [D1](../spec/D1-datenmodell.md), [D2](../spec/D2-datentypen.md), [B1](../spec/B1-dialogspezifikation.md), [S1](../spec/S1-nachbarsysteme.md)), bestehender Architektur (A01–A04, README) und aktuellem Code (`src/`) sowie Entwurf von Kapitel 5 „Bausteinsicht" samt PlantUML-Bausteindiagramm. |
-| Prüfung | Bausteine gegen F2/F3, D1/D2, B1, A04 und die tatsächliche Code-Struktur unter `src/` geprüft; keine unbelegten Komponenten ergänzt; Diagramm gegen die Tabellen in 5.1/5.4 auf Konsistenz geprüft. |

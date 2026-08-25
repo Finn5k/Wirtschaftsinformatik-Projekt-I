@@ -26,11 +26,3 @@ Eine weitergehende Zerlegung des Clients ist auf dieser Ebene nicht eindeutig be
 ## 4.4 Organisatorischer Ansatz
 
 Budget 0 EUR und Betrieb ausschließlich in Free-/Student-Tiers ([P1.2](../spec/P1-ziele-rahmenbedingungen.md#p12-geschäftsziele) G-05; [A02](A02-architecture-constraints.md#22-organisatorische-randbedingungen) ORG-01) prägen die Wahl verwalteter Cloud-Dienste und die bereits in [4.1](#41-technologie) und [4.2](#42-top-level-zerlegung) beschriebene Systemform. Das Entwicklungsteam entwickelt, deployt und betreibt LocalCourt selbst, ohne separaten Betriebsstakeholder ([A02](A02-architecture-constraints.md#22-organisatorische-randbedingungen) ORG-02).
-
-## 4.5 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Claude Code |
-| Verwendung | Analyse von Spezifikation und bestehender Architektur sowie Entwurf und strukturelle Überarbeitung von Kapitel 4 „Lösungsstrategie" in Anlehnung an die Gliederung von Herold A04 (Technologie, Top-Level-Zerlegung, Lösungsansätze je Qualitätsziel, Organisatorischer Ansatz). |
-| Prüfung | Lösungsstrategien gegen Spezifikation, A01–A03 und die angegebenen Quellen geprüft; keine unbelegten Architekturentscheidungen ergänzt; keine fachlichen Inhalte aus Herold übernommen. |
