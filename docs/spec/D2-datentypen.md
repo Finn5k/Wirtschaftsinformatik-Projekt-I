@@ -4,7 +4,7 @@
 
 Dieser Baustein ist das **Datentypenverzeichnis** von LocalCourt. Er definiert die fachlichen Datentypen, mit denen die Attribute aus [D1](D1-datenmodell.md) belegt sind: ihre Wertform, ihre Wertebereiche, Aufzählungswerte, Gleichheits-/Ordnungssemantik und die fachlichen Validierungsregeln.
 
-Nach Siedersleben beschreibt D2 die Datentypen **fachlich**, nicht technisch. Die Zuordnung zu konkreten PostgreSQL-Spaltentypen (`uuid`, `timestamptz`, `text`, `smallint`, …), zu Constraints, Indizes oder Speicherformaten ist Sache von [N2](N2-querschnittskonzepte.md) und der Architektur. D2 legt fest, *welche Werte fachlich gültig sind* und *wie mit ihnen umzugehen ist*; die technische Erzwingung dieser Regeln beschreibt N2.
+Nach Siedersleben beschreibt D2 die Datentypen **fachlich**, nicht technisch. Die konkrete Repräsentation in TypeScript bzw. PostgreSQL (`uuid`, `timestamptz`, `text`, `smallint`, …) sowie Constraints, Indizes und Speicherformate sind Architektur- und Implementierungsentscheidungen. D2 legt fest, *welche Werte fachlich gültig sind* und *wie mit ihnen umzugehen ist*.
 
 **Triviale Typen** werden ohne eigene Detailsektion direkt verwendet:
 
@@ -40,7 +40,7 @@ Die folgenden Sektionen [D2.2–D2.8](#d22-identifier) definieren die **nicht-tr
 
 **Gleichheit & Ordnung:** Zwei Identifier sind gleich, wenn sie zeichenweise übereinstimmen. Eine fachliche Ordnung ist nicht definiert; Identifier werden nicht zum Sortieren fachlicher Listen verwendet.
 
-**Validierung:** Ein Identifier ist gültig, wenn er nicht leer ist und auf ein existierendes Objekt verweist (bei Fremdschlüsseln: referenzielle Integrität, technisch in N2 erzwungen).
+**Validierung:** Ein Identifier ist gültig, wenn er nicht leer ist und auf ein existierendes Objekt verweist (bei Fremdschlüsseln: referenzielle Integrität, technisch in Architektur und Implementierung umgesetzt).
 
 ## D2.3 SessionStatus
 
@@ -140,7 +140,7 @@ Attribut- und Entitätsnamen sind in **englischem `snake_case`** gehalten (konsi
 | [F3](F3-anwendungsfunktionen.md) | Definiert die Regeln über den Werten: `SessionStatus` (AF-03), `Pin`/`QrContent` (AF-02, AF-04), `ParticipantStatus` (AF-01, AF-02). |
 | [P1](P1-ziele-rahmenbedingungen.md) | Scope-Grenzen prägen die Wertebereiche (kein `waiting`, NG-10). |
 | [S1](S1-nachbarsysteme.md) | `Identifier` (`user_id`) stammt aus Supabase Auth (NB-02); `GeoCoordinate` entsteht über die Kartenansicht (NB-04) und wird für Reverse-Geocoding an NB-05 übergeben. |
-| N1 / N2 | Feldlängen, Obergrenzen, technische Typzuordnung, Constraints, PIN-Speicherung, Zeittoleranz beim Check-in. |
+| N1 / N2 | Qualitätsbezogene Grenzwerte sowie systemweite Zugriffs- und Mappingregeln. |
 | B1 | Ein-/Ausgabeformate und Feldvalidierung in den Dialogen. |
 | E2 | Glossar: konsistente Begriffe zu den Typwerten. |
 

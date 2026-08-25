@@ -207,7 +207,7 @@ Diese Merkmale erscheinen deshalb nicht in den Attributtabellen von [D1.4](#d14-
 | [F2](F2-anwendungsfaelle.md) | Jeder „Bezug zu Daten" der Use Cases ist hier durch eine Entität abgedeckt. |
 | [F3](F3-anwendungsfunktionen.md) | Bindet Felder (`status`, `max_participants`, `checked_in_at`, `pin`) an Entitäten; F3 definiert die Regeln darüber. |
 | [D2](D2-datentypen.md) | Formale Definition aller in D1 verwendeten Datentypen und Wertebereiche. |
-| N1 / N2 | Technische Umsetzung: Schlüssel, Constraints, Atomarität, Statuspersistenz, Zählstrategie, PIN-Speicherung. |
+| N1 / N2 | Übergreifende Qualitäts-, Zugriffs- und technische Mapping-Regeln. |
 | B1 | Darstellung der freigegebenen Profil-/Teilnehmerfelder in den Dialogen. |
 | [S1](S1-nachbarsysteme.md) | Auth-Kennung und Kartendaten stammen aus Nachbarsystemen, hier nur referenziert; `create_session` (S1.4) legt `organizer`- und `participant`-Eintrag atomar mit der Session an. |
 | E2 | Glossar: einheitliche Begriffe (Session, Teilnahme/Participant, Organisator/Organizer, Court/Sportort, Profil, Sportart). |

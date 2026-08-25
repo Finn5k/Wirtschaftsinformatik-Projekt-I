@@ -44,7 +44,7 @@ Quelle: [`diagrams/A06-check-in.puml`](diagrams/A06-check-in.puml).
 - **Ein Algorithmus, zwei Einstiege.** QR-Code und PIN liefern dasselbe Merkmal (die Session-PIN — beim QR-Weg aus dem Deep-Link vorbelegt, dessen Inhalt bei der Session-Erstellung nach AF-04 erzeugt wurde, siehe [6.3](#63-session-und-court-erstellen)) und durchlaufen denselben Aufruf `check_in`.
 - **Die Prüfung liegt in der RPC, nicht im Client.** `check_in` prüft Teilnahme, Merkmal und Zeitfenster gegen die Serverzeit und setzt den Status atomar ([F3 AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung)); die Dialogseite reicht das Merkmal nur unverändert über die Service-Schicht an NB-03 durch.
 - **Kein Toleranzfenster.** Maßgeblich für das Zeitfenster ist ausschließlich der aus AF-03 abgeleitete Status `active`.
-- **Idempotent bei Wiederholung.** `OK` und `ALREADY_CHECKED_IN` sind gleichermaßen erfolgreich; ein bereits gesetzter `checked_in`-Status wird nie zurückgenommen. Die Zuordnung der übrigen Ergebniscodes zu HTTP-Status und Anzeigetext steht in [N2.3](../spec/N2-querschnittskonzepte.md#n23-fehler-mapping-ergebniscodes--http) und [B1.4.6](../spec/B1-dialogspezifikation.md#b146-dlg-06--check-in).
+- **Idempotent bei Wiederholung.** `OK` und `ALREADY_CHECKED_IN` sind gleichermaßen erfolgreich; ein bereits gesetzter `checked_in`-Status wird nie zurückgenommen. Die Zuordnung der übrigen Ergebniscodes zu HTTP-Status steht in [F3 AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung), der Anzeigetext in [B1.4.6](../spec/B1-dialogspezifikation.md#b146-dlg-06--check-in).
 
 ## 6.3 Session und Court erstellen
 
