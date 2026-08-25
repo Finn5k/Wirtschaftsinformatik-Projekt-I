@@ -22,12 +22,16 @@ Details je Nachbarsystem — Operationen, Abgrenzung, Owner — stehen in [P2.2]
 
 ## 3.2 Technischer Kontext
 
-Jede Verbindung läuft synchron über HTTPS, ausgelöst durch eine Nutzeraktion; es gibt weder Warteschlangen noch Push-Kanäle ([P2.1](../spec/P2-architekturueberblick.md#p21-systemkontext), [S1.1](../spec/S1-nachbarsysteme.md#s11-konventionen)).
+Die folgende Abbildung zeigt dieselbe Kontextlandschaft wie [3.1](#31-fachlicher-kontext), jedoch aus technischer Sicht: Statt der fachlich ausgetauschten Information sind die Verbindungen mit Protokoll- und Schnittstelleninformationen beschriftet. Die technischen Verbindungen zwischen Browser, LocalCourt und den externen Nachbarsystemen erfolgen synchron über HTTPS und werden durch Nutzerinteraktionen ausgelöst; es gibt weder Warteschlangen noch Push-Kanäle ([P2.1](../spec/P2-architekturueberblick.md#p21-systemkontext), [S1.1](../spec/S1-nachbarsysteme.md#s11-konventionen)).
+
+[![Technischer Kontext LocalCourt](diagrams-png/A03-technischer-kontext.png)](diagrams-png/A03-technischer-kontext.png)
+
+Quelle: [`diagrams/A03-technischer-kontext.puml`](diagrams/A03-technischer-kontext.puml), abgeleitet aus dem Systemkontext in [3.1](#31-fachlicher-kontext).
 
 | Verbindung | Übertragung | Authentifizierung |
 |---|---|---|
 | LocalCourt ↔ NB-02 Supabase Auth | HTTPS | E-Mail/Passwort bzw. Token (Anfrage); Antwort liefert JWT |
-| LocalCourt ↔ NB-03 Supabase PostgREST | HTTPS | JWT aus NB-02 je Aufruf |
+| LocalCourt ↔ NB-03 Supabase PostgREST | HTTPS / REST | JWT aus NB-02 je Aufruf |
 | LocalCourt → NB-04 OpenStreetMap | HTTPS | keine |
 | LocalCourt ↔ NB-05 Nominatim | HTTPS | keine |
 
