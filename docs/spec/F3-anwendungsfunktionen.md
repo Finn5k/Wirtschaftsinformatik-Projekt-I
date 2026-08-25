@@ -1,6 +1,6 @@
 # F3 — Anwendungsfunktionen
 
-F3 enthält fachliche Berechnungs-, Prüf- und Entscheidungslogik, die für eine Beschreibung innerhalb eines Anwendungsfalls ([F2](F2-anwendungsfaelle.md)) zu umfangreich wäre. Eine Anwendungsfunktion ist ein fachlicher Algorithmus aus Sicht des Anwenders, kein Informatik-Algorithmus — Suchen, Sortieren und Speichern gehören daher nicht hierher (siehe [F3.3](#f33-nicht-teil-von-f3)). Die technische Realisierung liegt außerhalb von F3: [N2](N2-querschnittskonzepte.md) beschreibt systemweite Zugriffs- und Mapping-Regeln, [S1](S1-nachbarsysteme.md) die Nachbarsystemschnittstellen und RPC-Verträge; die konkrete Persistenz- und Transaktionsrealisierung wird in der Architekturdokumentation beschrieben. F3 dokumentiert zusätzlich die für die jeweilige Anwendungsfunktion verbindliche Abbildung ihrer Ergebniscodes auf HTTP-Status als Teil des Schnittstellenvertrags.
+F3 enthält fachliche Berechnungs-, Prüf- und Entscheidungslogik, die für eine Beschreibung innerhalb eines Anwendungsfalls ([F2](F2-anwendungsfaelle.md)) zu umfangreich wäre. Eine [Anwendungsfunktion](E2-glossar.md#e23-alphabetisches-glossar) ist ein fachlicher Algorithmus aus Sicht des Anwenders, kein Informatik-Algorithmus — Suchen, Sortieren und Speichern gehören daher nicht hierher (siehe [F3.3](#f33-nicht-teil-von-f3)). Die technische Realisierung liegt außerhalb von F3: [N2](N2-querschnittskonzepte.md) beschreibt systemweite Zugriffs- und Mapping-Regeln, [S1](S1-nachbarsysteme.md) die Nachbarsystemschnittstellen und RPC-Verträge; die konkrete Persistenz- und Transaktionsrealisierung wird in der Architekturdokumentation beschrieben. F3 dokumentiert zusätzlich die für die jeweilige Anwendungsfunktion verbindliche Abbildung ihrer [Ergebniscodes](E2-glossar.md#e23-alphabetisches-glossar) auf HTTP-Status als Teil des Schnittstellenvertrags.
 
 **Begriffsklärung:** Eine `Session` ist bei LocalCourt ein geplanter Sporttermin (siehe [E2](E2-glossar.md#e23-alphabetisches-glossar)), **keine** technische Anmelde- oder Authentifizierungssitzung — Letztere wird, wo nötig, als „Anmeldesitzung" beziehungsweise „Auth-Session" bezeichnet.
 
@@ -9,7 +9,7 @@ F3 enthält fachliche Berechnungs-, Prüf- und Entscheidungslogik, die für eine
 | AF-ID | Funktion | Fachliche Berechnung/Entscheidung | Genutzte Use Cases |
 |---|---|---|---|
 | **AF-01** | Beitritts- und Kapazitätsregel | Freie Plätze ermitteln und Beitritt anhand Status, Kapazität und Doppelbeitritt entscheiden. | UC-04 |
-| **AF-02** | Check-in-Validierung | Check-in anhand Teilnahme, Merkmal, Zeitfenster und vorhandenem Check-in entscheiden. | UC-08, UC-09 |
+| **AF-02** | Check-in-Validierung | Check-in anhand Teilnahme, PIN, Zeitfenster und vorhandenem Check-in entscheiden. | UC-08, UC-09 |
 | **AF-03** | Status einer Sport-Session | Status zeitbasiert aus Start, Dauer und aktueller Zeit ableiten. | UC-02, UC-03, UC-04, UC-08, UC-09, UC-11 |
 | **AF-04** | PIN- und QR-Code-Erzeugung | PIN zufällig erzeugen, QR-Inhalt aus Session-Kennung und PIN ableiten. | UC-06, UC-08, UC-09 |
 
@@ -20,10 +20,10 @@ F3 enthält fachliche Berechnungs-, Prüf- und Entscheidungslogik, die für eine
 | Abschnitt | Inhalt |
 |---|---|
 | Zweck | Entscheidet für einen Beitrittswunsch, ob er zulässig ist, und reserviert bei Zulässigkeit genau einen Platz, ohne die Kapazität zu überschreiten. |
-| Eingaben | Angemeldeter Nutzer; Session mit Status und Teilnehmerlimit `max_participants`; Anzahl bestätigter Teilnahmen (`confirmed_count`); vorhandene Teilnahme des Nutzers. |
-| Ergebnis | Neuer Participant-Eintrag mit Status `confirmed` **oder** Ablehnung mit Ergebniscode; bei Ablehnung bleibt der Datenbestand unverändert. |
+| Eingaben | Angemeldeter Nutzer; Session mit Status und [Kapazitätsgrenze](E2-glossar.md#e23-alphabetisches-glossar) `max_participants`; Anzahl bestätigter Teilnahmen (`confirmed_count`); vorhandene [Teilnahme](E2-glossar.md#e23-alphabetisches-glossar) des Nutzers. |
+| Ergebnis | Neue Teilnahme mit Status `confirmed` **oder** Ablehnung mit Ergebniscode; bei Ablehnung bleibt der Datenbestand unverändert. |
 | Ergebniscodes | `OK`, `NOT_AUTHENTICATED`, `SESSION_NOT_JOINABLE`, `ALREADY_JOINED`, `SESSION_FULL` |
-| Zusicherungen | **Kapazitätsinvariante:** `confirmed_count` überschreitet `max_participants` nie; keine Warteliste (P1 NG-10), der Organisator zählt ab Erstellung als Teilnehmer (F1 GP-01 A2). **Atomarität statt Reihenfolgegarantie:** Prüfung und Anlage sind unteilbar (Zielbild: atomare RPC gemäß S1.4); eine bestimmte Eingangsreihenfolge wird nicht zugesichert, garantiert ist nur die Kapazitätsinvariante. |
+| Zusicherungen | **Kapazitätsinvariante:** `confirmed_count` überschreitet `max_participants` nie; keine Warteliste (P1 NG-10), der Organisator zählt ab Erstellung als [Teilnehmer](E2-glossar.md#e23-alphabetisches-glossar) (F1 GP-01 A2). **[Atomarität](E2-glossar.md#e23-alphabetisches-glossar) statt Reihenfolgegarantie:** Prüfung und Anlage sind unteilbar (Zielbild: atomare RPC gemäß S1.4); eine bestimmte Eingangsreihenfolge wird nicht zugesichert, garantiert ist nur die Kapazitätsinvariante. |
 | Bezug | [F1](F1-geschaeftsprozesse.md) GP-01 A4; [UC-04](F2-anwendungsfaelle.md#uc-04--session-beitreten); Daten `session`, `participant` ([D1](D1-datenmodell.md)). |
 
 #### Algorithmus (AF-01)
@@ -32,22 +32,22 @@ Die Prüfungen laufen in dieser Reihenfolge; die erste zutreffende Bedingung bes
 
 ```text
 beitreten(nutzer, session):
-    wenn nutzer nicht angemeldet                 -> NOT_AUTHENTICATED
-    wenn status(session) = completed             -> SESSION_NOT_JOINABLE
-    wenn teilnahme(nutzer, session) vorhanden    -> ALREADY_JOINED
+    wenn nutzer nicht angemeldet                   -> NOT_AUTHENTICATED
+    wenn status(session) = completed               -> SESSION_NOT_JOINABLE
+    wenn findeTeilnahme(nutzer, session) vorhanden -> ALREADY_JOINED
 
     freie_plaetze := session.max_participants - confirmed_count(session)
-    wenn freie_plaetze <= 0                      -> SESSION_FULL
+    wenn freie_plaetze <= 0                        -> SESSION_FULL
 
     lege teilnahme an mit status = confirmed
-                                                 -> OK
+                                                   -> OK
 ```
 
 #### Ergebniscodes und HTTP-Mapping (AF-01)
 
 | Ergebniscode | HTTP-Status (RPC-Antwort) |
 |---|---|
-| `OK` | `200 OK` mit Participant-Datensatz |
+| `OK` | `200 OK` mit Teilnahme-Datensatz |
 | `NOT_AUTHENTICATED` | `401 Unauthorized` |
 | `SESSION_NOT_JOINABLE` | `409 Conflict` |
 | `ALREADY_JOINED` | `409 Conflict` |
@@ -59,8 +59,8 @@ Die HTTP-Werte folgen der allgemeinen Mapping-Konvention aus [N2.3](N2-querschni
 
 | Abschnitt | Inhalt |
 |---|---|
-| Zweck | Prüft für einen Check-in-Versuch (QR-Code oder PIN), ob er gültig ist, und markiert den Teilnehmer bei Gültigkeit als eingecheckt. |
-| Eingaben | Angemeldeter Nutzer; Session (Status, PIN); vorhandene Teilnahme (Status); vorgelegtes Merkmal (QR-Inhalt oder PIN); aktuelle Zeit. |
+| Zweck | Prüft für einen [Check-in](E2-glossar.md#e23-alphabetisches-glossar)-Versuch ([QR-Code](E2-glossar.md#e23-alphabetisches-glossar) oder [PIN](E2-glossar.md#e23-alphabetisches-glossar)), ob er gültig ist, und markiert den Teilnehmer bei Gültigkeit als eingecheckt. |
+| Eingaben | Angemeldeter Nutzer; Session (Status, PIN); vorhandene Teilnahme (Status); vorgelegte PIN (aus QR-Code oder manueller Eingabe); aktuelle Zeit. |
 | Ergebnis | Teilnahme-Status wird auf `checked_in` gesetzt und der Zeitpunkt festgehalten **oder** Ablehnung mit Ergebniscode; bei Ablehnung bleibt der Status unverändert. |
 | Ergebniscodes | `OK`, `NOT_JOINED`, `INVALID_CREDENTIAL`, `OUTSIDE_WINDOW`, `ALREADY_CHECKED_IN` |
 | Zusicherungen | **Keine Statusrücknahme:** ein gesetzter `checked_in`-Status wird nicht zurückgenommen, der einmal festgehaltene Zeitpunkt nicht überschrieben. **Kein Toleranzfenster:** maßgeblich ist ausschließlich der Status `active` (AF-03). |
@@ -69,10 +69,10 @@ Die HTTP-Werte folgen der allgemeinen Mapping-Konvention aus [N2.3](N2-querschni
 #### Algorithmus (AF-02)
 
 ```text
-einchecken(nutzer, session, merkmal, jetzt):
-    teilnahme := teilnahme(nutzer, session)
+einchecken(nutzer, session, vorgelegte_pin, jetzt):
+    teilnahme := findeTeilnahme(nutzer, session)
     wenn teilnahme fehlt                         -> NOT_JOINED
-    wenn merkmal != session.pin                  -> INVALID_CREDENTIAL
+    wenn vorgelegte_pin != session.pin           -> INVALID_CREDENTIAL
     wenn status(session, jetzt) != active        -> OUTSIDE_WINDOW
     wenn teilnahme.status = checked_in           -> ALREADY_CHECKED_IN
 
@@ -92,7 +92,7 @@ einchecken(nutzer, session, merkmal, jetzt):
 
 Die HTTP-Werte folgen der allgemeinen Mapping-Konvention aus [N2.3](N2-querschnittskonzepte.md#n23-ergebnisweitergabe-und-technisches-mapping).
 
-Der QR-Weg liefert dasselbe Merkmal wie die manuelle Eingabe (AF-04); beide Wege durchlaufen denselben Algorithmus.
+Der QR-Weg liefert dieselbe PIN wie die manuelle Eingabe (AF-04); beide Wege durchlaufen denselben Algorithmus.
 
 ### AF-03 — Status einer Sport-Session
 
@@ -100,7 +100,7 @@ Der QR-Weg liefert dasselbe Merkmal wie die manuelle Eingabe (AF-04); beide Wege
 
 PlantUML-Quelle: [`diagrams/F3-af03-session-lifecycle.puml`](diagrams/F3-af03-session-lifecycle.puml)
 
-Der Status einer Session (`scheduled`, `active`, `completed`) wird bei jeder Abfrage aus Startzeitpunkt, Dauer und aktueller Zeit abgeleitet — nicht separat gespeichert und nicht manuell gesetzt. Es gibt keinen Rücksprung und keinen Statuswechsel durch den Organisator; Bearbeiten, Absagen und Löschen sind gemäß P1 NG-11 nicht Teil des MVP.
+Der [Sessionstatus](E2-glossar.md#e23-alphabetisches-glossar) (`scheduled`, `active`, `completed`) wird bei jeder Abfrage aus Startzeitpunkt, Dauer und aktueller Zeit abgeleitet — nicht separat gespeichert und nicht manuell gesetzt. Es gibt keinen Rücksprung und keinen Statuswechsel durch den Organisator; Bearbeiten, Absagen und Löschen sind gemäß P1 NG-11 nicht Teil des MVP.
 
 ```text
 status(session, jetzt):
