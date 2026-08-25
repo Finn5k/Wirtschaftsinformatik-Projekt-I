@@ -17,11 +17,3 @@ Das maßgebliche fachliche Glossar liegt in der Spezifikation ([E2](../spec/E2-g
 | **Supabase PostgREST (NB-03)** | Nachbarsystem für den gesamten fachlichen Datenzugriff (Lesen, RPCs, einfache Schreibzugriffe). Im UI-Prototyp durch clientseitige `localStorage`-Persistenz je Service-Modul ersetzt. | [A02](A02-architecture-constraints.md#21-technische-randbedingungen), [A05 §5.4](A05-building-block-view.md#54-whitebox-service-schicht--ebene-2), [A08 §8.1](A08-crosscutting-concepts.md#81-datenmodell-und-persistenz), [S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) |
 | **UI-Prototyp** | Bezeichnung für den aktuellen Code-Stand ohne Supabase-/PostgreSQL-Anbindung; NB-05 Nominatim ist bereits angebunden. Abweichungen vom Zielbild sind je Konzept in A08 und als technische Schuld in A11 dokumentiert. | [A08](A08-crosscutting-concepts.md), [A11 §11.2](A11-risks-and-technical-debt.md#112-technische-schulden), [B1.6](../spec/B1-dialogspezifikation.md#b16-abweichungen-des-prototyps) |
 | **Zielbild / Zielarchitektur** | Der in A04–A09 beschriebene angestrebte Architekturzustand mit vollständiger Supabase-Anbindung, im Unterschied zum tatsächlichen UI-Prototyp. Abweichungen sind je Konzept in A08 und gebündelt als technische Schuld in A11 erfasst. | [A08](A08-crosscutting-concepts.md), [A11](A11-risks-and-technical-debt.md) |
-
-## 12.2 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Claude Code |
-| Verwendung | Analyse der in Spezifikation und Architektur verwendeten Terminologie sowie Entwurf des Architekturglossars. |
-| Prüfung | Begriffe und Definitionen gegen das fachliche Glossar, Spezifikation und A01–A11 geprüft; keine neuen fachlichen Begriffe oder Bedeutungen eingeführt. |

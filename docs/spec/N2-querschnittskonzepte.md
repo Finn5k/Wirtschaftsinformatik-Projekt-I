@@ -39,12 +39,3 @@ Dieses Querschnittskonzept beschreibt die einheitliche Behandlung fachlicher Feh
 | AF-02 | `OUTSIDE_WINDOW` | `409 Conflict` |
 
 Alle `409`-Antworten sind fachliche Ablehnungen (kein Serverfehler) und werden im Frontend als Inline-Meldung dargestellt, nicht als generischer Fehlerzustand (konsistent mit S1.2, „Validation Errors: Form-Level Highlights").
-
-
-## N2.4 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Claude (Claude Sonnet 5) / Codex |
-| Verwendung | Unterstützung bei der Erstellung und sprachlichen Überarbeitung des Bausteins N2. RLS-Policies (N2.2) nach Einführung der `organizer`-Entität in D1 aktualisiert (`organizer_id`-Spalte auf `session` entfällt, ersetzt durch `organizer`-Tabelle). |
-| Prüfung | Alle Inhalte wurden anhand der übrigen Spezifikationsbausteine geprüft und anschließend manuell überarbeitet. |

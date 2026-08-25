@@ -211,11 +211,3 @@ Diese Merkmale erscheinen deshalb nicht in den Attributtabellen von [D1.4](#d14-
 | B1 | Darstellung der freigegebenen Profil-/Teilnehmerfelder in den Dialogen. |
 | [S1](S1-nachbarsysteme.md) | Auth-Kennung und Kartendaten stammen aus Nachbarsystemen, hier nur referenziert; `create_session` (S1.4) legt `organizer`- und `participant`-Eintrag atomar mit der Session an. |
 | E2 | Glossar: einheitliche Begriffe (Session, Teilnahme/Participant, Organisator/Organizer, Court/Sportort, Profil, Sportart). |
-
-## D1.9 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Claude Code, Codex |
-| Verwendung | Ableitung der Entitätstypen, Attribute, Beziehungen und Invarianten aus den „Bezug zu Daten"-Angaben in F2/F3 sowie Erstellung des ursprünglichen ER-Diagramms. Überarbeitung der Rollenmodellierung (`profile`, `participant`, Organisator) auf Basis von Prüfer-Feedback; Straffung des Bausteins auf den Umfang des Referenzprojekts Herold. Anschließend auf Wunsch des Teams: Zusammenführung von `court.latitude`/`longitude` zu `court.coordinates` (D2 `GeoCoordinate` als Koordinatenpaar), Einführung einer eigenen `organizer`-Entität anstelle von `session.organizer_id` (inkl. Anpassung der abhängigen Stellen in B1, D2, E2, N2, S1), Umstellung des ER-Diagramms von Mermaid auf PlantUML (`diagrams/D1-er-diagramm.puml`) und Entfernung des Entscheidungsstand-Abschnitts mit entsprechender Neunummerierung. |
-| Prüfung | Abgeglichen mit [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F2](F2-anwendungsfaelle.md), [F3](F3-anwendungsfunktionen.md) und [D2](D2-datentypen.md); die Richtungsentscheidungen (fachliche Abstraktion, Sportart als Katalog, englische Feldnamen) hat das Team vorab bestätigt. Die Einführung der `organizer`-Entität wurde bewusst als Abweichung von der zuvor dokumentierten Begründung (keine eigene Entität nötig) getroffen und im Abschnitt [Rollenmodellierung](#rollenmodellierung-organisator-und-teilnehmer) neu hergeleitet; alle Anker, auf die andere Bausteine verweisen, wurden nach der Überarbeitung stichprobenartig kontrolliert. |

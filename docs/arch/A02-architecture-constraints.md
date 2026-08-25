@@ -27,11 +27,3 @@
 | CONV-01 | Spezifikation nach Siedersleben-Schema unter `docs/spec/` mit stabilen IDs als durchgängige Referenz (`GP-nn`, `UC-nn`, `AF-nn`, `G-nn`, `NG-nn`, `DLG-nn`, `NB-nn`, `N1-QA-nn`) | [CLAUDE.md](../../CLAUDE.md), Abschnitt „Spezifikation nach Siedersleben"; [E1](../spec/E1-leseanleitung.md) |
 | CONV-02 | Dokumentationssprache Deutsch; Tabellen/Listen vor Prosa; Querverweise zwischen Bausteinen als explizite Markdown-Links | [CLAUDE.md](../../CLAUDE.md); [docs/spec/README.md](../spec/README.md#hinweise), Abschnitt „Hinweise" |
 | CONV-03 | Architekturdokumentation in Anlehnung an arc42; ein Kapitel referenziert die Spezifikation, statt sie zu wiederholen | [docs/arch/README.md](README.md), Abschnitt 1 „Zweck und Abgrenzung"; vorgelebt in [A01](A01-introduction-and-goals.md) |
-
-## 2.4 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Claude Code |
-| Verwendung | Entwurf von Kapitel 2 (technische, organisatorische Randbedingungen, Konventionen) auf Basis von [P1](../spec/P1-ziele-rahmenbedingungen.md), [P2](../spec/P2-architekturueberblick.md), [S1](../spec/S1-nachbarsysteme.md) und [CLAUDE.md](../../CLAUDE.md). |
-| Prüfung | Jede Randbedingung gegen die genannte Quelle abgeglichen; keine Architekturentscheidungen vorweggenommen. |

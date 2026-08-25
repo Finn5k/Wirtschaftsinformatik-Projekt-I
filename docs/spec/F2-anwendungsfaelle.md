@@ -258,12 +258,3 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 | [N1](N1-nichtfunktionale-anforderungen.md) | Konkretisiert Qualitätsanforderungen wie Usability, Datenschutz, Performance, Sicherheit und Free-/Student-Tier-Betrieb. |
 | [N2](N2-querschnittskonzepte.md) | Technische Umsetzung der nichtfunktionalen Anforderungen, Tests, Monitoring und Sicherheitsmaßnahmen. |
 | [E2](E2-glossar.md) | Glossar und Begriffsklärungen, insbesondere konsistente Begriffe wie Session, Court/Sportort, Participant/Teilnehmer, Profile/Profil und Check-in. |
-
-## F2.7 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Codex, ChatGPT, Claude Code |
-| Verwendung | Entwurf und Strukturierung der Use Cases UC-01–UC-12; Einarbeitung fachlicher Teamentscheidungen (u. a. unveränderliche Sessions, read-only Profilbilder, sichtbare Profilfelder, Reverse-Geocoding, Listensortierung, Court-Dubletten, Organisator-Ergebnisdaten); Zusammenführung der Akteursdiagramme zu einem PlantUML-Use-Case-Diagramm mit einer Systemgrenze samt kreuzungsarmer Layoutüberarbeitung; Angleichung der Tabellenstruktur je Use Case an das im Referenzprojekt [Herold](https://github.com/carstenlucke/herold/blob/main/docs/spec/F2-anwendungsfaelle.md) verwendete, schlankere Zeilenschema; Ergänzung von PlantUML-Aktivitätsdiagrammen für die Hauptszenarien von UC-01–UC-09, UC-11 und UC-12 sowie das bestehende Verzweigungsdiagramm für UC-10. |
-| Prüfung | Inhalte wurden gegen [P1](P1-ziele-rahmenbedingungen.md), [P2](P2-architekturueberblick.md), [F1](F1-geschaeftsprozesse.md), [F3](F3-anwendungsfunktionen.md), [D1](D1-datenmodell.md), [D2](D2-datentypen.md), [B1](B1-dialogspezifikation.md), [S1](S1-nachbarsysteme.md), [N1](N1-nichtfunktionale-anforderungen.md), Repository-Vorgaben und Teamentscheidungen geprüft und manuell überarbeitet; die Zuordnung Use Case ↔ Aktivität wurde gegen die auf [GP-01](F1-geschaeftsprozesse.md#f11-geschäftsprozess-sportgelegenheit-zustande-bringen-gp-01) mit den Aktivitäten A1–A8 gestraffte F1-Struktur geprüft und im Use-Case-Index (F2.3) abgebildet; fachliche UC-Inhalte blieben dabei unverändert. |
-| Fachliche Verantwortung | Bleibt beim Team. |

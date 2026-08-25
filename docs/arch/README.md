@@ -353,11 +353,3 @@ als zusätzliche ADR-Zeile mit Status und Begründung ergänzt.
 | Keine Pagination | Größere Ergebnismengen erhöhen Antwortzeit | Indizes und Nutzungsdaten beobachten; später serverseitige Pagination ergänzen |
 | Free-Tier-Grenzen | Begrenzte Kapazität und Logs | Vercel-/Supabase-Dashboards beobachten; keine Zusatzdienste voraussetzen |
 | Prototyp nutzt Mockdaten | Architektur ist im Code noch nicht vollständig nachweisbar | Service-Schicht schrittweise austauschen; Abweichungen in `docs/frontend.md` aktuell halten |
-
-## 11. Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | ChatGPT, Codex |
-| Verwendung | Strukturierung nach arc42, Ableitung der Baustein-, Laufzeit- und Deployment-Sichten aus P2, S1, D1 und N1/N2 sowie Abgleich mit dem aktuellen React-Prototyp. |
-| Prüfung | Abgeglichen mit der Spezifikation sowie `package.json`, `src/`, `vite.config.ts` und `vercel.json`. Es wurden keine neuen fachlichen Funktionen eingeführt. |

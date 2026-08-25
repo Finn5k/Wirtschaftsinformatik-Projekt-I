@@ -46,3 +46,28 @@ Branches, Spezifikationsschema) in [../CLAUDE.md](../CLAUDE.md).
 LocalCourt befindet sich in aktiver Entwicklung. Spezifikation, Architektur
 und Frontend-Dokumentation werden fortlaufend aktualisiert und an den
 jeweils aktuellen Projektstand angepasst.
+
+## Deklaration von Hilfsmitteln
+
+Im Projekt LocalCourt werden KI-gestützte Werkzeuge unterstützend
+eingesetzt. Diese Deklaration wird zentral für das gesamte Projekt geführt
+und ersetzt die zuvor in einzelnen Spezifikations- und
+Architekturdokumenten enthaltenen Abschnitte zu eingesetzten
+KI-Werkzeugen.
+
+Dokumentiert wird der jeweils tatsächlich erfolgte Einsatz in
+Spezifikation, Architektur, Implementierung und weiterer
+Projektdokumentation. Die fachliche Verantwortung und Freigabe aller
+Inhalte bleibt beim Team. KI-generierte oder KI-überarbeitete Inhalte und
+Vorschläge werden vor ihrer Übernahme geprüft und bei Bedarf angepasst.
+
+| Werkzeug | Einsatzbereich | Verwendung |
+|---|---|---|
+| Claude Code | Spezifikation, Architektur | Analyse bestehender Spezifikation, Architektur und Code; Entwurf und Strukturierung von Spezifikationsbausteinen und arc42-Kapiteln; Unterstützung bei der Erstellung und Überarbeitung von Diagrammen in Spezifikation und Architektur; Konsistenz- und Querverweisprüfung. |
+| ChatGPT | Spezifikation, Projektdokumentation | Formulierungsvorschläge und redaktionelle Überarbeitung einzelner Spezifikationsbausteine sowie Abgleich der Frontend-Statusdokumentation (`docs/frontend.md`) mit dem UI-Prototyp. |
+| Codex | Spezifikation, Projektdokumentation | Ausarbeitung und redaktionelle Überarbeitung von Spezifikationsbausteinen; Nachführen der Frontend-Statusdokumentation nach Codeänderungen; Unterstützung bei der Strukturierung der Architektur-Übersicht (`docs/arch/README.md`). |
+| GitHub Copilot | Spezifikation | Formulierungsunterstützung bei einzelnen frühen Spezifikationsbausteinen (P1, F1, P2, S1). |
+
+Für die Implementierung (`src/`) ist bislang keine konkrete KI-Nutzung
+dokumentiert. Sobald sich das ändert, wird diese Deklaration entsprechend
+ergänzt.

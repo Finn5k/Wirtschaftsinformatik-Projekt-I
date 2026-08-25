@@ -32,11 +32,3 @@ Jede Verbindung läuft synchron über HTTPS, ausgelöst durch eine Nutzeraktion;
 | LocalCourt ↔ NB-05 Nominatim | HTTPS | keine |
 
 NB-01 Browser hat keinen eigenen Protokoll-Contract; die Schnittstelle ist die Dialogfläche aus B1 ([S1.2](../spec/S1-nachbarsysteme.md#s12-nb-01--browser-nutzerkanal)).
-
-## 3.3 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Claude Code |
-| Verwendung | Analyse der Spezifikation und Entwurf von Kapitel 3 „Kontextabgrenzung". |
-| Prüfung | Kontext, Nachbarsysteme und Beziehungen gegen P2/S1 sowie die übrige Spezifikation geprüft; keine unbelegten Systeme oder Beziehungen ergänzt. |

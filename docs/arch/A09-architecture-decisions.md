@@ -46,13 +46,3 @@ Dialogseiten benötigen fachlichen Datenzugriff über Supabase PostgREST (NB-03)
 **Begründung:**
 
 [A04 §4.1](A04-solution-strategy.md#41-technologie) legt fest, dass Seiten nicht direkt auf Supabase oder Nachbarsystem-Details zugreifen, „damit der UI-Prototyp schrittweise von Mock- auf persistente Services umgestellt werden kann, ohne die Dialogkomponenten neu zu strukturieren" — diese Austauschbarkeit wird bereits genutzt: Die Service-Module unter `src/services/` bilden im Prototyp bereits die vorgesehenen Integrationsgrenzen ab: `sessionService`, `courtService` und `userService` für die in [S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) beschriebenen fachlichen Datenzugriffe sowie `geocodingService` für NB-05 gemäß [S1.6](../spec/S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding); aktuell arbeiten sie noch mit Mockdaten bzw. der vorhandenen Prototyp-Anbindung statt der vollständigen Zielarchitektur ([A08 §8.1](A08-crosscutting-concepts.md#81-datenmodell-und-persistenz)). [A05 §5.4](A05-building-block-view.md#54-whitebox-service-schicht--ebene-2) ordnet `sessionService`/`courtService` NB-03, `geocodingService` NB-05 und `userService` NB-02 (Nutzerkennung)/NB-03 (`profilAktualisieren`) zu. Die Auth-Sitzung selbst liegt außerhalb dieser Grenze: [A05 §5.1](A05-building-block-view.md#51-whitebox-localcourt--ebene-1) ordnet den Zugriffsschutz über die Supabase-Auth-Sitzung (NB-02) explizit dem Baustein App-Shell & Navigation zu (`src/auth/`), nicht der Service-Schicht — im Code entsprechend `AuthProvider`/`ProtectedRoute` statt eines Service-Moduls. Die hier dokumentierte Entscheidung betrifft daher die Integrationsgrenze für NB-03/NB-05 (vollständig) und den NB-02-Ausschnitt, den `userService` tatsächlich abdeckt — nicht die vollständige Authentifizierung.
-
----
-
-## 9.3 Eingesetzte KI-Werkzeuge
-
-| Aspekt | Inhalt |
-|---|---|
-| Werkzeug | Claude Code |
-| Verwendung | Analyse von Spezifikation, bestehender Architektur und aktuellem Repository sowie Entwurf und Strukturierung der Architekturentscheidungen. |
-| Prüfung | Entscheidungen, Optionen und Begründungen gegen P1, N1/N2, S1 und A02–A08 geprüft; keine unbelegten Projektentscheidungen oder Technologien ergänzt. |
