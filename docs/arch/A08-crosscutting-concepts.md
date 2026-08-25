@@ -9,7 +9,6 @@ Die querschnittlichen Strategien dieses Kapitels sind, soweit spezifikationsseit
 | [8.3](#83-authentifizierung-und-zugriffsschutz) | Authentifizierung und Zugriffsschutz | [N1-QA-03](../spec/N1-nichtfunktionale-anforderungen.md#n1-qa-03--zugriffsschutz-und-datensparsamkeit), [N2.2](../spec/N2-querschnittskonzepte.md#n22-row-level-security-rls), [S1.3](../spec/S1-nachbarsysteme.md#s13-nb-02--supabase-auth) |
 | [8.4](#84-atomare-fachoperationen-und-datenzugriff-über-die-service-schicht) | Atomare Fachoperationen und Datenzugriff über die Service-Schicht | [F3](../spec/F3-anwendungsfunktionen.md) AF-01/AF-02, [S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest), [N1-QA-01](../spec/N1-nichtfunktionale-anforderungen.md#n1-qa-01--konsistenz-von-beitritt-und-check-in) |
 | [8.5](#85-fehlerbehandlung-und-ergebnisweitergabe) | Fehlerbehandlung und Ergebnisweitergabe | [F3](../spec/F3-anwendungsfunktionen.md#f31-katalog-der-anwendungsfunktionen), [N2.3](../spec/N2-querschnittskonzepte.md#n23-fehler-mapping-ergebniscodes--http), [S1.1](../spec/S1-nachbarsysteme.md#s11-konventionen), [B1.5.3](../spec/B1-dialogspezifikation.md#b153-formular-validierung)/[B1.5.4](../spec/B1-dialogspezifikation.md#b154-fehler--und-ladezustände) |
-| [8.6](#86-zeit--und-statuskonzept) | Zeit- und Statuskonzept | [F3 AF-03](../spec/F3-anwendungsfunktionen.md#af-03--status-einer-sport-session), [D2.3](../spec/D2-datentypen.md#d23-sessionstatus) |
 
 ## 8.1 Datenmodell und Persistenz
 
@@ -59,7 +58,7 @@ Die konkreten technischen Speichermechanismen — im Prototyp wie im Zielbild �
 
 Fachlich abgeleitete Werte werden nicht zusätzlich persistiert, wenn sie zuverlässig aus vorhandenen Daten berechnet werden können und D1 keine redundante Speicherung vorsieht ([D1.6](../spec/D1-datenmodell.md#d16-abgeleitete-merkmale)). Weicht der aktuelle Prototyp davon ab, wird das als Abweichung dokumentiert, nicht als Architekturregel behandelt.
 
-`status` erfüllt die Regel: Der abgeleitete Wert wird von `getSessionStatus()` bei jedem Zugriff aus `startAt`/`durationMin` berechnet und nirgends gespeichert ([8.6](#86-zeit--und-statuskonzept)) — konsistent mit [D1.6](../spec/D1-datenmodell.md#d16-abgeleitete-merkmale)/[D2.3](../spec/D2-datentypen.md#d23-sessionstatus). `confirmed_count` weicht dagegen ab: Im Code ist er als eigenständiges, redundant gepflegtes Feld `participantsCount` auf `SportSession` realisiert und bei jeder Kapazitätsänderung fortgeschrieben (`src/services/sessionService.ts`), statt bei jedem Zugriff aus `participants` gezählt zu werden — D1.6 verlangt ausdrücklich keine eigenständige Pflege. Diese Abweichung wird hier benannt, nicht zur Zielarchitektur erklärt.
+`status` erfüllt die Regel: Der abgeleitete Wert wird im aktuellen Code von `getSessionStatus()` bei jedem Zugriff aus `startAt`/`durationMin` berechnet und nirgends gespeichert; die fachliche Statusregel dahinter ist in [F3 AF-03](../spec/F3-anwendungsfunktionen.md#af-03--status-einer-sport-session) definiert — konsistent mit [D1.6](../spec/D1-datenmodell.md#d16-abgeleitete-merkmale)/[D2.3](../spec/D2-datentypen.md#d23-sessionstatus). `confirmed_count` weicht dagegen ab: Im Code ist er als eigenständiges, redundant gepflegtes Feld `participantsCount` auf `SportSession` realisiert und bei jeder Kapazitätsänderung fortgeschrieben (`src/services/sessionService.ts`), statt bei jedem Zugriff aus `participants` gezählt zu werden — D1.6 verlangt ausdrücklich keine eigenständige Pflege. Diese Abweichung wird hier benannt, nicht zur Zielarchitektur erklärt.
 
 ### 8.1.5 Aktueller Prototyp und Zielbild
 
@@ -262,18 +261,3 @@ Die folgenden Fälle illustrieren die vorstehende Regel; sie sind Beispiele, nic
 Bei jedem Fehlerfall wird zunächst zwischen Eingabevalidierung, fachlicher Ablehnung und technischem Fehler unterschieden ([8.5.2](#852-fehlerklassen)). Eingabevalidierung bleibt nach [8.2](#82-validierung) feldbezogen. Fachliche Ablehnungen — einschließlich technisch erfolgreicher, aber fachlich nicht verwertbarer Ergebnisse eines Nachbarsystems — werden als definierte fachliche Ergebnisse weitergegeben und von der UI kontextbezogen dargestellt. Technische Fehler werden getrennt als technischer Fehlerzustand weitergegeben und dürfen nicht in fachliche Ergebniscodes umgedeutet werden; die UI zeigt dafür eine allgemeine, technikfreie Verfügbarkeits-/Wiederholungsmeldung ohne interne Details. Fehler eines Nachbarsystems werden danach klassifiziert, ob der Dienst technisch nicht zuverlässig erreichbar war oder technisch erfolgreich ein fachlich nicht verwertbares Ergebnis geliefert hat ([8.5.5](#855-fehler-aus-nachbarsystemen)).
 
 **Betroffene Bausteine ([A05](A05-building-block-view.md)):** Service-Schicht, Dialogseiten. **Betroffene Laufzeitszenarien ([A06](A06-runtime-view.md)):** 6.1, 6.2, 6.3.
-
-## 8.6 Zeit- und Statuskonzept
-
-`getSessionStatus()` (`src/utils/sessionTime.ts:24`) leitet `SessionStatus` bei jedem Aufruf aus `startAt`, `durationMin` und einem Zeitpunkt ab, exakt nach der Regel aus [F3 AF-03](../spec/F3-anwendungsfunktionen.md#af-03--status-einer-sport-session); der Wert wird nirgends gespeichert:
-
-```ts
-export function getSessionStatus(
-  session: SessionTiming,
-  now = new Date(),          // Default: Client-Uhr des Browsers
-): SessionStatus { /* … */ }
-```
-
-Die Funktionssignatur nimmt den Referenzzeitpunkt als optionalen Parameter entgegen und ist insofern nicht an die Browser-Uhr gebunden; im aktuellen Code wird sie jedoch ausnahmslos mit dem Default `new Date()` aufgerufen — von `sessionService.ts` (Discovery-Filterung, „Meine Sessions“), `SessionDetailPage.tsx` und `CheckInPage.tsx` gleichermaßen, sodass innerhalb eines Browser-Tabs dieselbe Uhr für alle Ableitungen gilt. Eine Anbindung an eine Serverzeit existiert nicht, da keine RPC-Ebene vorhanden ist. Für die serverseitige Check-in-Prüfung sieht das Zielbild dagegen die maßgebliche Serverzeit vor, wie in der Check-in-Regel aus [F3 AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung) und [A06 6.2](A06-runtime-view.md#62-check-in-per-qr-code-oder-pin) festgelegt. Ein zusätzliches Toleranzfenster am Rand von `active` ist nicht implementiert, konsistent mit der dort festgehaltenen Zusicherung „Kein Toleranzfenster" ([F3 AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung); siehe auch [N1.3](../spec/N1-nichtfunktionale-anforderungen.md#n13-bewusst-nicht-verfolgte-qualitätsziele)).
-
-**Betroffene Bausteine ([A05](A05-building-block-view.md)):** Fachliche Typen & Regeln, Service-Schicht, Dialogseiten. **Betroffene Use Cases:** UC-02, UC-03, UC-04, UC-05, UC-08, UC-09, UC-11.
