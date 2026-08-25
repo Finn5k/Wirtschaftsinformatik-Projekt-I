@@ -1,0 +1,47 @@
+@startuml A05-bausteinsicht-service-schicht
+skinparam backgroundColor White
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam ArrowFontSize 11
+skinparam rectangle {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam nodesep 30
+skinparam ranksep 60
+
+rectangle "Dialogseiten" as Pages
+rectangle "UI-Komponenten\n(CreateSessionForm)" as UIComp
+
+rectangle "**Service-Schicht**" {
+  rectangle "sessionService" as SessionSvc
+  rectangle "userService" as UserSvc
+  rectangle "courtService" as CourtSvc
+  rectangle "geocodingService" as GeoSvc
+
+  SessionSvc --> UserSvc : verwendet\n(getCurrentUser)
+}
+
+rectangle "NB-02\nSupabase Auth" as NB02
+rectangle "NB-03\nSupabase PostgREST" as NB03
+rectangle "NB-05\nNominatim" as NB05
+
+Pages -[hidden]right-> UIComp
+
+Pages --> SessionSvc
+Pages --> UserSvc
+UIComp --> CourtSvc
+UIComp --> GeoSvc
+UIComp -[#Black]-> SessionSvc
+UIComp -[#Black]-> UserSvc
+
+SessionSvc -[#Black]-> NB03 : Lesen, RPC
+CourtSvc -[#Black]-> NB03 : Lesen, Anlegen
+UserSvc -[#Black]-> NB02 : Nutzerkennung
+UserSvc -[#Black]-> NB03 : Profil lesen/\naktualisieren
+GeoSvc -[#Black]-> NB05 : Reverse-\nGeocoding
+
+NB02 -[hidden]- NB03
+NB03 -[hidden]- NB05
+
+@enduml
