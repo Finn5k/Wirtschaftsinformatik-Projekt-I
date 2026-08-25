@@ -342,14 +342,3 @@ Der detaillierte Abgleich steht in [docs/frontend.md](../frontend.md).
 Diese Tabelle dokumentiert ausschließlich bereits aus P1, P2, S1 und N2
 abgeleitete Entscheidungen. Neue oder ersetzende Entscheidungen werden künftig
 als zusätzliche ADR-Zeile mit Status und Begründung ergänzt.
-
-## 10. Risiken und technische Schulden
-
-| Risiko | Auswirkung | Umgang im MVP |
-|---|---|---|
-| Öffentliche OSM-/Nominatim-Dienste | Rate-Limit oder zeitweilige Nichterreichbarkeit | Attribution, höchstens eine Nominatim-Anfrage pro Sekunde, keine automatischen Retries, verständlicher Fallback |
-| Direkter Browser-zu-Supabase-Zugriff | Fehlerhafte RLS könnte Daten offenlegen | RLS-Review und Berechtigungstests vor Backend-Freigabe |
-| Fehlende automatisierte Tests | Regressionen in RPCs und Dialogzuständen | Algorithmen aus F3 manuell nachvollziehen; RPC-Integrationstests zuerst ergänzen |
-| Keine Pagination | Größere Ergebnismengen erhöhen Antwortzeit | Indizes und Nutzungsdaten beobachten; später serverseitige Pagination ergänzen |
-| Free-Tier-Grenzen | Begrenzte Kapazität und Logs | Vercel-/Supabase-Dashboards beobachten; keine Zusatzdienste voraussetzen |
-| Prototyp nutzt Mockdaten | Architektur ist im Code noch nicht vollständig nachweisbar | Service-Schicht schrittweise austauschen; Abweichungen in `docs/frontend.md` aktuell halten |
