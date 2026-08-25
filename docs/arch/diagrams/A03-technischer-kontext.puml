@@ -1,0 +1,46 @@
+@startuml A03-technischer-kontext
+left to right direction
+skinparam backgroundColor White
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam ArrowFontSize 11
+skinparam actor {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam rectangle {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam package {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam nodesep 45
+skinparam ranksep 120
+
+actor "Teilnehmer" as Teilnehmer
+actor "Organisator" as Organisator
+
+rectangle "NB-01\nBrowser\n(Nutzerkanal)" as Browser
+
+rectangle "**LocalCourt**" as LocalCourt
+
+package "Supabase" as Supabase {
+  rectangle "NB-02\nSupabase Auth" as Auth
+  rectangle "NB-03\nSupabase PostgREST" as Daten
+}
+rectangle "NB-04\nOpenStreetMap" as OSM
+rectangle "NB-05\nNominatim" as Nominatim
+
+Teilnehmer --> Browser
+Organisator --> Browser
+
+Browser --> LocalCourt : HTTPS
+
+LocalCourt --> Auth : HTTPS\nE-Mail/Passwort bzw. Token\n→ JWT
+LocalCourt --> Daten : HTTPS / REST\nJWT je Aufruf
+LocalCourt --> OSM : HTTPS\nkeine Authentifizierung
+LocalCourt --> Nominatim : HTTPS\nkeine Authentifizierung
+
+@enduml
