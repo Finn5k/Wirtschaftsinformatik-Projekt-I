@@ -1,7 +1,15 @@
-export interface ReverseGeocodingResult {
-  city: string;
-  address?: string;
-}
+import type { ReverseGeocodeResult, ReverseGeocodingData } from "../types/result";
+
+// NB-05 Nominatim (S1.6). A08 8.5.5 führt diesen Aufruf als Referenzfall mit
+// allen drei Ausgängen: verwertbarer Ort (Erfolg), technisch erfolgreiche
+// Antwort ohne verwertbaren Ort (fachliche Ablehnung) und technischer Fehler.
+// Der Rückgabetyp unterscheidet sie, statt beide Fehlerfälle als Ausnahme zu
+// werfen und der UI die Einordnung zu überlassen (A08 8.5.4).
+//
+// Ausnahme davon ist der Abbruch über ein AbortSignal: Er ist keine der drei
+// Fehlerklassen aus A08 8.5.2 — es wurde gar keine fachliche Frage gestellt —
+// und wird weiterhin als DOMException geworfen, damit der Aufrufer ihn von
+// einem Ergebnis unterscheiden kann.
 
 interface NominatimAddress {
   city?: string;
@@ -20,11 +28,15 @@ interface NominatimResponse {
   address?: NominatimAddress;
 }
 
-const cache = new Map<string, ReverseGeocodingResult>();
+const cache = new Map<string, ReverseGeocodingData>();
 let lastRequestAt = 0;
 
 function coordinateKey(latitude: number, longitude: number) {
   return `${latitude.toFixed(6)},${longitude.toFixed(6)}`;
+}
+
+function isAbort(error: unknown) {
+  return error instanceof DOMException && error.name === "AbortError";
 }
 
 function wait(milliseconds: number, signal?: AbortSignal) {
@@ -50,12 +62,12 @@ export async function reverseGeocode(
   latitude: number,
   longitude: number,
   signal?: AbortSignal,
-): Promise<ReverseGeocodingResult> {
+): Promise<ReverseGeocodeResult> {
   const key = coordinateKey(latitude, longitude);
   const cachedResult = cache.get(key);
 
   if (cachedResult) {
-    return cachedResult;
+    return { kind: "ok", code: "OK", data: cachedResult };
   }
 
   await wait(Math.max(0, 1000 - (Date.now() - lastRequestAt)), signal);
@@ -68,22 +80,36 @@ export async function reverseGeocode(
     addressdetails: "1",
     zoom: "18",
   });
-  const response = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?${parameters.toString()}`,
-    {
-      headers: {
-        Accept: "application/json",
-        "Accept-Language": "de",
-      },
-      signal,
-    },
-  );
 
-  if (!response.ok) {
-    throw new Error("GEOCODING_UNAVAILABLE");
+  let data: NominatimResponse;
+
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?${parameters.toString()}`,
+      {
+        headers: {
+          Accept: "application/json",
+          "Accept-Language": "de",
+        },
+        signal,
+      },
+    );
+
+    // HTTP-Fehler: Es kam keine fachliche Entscheidung zustande (A08 8.5.2).
+    if (!response.ok) {
+      return { kind: "failed", cause: `HTTP ${response.status}` };
+    }
+
+    data = (await response.json()) as NominatimResponse;
+  } catch (error) {
+    if (isAbort(error)) {
+      throw error;
+    }
+
+    // Netzwerkfehler oder technisch unlesbare Antwort.
+    return { kind: "failed", cause: error };
   }
 
-  const data = (await response.json()) as NominatimResponse;
   const address = data.address;
   const city =
     address?.city ??
@@ -92,8 +118,9 @@ export async function reverseGeocode(
     address?.municipality ??
     address?.county;
 
+  // Technisch erfolgreich, aber fachlich nicht verwertbar (A08 8.5.5).
   if (!city) {
-    throw new Error("GEOCODING_NO_CITY");
+    return { kind: "rejected", code: "GEOCODING_NO_CITY" };
   }
 
   const street = address?.road ?? address?.pedestrian ?? address?.footway;
@@ -103,11 +130,11 @@ export async function reverseGeocode(
   const formattedAddress = [streetAndNumber, address?.postcode]
     .filter(Boolean)
     .join(", ");
-  const result: ReverseGeocodingResult = {
+  const result: ReverseGeocodingData = {
     city,
     address: formattedAddress || undefined,
   };
 
   cache.set(key, result);
-  return result;
+  return { kind: "ok", code: "OK", data: result };
 }
