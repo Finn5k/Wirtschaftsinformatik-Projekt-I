@@ -6,7 +6,7 @@ N1 beschreibt, *wie gut* LocalCourt seine Funktionen erbringt. Die Funktionen se
 
 LocalCourt verfolgt **drei** Qualitätsziele. Sie sind so gewählt, dass jedes im Review an einem konkreten Verhalten überprüfbar ist; ein Ziel, das sich nicht prüfen lässt, ist keines. Weitere denkbare Qualitätsmerkmale werden in [N1.3](#n13-bewusst-nicht-verfolgte-qualitätsziele) mit Begründung ausgeschlossen, statt sie unverbindlich mitzuführen.
 
-**Stand:** N1 formuliert Anforderungen an das MVP, keine bereits erreichten Zusagen. Der Prototyp hat noch kein Backend; wie weit eine Anforderung heute umgesetzt ist, steht in [arch §8](../arch/README.md#8-aktueller-implementierungsstand).
+**Stand:** N1 formuliert Anforderungen an das MVP, keine bereits erreichten Zusagen. Der Prototyp hat noch kein Backend; wie weit eine Anforderung heute umgesetzt ist, steht in [A08](../arch/A08-crosscutting-concepts.md).
 
 ## N1.2 Qualitätsziele
 
