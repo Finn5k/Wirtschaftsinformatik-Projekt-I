@@ -67,10 +67,10 @@ Der aktuelle Bearbeitungsstand jedes Bausteins ist im [Spezifikationsindex](READ
 Zentrale spezifizierte Elemente wie Ziele, Geschäftsprozesse, Use Cases, Anwendungsfunktionen, Dialoge und Qualitätsanforderungen tragen stabile IDs. Diese IDs werden nicht wiederverwendet oder umnummeriert, auch wenn sich ihr Inhalt später ändert.
 
 | Präfix | Bedeutung | Definiert in | Beispiel |
-|---|---|---|
+|---|---|---|---|
 | `G-nn` | Geschäftsziel | [P1.2](P1-ziele-rahmenbedingungen.md#p12-geschäftsziele) | `G-03` Niedrige Einstiegshürde |
 | `NG-nn` | Nicht-Ziel (Out of Scope) | [P1.4](P1-ziele-rahmenbedingungen.md#p14-scope) | `NG-10` Wartelisten bei vollen Sessions |
-| `CON-T-nn`, `CON-O-nn`, `CON-D-nn` | Rahmenbedingung (technisch / organisatorisch / Datenschutz) | [P1.5](P1-ziele-rahmenbedingungen.md#p15-rahmenbedingungen-constraints) | `CON-T-01` Datenbank: PostgreSQL nur |
+| `CON-T-nn` | Technische Rahmenbedingung | [P1.5](P1-ziele-rahmenbedingungen.md#p15-rahmenbedingungen-constraints) | `CON-T-01` Datenbank: PostgreSQL nur |
 | `SC-nn` | Erfolgskriterium | [P1.6](P1-ziele-rahmenbedingungen.md#p16-erfolgskriterien) | `SC-02` Session-Creation Workflow UX |
 | `NB-nn` | Nachbarsystem | [P2.2](P2-architekturueberblick.md#p22-nachbarsysteme), detailliert in [S1](S1-nachbarsysteme.md) | `NB-03` Supabase PostgREST API |
 | `GP-nn` | Geschäftsprozess (real, IT-unabhängig) | [F1](F1-geschaeftsprozesse.md) | `GP-01` Sportgelegenheit zustande bringen |
@@ -90,20 +90,20 @@ Beim Verweis auf einen Baustein wird immer die Baustein-Kurzform verwendet (`P1`
 
 ## E1.6 Diagramme und Notationen
 
-Diagramme in der Spezifikation werden grundsätzlich als **versionierbare Quellen** gepflegt, damit sie im Diff nachvollziehbar bleiben. Der größte Teil ist als **Mermaid**-Codeblock direkt in Markdown eingebettet und wird so auf GitHub unmittelbar gerendert. Wo Mermaid für die gewünschte UML-Darstellung nicht ausreicht, beispielsweise bei Use-Case-Diagrammen mit expliziter Systemgrenze oder komplexeren Aktivitätsdiagrammen mit Verzweigungen, liegt die Quelle stattdessen als **PlantUML**-`.puml`-Datei unter `diagrams/` vor; die zugehörige gerenderte PNG-Datei unter `diagrams-png/` wird im Markdown eingebunden. Als PlantUML liegen das Use-Case- und das UC-10-Aktivitätsdiagramm in [F2](F2-anwendungsfaelle.md), das Zustandsdiagramm in [F3](F3-anwendungsfunktionen.md), das Systemkontext-Diagramm in [P2](P2-architekturueberblick.md) sowie das ER-Diagramm in [D1](D1-datenmodell.md) vor.
+Diagramme in der Spezifikation werden grundsätzlich als **versionierbare Quellen** gepflegt, damit sie im Diff nachvollziehbar bleiben. Verbindliche Notation ist durchgängig **PlantUML**: Die Quelle liegt als `.puml`-Datei unter `diagrams/`, die daraus gerenderte PNG-Datei unter `diagrams-png/` wird im Markdown eingebunden. Das gilt ausnahmslos für alle Diagramme der Spezifikation ebenso wie für die Architekturdiagramme unter [`../arch/diagrams/`](../arch/diagrams/); eingebettete Mermaid-Codeblöcke werden nicht verwendet.
 
 | Diagrammtyp | Notation | Verwendet in | Zweck |
-|---|---|---|
+|---|---|---|---|
 | Aktivitätsdiagramm eines Geschäftsprozesses | PlantUML (`diagrams/F1-gp01-sportgelegenheit.puml`, gerendert als `diagrams-png/F1-gp01-sportgelegenheit.png`) | [F1.1.5](F1-geschaeftsprozesse.md#f115-aktivitätsdiagramm) | Ablauf eines Geschäftsprozesses je Akteur. |
 | Use-Case-Diagramm | PlantUML `usecase`-Notation (`diagrams/F2-use-cases.puml`, gerendert als `diagrams-png/F2-use-cases.png`) | [F2.2](F2-anwendungsfaelle.md#f22-use-case-übersicht) | Zuordnung Use Cases ↔ Akteure mit expliziter Systemgrenze. |
 | Aktivitätsdiagramm mit Verzweigungen | PlantUML `if`/`else`-Aktivitätsnotation (`diagrams/F2-uc10-court-erfassen.puml`, gerendert als `diagrams-png/F2-uc10-court-erfassen.png`) | [F2.4 UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen) | Verzweigungen (Auswahl vs. Neuerfassung mit Geocoding-Fehlerfall), die Mermaid-Flowcharts hier weniger klar darstellen. |
 | Systemkontext-Diagramm | PlantUML (`diagrams/P2-systemkontext.puml`, gerendert als `diagrams-png/P2-systemkontext.png`) | [P2.1](P2-architekturueberblick.md#p21-systemkontext) | Akteure (Teilnehmer, Organisator) und Nachbarsysteme NB-01 bis NB-05 als Blackbox-Kontext. |
-| Deployment-Diagramm | Mermaid `flowchart` mit `subgraph` je Tier/System | [Architekturdokumentation §6](../arch/README.md#6-verteilung-und-deployment) | Hosting- und Deployment-Topologie. |
-| Sequenzdiagramm | Mermaid `sequenceDiagram` | [Architekturdokumentation §5](../arch/README.md#5-laufzeitsichten) | Ablauf kritischer Datenflüsse über mehrere Systeme hinweg. |
+| Deployment-Diagramm | PlantUML (`../arch/diagrams/A07-deployment-view.puml`) | [A07](../arch/A07-deployment-view.md#711-produktionsumgebung) | Hosting- und Deployment-Topologie. |
+| Sequenzdiagramm | PlantUML (`../arch/diagrams/A06-*.puml`) | [A06](../arch/A06-runtime-view.md) | Ablauf kritischer Datenflüsse über mehrere Systeme hinweg. |
 | ER-Diagramm | PlantUML (`diagrams/D1-er-diagramm.puml`, gerendert als `diagrams-png/D1-er-diagramm.png`) | [D1.2](D1-datenmodell.md#d12-überblick-er-diagramm) | Entitätstypen und ihre Beziehungen. |
-| Dialoglandkarte | Mermaid `flowchart` mit `subgraph` je Navigationsbereich | [B1.2](B1-dialogspezifikation.md#b12-dialoglandkarte) | Navigation zwischen Dialogen (DLG-nn). |
+| Dialoglandkarte | PlantUML (`diagrams/B1-dialoglandkarte.puml`, gerendert als `diagrams-png/B1-dialoglandkarte.png`) | [B1.2](B1-dialogspezifikation.md#b12-dialoglandkarte) | Navigation zwischen Dialogen (DLG-nn). |
 | Algorithmus einer Anwendungsfunktion | Pseudocode-Block | [F3.2](F3-anwendungsfunktionen.md#f32-beschreibung-der-anwendungsfunktionen) | Fachliche Prüf- und Entscheidungsfolge mit ihren Ergebniscodes. |
-| Architekturdiagramme nach arc42 | Mermaid `flowchart` und `sequenceDiagram` | [Architekturdokumentation](../arch/README.md) | Komponenten-, Deployment- und Laufzeitsichten, die laut [P2](P2-architekturueberblick.md#p2--architekturüberblick) bewusst nicht in P2 gehören. |
+| Bausteindiagramm | PlantUML (`../arch/diagrams/A05-*.puml`) | [A05](../arch/A05-building-block-view.md#52-bausteindiagramm) | Zerlegung des Clients in Bausteine und die Service-Schicht — interne Architektur, die laut [P2](P2-architekturueberblick.md#p2--architekturüberblick) bewusst außerhalb des Architekturüberblicks steht. |
 
 ---
 
@@ -135,7 +135,7 @@ Jeder Schritt in dieser Kette **verfeinert**, ohne den vorherigen Schritt zu wid
 | Anwendungsfunktion | [F3.2 AF-01](F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel) | Fachliche Kapazitätsregel, die UC-04 zugrunde liegt. |
 | Datenmodell | [D1.4 `participant`](D1-datenmodell.md#participant--teilnahme) | Entität, die den Beitritt persistiert. |
 | Schnittstelle | [S1.4 NB-03](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) | Atomare Operation `join_session`. |
-| Architektur | [Baustein- und Laufzeitsicht](../arch/README.md#5-laufzeitsichten) | Frontend-Service ruft `join_session` auf; PostgreSQL prüft und schreibt atomar. |
+| Architektur | [Baustein- und Laufzeitsicht](../arch/A06-runtime-view.md#61-session-beitreten) | Frontend-Service ruft `join_session` auf; PostgreSQL prüft und schreibt atomar. |
 | Code | Implementierung des Beitritts-Flows | — |
 | Test | Testfall zu UC-04 (Kapazität voll/frei) | — |
 

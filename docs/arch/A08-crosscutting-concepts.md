@@ -198,6 +198,8 @@ if (
 
 **Abweichung.** Keine der drei Funktionen ist eine unteilbare Datenbankoperation: Alle laufen synchron im Browser auf einem einzigen, modulweiten Array. Die in [F3 AF-01](../spec/F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel)/[AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung) geforderte Atomarität bei gleichzeitigem Zugriff mehrerer Nutzer ([N1-QA-01](../spec/N1-nichtfunktionale-anforderungen.md#n1-qa-01--konsistenz-von-beitritt-und-check-in)) ist im aktuellen, je Browser-Instanz isolierten Prototyp nicht wirksam prüfbar; sie bleibt eine Anforderung des Zielbilds und wird erst mit der RPC-/PostgreSQL-Anbindung technisch durchgesetzt. Zusätzlich prüft `checkIn()` das Merkmal nicht mit; anders als in [F3 AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung) beschrieben, ist die Merkmalsprüfung im Code von der Zeitfenster-/Teilnahmeprüfung getrennt statt Teil derselben Operation.
 
+**Lesezugriffe.** Discovery ([UC-02](../spec/F2-anwendungsfaelle.md#uc-02--session-suchen)) lädt die vollständig gefilterte Ergebnismenge in einem Aufruf; eine seitenweise Nachforderung ist im MVP nicht vorgesehen, weil die je Ort und Sportart erwartete Ergebnismenge klein bleibt.
+
 **Betroffene Bausteine ([A05](A05-building-block-view.md)):** Dialogseiten, Service-Schicht (`sessionService`). **Betroffene Laufzeitszenarien ([A06](A06-runtime-view.md)):** 6.1–6.3.
 
 ## 8.5 Fehlerbehandlung und Ergebnisweitergabe

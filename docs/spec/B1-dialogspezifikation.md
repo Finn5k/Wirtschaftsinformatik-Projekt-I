@@ -12,37 +12,9 @@ B1 beschreibt den **MVP-Sollzustand** und ist damit die verbindliche Referenz f�
 
 Die Hauptnavigation ist eine persistente Navigationsleiste mit fünf Zielen ([B1.5.1](#b151-hauptnavigation)). Session-Detail und Check-in werden kontextbezogen erreicht.
 
-```mermaid
-flowchart LR
-    subgraph zugang["Zugang"]
-        dlg01["DLG-01<br/>Anmelden / Registrieren"]
-    end
+[![B1 Dialoglandkarte](diagrams-png/B1-dialoglandkarte.png)](diagrams-png/B1-dialoglandkarte.png)
 
-    subgraph hauptnav["Hauptnavigation"]
-        dlg02["DLG-02<br/>Entdecken (Liste)"]
-        dlg03["DLG-03<br/>Karte"]
-        dlg05["DLG-05<br/>Session erstellen"]
-        dlg07["DLG-07<br/>Meine Sessions"]
-        dlg08["DLG-08<br/>Profil"]
-    end
-
-    dlg04["DLG-04<br/>Session-Detail"]
-    dlg06["DLG-06<br/>Check-in"]
-    qr(["QR-Scan<br/>(Kamera des Geräts)"])
-
-    dlg01 -->|"nach Anmeldung"| dlg02
-    dlg02 -->|"Session wählen"| dlg04
-    dlg03 -->|"Session ansehen"| dlg04
-    dlg07 -->|"Session öffnen"| dlg04
-    dlg05 -->|"nach Erstellung"| dlg04
-    dlg04 -->|"Zum Check-in"| dlg06
-    dlg06 -->|"zurück / fertig"| dlg04
-    qr -.->|"Deep-Link (AF-04)"| dlg06
-    dlg04 -.->|"geschützte Aktion,<br/>nicht angemeldet"| dlg01
-    dlg05 -.->|"nicht angemeldet"| dlg01
-    dlg07 -.->|"nicht angemeldet"| dlg01
-    dlg08 -.->|"nicht angemeldet"| dlg01
-```
+Quelle: [`diagrams/B1-dialoglandkarte.puml`](diagrams/B1-dialoglandkarte.puml).
 
 Suche und Detailansicht (DLG-02, DLG-03, DLG-04) sind ohne Anmeldung nutzbar (UC-02); alle personenbezogenen Aktionen (Beitreten, Erstellen, Check-in, Meine Sessions, Profil) erfordern Anmeldung und leiten sonst zu DLG-01 ([B1.5.2](#b152-weiterleitung-nicht-angemeldeter-nutzer)).
 
