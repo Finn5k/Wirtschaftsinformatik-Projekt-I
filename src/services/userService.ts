@@ -1,6 +1,6 @@
 import { mockUser } from "../data/mockUser";
-import { sportTypes } from "../data/sports";
-import type { SportType } from "../types/session";
+import { isSportKey, sports } from "../data/sports";
+import type { SportKey } from "../types/session";
 import type { UserProfile } from "../types/user";
 
 const PROFILE_STORAGE_KEY = "localcourt.mock-profile";
@@ -8,7 +8,19 @@ const PROFILE_STORAGE_KEY = "localcourt.mock-profile";
 export interface UpdateProfileInput {
   name: string;
   city: string;
-  preferredSports: SportType[];
+  preferredSports: SportKey[];
+}
+
+// Vor der Umstellung auf die Schluessel aus D1.4 speicherte der Prototyp die
+// deutschen Anzeigenamen ("Fußball"). Bereits abgelegte Profile wuerden sonst
+// wortlos ihre Sportarten verlieren. Der Umweg entfaellt mit der serverseitigen
+// Profilpersistenz, die localStorage ohnehin abloest (A08 8.1.5).
+function toSportKey(value: unknown): unknown {
+  if (typeof value !== "string" || isSportKey(value)) {
+    return value;
+  }
+
+  return sports.find((sport) => sport.displayName === value)?.key ?? value;
 }
 
 function readStoredProfile(): UserProfile {
@@ -21,9 +33,7 @@ function readStoredProfile(): UserProfile {
   try {
     const parsedProfile = JSON.parse(storedProfile) as Partial<UserProfile>;
     const preferredSports = Array.isArray(parsedProfile.preferredSports)
-      ? parsedProfile.preferredSports.filter((sport): sport is SportType =>
-          sportTypes.includes(sport as SportType),
-        )
+      ? parsedProfile.preferredSports.map(toSportKey).filter(isSportKey)
       : mockUser.preferredSports;
 
     return {

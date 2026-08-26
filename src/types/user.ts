@@ -1,4 +1,4 @@
-import type { SportType } from "./session";
+import type { SportKey } from "./session";
 
 // MVP-Profil gemäß Spezifikation D1 (profile) und B1 DLG-08:
 // Anzeigename, Ort, optional angezeigtes Profilbild, bevorzugte Sportarten.
@@ -8,6 +8,6 @@ export interface UserProfile {
   name: string;
   city: string;
   email: string;
-  preferredSports: SportType[];
+  preferredSports: SportKey[];
   avatarUrl?: string;
 }

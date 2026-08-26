@@ -1,5 +1,17 @@
-import type { SportSession } from "../types/session";
+import type { Court, SportSession } from "../types/session";
+import { getCourtById } from "./mockCourts";
 import { mockUser } from "./mockUser";
+
+// D1.4: Das Koordinatenpaar traegt der Court, nicht die Session. Die Mockdaten
+// referenzieren deshalb den Court aus mockCourts, statt seine Felder zu
+// wiederholen.
+function court(courtId: string): Court {
+  const entry = getCourtById(courtId);
+  if (!entry) {
+    throw new Error(`Unbekannter Court in den Mockdaten: ${courtId}`);
+  }
+  return entry;
+}
 
 function relativeStartAt({
   days = 0,
@@ -29,13 +41,9 @@ export const mockSessions: SportSession[] = [
   {
     id: "morning-run",
     title: "Morning Run",
-    sportType: "Laufen",
-    courtId: "court-wieseckaue",
-    locationName: "Stadtpark Wieseckaue",
-    city: "Gießen",
+    sportKey: "running",
+    court: court("court-wieseckaue"),
     startAt: startAtDayOffset(1, 8),
-    latitude: 50.5926,
-    longitude: 8.6909,
     description:
       "Starte mit uns aktiv in den Abend. Lockere Laufrunde durch die Wieseckaue mit moderatem Tempo.",
     durationMin: 60,
@@ -58,13 +66,9 @@ export const mockSessions: SportSession[] = [
   {
     id: "afterwork-football",
     title: "Afterwork Fußball",
-    sportType: "Fußball",
-    courtId: "court-giessen-west",
-    locationName: "Sportplatz Gießen West",
-    city: "Gießen",
+    sportKey: "football",
+    court: court("court-giessen-west"),
     startAt: relativeStartAt({ minutes: -30 }),
-    latitude: 50.5847,
-    longitude: 8.6598,
     description:
       "Lockeres Kleinfeldspiel nach Uni oder Arbeit. Alle sind willkommen, Teams werden vor Ort gebildet.",
     durationMin: 90,
@@ -87,13 +91,9 @@ export const mockSessions: SportSession[] = [
   {
     id: "sunset-ride",
     title: "Sunset Ride",
-    sportType: "Radfahren",
-    courtId: "court-lahnradweg",
-    locationName: "Lahnradweg",
-    city: "Gießen",
+    sportKey: "cycling",
+    court: court("court-lahnradweg"),
     startAt: startAtDayOffset(1, 19),
-    latitude: 50.5764,
-    longitude: 8.6847,
     description:
       "Entspannte Fahrradrunde entlang der Lahn zum Sonnenuntergang. Ideal für alle, die eine lockere Runde fahren möchten.",
     durationMin: 75,
@@ -110,13 +110,9 @@ export const mockSessions: SportSession[] = [
   {
     id: "campus-basketball",
     title: "Campus Basketball 3v3",
-    sportType: "Basketball",
-    courtId: "court-campus",
-    locationName: "Campus Court",
-    city: "Friedberg",
+    sportKey: "basketball",
+    court: court("court-campus"),
     startAt: startAtDayOffset(1, 20),
-    latitude: 50.3372,
-    longitude: 8.7558,
     description:
       "Schnelle 3v3 Basketball-Session auf dem Campus Court. Ideal für lockere Runs nach Uni oder Arbeit.",
     durationMin: 90,
@@ -134,13 +130,9 @@ export const mockSessions: SportSession[] = [
   {
     id: "badminton-open",
     title: "Badminton Open Court",
-    sportType: "Badminton",
-    courtId: "court-thm-halle",
-    locationName: "THM Sporthalle",
-    city: "Gießen",
+    sportKey: "badminton",
+    court: court("court-thm-halle"),
     startAt: startAtDayOffset(2, 18, 30),
-    latitude: 50.5878,
-    longitude: 8.6833,
     description:
       "Offene Badminton-Session für Einsteiger und Fortgeschrittene. Schläger bitte selbst mitbringen.",
     durationMin: 120,
@@ -157,13 +149,9 @@ export const mockSessions: SportSession[] = [
   {
     id: "swim-session",
     title: "Swim Technique Basics",
-    sportType: "Schwimmen",
-    courtId: "court-ringallee",
-    locationName: "Hallenbad Ringallee",
-    city: "Gießen",
+    sportKey: "swimming",
+    court: court("court-ringallee"),
     startAt: startAtDayOffset(3, 10),
-    latitude: 50.5967,
-    longitude: 8.6849,
     description:
       "Gemeinsame Schwimmeinheit mit Fokus auf Technik, ruhigem Tempo und sauberem Einstieg.",
     durationMin: 60,
@@ -180,13 +168,9 @@ export const mockSessions: SportSession[] = [
   {
     id: "lahn-loop",
     title: "Lahn Loop",
-    sportType: "Laufen",
-    courtId: "court-lahnradweg",
-    locationName: "Lahnradweg",
-    city: "Gießen",
+    sportKey: "running",
+    court: court("court-lahnradweg"),
     startAt: startAtDayOffset(-2, 9),
-    latitude: 50.5764,
-    longitude: 8.6847,
     description:
       "Gemeinsame Laufrunde entlang der Lahn. Diese Session ist bereits abgeschlossen.",
     durationMin: 60,
@@ -209,13 +193,9 @@ export const mockSessions: SportSession[] = [
   {
     id: "morning-run-vol1",
     title: "Morning Run Vol. 1",
-    sportType: "Laufen",
-    courtId: "court-wieseckaue",
-    locationName: "Stadtpark Wieseckaue",
-    city: "Gießen",
+    sportKey: "running",
+    court: court("court-wieseckaue"),
     startAt: startAtDayOffset(-14, 18),
-    latitude: 50.5926,
-    longitude: 8.6909,
     description:
       "Die erste Ausgabe des Morning Run. Diese Session ist bereits abgeschlossen.",
     durationMin: 60,

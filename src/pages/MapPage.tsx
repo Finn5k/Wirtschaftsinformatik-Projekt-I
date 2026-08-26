@@ -4,20 +4,20 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { StatusBadge } from "../components/sessions/StatusBadge";
-import { sportTypes } from "../data/sports";
-import { getSessionsBySportType } from "../services/sessionService";
-import type { SportSession, SportType } from "../types/session";
+import { sportDisplayName, sportKeys } from "../data/sports";
+import { getSessionsBySportKey } from "../services/sessionService";
+import type { SportKey, SportSession } from "../types/session";
 import {
   formatSessionDate,
   formatSessionTime,
   getSessionStatus,
 } from "../utils/sessionTime";
 
-type SessionFilter = "Alle" | SportType;
+type SessionFilter = "Alle" | SportKey;
 
 const filters: SessionFilter[] = [
   "Alle",
-  ...sportTypes,
+  ...sportKeys,
 ];
 
 const defaultCenter: [number, number] = [50.5841, 8.6784];
@@ -59,14 +59,14 @@ export function MapPage() {
   const [tileLayerKey, setTileLayerKey] = useState(0);
 
   // Nur zukünftige/laufende Sessions, gefiltert nach Sportart (B1 DLG-03, UC-02).
-  const sessions = getSessionsBySportType(activeFilter);
+  const sessions = getSessionsBySportKey(activeFilter);
 
   const mapCenter = useMemo<[number, number]>(() => {
     if (!selectedSession) {
       return defaultCenter;
     }
 
-    return [selectedSession.latitude, selectedSession.longitude];
+    return [selectedSession.court.latitude, selectedSession.court.longitude];
   }, [selectedSession]);
 
   function selectFilter(filter: SessionFilter) {
@@ -108,7 +108,7 @@ export function MapPage() {
                     : "bg-white/90 text-slate-700",
                 ].join(" ")}
               >
-                {filter}
+                {filter === "Alle" ? filter : sportDisplayName(filter)}
               </button>
             );
           })}
@@ -144,8 +144,8 @@ export function MapPage() {
             return (
               <Marker
                 key={session.id}
-                title={`${session.title} – ${session.locationName}`}
-                position={[session.latitude, session.longitude]}
+                title={`${session.title} – ${session.court.name}`}
+                position={[session.court.latitude, session.court.longitude]}
                 icon={createSessionMarkerIcon(isSelected)}
                 eventHandlers={{
                   click: () => setSelectedSession(session),
@@ -154,7 +154,7 @@ export function MapPage() {
                 <Popup>
                   <strong>{session.title}</strong>
                   <br />
-                  {session.locationName}
+                  {session.court.name}
                   <br />
                   {formatSessionDate(session.startAt)} ·{" "}
                   {formatSessionTime(session.startAt)}
@@ -217,7 +217,7 @@ export function MapPage() {
               <div className="mb-2 flex items-center gap-2">
                 <StatusBadge status={getSessionStatus(selectedSession)} />
                 <span className="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-bold text-blue-700">
-                  {selectedSession.sportType}
+                  {sportDisplayName(selectedSession.sportKey)}
                 </span>
               </div>
 
@@ -226,7 +226,7 @@ export function MapPage() {
               </h2>
 
               <p className="mt-1 text-sm text-slate-500">
-                {selectedSession.locationName}, {selectedSession.city}
+                {selectedSession.court.name}, {selectedSession.court.city}
               </p>
             </div>
 

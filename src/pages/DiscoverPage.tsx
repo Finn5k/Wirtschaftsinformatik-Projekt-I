@@ -2,17 +2,17 @@ import { Search, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import { SessionCard } from "../components/sessions/SessionCard";
-import { sportTypes } from "../data/sports";
-import { getSessionsBySportType } from "../services/sessionService";
+import { sportDisplayName, sportKeys } from "../data/sports";
+import { getSessionsBySportKey } from "../services/sessionService";
 import { getCurrentUser } from "../services/userService";
-import type { SportType } from "../types/session";
+import type { SportKey } from "../types/session";
 import { formatSessionDate, formatSessionTime } from "../utils/sessionTime";
 
-type SessionFilter = "Alle" | SportType;
+type SessionFilter = "Alle" | SportKey;
 
 const filters: SessionFilter[] = [
   "Alle",
-  ...sportTypes,
+  ...sportKeys,
 ];
 
 export function DiscoverPage() {
@@ -22,13 +22,18 @@ export function DiscoverPage() {
 
   // Suche nach Ort/Region und optional Sportart (B1 DLG-02, UC-02).
   const normalizedSearch = searchTerm.trim().toLowerCase();
-  const filteredSessions = getSessionsBySportType(activeFilter).filter(
+  const filteredSessions = getSessionsBySportKey(activeFilter).filter(
     (session) => {
       if (!normalizedSearch) {
         return true;
       }
 
-      return [session.title, session.locationName, session.city, session.sportType]
+      return [
+        session.title,
+        session.court.name,
+        session.court.city,
+        sportDisplayName(session.sportKey),
+      ]
         .join(" ")
         .toLowerCase()
         .includes(normalizedSearch);
@@ -82,7 +87,7 @@ export function DiscoverPage() {
                   : "bg-white text-slate-700 hover:bg-slate-100",
               ].join(" ")}
             >
-              {filter}
+              {filter === "Alle" ? filter : sportDisplayName(filter)}
             </button>
           );
         })}
@@ -114,7 +119,7 @@ export function DiscoverPage() {
                 <div className="absolute bottom-4 left-4 right-4 text-white">
                   <div className="mb-2 flex gap-2">
                     <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold backdrop-blur">
-                      {featuredSession.sportType}
+                      {sportDisplayName(featuredSession.sportKey)}
                     </span>
                     <span className="rounded-full bg-emerald-400 px-3 py-1 text-xs font-bold text-slate-950">
                       {featuredSession.participantsCount}/
@@ -127,7 +132,7 @@ export function DiscoverPage() {
                   </h3>
 
                   <p className="mt-1 text-sm text-white/80">
-                    {featuredSession.locationName} ·{" "}
+                    {featuredSession.court.name} ·{" "}
                     {formatSessionDate(featuredSession.startAt)}{" "}
                     {formatSessionTime(featuredSession.startAt)}
                   </p>

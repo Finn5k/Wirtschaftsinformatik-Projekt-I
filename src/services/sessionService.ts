@@ -1,5 +1,5 @@
 import { mockSessions } from "../data/mockSessions";
-import type { Court, SportSession, SportType } from "../types/session";
+import type { Court, SportSession, SportKey } from "../types/session";
 import { getSessionStatus } from "../utils/sessionTime";
 import { getCurrentUser } from "./userService";
 
@@ -103,7 +103,7 @@ function synchronizeCurrentUserDisplay() {
 }
 
 export interface CreateSessionInput {
-  sportType: SportType;
+  sportKey: SportKey;
   title: string;
   description: string;
   startAt: string;
@@ -121,10 +121,8 @@ export function createSession(input: CreateSessionInput): SportSession {
   const session: SportSession = {
     id: crypto.randomUUID(),
     title: input.title.trim(),
-    sportType: input.sportType,
-    courtId: input.court.id,
-    locationName: input.court.name,
-    city: input.court.city,
+    sportKey: input.sportKey,
+    court: input.court,
     startAt: input.startAt,
     description: input.description.trim(),
     durationMin: input.durationMin,
@@ -141,8 +139,6 @@ export function createSession(input: CreateSessionInput): SportSession {
         status: "confirmed",
       },
     ],
-    latitude: input.court.latitude,
-    longitude: input.court.longitude,
   };
 
   createdSessions = [...createdSessions, session];
@@ -191,16 +187,16 @@ export function getDiscoverableSessions(): SportSession[] {
     });
 }
 
-export function getSessionsBySportType(
-  sportType: SportType | "Alle",
+export function getSessionsBySportKey(
+  sportKey: SportKey | "Alle",
 ): SportSession[] {
   const discoverable = getDiscoverableSessions();
 
-  if (sportType === "Alle") {
+  if (sportKey === "Alle") {
     return discoverable;
   }
 
-  return discoverable.filter((session) => session.sportType === sportType);
+  return discoverable.filter((session) => session.sportKey === sportKey);
 }
 
 function isMySession(session: SportSession): boolean {
