@@ -1,5 +1,6 @@
 import { Clock, MapPin, Timer, Users } from "lucide-react";
 import { Link } from "react-router";
+import { sportDisplayName } from "../../data/sports";
 import type { SportSession } from "../../types/session";
 import { isSessionFull } from "../../types/session";
 import {
@@ -30,7 +31,7 @@ export function SessionCard({ session }: SessionCardProps) {
           <div className="mb-2 flex flex-wrap items-center gap-2">
             <StatusBadge status={status} />
             <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">
-              {session.sportType}
+              {sportDisplayName(session.sportKey)}
             </span>
             {isFull && status !== "completed" && (
               <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-bold text-amber-700">
@@ -46,7 +47,7 @@ export function SessionCard({ session }: SessionCardProps) {
           <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
             <MapPin size={13} />
             <span className="truncate">
-              {session.locationName}, {session.city}
+              {session.court.name}, {session.court.city}
             </span>
           </p>
 

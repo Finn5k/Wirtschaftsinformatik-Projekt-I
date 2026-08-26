@@ -16,12 +16,12 @@ import {
 import type { ReactNode } from "react";
 import { useId, useRef, useState } from "react";
 import { Link } from "react-router";
-import { sportTypes } from "../../data/sports";
+import { sportDisplayName, sportKeys, sports } from "../../data/sports";
 import { createCourt, getCourts } from "../../services/courtService";
 import { reverseGeocode } from "../../services/geocodingService";
 import { createSession } from "../../services/sessionService";
 import { getCurrentUser } from "../../services/userService";
-import type { Court, SportSession, SportType } from "../../types/session";
+import type { Court, SportKey, SportSession } from "../../types/session";
 import { CheckInQrCode } from "./CheckInQrCode";
 import {
   CourtLocationPicker,
@@ -35,7 +35,7 @@ import {
 const NEW_COURT_VALUE = "__new__";
 
 interface FormState {
-  sportType: SportType;
+  sportKey: SportKey;
   title: string;
   description: string;
   date: string;
@@ -81,7 +81,7 @@ export function CreateSessionForm() {
   const geocodingAbortController = useRef<AbortController | null>(null);
 
   const [form, setForm] = useState<FormState>({
-    sportType: currentUser.preferredSports[0] ?? sportTypes[0],
+    sportKey: currentUser.preferredSports[0] ?? sportKeys[0],
     title: "",
     description: "",
     date: "",
@@ -240,7 +240,7 @@ export function CreateSessionForm() {
     }
 
     const session = createSession({
-      sportType: form.sportType,
+      sportKey: form.sportKey,
       title: form.title,
       description: form.description,
       startAt: new Date(`${form.date}T${form.time}`).toISOString(),
@@ -253,7 +253,7 @@ export function CreateSessionForm() {
   }
 
   if (createdSession) {
-    const courtLabel = `${createdSession.locationName}, ${createdSession.city}`;
+    const courtLabel = `${createdSession.court.name}, ${createdSession.court.city}`;
 
     return (
       <div className="space-y-4">
@@ -310,7 +310,7 @@ export function CreateSessionForm() {
           </p>
 
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <PreviewItem label="Sportart" value={form.sportType} />
+            <PreviewItem label="Sportart" value={sportDisplayName(form.sportKey)} />
             <PreviewItem label="Datum" value={form.date} />
             <PreviewItem label="Uhrzeit" value={form.time} />
             <PreviewItem label="Dauer" value={`${durationMin} Min.`} />
@@ -348,9 +348,12 @@ export function CreateSessionForm() {
       <FormSelect
         icon={<Zap size={18} />}
         label="Sportart"
-        value={form.sportType}
-        options={sportTypes.map((sport) => ({ value: sport, label: sport }))}
-        onChange={(value) => updateForm("sportType", value)}
+        value={form.sportKey}
+        options={sports.map((sport) => ({
+          value: sport.key,
+          label: sport.displayName,
+        }))}
+        onChange={(value) => updateForm("sportKey", value)}
       />
 
       <FormInput

@@ -2,6 +2,7 @@ import { CalendarDays, CheckCircle2, Clock, MapPin } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router";
 import { StatusBadge } from "../components/sessions/StatusBadge";
+import { sportDisplayName } from "../data/sports";
 import {
   getMyPastSessions,
   getMyUpcomingSessions,
@@ -141,7 +142,7 @@ function MySessionRow({ session, showCheckInInfo }: MySessionRowProps) {
       <div className="mb-2 flex flex-wrap items-center gap-2">
         <StatusBadge status={status} />
         <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">
-          {session.sportType}
+          {sportDisplayName(session.sportKey)}
         </span>
         <span
           className={[
@@ -166,7 +167,7 @@ function MySessionRow({ session, showCheckInInfo }: MySessionRowProps) {
         </span>
         <span className="flex items-center gap-1">
           <MapPin size={13} />
-          {session.locationName}
+          {session.court.name}
         </span>
       </div>
 

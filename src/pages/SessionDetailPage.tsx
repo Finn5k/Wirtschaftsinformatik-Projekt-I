@@ -14,6 +14,7 @@ import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { StatusBadge } from "../components/sessions/StatusBadge";
 import { CheckInQrCode } from "../components/sessions/CheckInQrCode";
+import { sportDisplayName } from "../data/sports";
 import { getSessionById, joinSession } from "../services/sessionService";
 import { getCurrentUser } from "../services/userService";
 import { isSessionFull } from "../types/session";
@@ -95,7 +96,7 @@ export function SessionDetailPage() {
           <div className="mb-3 flex items-center gap-2">
             <StatusBadge status={status} />
             <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
-              {session.sportType}
+              {sportDisplayName(session.sportKey)}
             </span>
             {isFull && !isReadOnly && (
               <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">
@@ -298,7 +299,7 @@ export function SessionDetailPage() {
             <div>
               <h2 className="font-extrabold text-slate-950">Sportort</h2>
               <p className="text-sm text-slate-500">
-                {session.locationName}, {session.city}
+                {session.court.name}, {session.court.city}
               </p>
             </div>
 

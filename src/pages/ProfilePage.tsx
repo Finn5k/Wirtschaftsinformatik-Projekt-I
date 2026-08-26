@@ -2,18 +2,18 @@ import { Check, LogOut, Mail, MapPin, Pencil, X } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../auth/authContext";
-import { sportTypes } from "../data/sports";
+import { sportDisplayName, sportKeys } from "../data/sports";
 import {
   getCurrentUser,
   updateCurrentUser,
 } from "../services/userService";
-import type { SportType } from "../types/session";
+import type { SportKey } from "../types/session";
 
 // Profil gemäß B1 DLG-08 (UC-12): Anzeigename, Ort, E-Mail (read-only, Auth),
 // bevorzugte Sportarten. Zustände: Ansicht / Bearbeiten.
 // Level/XP/Rang, Streak, Abzeichen und Avatar-Items sind bewusst entfernt (NG-05).
 
-const allSports: readonly SportType[] = sportTypes;
+const allSports: readonly SportKey[] = sportKeys;
 
 export function ProfilePage() {
   const { logout } = useAuth();
@@ -23,7 +23,7 @@ export function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [draftName, setDraftName] = useState(currentUser.name);
   const [draftCity, setDraftCity] = useState(currentUser.city);
-  const [draftSports, setDraftSports] = useState<SportType[]>(
+  const [draftSports, setDraftSports] = useState<SportKey[]>(
     currentUser.preferredSports,
   );
   const [nameError, setNameError] = useState<string | null>(null);
@@ -36,7 +36,7 @@ export function ProfilePage() {
     setIsEditing(true);
   }
 
-  function toggleSport(sport: SportType) {
+  function toggleSport(sport: SportKey) {
     setDraftSports((current) =>
       current.includes(sport)
         ? current.filter((entry) => entry !== sport)
@@ -172,7 +172,7 @@ export function ProfilePage() {
                           : "bg-slate-100 text-slate-700",
                       ].join(" ")}
                     >
-                      {sport}
+                      {sportDisplayName(sport)}
                     </button>
                   );
                 })}
@@ -218,7 +218,7 @@ export function ProfilePage() {
                     key={sport}
                     className="rounded-2xl bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700"
                   >
-                    {sport}
+                    {sportDisplayName(sport)}
                   </span>
                 ))}
               </div>
