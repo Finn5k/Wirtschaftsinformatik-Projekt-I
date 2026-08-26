@@ -1,0 +1,66 @@
+@startuml B1-dialoglandkarte
+skinparam backgroundColor White
+skinparam shadowing false
+skinparam ArrowColor Black
+skinparam ArrowFontSize 11
+skinparam rectangle {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam package {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam usecase {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam legend {
+  BackgroundColor White
+  BorderColor Black
+}
+skinparam nodesep 30
+skinparam ranksep 55
+
+package "Zugang" as Zugang {
+  rectangle "DLG-01\nAnmelden / Registrieren" as DLG01
+}
+
+package "Hauptnavigation" as Hauptnav {
+  rectangle "DLG-02\nEntdecken (Liste)" as DLG02
+  rectangle "DLG-03\nKarte" as DLG03
+  rectangle "DLG-05\nSession erstellen" as DLG05
+  rectangle "DLG-07\nMeine Sessions" as DLG07
+  rectangle "DLG-08\nProfil" as DLG08
+
+  ' Reihenfolge der Navigationsziele stabil halten
+  DLG02 -[hidden]right- DLG03
+  DLG03 -[hidden]right- DLG05
+  DLG05 -[hidden]right- DLG07
+  DLG07 -[hidden]right- DLG08
+}
+
+rectangle "DLG-04\nSession-Detail" as DLG04
+rectangle "DLG-06\nCheck-in" as DLG06
+usecase "QR-Scan\n(Kamera des Geräts)" as QR
+
+DLG01 --> DLG02 : nach Anmeldung
+
+DLG02 --> DLG04 : Session wählen
+DLG03 --> DLG04 : Session ansehen
+DLG05 --> DLG04 : nach Erstellung
+DLG07 --> DLG04 : Session öffnen
+
+DLG04 --> DLG06 : Zum Check-in
+DLG06 --> DLG04 : zurück / fertig
+QR -[#Black,dashed]-> DLG06 : Deep-Link (AF-04)
+
+' Weiterleitung nicht angemeldeter Nutzer gebuendelt als Legende,
+' statt als vier ueberlagernde Rueckkanten auf DLG-01
+legend right
+  Geschützte Aktionen in DLG-04, DLG-05, DLG-07 und DLG-08
+  leiten nicht angemeldete Nutzer zu DLG-01 (B1.5.2) und
+  kehren danach zum ursprünglichen Ziel zurück.
+endlegend
+
+@enduml

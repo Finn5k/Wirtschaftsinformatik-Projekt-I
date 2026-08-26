@@ -70,7 +70,7 @@ Zentrale spezifizierte Elemente wie Ziele, Geschäftsprozesse, Use Cases, Anwend
 |---|---|---|---|
 | `G-nn` | Geschäftsziel | [P1.2](P1-ziele-rahmenbedingungen.md#p12-geschäftsziele) | `G-03` Niedrige Einstiegshürde |
 | `NG-nn` | Nicht-Ziel (Out of Scope) | [P1.4](P1-ziele-rahmenbedingungen.md#p14-scope) | `NG-10` Wartelisten bei vollen Sessions |
-| `CON-T-nn`, `CON-O-nn`, `CON-D-nn` | Rahmenbedingung (technisch / organisatorisch / Datenschutz) | [P1.5](P1-ziele-rahmenbedingungen.md#p15-rahmenbedingungen-constraints) | `CON-T-01` Datenbank: PostgreSQL nur |
+| `CON-T-nn` | Technische Rahmenbedingung | [P1.5](P1-ziele-rahmenbedingungen.md#p15-rahmenbedingungen-constraints) | `CON-T-01` Datenbank: PostgreSQL nur |
 | `SC-nn` | Erfolgskriterium | [P1.6](P1-ziele-rahmenbedingungen.md#p16-erfolgskriterien) | `SC-02` Session-Creation Workflow UX |
 | `NB-nn` | Nachbarsystem | [P2.2](P2-architekturueberblick.md#p22-nachbarsysteme), detailliert in [S1](S1-nachbarsysteme.md) | `NB-03` Supabase PostgREST API |
 | `GP-nn` | Geschäftsprozess (real, IT-unabhängig) | [F1](F1-geschaeftsprozesse.md) | `GP-01` Sportgelegenheit zustande bringen |
@@ -90,7 +90,7 @@ Beim Verweis auf einen Baustein wird immer die Baustein-Kurzform verwendet (`P1`
 
 ## E1.6 Diagramme und Notationen
 
-Diagramme in der Spezifikation werden grundsätzlich als **versionierbare Quellen** gepflegt, damit sie im Diff nachvollziehbar bleiben. Der Regelfall ist eine **PlantUML**-`.puml`-Datei unter `diagrams/`; die zugehörige gerenderte PNG-Datei unter `diagrams-png/` wird im Markdown eingebunden. So liegen unter anderem das Use-Case- und das UC-10-Aktivitätsdiagramm in [F2](F2-anwendungsfaelle.md), das Zustandsdiagramm in [F3](F3-anwendungsfunktionen.md), das Systemkontext-Diagramm in [P2](P2-architekturueberblick.md) und das ER-Diagramm in [D1](D1-datenmodell.md) vor, ebenso sämtliche Architekturdiagramme unter [`../arch/diagrams/`](../arch/diagrams/). Einzige Ausnahme ist die Dialoglandkarte in [B1.2](B1-dialogspezifikation.md#b12-dialoglandkarte), die als **Mermaid**-Codeblock direkt in Markdown eingebettet ist und so auf GitHub unmittelbar gerendert wird.
+Diagramme in der Spezifikation werden grundsätzlich als **versionierbare Quellen** gepflegt, damit sie im Diff nachvollziehbar bleiben. Verbindliche Notation ist durchgängig **PlantUML**: Die Quelle liegt als `.puml`-Datei unter `diagrams/`, die daraus gerenderte PNG-Datei unter `diagrams-png/` wird im Markdown eingebunden. Das gilt ausnahmslos für alle Diagramme der Spezifikation ebenso wie für die Architekturdiagramme unter [`../arch/diagrams/`](../arch/diagrams/); eingebettete Mermaid-Codeblöcke werden nicht verwendet.
 
 | Diagrammtyp | Notation | Verwendet in | Zweck |
 |---|---|---|---|
@@ -101,7 +101,7 @@ Diagramme in der Spezifikation werden grundsätzlich als **versionierbare Quelle
 | Deployment-Diagramm | PlantUML (`../arch/diagrams/A07-deployment-view.puml`) | [A07](../arch/A07-deployment-view.md#711-produktionsumgebung) | Hosting- und Deployment-Topologie. |
 | Sequenzdiagramm | PlantUML (`../arch/diagrams/A06-*.puml`) | [A06](../arch/A06-runtime-view.md) | Ablauf kritischer Datenflüsse über mehrere Systeme hinweg. |
 | ER-Diagramm | PlantUML (`diagrams/D1-er-diagramm.puml`, gerendert als `diagrams-png/D1-er-diagramm.png`) | [D1.2](D1-datenmodell.md#d12-überblick-er-diagramm) | Entitätstypen und ihre Beziehungen. |
-| Dialoglandkarte | Mermaid `flowchart` mit `subgraph` je Navigationsbereich | [B1.2](B1-dialogspezifikation.md#b12-dialoglandkarte) | Navigation zwischen Dialogen (DLG-nn). |
+| Dialoglandkarte | PlantUML (`diagrams/B1-dialoglandkarte.puml`, gerendert als `diagrams-png/B1-dialoglandkarte.png`) | [B1.2](B1-dialogspezifikation.md#b12-dialoglandkarte) | Navigation zwischen Dialogen (DLG-nn). |
 | Algorithmus einer Anwendungsfunktion | Pseudocode-Block | [F3.2](F3-anwendungsfunktionen.md#f32-beschreibung-der-anwendungsfunktionen) | Fachliche Prüf- und Entscheidungsfolge mit ihren Ergebniscodes. |
 | Bausteindiagramm | PlantUML (`../arch/diagrams/A05-*.puml`) | [A05](../arch/A05-building-block-view.md#52-bausteindiagramm) | Zerlegung des Clients in Bausteine und die Service-Schicht — interne Architektur, die laut [P2](P2-architekturueberblick.md#p2--architekturüberblick) bewusst außerhalb des Architekturüberblicks steht. |
 
