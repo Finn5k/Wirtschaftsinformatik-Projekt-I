@@ -8,8 +8,10 @@ Region auf einer Karte, treten ihnen bei, und Organisatoren erstellen Sessions,
 verwalten Teilnehmerlimits und wickeln den Check-in per QR-Code oder PIN ab.
 
 > **Status:** Hochschulprojekt (THM, Wirtschaftsinformatik Projekt I) —
-> derzeit in der **Spezifikationsphase**. Die vollständige Spezifikation nach
-> Siedersleben-Schema liegt unter [`docs/spec/`](docs/spec/README.md).
+> Spezifikation und Architektur stehen, die **Implementierung läuft**. Die
+> Spezifikation nach Siedersleben-Schema liegt unter
+> [`docs/spec/`](docs/spec/README.md), die Architektur nach arc42 unter
+> [`docs/arch/`](docs/arch/README.md).
 
 ## Kernfunktionen (MVP)
 
@@ -36,11 +38,12 @@ Wartelisten, Ratings, Zahlungen, native Apps. Details in
 | Karte | Leaflet / react-leaflet (OpenStreetMap) |
 | Routing | react-router |
 | Icons | lucide-react |
-| Backend (geplant) | Supabase — PostgreSQL, Auth, PostgREST |
+| Backend | Supabase — PostgreSQL, Auth, PostgREST ([Schema](supabase/README.md)) |
 | Tooling | ESLint, npm |
 
-> Backend/Persistenz sind spezifiziert, aber noch nicht im Code verdrahtet.
-> Der verbindliche Stack ist in
+> Das Datenbankschema mit RLS-Policies und den atomaren RPCs liegt unter
+> [`supabase/migrations/`](supabase/migrations); das Frontend ist noch nicht
+> dagegen verdrahtet. Der verbindliche Stack ist in
 > [P2 — Architekturüberblick](docs/spec/P2-architekturueberblick.md) beschrieben.
 
 ## Schnellstart
@@ -60,8 +63,11 @@ npm run preview  # Produktionsbuild lokal ansehen
 ```
 .
 ├── src/                 # React-Frontend (TypeScript)
+├── supabase/
+│   └── migrations/      # Datenbankschema, RLS-Policies, atomare RPCs
 ├── docs/
 │   ├── spec/            # Spezifikation nach Siedersleben (P1, P2, F1–F3, D1, D2, S1, …)
+│   ├── arch/            # Architektur nach arc42 (A01–A09, A12) mit ADRs
 │   └── frontend.md      # Frontend-Notizen
 ├── CLAUDE.md            # Projektkonventionen (Commits, Branches, Spec-Schema)
 ├── AGENTS.md            # Verweis auf CLAUDE.md für weitere KI-Werkzeuge
