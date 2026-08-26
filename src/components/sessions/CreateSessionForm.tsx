@@ -18,10 +18,7 @@ import { useId, useRef, useState } from "react";
 import { Link } from "react-router";
 import { sportTypes } from "../../data/sports";
 import { createCourt, getCourts } from "../../services/courtService";
-import {
-  reverseGeocode,
-  type ReverseGeocodingResult,
-} from "../../services/geocodingService";
+import { reverseGeocode } from "../../services/geocodingService";
 import { createSession } from "../../services/sessionService";
 import { getCurrentUser } from "../../services/userService";
 import type { Court, SportSession, SportType } from "../../types/session";
@@ -53,7 +50,16 @@ type FormErrors = Partial<
   Record<keyof FormState | "duration" | "newCourtLocation", string>
 >;
 
-type GeocodingStatus = "idle" | "loading" | "success" | "error";
+// "rejected" und "failed" trennen die beiden Fehlerklassen aus A08 8.5.2:
+// eine technisch erfolgreiche Antwort ohne verwertbaren Ort gegenüber einem
+// technisch fehlgeschlagenen Aufruf. A08 8.5.6 verlangt dafür unterschiedliche
+// Darstellung — kontextbezogener Hinweis gegenüber Wiederholen-Meldung.
+type GeocodingStatus =
+  | "idle"
+  | "loading"
+  | "success"
+  | "rejected"
+  | "failed";
 
 function isStartInPast(date: string, time: string) {
   const startAt = new Date(`${date}T${time}`);
@@ -124,29 +130,48 @@ export function CreateSessionForm() {
     }));
     setErrors((current) => ({ ...current, newCourtLocation: undefined }));
 
+    let result;
+
     try {
-      const result: ReverseGeocodingResult = await reverseGeocode(
+      result = await reverseGeocode(
         coordinates.latitude,
         coordinates.longitude,
         abortController.signal,
       );
-
-      setForm((current) => ({
-        ...current,
-        newCourtCity: result.city,
-        newCourtAddress: result.address ?? "",
-      }));
-      setGeocodingStatus("success");
     } catch (error) {
+      // Abbruch durch einen neueren Pin — kein Fehlerfall nach A08 8.5.2.
       if (error instanceof DOMException && error.name === "AbortError") {
         return;
       }
 
-      setGeocodingStatus("error");
-      setGeocodingError(
-        "Der Ort konnte nicht ermittelt werden. Bitte versuche es erneut oder setze den Pin neu.",
-      );
+      throw error;
     }
+
+    if (result.kind === "ok") {
+      setForm((current) => ({
+        ...current,
+        newCourtCity: result.data.city,
+        newCourtAddress: result.data.address ?? "",
+      }));
+      setGeocodingStatus("success");
+      return;
+    }
+
+    if (result.kind === "rejected") {
+      // GEOCODING_NO_CITY: fachlich nicht verwertbares Ergebnis. Wiederholen
+      // hilft hier nicht, ein versetzter Pin schon (A08 8.5.6).
+      setGeocodingStatus("rejected");
+      setGeocodingError(
+        "Zu diesem Punkt gibt es keinen bekannten Ort. Bitte setze den Pin etwas versetzt, zum Beispiel näher an einer Straße.",
+      );
+      return;
+    }
+
+    // Technischer Fehler: keine internen Details anzeigen (A08 8.5.6).
+    setGeocodingStatus("failed");
+    setGeocodingError(
+      "Der Ort konnte gerade nicht ermittelt werden. Bitte versuche es erneut.",
+    );
   }
 
   function validateForm() {
@@ -446,7 +471,8 @@ export function CreateSessionForm() {
             </section>
           )}
 
-          {geocodingStatus === "error" && (
+          {(geocodingStatus === "rejected" ||
+            geocodingStatus === "failed") && (
             <section
               role="alert"
               className="rounded-2xl border border-red-100 bg-red-50 p-4"
@@ -454,7 +480,7 @@ export function CreateSessionForm() {
               <p className="text-xs font-bold leading-5 text-red-700">
                 {geocodingError}
               </p>
-              {courtCoordinates && (
+              {geocodingStatus === "failed" && courtCoordinates && (
                 <button
                   type="button"
                   onClick={() => lookupCourtLocation(courtCoordinates)}
