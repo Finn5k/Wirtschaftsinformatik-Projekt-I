@@ -1,7 +1,7 @@
 -- LocalCourt — Abgeleitete Merkmale
 --
--- D1.6 fuehrt status und confirmed_count als abgeleitete Merkmale und ueberlaesst
--- die Umsetzungsentscheidung ausdruecklich der Architektur. A08 8.1.4 entscheidet
+-- D1.6 führt status und confirmed_count als abgeleitete Merkmale und überlässt
+-- die Umsetzungsentscheidung ausdrücklich der Architektur. A08 8.1.4 entscheidet
 -- sie: ableitbare Werte werden nicht redundant persistiert. Beide entstehen
 -- deshalb bei jeder Abfrage, nicht als Spalte und nicht per Job (F3 AF-03).
 --
@@ -10,7 +10,7 @@
 
 -- --------------------------------------------------- Statusableitung (AF-03)
 -- Eine einzige Definition, die View und RPCs gemeinsam nutzen. Damit kann die
--- Pruefung in check_in (AF-02: Status muss active sein) nicht von der Anzeige
+-- Prüfung in check_in (AF-02: Status muss active sein) nicht von der Anzeige
 -- abweichen.
 create function public.session_status(
   p_start_at     timestamptz,
@@ -32,10 +32,10 @@ comment on function public.session_status(timestamptz, integer) is
   'F3 AF-03 - leitet scheduled/active/completed aus Startzeit, Dauer und jetzt ab.';
 
 -- ------------------------------------------------ Belegungszahl (D1.6/AF-01)
--- SECURITY DEFINER, weil hier zwei Regeln aufeinandertreffen: N2.2 beschraenkt
+-- SECURITY DEFINER, weil hier zwei Regeln aufeinandertreffen: N2.2 beschränkt
 -- das Lesen einzelner participant-Zeilen auf Organisator und Nutzer selbst,
--- waehrend die Belegungsanzeige "x/max" laut UC-02/UC-03 fuer jeden sichtbar ist.
--- Weitergegeben wird ausschliesslich die Aggregatzahl, nie eine Teilnahmezeile.
+-- während die Belegungsanzeige "x/max" laut UC-02/UC-03 für jeden sichtbar ist.
+-- Weitergegeben wird ausschließlich die Aggregatzahl, nie eine Teilnahmezeile.
 create function public.confirmed_count(p_session_id uuid)
 returns integer
 language sql
@@ -50,19 +50,19 @@ as $fn$
 $fn$;
 
 comment on function public.confirmed_count(uuid) is
-  'D1.6 confirmed_count - zaehlt confirmed und checked_in; gibt nur die Aggregatzahl heraus (N2.2).';
+  'D1.6 confirmed_count - zählt confirmed und checked_in; gibt nur die Aggregatzahl heraus (N2.2).';
 
 -- ------------------------------------------------------ Session-Lesesicht
--- Traegt die Felder, die UC-02 (Discovery), UC-03 (Detail) und UC-11 (Historie)
--- benoetigen, inklusive Court und Sportart, damit die Dialogseiten dafuer keine
+-- Trägt die Felder, die UC-02 (Discovery), UC-03 (Detail) und UC-11 (Historie)
+-- benötigen, inklusive Court und Sportart, damit die Dialogseiten dafür keine
 -- Folgeabfragen brauchen.
 --
--- Bewusst OHNE pin: N2.2 beschraenkt die PIN auf Organisator und bestaetigte
--- Teilnehmer; sie ist ausschliesslich ueber public.session_pin() zugaenglich.
+-- Bewusst OHNE pin: N2.2 beschränkt die PIN auf Organisator und bestätigte
+-- Teilnehmer; sie ist ausschließlich über public.session_pin() zugänglich.
 --
 -- security_invoker = on: Die View wendet die RLS-Policies des Aufrufers auf die
--- Basistabellen an, statt sie mit Eigentuemerrechten zu umgehen. Die einzige
--- Stelle, die mehr Rechte braucht, ist die Belegungszahl - dafuer gibt es die
+-- Basistabellen an, statt sie mit Eigentümerrechten zu umgehen. Die einzige
+-- Stelle, die mehr Rechte braucht, ist die Belegungszahl - dafür gibt es die
 -- gekapselte Funktion oben.
 create view public.v_session
 with (security_invoker = on) as

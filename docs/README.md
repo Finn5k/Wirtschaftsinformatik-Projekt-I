@@ -11,6 +11,7 @@ Statusdokumentation des UI-Prototyps:
 | [spec/](spec/README.md) | Spezifikation — *was* und *warum* | [Siedersleben-Schema](spec/E1-leseanleitung.md) | Technologieunabhängige Beschreibung von Zielen, Geschäftsprozessen, Anwendungsfällen, Datenmodell, Dialogen und nichtfunktionalen Anforderungen. |
 | [arch/](arch/README.md) | Architektur — *wie* | arc42 + ADRs | Lösungsstrategie, Bausteinsicht, Laufzeitsichten, Deployment und Architekturentscheidungen zur Umsetzung der Spezifikation. |
 | [frontend.md](frontend.md) | Umsetzungsstand | Screens, Komponenten, Abweichungen | Abgleich des aktuellen UI-Prototyps (Routen, Komponenten, Mockdaten) mit den in `spec/B1` beschriebenen Dialogen. |
+| [../supabase/](../supabase/README.md) | Umsetzung — Datenbank | Migrationen | Datenbankschema, RLS-Policies und atomare RPCs; setzt `spec/D1`, `spec/D2`, `spec/N2.2` und `arch/A09` ADR-001 um. |
 
 Die Trennung zwischen Spezifikation und Architektur ist bewusst: `spec/`
 beschreibt die fachlichen Anforderungen — Ziele, Prozesse, Anwendungsfälle,

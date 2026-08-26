@@ -1,12 +1,12 @@
 -- LocalCourt — Basisschema
 --
--- Setzt die Entitaeten aus D1.4 und die Wertebereiche aus D2 um.
+-- Setzt die Entitäten aus D1.4 und die Wertebereiche aus D2 um.
 -- Beziehungen B1-B8 aus D1.5, Invarianten aus D1.4/D1.5.
 -- Abgeleitete Merkmale (status, confirmed_count, qr_content) sind bewusst
 -- KEINE Spalten (D1.6, A08 8.1.4) und entstehen in den Views.
 
 -- ---------------------------------------------------------------- profile
--- D1.4 profile: user_id ist die uebernommene Auth-Kennung aus NB-02 (D2.2).
+-- D1.4 profile: user_id ist die übernommene Auth-Kennung aus NB-02 (D2.2).
 create table public.profile (
   user_id      uuid primary key references auth.users (id) on delete cascade,
   display_name text        not null check (length(btrim(display_name)) > 0),
@@ -31,9 +31,9 @@ comment on table public.sport is
 
 -- ------------------------------------------------------------------ court
 -- D1.4 court: name, city und Koordinatenpaar sind Pflicht (Invariante UC-10).
--- D2.7 fuehrt das Koordinatenpaar fachlich als EIN Attribut. Technisch sind es
--- zwei NOT-NULL-Spalten: damit ist ein unvollstaendiges Paar - der eigentliche
--- Gegenstand der D2.7-Invariante - ausgeschlossen, waehrend Breite und Laenge
+-- D2.7 führt das Koordinatenpaar fachlich als EIN Attribut. Technisch sind es
+-- zwei NOT-NULL-Spalten: damit ist ein unvollständiges Paar - der eigentliche
+-- Gegenstand der D2.7-Invariante - ausgeschlossen, während Breite und Länge
 -- einzeln indizierbar und ohne Umwandlung als JSON abrufbar bleiben.
 create table public.court (
   court_id   uuid primary key default gen_random_uuid(),
@@ -47,7 +47,7 @@ create table public.court (
 );
 
 comment on table public.court is
-  'D1.4 court - Sportort; created_by wird beim Loeschen des Profils geleert, der Court bleibt.';
+  'D1.4 court - Sportort; created_by wird beim Löschen des Profils geleert, der Court bleibt.';
 
 -- ---------------------------------------------------------------- session
 -- D1.4 session. Die Bedingung "start_at liegt in der Zukunft" gilt nur zur
@@ -71,7 +71,7 @@ comment on column public.session.pin is
   'D2.4 Pin - vierstellig numerisch, im Klartext gespeichert (bewusstes Sicherheitsniveau).';
 
 -- -------------------------------------------------------------- organizer
--- D1.4 organizer, Beziehung B8 (1:1 zu session) ueber UNIQUE(session_id).
+-- D1.4 organizer, Beziehung B8 (1:1 zu session) über UNIQUE(session_id).
 create table public.organizer (
   organizer_id uuid primary key default gen_random_uuid(),
   session_id   uuid not null unique references public.session (session_id) on delete cascade,
@@ -79,11 +79,11 @@ create table public.organizer (
 );
 
 comment on table public.organizer is
-  'D1.4 organizer - Organisation einer Session (B8, 1:1); traegt keinen Kapazitaets- oder Check-in-Zustand.';
+  'D1.4 organizer - Organisation einer Session (B8, 1:1); trägt keinen Kapazitäts- oder Check-in-Zustand.';
 
 -- ------------------------------------------------------------ participant
 -- D1.4 participant mit beiden Invarianten:
---   Eindeutigkeit     - hoechstens eine Teilnahme je (session_id, user_id)
+--   Eindeutigkeit     - höchstens eine Teilnahme je (session_id, user_id)
 --   Check-in-Kopplung - checked_in_at gesetzt <=> status = 'checked_in'
 create table public.participant (
   participant_id uuid        primary key default gen_random_uuid(),
@@ -101,7 +101,7 @@ comment on table public.participant is
   'D1.4 participant - Teilnahme; D2.5 kennt bewusst keinen Wert waiting (P1 NG-10).';
 
 -- ------------------------------------------------------- sport_preference
--- D1.4 sport_preference, Beziehung B6; fachliche Identitaet = (user_id, sport_id).
+-- D1.4 sport_preference, Beziehung B6; fachliche Identität = (user_id, sport_id).
 create table public.sport_preference (
   user_id  uuid not null references public.profile (user_id) on delete cascade,
   sport_id uuid not null references public.sport (sport_id) on delete cascade,
@@ -109,7 +109,7 @@ create table public.sport_preference (
 );
 
 comment on table public.sport_preference is
-  'D1.4 sport_preference - Aufloesung der n:m-Beziehung Profil<->Sportart (B6).';
+  'D1.4 sport_preference - Auflösung der n:m-Beziehung Profil<->Sportart (B6).';
 
 -- ---------------------------------------------------------------- Indizes
 -- Tragen die Zugriffspfade aus UC-02 (Ort/Sportart/Zeit) und UC-05/UC-07.
@@ -146,10 +146,10 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_auth_user();
 
--- ----------------------------------- Organisierte Sessions mitloeschen (D1.4)
--- D1.4 profile, "Datenschutz & Loeschung": Beim Loeschen eines Kontos entfallen
+-- ----------------------------------- Organisierte Sessions mitlöschen (D1.4)
+-- D1.4 profile, "Datenschutz & Löschung": Beim Löschen eines Kontos entfallen
 -- auch die organisierten Sessions. Ohne diesen Trigger bliebe die Session ohne
--- organizer-Eintrag zurueck und verletzte B8.
+-- organizer-Eintrag zurück und verletzte B8.
 create function public.delete_organized_sessions()
 returns trigger
 language plpgsql

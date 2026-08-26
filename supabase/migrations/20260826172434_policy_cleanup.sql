@@ -3,7 +3,7 @@
 -- Ergebnis des Supabase-Performance-Advisors.
 
 -- ============================ Zwei SELECT-Policies zu einer zusammenfassen
--- N2.2 nennt fuer participant zwei Lesegruende - eigener Datensatz (UC-05,
+-- N2.2 nennt für participant zwei Lesegründe - eigener Datensatz (UC-05,
 -- UC-11) und Organisator der Session (Teilnehmerliste, UC-07). Als zwei
 -- permissive Policies muss PostgreSQL bei jeder Abfrage beide auswerten.
 -- Fachlich ist es eine Oder-Bedingung, also auch eine Policy.
@@ -22,9 +22,9 @@ create policy participant_select on public.participant
     )
   );
 
--- ================================================ Fremdschluessel-Indizes
--- Beide Fremdschluessel werden beim Loeschen eines Profils durchlaufen
--- (D1.4 "Datenschutz & Loeschung": created_by wird geleert, Praeferenzen
--- entfallen). Ohne Index bedeutet das je einen vollstaendigen Tabellenscan.
+-- ================================================ Fremdschlüssel-Indizes
+-- Beide Fremdschlüssel werden beim Löschen eines Profils durchlaufen
+-- (D1.4 "Datenschutz & Löschung": created_by wird geleert, Präferenzen
+-- entfallen). Ohne Index bedeutet das je einen vollständigen Tabellenscan.
 create index court_created_by_idx        on public.court (created_by);
 create index sport_preference_sport_idx  on public.sport_preference (sport_id);

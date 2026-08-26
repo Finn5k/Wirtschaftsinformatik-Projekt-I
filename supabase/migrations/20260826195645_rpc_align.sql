@@ -1,28 +1,17 @@
--- LocalCourt — Atomare Fachoperationen
+-- LocalCourt — RPC-Funktionskörper an die Quelldateien angleichen
 --
--- ADR-001: create_session, join_session und check_in sind der alleinige
--- Schreibpfad für Erstellung, Beitritt und Check-in. Sie laufen als eine
--- unteilbare Transaktion in der Datenbank, weil TECH-03 eine eigene
--- Backend-Schicht ausschließt und die Kapazitäts- und Check-in-Invariante
--- (N1-QA-01) unabhängig vom Client-Verhalten gelten muss.
+-- Zwei Abweichungen zwischen Repository und Datenbank:
+--   1. Die detail-Texte der Ergebniscodes standen in ASCII-Ersatzschreibung.
+--   2. Beim ersten Einspielen war eine gekürzte Fassung ohne die
+--      Inline-Kommentare angewendet worden, sodass der in der Datenbank
+--      gespeicherte Funktionsquelltext knapper war als die Quelldatei.
 --
--- Alle drei sind SECURITY DEFINER: N2.2 verbietet direkte INSERT/UPDATE auf
--- session, organizer und participant; geschrieben wird ausschließlich hier.
---
--- Fachliche Ergebniscodes werden als SQLSTATE 'PTxyz' geworfen. PostgREST
--- übersetzt diese in den HTTP-Status xyz und liefert den Ergebniscode als
--- message - genau die Zuordnung, die F3 je Anwendungsfunktion festlegt.
--- Ein technischer Fehler ist davon zu unterscheiden (N2.3).
+-- Diese Migration ersetzt die drei Funktionen durch den Wortlaut aus
+-- 20260826171924_rpc.sql. Signaturen, Prüffolge und Ergebniscodes bleiben
+-- unverändert; geändert werden ausschließlich Kommentare und die
+-- deutschsprachigen detail-Texte.
 
--- ============================================================ create_session
--- UC-06 und UC-10. Legt Session, organizer-Eintrag und die Teilnahme des
--- Organisators gemeinsam an: D1.5 "Organisator-als-Teilnehmer" darf nicht durch
--- einen fehlschlagenden Zwischenschritt verletzt werden (ADR-001 Begründung).
--- Der Court wird optional in derselben Transaktion erfasst (UC-10, A06 6.3).
---
--- F3 definiert für create_session bewusst kein eigenes Ergebniscode-Set
--- (A09 ADR-001); geworfen werden nur NOT_AUTHENTICATED und Eingabefehler.
-create function public.create_session(
+create or replace function public.create_session(
   p_title            text,
   p_sport_id         uuid,
   p_start_at         timestamptz,
@@ -115,7 +104,7 @@ comment on function public.create_session is
 -- ============================================================== join_session
 -- AF-01. Prüffolge exakt wie im Algorithmus: Anmeldung, Sessionstatus,
 -- Doppelbeitritt, Kapazität. Die erste zutreffende Bedingung bricht ab.
-create function public.join_session(p_session_id uuid)
+create or replace function public.join_session(p_session_id uuid)
 returns jsonb
 language plpgsql
 security definer
@@ -198,7 +187,7 @@ comment on function public.join_session(uuid) is
 -- Reihenfolge laut Algorithmus: Teilnahme, Merkmal, Zeitfenster, vorhandener
 -- Check-in. ALREADY_CHECKED_IN ist KEIN Fehler, sondern ein idempotenter Erfolg
 -- und wird deshalb mit 200 zurückgegeben, nicht geworfen (F3 AF-02-Mapping).
-create function public.check_in(
+create or replace function public.check_in(
   p_session_id uuid,
   p_pin        text
 )
