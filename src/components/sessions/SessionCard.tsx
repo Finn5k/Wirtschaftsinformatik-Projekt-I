@@ -3,11 +3,7 @@ import { Link } from "react-router";
 import { sportDisplayName } from "../../data/sports";
 import type { SportSession } from "../../types/session";
 import { isSessionFull } from "../../types/session";
-import {
-  formatSessionDate,
-  formatSessionTime,
-  getSessionStatus,
-} from "../../utils/sessionTime";
+import { formatSessionDate, formatSessionTime } from "../../utils/sessionTime";
 import { StatusBadge } from "./StatusBadge";
 
 interface SessionCardProps {
@@ -22,7 +18,7 @@ export function SessionCard({ session }: SessionCardProps) {
   // "Voll" ist abgeleitet aus der Belegung (AF-01), kein eigener Status.
   // Volle Sessions bleiben ansehbar, aber ohne Beitritt — keine Warteliste (P1 NG-10).
   const isFull = isSessionFull(session);
-  const status = getSessionStatus(session);
+  const status = session.status;
 
   return (
     <article className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-sm">

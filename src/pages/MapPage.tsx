@@ -5,13 +5,11 @@ import { Link } from "react-router";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
 import { StatusBadge } from "../components/sessions/StatusBadge";
 import { sportDisplayName, sportKeys } from "../data/sports";
-import { getSessionsBySportKey } from "../services/sessionService";
+import { getDiscoverableSessions } from "../services/sessionService";
+import { ErrorState, LoadingState } from "../components/DataStates";
+import { useLoadedData } from "../hooks/useLoadedData";
 import type { SportKey, SportSession } from "../types/session";
-import {
-  formatSessionDate,
-  formatSessionTime,
-  getSessionStatus,
-} from "../utils/sessionTime";
+import { formatSessionDate, formatSessionTime } from "../utils/sessionTime";
 
 type SessionFilter = "Alle" | SportKey;
 
@@ -59,7 +57,11 @@ export function MapPage() {
   const [tileLayerKey, setTileLayerKey] = useState(0);
 
   // Nur zukünftige/laufende Sessions, gefiltert nach Sportart (B1 DLG-03, UC-02).
-  const sessions = getSessionsBySportKey(activeFilter);
+  const { state, reload } = useLoadedData(
+    () => getDiscoverableSessions(activeFilter),
+    [activeFilter],
+  );
+  const sessions = state.status === "ok" ? state.data : [];
 
   const mapCenter = useMemo<[number, number]>(() => {
     if (!selectedSession) {
@@ -77,6 +79,19 @@ export function MapPage() {
   function retryMapLoading() {
     setMapUnavailable(false);
     setTileLayerKey((currentKey) => currentKey + 1);
+  }
+
+  if (state.status === "loading") {
+    return <LoadingState label="Sessions werden geladen …" />;
+  }
+
+  if (state.status === "failed") {
+    return (
+      <ErrorState
+        onRetry={reload}
+        label="Die Sessions konnten gerade nicht geladen werden."
+      />
+    );
   }
 
   return (
@@ -215,7 +230,7 @@ export function MapPage() {
           <div className="mb-4 flex items-start justify-between gap-3">
             <div>
               <div className="mb-2 flex items-center gap-2">
-                <StatusBadge status={getSessionStatus(selectedSession)} />
+                <StatusBadge status={selectedSession.status} />
                 <span className="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-bold text-blue-700">
                   {sportDisplayName(selectedSession.sportKey)}
                 </span>

@@ -1,34 +1,47 @@
-import { mockCourts } from "../data/mockCourts";
+import type { Failed, Ok } from "../types/result";
 import type { Court } from "../types/session";
+import { supabase } from "./supabaseClient";
 
-const CREATED_COURTS_STORAGE_KEY = "localcourt.mock-created-courts";
+// Sportorte über NB-03 (S1.4). Lesbar auch ohne Anmeldung, weil die Auswahl
+// zur Suche gehört (N2.2, UC-02).
+//
+// Ein eigenes Anlegen gibt es hier nicht mehr: Ein neuer Court entsteht
+// gemeinsam mit der Session in der RPC `create_session`, damit kein
+// verwaister Court zurückbleibt, wenn ein Zwischenschritt fehlschlägt
+// (ADR-001, A06 6.3).
 
-function readCreatedCourts(): Court[] {
-  const storedCourts = window.localStorage.getItem(CREATED_COURTS_STORAGE_KEY);
+export type CourtListResult = Ok<Court[]> | Failed;
 
-  if (!storedCourts) {
-    return [];
-  }
-
-  try {
-    const parsedCourts: unknown = JSON.parse(storedCourts);
-    return Array.isArray(parsedCourts) ? (parsedCourts as Court[]) : [];
-  } catch {
-    return [];
-  }
+interface CourtRow {
+  court_id: string;
+  name: string;
+  city: string;
+  address: string | null;
+  latitude: number | string;
+  longitude: number | string;
 }
 
-let createdCourts = readCreatedCourts();
+export async function getCourts(): Promise<CourtListResult> {
+  const { data, error } = await supabase
+    .from("court")
+    .select("court_id, name, city, address, latitude, longitude")
+    .order("name", { ascending: true });
 
-export function getCourts(): Court[] {
-  return [...mockCourts, ...createdCourts];
-}
+  if (error || !data) {
+    return { kind: "failed", cause: error };
+  }
 
-export function createCourt(court: Court): Court {
-  createdCourts = [...createdCourts, court];
-  window.localStorage.setItem(
-    CREATED_COURTS_STORAGE_KEY,
-    JSON.stringify(createdCourts),
-  );
-  return court;
+  return {
+    kind: "ok",
+    code: "OK",
+    data: (data as unknown as CourtRow[]).map((row) => ({
+      id: row.court_id,
+      name: row.name,
+      city: row.city,
+      address: row.address ?? undefined,
+      // PostgREST liefert `numeric` als Zeichenkette (D2.7).
+      latitude: Number(row.latitude),
+      longitude: Number(row.longitude),
+    })),
+  };
 }

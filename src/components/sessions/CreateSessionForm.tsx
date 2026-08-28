@@ -17,11 +17,13 @@ import type { ReactNode } from "react";
 import { useId, useRef, useState } from "react";
 import { Link } from "react-router";
 import { sportDisplayName, sportKeys, sports } from "../../data/sports";
-import { createCourt, getCourts } from "../../services/courtService";
+import { getCourts } from "../../services/courtService";
+import { ErrorState, LoadingState } from "../DataStates";
+import { useLoadedData } from "../../hooks/useLoadedData";
 import { reverseGeocode } from "../../services/geocodingService";
 import { createSession } from "../../services/sessionService";
 import { useAuth } from "../../auth/authContext";
-import type { Court, SportKey, SportSession } from "../../types/session";
+import type { SportKey } from "../../types/session";
 import { CheckInQrCode } from "./CheckInQrCode";
 import {
   CourtLocationPicker,
@@ -71,7 +73,14 @@ export function CreateSessionForm() {
   const { user: currentUser } = useAuth();
   const [participantLimit, setParticipantLimit] = useState(10);
   const [durationMin, setDurationMin] = useState(60);
-  const [createdSession, setCreatedSession] = useState<SportSession | null>(null);
+  // Nach dem Anlegen liefert die RPC nur Kennung und PIN; die Vorschau nutzt
+  // die Formularwerte, die Detailansicht die Datenbank (ADR-001).
+  const [createdSession, setCreatedSession] = useState<{
+    sessionId: string;
+    pin: string;
+  } | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [courtCoordinates, setCourtCoordinates] =
     useState<CourtCoordinates | null>(null);
@@ -94,7 +103,12 @@ export function CreateSessionForm() {
   });
 
   const isNewCourt = form.courtId === NEW_COURT_VALUE;
-  const courts = getCourts();
+  // Sportorte kommen aus der Datenbank (UC-10, N2.2: auch unangemeldet lesbar).
+  const { state: courtState, reload: reloadCourts } = useLoadedData(
+    () => getCourts(),
+    [],
+  );
+  const courts = courtState.status === "ok" ? courtState.data : [];
 
   function updateForm(field: keyof FormState, value: string) {
     setForm((current) => ({
@@ -215,46 +229,89 @@ export function CreateSessionForm() {
     return Object.keys(nextErrors).length === 0;
   }
 
-  function handleCreateSession() {
+  async function handleCreateSession() {
     if (!validateForm()) {
       return;
     }
 
     const selectedCourt = courts.find((entry) => entry.id === form.courtId);
-    let court: Court;
 
-    if (selectedCourt) {
-      court = selectedCourt;
-    } else {
-      if (!courtCoordinates || !form.newCourtCity.trim()) {
-        return;
-      }
-
-      court = createCourt({
-        id: `mock-court-${crypto.randomUUID()}`,
-        name: form.newCourtName.trim(),
-        city: form.newCourtCity.trim(),
-        address: form.newCourtAddress.trim() || undefined,
-        latitude: courtCoordinates.latitude,
-        longitude: courtCoordinates.longitude,
-      });
+    if (!selectedCourt && (!courtCoordinates || !form.newCourtCity.trim())) {
+      return;
     }
 
-    const session = createSession({
+    setSubmitError(null);
+    setIsSubmitting(true);
+    // Court, Session, organizer-Eintrag und Organisator-Teilnahme entstehen in
+    // einer Transaktion; ein neuer Court wird dabei mit angelegt (ADR-001).
+    const result = await createSession({
       sportKey: form.sportKey,
       title: form.title,
       description: form.description,
       startAt: new Date(`${form.date}T${form.time}`).toISOString(),
       durationMin,
       maxParticipants: participantLimit,
-      court,
+      courtId: selectedCourt?.id,
+      newCourt: selectedCourt
+        ? undefined
+        : {
+            name: form.newCourtName.trim(),
+            city: form.newCourtCity.trim(),
+            address: form.newCourtAddress.trim() || undefined,
+            latitude: courtCoordinates!.latitude,
+            longitude: courtCoordinates!.longitude,
+          },
     });
+    setIsSubmitting(false);
 
-    setCreatedSession(session);
+    if (result.kind === "ok") {
+      setCreatedSession(result.data);
+      return;
+    }
+
+    if (result.kind === "invalid") {
+      // Eingabefehler feldbezogen anzeigen (A08 8.2.4, B1.5.3).
+      if (result.code === "START_IN_PAST") {
+        setErrors((current) => ({
+          ...current,
+          date: "Der Startzeitpunkt muss in der Zukunft liegen.",
+        }));
+      } else {
+        setErrors((current) => ({
+          ...current,
+          newCourtLocation:
+            "Für einen neuen Sportort werden Name, Ort und Kartenpin benötigt.",
+        }));
+      }
+
+      return;
+    }
+
+    setSubmitError(
+      result.kind === "rejected"
+        ? "Bitte melde dich an, um eine Session zu erstellen."
+        : "Die Session konnte gerade nicht angelegt werden. Bitte versuche es erneut.",
+    );
+  }
+
+  if (courtState.status === "loading") {
+    return <LoadingState label="Sportorte werden geladen …" />;
+  }
+
+  if (courtState.status === "failed") {
+    return (
+      <ErrorState
+        onRetry={reloadCourts}
+        label="Die Sportorte konnten gerade nicht geladen werden."
+      />
+    );
   }
 
   if (createdSession) {
-    const courtLabel = `${createdSession.court.name}, ${createdSession.court.city}`;
+    const angelegterCourt = courts.find((entry) => entry.id === form.courtId);
+    const courtLabel = angelegterCourt
+      ? `${angelegterCourt.name}, ${angelegterCourt.city}`
+      : `${form.newCourtName.trim()}, ${form.newCourtCity.trim()}`;
 
     return (
       <div className="space-y-4">
@@ -275,7 +332,7 @@ export function CreateSessionForm() {
           <div className="flex items-start gap-4">
             <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-white text-slate-950">
               <CheckInQrCode
-                sessionId={createdSession.id}
+                sessionId={createdSession.sessionId}
                 pin={createdSession.pin}
                 size={80}
               />
@@ -342,7 +399,7 @@ export function CreateSessionForm() {
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        handleCreateSession();
+        void handleCreateSession();
       }}
       className="space-y-4"
     >
@@ -514,11 +571,21 @@ export function CreateSessionForm() {
         onIncrease={() => changeLimit(1)}
       />
 
+      {submitError && (
+        <p
+          role="alert"
+          className="rounded-2xl bg-red-50 px-4 py-3 text-xs font-bold leading-5 text-red-700"
+        >
+          {submitError}
+        </p>
+      )}
+
       <button
         type="submit"
-        className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-emerald-400 py-3.5 font-extrabold text-white shadow-lg shadow-blue-100"
+        disabled={isSubmitting}
+        className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-emerald-400 py-3.5 font-extrabold text-white shadow-lg shadow-blue-100 disabled:opacity-60"
       >
-        Session erstellen
+        {isSubmitting ? "Einen Moment …" : "Session erstellen"}
       </button>
     </form>
   );

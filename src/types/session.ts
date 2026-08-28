@@ -53,8 +53,18 @@ export interface Court {
 // `latitude` und `longitude` flach auf der Session — die Koordinaten damit auf
 // einer Entität, die sie laut D1.4 gar nicht trägt.
 //
-// `status` und `confirmedCount` sind abgeleitete Merkmale (D1.6) und werden
-// nicht gespeichert; `status` berechnet `utils/sessionTime.ts` (AF-03).
+// `status` und `participantsCount` sind abgeleitete Merkmale (D1.6) und werden
+// nicht gespeichert, sondern von `v_session` bei jeder Abfrage berechnet
+// (AF-03). Sie kommen bewusst vom Server: `check_in` prüft das Zeitfenster mit
+// derselben Datenbankfunktion, eine eigene Client-Rechnung könnte also anzeigen,
+// was die RPC ablehnt.
+//
+// Die PIN gehört nicht hierher. N2.2 gibt sie nur dem Organisator und
+// bestätigten Teilnehmern frei; sie ist deshalb nicht Teil von `v_session`,
+// sondern wird bei Bedarf über `sessionService.getSessionPin()` geholt.
+//
+// `participants` enthält nur, was die RLS dem Aufrufer zeigt: die eigene
+// Teilnahme, für den Organisator die vollständige Liste (N2.2, UC-07).
 export interface SportSession {
   id: string;
   title: string;
@@ -63,11 +73,11 @@ export interface SportSession {
   startAt: string;
   description: string;
   durationMin: number;
+  status: SessionStatus;
   participantsCount: number;
   maxParticipants: number;
   organizerId: string;
   organizerName: string;
-  pin: string;
   participants: Participant[];
 }
 
