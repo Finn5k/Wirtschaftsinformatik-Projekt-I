@@ -7,7 +7,7 @@ import {
   getMyPastSessions,
   getMyUpcomingSessions,
 } from "../services/sessionService";
-import { getCurrentUser } from "../services/userService";
+import { useAuth } from "../auth/authContext";
 import type { SportSession } from "../types/session";
 import {
   formatSessionDate,
@@ -125,11 +125,12 @@ interface MySessionRowProps {
 }
 
 function MySessionRow({ session, showCheckInInfo }: MySessionRowProps) {
-  const currentUser = getCurrentUser();
+  // Nur über ProtectedRoute erreichbar (B1.5.2), also stets angemeldet.
+  const { user } = useAuth();
 
-  const isOrganizer = session.organizerId === currentUser.id;
+  const isOrganizer = session.organizerId === user?.id;
   const myParticipation = session.participants.find(
-    (participant) => participant.id === currentUser.id,
+    (participant) => participant.id === user?.id,
   );
   const wasCheckedIn = myParticipation?.status === "checked_in";
   const status = getSessionStatus(session);

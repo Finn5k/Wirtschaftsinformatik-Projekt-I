@@ -16,7 +16,7 @@ import { StatusBadge } from "../components/sessions/StatusBadge";
 import { CheckInQrCode } from "../components/sessions/CheckInQrCode";
 import { sportDisplayName } from "../data/sports";
 import { getSessionById, joinSession } from "../services/sessionService";
-import { getCurrentUser } from "../services/userService";
+import { useAuth } from "../auth/authContext";
 import { isSessionFull } from "../types/session";
 import {
   formatSessionDate,
@@ -32,7 +32,9 @@ export function SessionDetailPage() {
   const [, setLocalRevision] = useState(0);
 
   const session = getSessionById(sessionId);
-  const currentUser = getCurrentUser();
+  // DLG-04 ist ohne Anmeldung einsehbar (B1.2); geschützte Aktionen wie der
+  // Beitritt leiten dann über B1.5.2 zu DLG-01.
+  const { user } = useAuth();
 
   if (!session) {
     return (
@@ -59,12 +61,12 @@ export function SessionDetailPage() {
     );
   }
 
-  const isOrganizer = session.organizerId === currentUser.id;
+  const isOrganizer = session.organizerId === user?.id;
   const status = getSessionStatus(session);
   const isReadOnly = status === "completed";
   const isFull = isSessionFull(session);
   const currentParticipation = session.participants.find(
-    (participant) => participant.id === currentUser.id,
+    (participant) => participant.id === user?.id,
   );
   const hasJoined = Boolean(currentParticipation);
   const canJoin = !isOrganizer && !hasJoined && !isReadOnly && !isFull;

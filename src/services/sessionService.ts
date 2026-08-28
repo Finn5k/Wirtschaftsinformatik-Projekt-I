@@ -56,6 +56,13 @@ function updateCreatedSession(updatedSession: SportSession) {
 
 function synchronizeCurrentUserDisplay() {
   const currentUser = getCurrentUser();
+
+  // Ohne Anmeldung gibt es kein Profil, dessen Anzeigename gespiegelt werden
+  // könnte (B1.5.2: Suche und Detailansicht bleiben trotzdem nutzbar).
+  if (!currentUser) {
+    return;
+  }
+
   let hasChanges = false;
 
   sessions = sessions.map((session) => {
@@ -118,6 +125,12 @@ function generatePin(): string {
 
 export function createSession(input: CreateSessionInput): SportSession {
   const currentUser = getCurrentUser();
+
+  // Erstellen ist eine geschützte Aktion (B1.5.2); ProtectedRoute lässt
+  // DLG-05 ohne Anmeldung gar nicht erst zu.
+  if (!currentUser) {
+    throw new Error("Session-Erstellung setzt eine Anmeldung voraus (UC-06).");
+  }
   const session: SportSession = {
     id: crypto.randomUUID(),
     title: input.title.trim(),
@@ -201,6 +214,12 @@ export function getSessionsBySportKey(
 
 function isMySession(session: SportSession): boolean {
   const currentUser = getCurrentUser();
+
+  // Ohne Anmeldung gibt es keine eigenen Sessions (UC-05, UC-11).
+  if (!currentUser) {
+    return false;
+  }
+
   return (
     session.organizerId === currentUser.id ||
     session.participants.some((participant) => participant.id === currentUser.id)
@@ -246,6 +265,12 @@ export function joinSession(sessionId: string): SportSession | undefined {
   const currentUser = getCurrentUser();
   const session = getSessionById(sessionId);
 
+  // F3 AF-01 prueft die Anmeldung als erste Bedingung. Bis die RPC angebunden
+  // ist, bleibt hier die stille Ablehnung des Prototyps (A08 8.5.7).
+  if (!currentUser) {
+    return session;
+  }
+
   if (
     !session ||
     getSessionStatus(session) === "completed" ||
@@ -280,6 +305,12 @@ export function joinSession(sessionId: string): SportSession | undefined {
 export function checkIn(sessionId: string): SportSession | undefined {
   const currentUser = getCurrentUser();
   const session = getSessionById(sessionId);
+
+  // F3 AF-02 setzt eine Anmeldung voraus.
+  if (!currentUser) {
+    return session;
+  }
+
   const participation = session?.participants.find(
     (participant) => participant.id === currentUser.id,
   );

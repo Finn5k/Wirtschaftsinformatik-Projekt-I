@@ -4,9 +4,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { useAuth } from "../auth/authContext";
 
-// Anmelden / Registrieren gemäß B1 DLG-01 (UC-01).
-// UI-Prototyp: Die Prüfung übernimmt im finalen System Supabase Auth (S1, NB-02);
-// hier wird nach erfolgreicher Validierung direkt weitergeleitet.
+// Anmelden / Registrieren gemäß B1 DLG-01 (UC-01) über NB-02 Supabase Auth (S1.3).
 type Mode = "login" | "register";
 
 interface FormErrors {
@@ -16,7 +14,7 @@ interface FormErrors {
 }
 
 export function LoginPage() {
-  const { login } = useAuth();
+  const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -25,15 +23,21 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
+  // Fachliche Ablehnung bzw. technischer Fehler des Anmeldedienstes; beide
+  // werden nach A08 8.5.6 unterschiedlich formuliert, aber an derselben
+  // Stelle angezeigt, weil sie nicht zu einem einzelnen Feld gehören.
+  const [formError, setFormError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const isRegister = mode === "register";
 
   function switchMode(nextMode: Mode) {
     setMode(nextMode);
     setErrors({});
+    setFormError(null);
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const nextErrors: FormErrors = {};
 
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
@@ -51,12 +55,43 @@ export function LoginPage() {
     }
 
     setErrors(nextErrors);
+    setFormError(null);
 
     if (Object.keys(nextErrors).length > 0) {
       return;
     }
 
-    login();
+    setIsSubmitting(true);
+    const result = isRegister
+      ? await signUp(email, password, displayName)
+      : await signIn(email, password);
+    setIsSubmitting(false);
+
+    if (result.kind === "rejected") {
+      // Fachliche Ablehnung: kontextbezogene Meldung, aus der hervorgeht,
+      // welche Eingabe oder Aktion sie ausgelöst hat (A08 8.5.6, B1.5.3).
+      if (result.code === "WEAK_PASSWORD") {
+        setErrors({ password: "Das Passwort ist zu schwach. Wähle ein längeres." });
+        return;
+      }
+
+      if (result.code === "INVALID_EMAIL") {
+        setErrors({ email: "Diese E-Mail-Adresse wird nicht akzeptiert." });
+        return;
+      }
+
+      setFormError(rejectionMessage(result.code));
+      return;
+    }
+
+    if (result.kind === "failed") {
+      // Technischer Fehler: allgemein verständlich, ohne interne Details,
+      // mit der Möglichkeit, es erneut zu versuchen (A08 8.5.6, B1.5.4).
+      setFormError(
+        "Die Anmeldung ist gerade nicht möglich. Bitte versuche es erneut.",
+      );
+      return;
+    }
 
     const requestedPath = searchParams.get("redirect");
     const safeRedirect =
@@ -85,7 +120,7 @@ export function LoginPage() {
         <form
           onSubmit={(event) => {
             event.preventDefault();
-            handleSubmit();
+            void handleSubmit();
           }}
           className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm"
         >
@@ -159,21 +194,44 @@ export function LoginPage() {
             />
           </div>
 
+          {formError && (
+            <p
+              role="alert"
+              className="mt-4 rounded-2xl bg-red-50 px-4 py-3 text-xs font-bold leading-5 text-red-700"
+            >
+              {formError}
+            </p>
+          )}
+
           <button
             type="submit"
-            className="mt-5 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-emerald-400 py-3.5 font-extrabold text-white shadow-lg shadow-blue-100"
+            disabled={isSubmitting}
+            className="mt-5 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-emerald-400 py-3.5 font-extrabold text-white shadow-lg shadow-blue-100 disabled:opacity-60"
           >
-            {isRegister ? "Konto erstellen" : "Anmelden"}
+            {isSubmitting
+              ? "Einen Moment …"
+              : isRegister
+                ? "Konto erstellen"
+                : "Anmelden"}
           </button>
-
-          <p className="mt-4 text-center text-xs leading-5 text-slate-400">
-            UI-Prototyp: Die Anmeldung erfolgt im finalen System über
-            Supabase Auth.
-          </p>
         </form>
       </div>
     </div>
   );
+}
+
+function rejectionMessage(code: string): string {
+  switch (code) {
+    case "INVALID_CREDENTIALS":
+      // Bewusst ohne Hinweis darauf, welcher der beiden Werte falsch war.
+      return "E-Mail-Adresse oder Passwort stimmt nicht.";
+    case "EMAIL_ALREADY_REGISTERED":
+      return "Für diese E-Mail-Adresse gibt es bereits ein Konto. Melde dich stattdessen an.";
+    case "EMAIL_NOT_CONFIRMED":
+      return "Dieses Konto ist noch nicht bestätigt. Öffne dazu den Link in der E-Mail, die wir dir geschickt haben.";
+    default:
+      return "Die Anmeldung war nicht erfolgreich.";
+  }
 }
 
 interface AuthInputProps {

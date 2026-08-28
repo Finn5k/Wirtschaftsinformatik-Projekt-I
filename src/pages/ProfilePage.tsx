@@ -3,10 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../auth/authContext";
 import { sportDisplayName, sportKeys } from "../data/sports";
-import {
-  getCurrentUser,
-  updateCurrentUser,
-} from "../services/userService";
+import { updateCurrentUser } from "../services/userService";
 import type { SportKey } from "../types/session";
 
 // Profil gemäß B1 DLG-08 (UC-12): Anzeigename, Ort, E-Mail (read-only, Auth),
@@ -16,22 +13,30 @@ import type { SportKey } from "../types/session";
 const allSports: readonly SportKey[] = sportKeys;
 
 export function ProfilePage() {
-  const { logout } = useAuth();
+  // Nur über ProtectedRoute erreichbar (B1.5.2), also stets angemeldet.
+  const { user: currentUser, signOut, refreshProfile } = useAuth();
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState(getCurrentUser);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [draftName, setDraftName] = useState(currentUser.name);
-  const [draftCity, setDraftCity] = useState(currentUser.city);
+  const [draftName, setDraftName] = useState(currentUser?.name ?? "");
+  const [draftCity, setDraftCity] = useState(currentUser?.city ?? "");
   const [draftSports, setDraftSports] = useState<SportKey[]>(
-    currentUser.preferredSports,
+    currentUser?.preferredSports ?? [],
   );
   const [nameError, setNameError] = useState<string | null>(null);
+  // Technischer Fehler beim Speichern (A08 8.5.6): allgemeine Meldung mit
+  // Wiederholmöglichkeit, ohne interne Details.
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  if (!currentUser) {
+    return null;
+  }
 
   function startEditing() {
-    setDraftName(currentUser.name);
-    setDraftCity(currentUser.city);
-    setDraftSports(currentUser.preferredSports);
+    setDraftName(currentUser?.name ?? "");
+    setDraftCity(currentUser?.city ?? "");
+    setDraftSports(currentUser?.preferredSports ?? []);
     setNameError(null);
     setIsEditing(true);
   }
@@ -44,19 +49,29 @@ export function ProfilePage() {
     );
   }
 
-  function saveChanges() {
+  async function saveChanges() {
     if (!draftName.trim()) {
       setNameError("Bitte gib einen Anzeigenamen ein.");
       return;
     }
 
-    setCurrentUser(
-      updateCurrentUser({
-        name: draftName,
-        city: draftCity,
-        preferredSports: draftSports,
-      }),
-    );
+    setSaveError(null);
+    setIsSaving(true);
+    const result = await updateCurrentUser({
+      name: draftName,
+      city: draftCity,
+      preferredSports: draftSports,
+    });
+    setIsSaving(false);
+
+    if (result.kind === "failed") {
+      setSaveError(
+        "Die Änderungen konnten nicht gespeichert werden. Bitte versuche es erneut.",
+      );
+      return;
+    }
+
+    await refreshProfile();
     setIsEditing(false);
   }
 
@@ -105,7 +120,7 @@ export function ProfilePage() {
         <form
           onSubmit={(event) => {
             event.preventDefault();
-            saveChanges();
+            void saveChanges();
           }}
           className="space-y-4 px-4 pt-5"
         >
@@ -180,6 +195,15 @@ export function ProfilePage() {
             </div>
           </div>
 
+          {saveError && (
+            <p
+              role="alert"
+              className="rounded-2xl bg-red-50 px-4 py-3 text-xs font-bold leading-5 text-red-700"
+            >
+              {saveError}
+            </p>
+          )}
+
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
@@ -192,7 +216,8 @@ export function ProfilePage() {
 
             <button
               type="submit"
-              className="flex items-center justify-center gap-2 rounded-2xl bg-blue-600 py-3 font-bold text-white"
+              disabled={isSaving}
+              className="flex items-center justify-center gap-2 rounded-2xl bg-blue-600 py-3 font-bold text-white disabled:opacity-60"
             >
               <Check size={16} />
               Speichern
@@ -236,8 +261,9 @@ export function ProfilePage() {
           <button
             type="button"
             onClick={() => {
-              navigate("/login", { replace: true });
-              logout();
+              void signOut().then(() => {
+                navigate("/login", { replace: true });
+              });
             }}
             className="flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white py-3 font-bold text-red-600 shadow-sm"
           >
