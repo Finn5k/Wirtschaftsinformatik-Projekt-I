@@ -62,7 +62,7 @@ Fachlich abgeleitete Werte werden nicht zusätzlich persistiert, wenn sie zuverl
 
 ### 8.1.5 Aktueller Prototyp und Zielbild
 
-**Aktueller Prototyp.** Ohne Backend-Anbindung ([B1.6](../spec/B1-dialogspezifikation.md#b16-abweichungen-des-prototyps)) unterscheidet der Code drei Speicherarten: Daten, die nur für die Dauer der Browser-Sitzung im Modul-Zustand eines Servicemoduls gehalten werden (z. B. die vorgegebenen `mockSessions`); Daten, die zusätzlich reloadfest in `localStorage` gespiegelt werden, sobald sie durch eine Nutzeraktion entstehen oder sich ändern (selbst erstellte Sessions, Courts, das Profil); und rein statische Datenmodule ohne Laufzeitänderung (`src/data/sports.ts`). Welche Kategorie zutrifft, entscheidet nicht die Entität an sich, sondern ob im Prototyp ein Seiten-Reload den Datenverlust rechtfertigt — bei den vorgegebenen Mockdaten unkritisch, bei nutzererzeugten Daten nicht. Die konkreten `localStorage`-Schlüssel je Modul stehen als Beispiel in der Tabelle in [8.1.6](#816-beispiele-aus-dem-aktuellen-modell).
+**Aktueller Stand.** Die fachlichen Daten liegen in PostgreSQL; `sessionService`, `courtService` und `userService` lesen und schreiben ausschließlich über NB-03. Im Code verbleiben als lokale Daten nur der statische Sportarten-Katalog (`src/data/sports.ts`) und der UI-Zustand der Dialogseiten. Die früheren Mockdaten und `localStorage`-Schlüssel für Sessions, Courts und das Profil sind entfallen.
 
 **Zielbild.** Persistenz erfolgt über PostgreSQL, ausschließlich über die PostgREST-Schnittstelle von Supabase ([A04 4.1](A04-solution-strategy.md#41-technologie), [S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)), abgesichert durch Row-Level-Security ([N2.2](../spec/N2-querschnittskonzepte.md#n22-row-level-security-rls)). Lesende Zugriffe und einfache geprüfte Schreibzugriffe (`courtAnlegen`, `profilAktualisieren`) laufen direkt über PostgREST; die drei atomaren Fachoperationen `create_session`, `join_session`, `check_in` laufen dagegen über Datenbank-RPCs, die Prüfung und Schreibvorgang unteilbar zusammenfassen ([8.4](#84-atomare-fachoperationen-und-datenzugriff-über-die-service-schicht)) — sie sind damit fachliche Operationen mit eigener Geschäftsregel, keine reine technische CRUD-Persistenz, und bleiben deshalb in [8.4](#84-atomare-fachoperationen-und-datenzugriff-über-die-service-schicht) dokumentiert statt hier. Dieses Zielbild ist ausschließlich in A04/S1/N2 begründet und wird hier nicht erweitert.
 
@@ -74,11 +74,11 @@ Die folgende Tabelle wendet die Regeln aus [8.1.2](#812-abbildung-fachlicher-dat
 
 | D1-Entität | Code-Typ | Persistenzort (Prototyp) | Zielrealisierung |
 |---|---|---|---|
-| `session` | `SportSession` (`src/types/`) | In-Memory-Zustand + `localStorage`-Schlüssel `localcourt.mock-created-sessions` (nur selbst erstellte Sessions; vorgegebene `mockSessions` nicht reloadfest) — `src/services/sessionService.ts` | PostgreSQL-Tabelle `session`, `status`/`confirmed_count` abgeleitet (siehe [8.1.4](#814-abgeleitete-und-redundante-daten)) |
+| `session` | `SportSession` (`src/types/`) | Tabelle `session`, gelesen über `v_session` — `src/services/sessionService.ts` | erreicht |
 | `participant` | `Participant` (`src/types/`) — eigener Typ, aber eingebettet als `Participant[]` auf `SportSession`, keine eigenständige top-level Repräsentation | Teil der Session-Persistenz | eigene Tabelle `participant`, RLS-beschränkt ([N2.2](../spec/N2-querschnittskonzepte.md#n22-row-level-security-rls)) |
 | `organizer` | kein eigener Typ — Felder `organizerId`/`organizerName` direkt auf `SportSession` | Teil der Session-Persistenz | eigene Tabelle `organizer` (1:1 zu `session`, [D1](../spec/D1-datenmodell.md#organizer--organisation)) |
 | `profile` | `UserProfile` (`src/types/`) | Tabelle `profile` über `my_profile()` und PostgREST — `src/services/userService.ts` | erreicht |
-| `court` | `Court` (`src/types/`) | statische Mockdaten + `localStorage`-Schlüssel `localcourt.mock-created-courts` — `src/services/courtService.ts` | Tabelle `court` |
+| `court` | `Court` (`src/types/`) | Tabelle `court`; neue Courts entstehen in `create_session` — `src/services/courtService.ts` | erreicht |
 | `sport` | `SportKey`-Union + Katalog `src/data/sports.ts` | statisches Modul | Referenztabelle `sport` |
 
 ### 8.1.7 Zusammenfassung als Implementierungsregel
@@ -178,7 +178,7 @@ ADR-002 ordnet die Auth-Sitzung dem Baustein App-Shell & Navigation zu, nicht de
 
 Das JWT der Sitzung führt der Supabase-Client (`src/services/supabaseClient.ts`) bei jedem Aufruf gegen NB-03 mit; damit greifen die in [N2.2](../spec/N2-querschnittskonzepte.md#n22-row-level-security-rls) beschriebenen RLS-Policies für alle Zugriffe, die bereits über die Datenbank laufen. Die Datenminimierung ist dadurch nicht mehr nur eine Zusage: `my_profile()` gibt `city` ausschließlich für die eigene Zeile heraus, während fremde Profile über das Spalten-GRANT auf `display_name` und `avatar_url` beschränkt bleiben.
 
-**Abweichung.** `sessionService` und `courtService` arbeiten weiterhin auf Mockdaten und einem modulweiten Zustand; ihre Zugriffe gehen an der Datenbank und damit an den RLS-Policies vorbei. Der Zugriffsschutz wirkt für diese Module also nach wie vor nur über die Routen, nicht über die Daten. Solange sie synchron bleiben, beziehen sie die Nutzerkennung über einen Zwischenspeicher in `userService`, den `AuthProvider` beim Laden des Profils füllt — eine Übergangslösung, die mit der Umstellung dieser Module auf die RPCs entfällt.
+**Wirksamkeit.** Alle fachlichen Zugriffe laufen inzwischen über NB-03 und tragen das JWT der Sitzung; die Policies aus N2.2 greifen damit auf dem Datenweg und nicht nur über die Routen. Sichtbar wird das an der Teilnehmerliste: Ein Teilnehmer sieht dort ausschließlich die eigene Teilnahme, der Organisator die vollständige Liste (UC-07).
 
 **Betroffene Bausteine ([A05](A05-building-block-view.md)):** App-Shell & Navigation. **Betroffene Use Cases:** UC-01 unmittelbar; mittelbar jede geschützte Aktion.
 
@@ -186,25 +186,21 @@ Das JWT der Sitzung führt der Supabase-Client (`src/services/supabaseClient.ts`
 
 Fachliche Datenzugriffe und Fachoperationen laufen über die Service-Schicht, nie direkt aus der UI-Schicht auf Persistenz oder ein fachliches Nachbarsystem ([A05](A05-building-block-view.md#51-whitebox-localcourt--ebene-1)). Rein darstellungsbezogene externe Zugriffe ohne fachliche Daten sind davon ausgenommen: Die Kartenkacheln von NB-04 OpenStreetMap werden über Leaflet/react-leaflet direkt aus der UI-Komponentenschicht bezogen (`CourtLocationPicker.tsx:75-79`, `MapPage.tsx:127-130`), nicht aus `src/services/` — NB-04 gehört deshalb nicht zur Service-Schicht ([A05 5.2](A05-building-block-view.md#52-bausteindiagramm)). Für die drei spezifizierten atomaren Fachoperationen — Session-Erstellung, Beitritt und Check-in — existiert je eine atomare RPC in der Datenbank ([S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest), [`supabase/migrations/`](../../supabase/migrations)); im aktuellen Frontend-Code entspricht dem je eine synchrone Funktion in `src/services/sessionService.ts`, die diese RPC noch nicht aufruft:
 
-| RPC (Datenbank) | Funktion (Frontend-Code) | Prüfreihenfolge im Frontend-Code |
+| RPC (Datenbank) | Aufrufende Funktion (`sessionService.ts`) | Ort der Prüfung |
 |---|---|---|
-| `create_session` | `createSession()` (`sessionService.ts:119`) | keine Prüfung — Session, PIN (`generatePin()`) und Organisator-Teilnahme werden bedingungslos angelegt |
-| `join_session` | `joinSession()` (`sessionService.ts:249`) | `completed`-Status → Doppelbeitritt → Kapazität — entspricht der Reihenfolge aus [F3 AF-01](../spec/F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel), ohne deren vorgelagerten `NOT_AUTHENTICATED`-Fall, der stattdessen von `ProtectedRoute` behandelt wird ([8.3](#83-authentifizierung-und-zugriffsschutz)) |
-| `check_in` | `checkIn()` (`sessionService.ts:284`) | prüft nur `active`-Status und vorhandene Teilnahme; die Merkmalsprüfung (PIN) liegt separat in `CheckInPage.tsx` ([8.2](#82-validierung)), nicht in `checkIn()` selbst |
+| `create_session` | `createSession()` | vollständig in der Datenbank; der Dialog prüft vorab nur die Eingabeform (8.2) |
+| `join_session` | `joinSession()` | vollständig in der Datenbank, in der Reihenfolge aus [F3 AF-01](../spec/F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel) |
+| `check_in` | `checkIn()` | vollständig in der Datenbank, einschließlich der Merkmalsprüfung — sie ist nicht mehr vom Zeitfenster getrennt ([F3 AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung)) |
 
 ```ts
-// sessionService.ts:253 — join_session-Äquivalent
-if (
-  !session ||
-  getSessionStatus(session) === "completed" ||
-  session.participants.some((participant) => participant.id === currentUser.id) ||
-  session.participantsCount >= session.maxParticipants
-) {
-  return session;                 // Ablehnung: unveränderte Session, kein Ergebniscode
-}
+// sessionService.ts — join_session: die Entscheidung trifft die Datenbank,
+// der Service übersetzt sie nur in einen Ergebnistyp (8.5.4).
+const { data, error } = await supabase.rpc("join_session", {
+  p_session_id: sessionId,
+});
 ```
 
-**Abweichung.** Keine der drei Funktionen ist eine unteilbare Datenbankoperation: Alle laufen synchron im Browser auf einem einzigen, modulweiten Array. Die in [F3 AF-01](../spec/F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel)/[AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung) geforderte Atomarität bei gleichzeitigem Zugriff mehrerer Nutzer ([N1-QA-01](../spec/N1-nichtfunktionale-anforderungen.md#n1-qa-01--konsistenz-von-beitritt-und-check-in)) ist im aktuellen, je Browser-Instanz isolierten Prototyp nicht wirksam prüfbar; die Datenbank setzt sie inzwischen durch — `join_session` hält die Kapazitätsgrenze über eine Zeilensperre —, das Frontend ruft die RPCs aber noch nicht auf. Zusätzlich prüft `checkIn()` das Merkmal nicht mit; anders als in [F3 AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung) beschrieben, ist die Merkmalsprüfung im Code von der Zeitfenster-/Teilnahmeprüfung getrennt statt Teil derselben Operation.
+**Umsetzung.** Alle drei Funktionen rufen die jeweilige RPC auf; die fachliche Entscheidung trifft ausschließlich die Datenbank. Die in [F3 AF-01](../spec/F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel)/[AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung) geforderte Atomarität bei gleichzeitigem Zugriff mehrerer Nutzer ([N1-QA-01](../spec/N1-nichtfunktionale-anforderungen.md#n1-qa-01--konsistenz-von-beitritt-und-check-in)) ist damit wirksam: `join_session` hält die Kapazitätsgrenze über eine Zeilensperre. Auch die zuvor abweichende Trennung von Merkmals- und Zeitfensterprüfung beim Check-in entfällt — beide liegen jetzt in derselben Operation.
 
 **Lesezugriffe.** Discovery ([UC-02](../spec/F2-anwendungsfaelle.md#uc-02--session-suchen)) lädt die vollständig gefilterte Ergebnismenge in einem Aufruf; eine seitenweise Nachforderung ist im MVP nicht vorgesehen, weil die je Ort und Sportart erwartete Ergebnismenge klein bleibt.
 
@@ -254,7 +250,7 @@ Wie ein Fehler dem Nutzer angezeigt wird, richtet sich nach seiner Klasse ([B1.5
 
 ### 8.5.7 Aktueller Prototyp und Zielbild
 
-**Aktueller Prototyp.** `joinSession()` und `checkIn()` (`src/services/sessionService.ts`, siehe [8.4](#84-atomare-fachoperationen-und-datenzugriff-über-die-service-schicht)) sind synchrone Funktionen ohne Netzwerkaufruf; bei Ablehnung geben beide die unveränderte Session zurück, ohne zwischen den in F3 definierten Ergebniscodes zu unterscheiden — der Aufrufer kann `OK` nicht von einer bestimmten Ablehnung unterscheiden. Die Dialogseiten kompensieren das, indem sie die Zulässigkeit vor dem Aufruf selbst neu berechnen, statt sie aus einem Rückgabewert zu lesen (`canJoin`/`canCheckIn` in `src/pages/SessionDetailPage.tsx`). Eine sichtbare Ausnahme ist die Check-in-PIN: `CheckInPage.tsx` prüft die PIN heute clientseitig selbst und zeigt bei Fehlschlag den lokalen Fehlertext `pinError` an — fachlich entspricht das `INVALID_CREDENTIAL` aus AF-02, ohne dass der Code diesen Ergebniscode selbst führt. Die Fehlerklassen aus [8.5.2](#852-fehlerklassen) und die F3-Ergebniscodes je Anwendungsfunktion sind inzwischen als Typen abgebildet (`src/types/result.ts`); `joinSession()`/`checkIn()` geben sie aber noch nicht zurück, weil sie bis zur Umstellung auf die RPCs synchron bleiben. NB-05 ist der einzige reale externe Aufruf des Prototyps und nutzt den Ergebnistyp bereits vollständig: Erfolg, fachlich nicht verwertbares Ergebnis und technischer Fehler werden im Service unterschieden und in der UI unterschiedlich dargestellt ([8.5.5](#855-fehler-aus-nachbarsystemen)).
+**Stand der Umsetzung.** `createSession()`, `joinSession()` und `checkIn()` (`src/services/sessionService.ts`) rufen die RPCs auf und geben deren Ergebniscode als Ergebnistyp weiter (`src/types/result.ts`); die Dialogseiten lesen die fachliche Reaktion daraus ab, statt die Regel erneut zu berechnen. Lesende Zugriffe laufen über `v_session` und erhalten Lade- und Fehlerzustände nach [B1.5.4](../spec/B1-dialogspezifikation.md#b154-fehler--und-ladezustände) über `useLoadedData`. NB-05 nutzt den Ergebnistyp seit der Umstellung des Geocodings ([8.5.5](#855-fehler-aus-nachbarsystemen)).
 
 **Zielbild.** Die drei atomaren Fachoperationen laufen über RPCs, die einen definierten fachlichen Ergebniscode gemäß F3/N2.3 zurückgeben ([8.4](#84-atomare-fachoperationen-und-datenzugriff-über-die-service-schicht)); die Service-Schicht gibt diesen Code unverändert an die aufrufende Dialogseite weiter, statt ihn zu verwerfen. Ein technischer Fehler des Transports oder eines Nachbarsystems wird davon getrennt als technischer Fehlerzustand weitergegeben, nicht als fachlicher Ergebniscode. Die UI-Schicht unterscheidet beide Kategorien gemäß [8.5.6](#856-nutzerkommunikation). Dieses Zielbild ist ausschließlich in F3/N2.3/S1.1 begründet und wird hier nicht über die Spezifikation hinaus erweitert.
 
@@ -262,8 +258,8 @@ Wie ein Fehler dem Nutzer angezeigt wird, richtet sich nach seiner Klasse ([B1.5
 
 Die folgenden Fälle illustrieren die vorstehende Regel; sie sind Beispiele, nicht deren Kern.
 
-- **Beitritt und Check-in (UC-04, UC-08/UC-09).** `joinSession()`/`checkIn()` (`src/services/sessionService.ts`) lehnen durch unveränderte Rückgabe ab, ohne Ergebniscode; `SessionDetailPage` berechnet `canJoin`/`canCheckIn` deshalb selbst aus Status, Teilnahme und Kapazität (`src/pages/SessionDetailPage.tsx`).
-- **Check-in-PIN (UC-09).** `pinError` in `src/pages/CheckInPage.tsx` zeigt eine fachliche Ablehnung (falsche PIN, fachlich `INVALID_CREDENTIAL`) als kontextbezogene Inline-Meldung mit `role="alert"`.
+- **Beitritt (UC-04).** `joinSession()` gibt den Ergebniscode aus F3 AF-01 zurück; `SessionDetailPage` zeigt ihn als kontextbezogene Meldung an — etwa `SESSION_FULL` als Hinweis, dass es keine Warteliste gibt (P1 NG-10).
+- **Check-in-PIN (UC-09).** `CheckInPage` prüft nur noch die Form der Eingabe (vier Ziffern) und übergibt sie an `check_in`; `INVALID_CREDENTIAL` kommt als Ergebniscode zurück und erscheint als Inline-Meldung mit `role="alert"`.
 - **Court-Standort (UC-10).** `reverseGeocode()`/`lookupCourtLocation()` (`src/services/geocodingService.ts`, `src/components/sessions/CreateSessionForm.tsx`) unterscheiden technisch fehlgeschlagene Anfragen von technisch erfolgreichen Antworten ohne verwertbaren Ort. Die UI folgt der Trennung aus [8.5.6](#856-nutzerkommunikation): Der technische Fehler erscheint mit Wiederholen-Möglichkeit, die fachliche Ablehnung dagegen als kontextbezogener Hinweis, den Pin versetzt zu setzen — Wiederholen würde dort nichts ändern.
 
 ### 8.5.9 Zusammenfassung als Implementierungsregel

@@ -1,113 +1,31 @@
-import { mockSessions } from "../data/mockSessions";
-import type { Court, SportSession, SportKey } from "../types/session";
-import { getSessionStatus } from "../utils/sessionTime";
-import { getCurrentUser } from "./userService";
+import type {
+  CheckInResult,
+  CreateSessionResult,
+  Failed,
+  JoinSessionResult,
+  Ok,
+} from "../types/result";
+import type { Participant, SportKey, SportSession } from "../types/session";
+import {
+  SESSION_VIEW_COLUMNS,
+  type SessionViewRow,
+  toSession,
+} from "./sessionQueries";
+import { supabase } from "./supabaseClient";
 
-const CREATED_SESSIONS_STORAGE_KEY = "localcourt.mock-created-sessions";
+// Fachlicher Zugriff auf Sessions über NB-03 (S1.4).
+//
+// Lesend über die View `v_session` — nicht über die Tabelle `session`: Deren
+// SELECT-GRANT schließt die Spalte `pin` aus (N2.2), ein `select('*')` würde
+// mit "permission denied" scheitern. Die View liefert zudem `status` und
+// `confirmed_count` bereits berechnet (D1.6).
+//
+// Schreibend ausschließlich über die drei atomaren RPCs (ADR-001). Ihre
+// fachlichen Ergebniscodes werden unverändert weitergereicht, statt sie zu
+// verwerfen (A08 8.5.4); technische Fehler bleiben davon getrennt (N2.3).
 
-function cloneSession(session: SportSession): SportSession {
-  return {
-    ...session,
-    participants: session.participants.map((participant) => ({
-      ...participant,
-    })),
-  };
-}
-
-function readCreatedSessions(): SportSession[] {
-  const storedSessions = window.localStorage.getItem(CREATED_SESSIONS_STORAGE_KEY);
-
-  if (!storedSessions) {
-    return [];
-  }
-
-  try {
-    const parsedSessions: unknown = JSON.parse(storedSessions);
-    return Array.isArray(parsedSessions)
-      ? (parsedSessions as SportSession[]).map(cloneSession)
-      : [];
-  } catch {
-    return [];
-  }
-}
-
-// Ausgangs-Mockdaten bleiben dynamisch; nur im Formular angelegte Sessions
-// werden für Seiten-Reloads lokal persistiert.
-let createdSessions = readCreatedSessions();
-let sessions = [...mockSessions.map(cloneSession), ...createdSessions];
-
-function persistCreatedSessions() {
-  window.localStorage.setItem(
-    CREATED_SESSIONS_STORAGE_KEY,
-    JSON.stringify(createdSessions),
-  );
-}
-
-function updateCreatedSession(updatedSession: SportSession) {
-  if (!createdSessions.some((session) => session.id === updatedSession.id)) {
-    return;
-  }
-
-  createdSessions = createdSessions.map((session) =>
-    session.id === updatedSession.id ? updatedSession : session,
-  );
-  persistCreatedSessions();
-}
-
-function synchronizeCurrentUserDisplay() {
-  const currentUser = getCurrentUser();
-
-  // Ohne Anmeldung gibt es kein Profil, dessen Anzeigename gespiegelt werden
-  // könnte (B1.5.2: Suche und Detailansicht bleiben trotzdem nutzbar).
-  if (!currentUser) {
-    return;
-  }
-
-  let hasChanges = false;
-
-  sessions = sessions.map((session) => {
-    const organizerName =
-      session.organizerId === currentUser.id
-        ? currentUser.name
-        : session.organizerName;
-    const participants = session.participants.map((participant) => {
-      if (participant.id !== currentUser.id) {
-        return participant;
-      }
-
-      if (
-        participant.name === currentUser.name &&
-        participant.avatarUrl === currentUser.avatarUrl
-      ) {
-        return participant;
-      }
-
-      hasChanges = true;
-      return {
-        ...participant,
-        name: currentUser.name,
-        avatarUrl: currentUser.avatarUrl,
-      };
-    });
-
-    if (organizerName !== session.organizerName) {
-      hasChanges = true;
-    }
-
-    return organizerName === session.organizerName &&
-      participants.every(
-        (participant, index) => participant === session.participants[index],
-      )
-      ? session
-      : { ...session, organizerName, participants };
-  });
-
-  if (hasChanges) {
-    const createdSessionIds = new Set(createdSessions.map((session) => session.id));
-    createdSessions = sessions.filter((session) => createdSessionIds.has(session.id));
-    persistCreatedSessions();
-  }
-}
+export type SessionListResult = Ok<SportSession[]> | Failed;
+export type SessionResult = Ok<SportSession | null> | Failed;
 
 export interface CreateSessionInput {
   sportKey: SportKey;
@@ -116,222 +34,417 @@ export interface CreateSessionInput {
   startAt: string;
   durationMin: number;
   maxParticipants: number;
-  court: Court;
+  /** Bestehender Court; alternativ `newCourt` für eine Neuerfassung (UC-10). */
+  courtId?: string;
+  newCourt?: {
+    name: string;
+    city: string;
+    address?: string;
+    latitude: number;
+    longitude: number;
+  };
 }
 
-function generatePin(): string {
-  return String(Math.floor(Math.random() * 10000)).padStart(4, "0");
+interface ParticipantRow {
+  user_id: string;
+  status: string;
+  profile: { display_name: string; avatar_url: string | null } | null;
 }
 
-export function createSession(input: CreateSessionInput): SportSession {
-  const currentUser = getCurrentUser();
+/**
+ * Übersetzt einen RPC-Fehler in einen fachlichen Ergebniscode. PostgREST
+ * transportiert den in F3 definierten Code als `message`, den HTTP-Status über
+ * das SQLSTATE `PTxyz`. Alles, was nicht in der erwarteten Liste steht, bleibt
+ * ein technischer Fehler und wird nicht umgedeutet (A08 8.5.4).
+ */
+function rejectionCode<TCode extends string>(
+  error: { message?: string } | null,
+  codes: readonly TCode[],
+): TCode | null {
+  const message = error?.message as TCode | undefined;
+  return message && codes.includes(message) ? message : null;
+}
 
-  // Erstellen ist eine geschützte Aktion (B1.5.2); ProtectedRoute lässt
-  // DLG-05 ohne Anmeldung gar nicht erst zu.
-  if (!currentUser) {
-    throw new Error("Session-Erstellung setzt eine Anmeldung voraus (UC-06).");
+/** Teilnahmen einer Session, soweit die RLS sie freigibt (N2.2, UC-07). */
+async function loadParticipants(sessionId: string): Promise<Participant[]> {
+  const { data, error } = await supabase
+    .from("participant")
+    .select("user_id, status, profile(display_name, avatar_url)")
+    .eq("session_id", sessionId)
+    .order("joined_at");
+
+  if (error || !data) {
+    // Kein Zugriff bedeutet hier nicht "keine Teilnehmer", sondern "nicht
+    // sichtbar" - die Belegungszahl kommt unabhängig davon aus der View.
+    return [];
   }
-  const session: SportSession = {
-    id: crypto.randomUUID(),
-    title: input.title.trim(),
-    sportKey: input.sportKey,
-    court: input.court,
-    startAt: input.startAt,
-    description: input.description.trim(),
-    durationMin: input.durationMin,
-    participantsCount: 1,
-    maxParticipants: input.maxParticipants,
-    organizerId: currentUser.id,
-    organizerName: currentUser.name,
-    pin: generatePin(),
-    participants: [
-      {
-        id: currentUser.id,
-        name: currentUser.name,
-        avatarUrl: currentUser.avatarUrl,
-        status: "confirmed",
-      },
+
+  return (data as unknown as ParticipantRow[]).map((row) => ({
+    id: row.user_id,
+    name: row.profile?.display_name ?? "Teilnehmer:in",
+    status: row.status === "checked_in" ? "checked_in" : "confirmed",
+    avatarUrl: row.profile?.avatar_url ?? undefined,
+  }));
+}
+
+/** Anzeigenamen mehrerer Profile in einem Aufruf (D1.4 Basisfelder). */
+async function loadDisplayNames(
+  userIds: readonly string[],
+): Promise<Map<string, string>> {
+  const eindeutige = [...new Set(userIds)];
+
+  if (eindeutige.length === 0) {
+    return new Map();
+  }
+
+  // Ohne Anmeldung gibt N2.2 die Tabelle profile gar nicht frei. Die Anfrage
+  // würde mit 401 abgewiesen; sie zu stellen erzeugte nur Fehlerrauschen in
+  // der Konsole, ohne je ein Ergebnis liefern zu können.
+  const { data: authState } = await supabase.auth.getSession();
+
+  if (!authState.session) {
+    return new Map();
+  }
+
+  const { data, error } = await supabase
+    .from("profile")
+    .select("user_id, display_name")
+    .in("user_id", eindeutige);
+
+  if (error || !data) {
+    // Fremde Profile sind laut N2.2 nur angemeldet lesbar; ohne Anmeldung
+    // bleibt der Name leer, die Session selbst ist trotzdem sichtbar (UC-02).
+    return new Map();
+  }
+
+  return new Map(
+    (data as { user_id: string; display_name: string }[]).map((row) => [
+      row.user_id,
+      row.display_name,
+    ]),
+  );
+}
+
+async function toSessions(rows: SessionViewRow[]): Promise<SportSession[]> {
+  const names = await loadDisplayNames(rows.map((row) => row.organizer_user_id));
+
+  return rows.map((row) =>
+    toSession(row, names.get(row.organizer_user_id) ?? "", []),
+  );
+}
+
+/**
+ * Entdecken und Karte zeigen nur zukünftige oder laufende Sessions
+ * (B1 DLG-02/DLG-03); abgeschlossene erscheinen ausschließlich in DLG-07.
+ *
+ * Sortierung nach B1 DLG-02: laufende vor bevorstehenden, je Gruppe `start_at`
+ * aufsteigend, bei Gleichstand Titel aufsteigend. Die Ergebnismenge wird
+ * vollständig geladen; eine Seitengröße ist im MVP nicht vorgesehen (A08 8.4).
+ */
+export async function getDiscoverableSessions(
+  sportKey: SportKey | "Alle" = "Alle",
+): Promise<SessionListResult> {
+  let query = supabase
+    .from("v_session")
+    .select(SESSION_VIEW_COLUMNS)
+    .neq("status", "completed")
+    .order("start_at", { ascending: true })
+    .order("title", { ascending: true });
+
+  if (sportKey !== "Alle") {
+    query = query.eq("sport_key", sportKey);
+  }
+
+  const { data, error } = await query;
+
+  if (error || !data) {
+    return { kind: "failed", cause: error };
+  }
+
+  const sessions = await toSessions(data as unknown as SessionViewRow[]);
+
+  // Laufende vor bevorstehenden; innerhalb der Gruppe bleibt die
+  // Datenbanksortierung erhalten (B1 DLG-02).
+  return {
+    kind: "ok",
+    code: "OK",
+    data: [
+      ...sessions.filter((session) => session.status === "active"),
+      ...sessions.filter((session) => session.status !== "active"),
     ],
   };
-
-  createdSessions = [...createdSessions, session];
-  sessions = [...sessions, session];
-  persistCreatedSessions();
-  return session;
 }
 
-export function getSessions(): SportSession[] {
-  synchronizeCurrentUserDisplay();
-  return sessions;
-}
-
-export function getSessionById(
+/** Session-Detail inklusive Teilnahmen, soweit sichtbar (UC-03, UC-07). */
+export async function getSessionById(
   sessionId: string | undefined,
-): SportSession | undefined {
+): Promise<SessionResult> {
   if (!sessionId) {
-    return undefined;
+    return { kind: "ok", code: "OK", data: null };
   }
 
-  synchronizeCurrentUserDisplay();
-  return sessions.find((session) => session.id === sessionId);
-}
+  const { data, error } = await supabase
+    .from("v_session")
+    .select(SESSION_VIEW_COLUMNS)
+    .eq("session_id", sessionId)
+    .maybeSingle();
 
-// Entdecken/Karte zeigen nur zukünftige oder laufende Sessions (B1 DLG-02/DLG-03);
-// abgeschlossene Sessions erscheinen ausschließlich unter "Meine Sessions" (UC-11).
-export function getDiscoverableSessions(): SportSession[] {
-  synchronizeCurrentUserDisplay();
-  return sessions
-    .filter(
-      (session) => getSessionStatus(session) !== "completed",
-    )
-    .sort((left, right) => {
-      const statusOrder = { active: 0, scheduled: 1, completed: 2 };
-      const statusDifference =
-        statusOrder[getSessionStatus(left)] - statusOrder[getSessionStatus(right)];
-
-      if (statusDifference !== 0) {
-        return statusDifference;
-      }
-
-      const startDifference =
-        Date.parse(left.startAt) - Date.parse(right.startAt);
-
-      return startDifference || left.title.localeCompare(right.title, "de");
-    });
-}
-
-export function getSessionsBySportKey(
-  sportKey: SportKey | "Alle",
-): SportSession[] {
-  const discoverable = getDiscoverableSessions();
-
-  if (sportKey === "Alle") {
-    return discoverable;
+  if (error) {
+    return { kind: "failed", cause: error };
   }
 
-  return discoverable.filter((session) => session.sportKey === sportKey);
-}
-
-function isMySession(session: SportSession): boolean {
-  const currentUser = getCurrentUser();
-
-  // Ohne Anmeldung gibt es keine eigenen Sessions (UC-05, UC-11).
-  if (!currentUser) {
-    return false;
+  if (!data) {
+    // Kein technischer Fehler: Die Anfrage wurde beantwortet, es gibt die
+    // Session nur nicht (B1.5.6 "nicht gefunden").
+    return { kind: "ok", code: "OK", data: null };
   }
 
-  return (
-    session.organizerId === currentUser.id ||
-    session.participants.some((participant) => participant.id === currentUser.id)
-  );
+  const row = data as unknown as SessionViewRow;
+  const [participants, names] = await Promise.all([
+    loadParticipants(row.session_id),
+    loadDisplayNames([row.organizer_user_id]),
+  ]);
+
+  return {
+    kind: "ok",
+    code: "OK",
+    data: toSession(row, names.get(row.organizer_user_id) ?? "", participants),
+  };
 }
 
-// "Meine Sessions" (B1 DLG-07): bevorstehende Sessions mit eigener Beteiligung (UC-05).
-export function getMyUpcomingSessions(): SportSession[] {
-  synchronizeCurrentUserDisplay();
-  return sessions
-    .filter(
-      (session) =>
-        isMySession(session) &&
-        getSessionStatus(session) !== "completed",
-    )
-    .sort(
-      (left, right) =>
-        Date.parse(left.startAt) - Date.parse(right.startAt) ||
-        left.title.localeCompare(right.title, "de"),
-    );
+/**
+ * PIN einer Session. Gibt `null` zurück, wenn der Aufrufer sie laut N2.2 nicht
+ * sehen darf — das ist eine Sichtbarkeitsregel, kein Ergebniscode.
+ */
+export async function getSessionPin(sessionId: string): Promise<string | null> {
+  const { data, error } = await supabase.rpc("session_pin", {
+    p_session_id: sessionId,
+  });
+
+  return error ? null : ((data as string | null) ?? null);
 }
 
-// "Meine Sessions", Tab Vergangen (B1 DLG-07): read-only Historie (UC-11).
-export function getMyPastSessions(): SportSession[] {
-  synchronizeCurrentUserDisplay();
-  return sessions
-    .filter(
-      (session) => isMySession(session) && getSessionStatus(session) === "completed",
-    )
-    .sort((left, right) => {
-      const leftEnd =
-        Date.parse(left.startAt) + left.durationMin * 60 * 1000;
-      const rightEnd =
-        Date.parse(right.startAt) + right.durationMin * 60 * 1000;
+/** Eigene Sessions (UC-05, UC-11): organisiert oder mit eigener Teilnahme. */
+async function getMySessions(): Promise<SessionListResult> {
+  const { data: sessionData } = await supabase.auth.getSession();
+  const userId = sessionData.session?.user.id;
 
-      return (
-        rightEnd - leftEnd || left.title.localeCompare(right.title, "de")
-      );
-    });
-}
-
-export function joinSession(sessionId: string): SportSession | undefined {
-  const currentUser = getCurrentUser();
-  const session = getSessionById(sessionId);
-
-  // F3 AF-01 prueft die Anmeldung als erste Bedingung. Bis die RPC angebunden
-  // ist, bleibt hier die stille Ablehnung des Prototyps (A08 8.5.7).
-  if (!currentUser) {
-    return session;
+  if (!userId) {
+    return { kind: "ok", code: "OK", data: [] };
   }
 
-  if (
-    !session ||
-    getSessionStatus(session) === "completed" ||
-    session.participants.some((participant) => participant.id === currentUser.id) ||
-    session.participantsCount >= session.maxParticipants
-  ) {
-    return session;
+  // Beide Beziehungen liefern Session-Kennungen; die RLS gibt jeweils nur
+  // eigene Zeilen frei (N2.2).
+  const [organized, joined] = await Promise.all([
+    supabase.from("organizer").select("session_id").eq("user_id", userId),
+    supabase.from("participant").select("session_id").eq("user_id", userId),
+  ]);
+
+  if (organized.error || joined.error) {
+    return { kind: "failed", cause: organized.error ?? joined.error };
   }
 
-  const updatedSession: SportSession = {
-    ...session,
-    participantsCount: session.participantsCount + 1,
-    participants: [
-      ...session.participants,
-      {
-        id: currentUser.id,
-        name: currentUser.name,
-        avatarUrl: currentUser.avatarUrl,
-        status: "confirmed",
-      },
-    ],
+  const ids = [
+    ...new Set([
+      ...(organized.data ?? []).map((row) => row.session_id as string),
+      ...(joined.data ?? []).map((row) => row.session_id as string),
+    ]),
+  ];
+
+  if (ids.length === 0) {
+    return { kind: "ok", code: "OK", data: [] };
+  }
+
+  const { data, error } = await supabase
+    .from("v_session")
+    .select(SESSION_VIEW_COLUMNS)
+    .in("session_id", ids);
+
+  if (error || !data) {
+    return { kind: "failed", cause: error };
+  }
+
+  return {
+    kind: "ok",
+    code: "OK",
+    data: await toSessions(data as unknown as SessionViewRow[]),
+  };
+}
+
+export async function getMyUpcomingSessions(): Promise<SessionListResult> {
+  const result = await getMySessions();
+
+  if (result.kind !== "ok") {
+    return result;
+  }
+
+  return {
+    ...result,
+    data: result.data
+      .filter((session) => session.status !== "completed")
+      .sort(
+        (left, right) =>
+          Date.parse(left.startAt) - Date.parse(right.startAt) ||
+          left.title.localeCompare(right.title, "de"),
+      ),
+  };
+}
+
+/** Historie (UC-11): abgeschlossene Sessions, jüngste zuerst. */
+export async function getMyPastSessions(): Promise<SessionListResult> {
+  const result = await getMySessions();
+
+  if (result.kind !== "ok") {
+    return result;
+  }
+
+  return {
+    ...result,
+    data: result.data
+      .filter((session) => session.status === "completed")
+      .sort((left, right) => {
+        const leftEnd = Date.parse(left.startAt) + left.durationMin * 60_000;
+        const rightEnd = Date.parse(right.startAt) + right.durationMin * 60_000;
+
+        return rightEnd - leftEnd || left.title.localeCompare(right.title, "de");
+      }),
+  };
+}
+
+/**
+ * UC-06/UC-10 über die RPC `create_session`: Court (optional), Session,
+ * organizer-Eintrag und Organisator-Teilnahme entstehen in einer Transaktion
+ * (ADR-001). Die PIN erzeugt dabei die Datenbank (AF-04).
+ */
+export async function createSession(
+  input: CreateSessionInput,
+): Promise<CreateSessionResult> {
+  // Die RPC erwartet die Sportart als Kennung; das Frontend führt den
+  // stabilen Schlüssel aus D1.4.
+  const sport = await supabase
+    .from("sport")
+    .select("sport_id")
+    .eq("key", input.sportKey)
+    .maybeSingle();
+
+  if (sport.error || !sport.data) {
+    return { kind: "failed", cause: sport.error };
+  }
+
+  const { data, error } = await supabase.rpc("create_session", {
+    p_title: input.title.trim(),
+    p_sport_id: (sport.data as { sport_id: string }).sport_id,
+    p_start_at: input.startAt,
+    p_duration_min: input.durationMin,
+    p_max_participants: input.maxParticipants,
+    p_description: input.description.trim() || null,
+    p_court_id: input.courtId ?? null,
+    p_court_name: input.newCourt?.name ?? null,
+    p_court_city: input.newCourt?.city ?? null,
+    p_court_address: input.newCourt?.address ?? null,
+    p_court_latitude: input.newCourt?.latitude ?? null,
+    p_court_longitude: input.newCourt?.longitude ?? null,
+  });
+
+  if (error) {
+    if (rejectionCode(error, ["NOT_AUTHENTICATED"] as const)) {
+      return { kind: "rejected", code: "NOT_AUTHENTICATED" };
+    }
+
+    const invalid = rejectionCode(error, [
+      "START_IN_PAST",
+      "COURT_INCOMPLETE",
+    ] as const);
+
+    return invalid
+      ? { kind: "invalid", code: invalid }
+      : { kind: "failed", cause: error };
+  }
+
+  const payload = data as { session_id: string; pin: string };
+  return {
+    kind: "ok",
+    code: "OK",
+    data: { sessionId: payload.session_id, pin: payload.pin },
+  };
+}
+
+/** F3 AF-01 über die RPC `join_session`. */
+export async function joinSession(
+  sessionId: string,
+): Promise<JoinSessionResult> {
+  const { data, error } = await supabase.rpc("join_session", {
+    p_session_id: sessionId,
+  });
+
+  if (error) {
+    const code = rejectionCode(error, [
+      "NOT_AUTHENTICATED",
+      "SESSION_NOT_JOINABLE",
+      "ALREADY_JOINED",
+      "SESSION_FULL",
+      "SESSION_NOT_FOUND",
+    ] as const);
+
+    return code
+      ? { kind: "rejected", code }
+      : { kind: "failed", cause: error };
+  }
+
+  const payload = data as {
+    participant_id: string;
+    status: "confirmed";
+    joined_at: string;
   };
 
-  sessions = sessions.map((entry) =>
-    entry.id === updatedSession.id ? updatedSession : entry,
-  );
-  updateCreatedSession(updatedSession);
-
-  return updatedSession;
+  return {
+    kind: "ok",
+    code: "OK",
+    data: {
+      participantId: payload.participant_id,
+      status: payload.status,
+      joinedAt: payload.joined_at,
+    },
+  };
 }
 
-export function checkIn(sessionId: string): SportSession | undefined {
-  const currentUser = getCurrentUser();
-  const session = getSessionById(sessionId);
+/**
+ * F3 AF-02 über die RPC `check_in`. QR-Weg und manuelle Eingabe führen in
+ * denselben Aufruf, weil der QR-Inhalt dieselbe PIN trägt (AF-04, D2.8).
+ *
+ * `ALREADY_CHECKED_IN` ist dabei Erfolg, keine Ablehnung — F3 AF-02 bildet es
+ * ausdrücklich auf 200 ab.
+ */
+export async function checkIn(
+  sessionId: string,
+  pin: string,
+): Promise<CheckInResult> {
+  const { data, error } = await supabase.rpc("check_in", {
+    p_session_id: sessionId,
+    p_pin: pin,
+  });
 
-  // F3 AF-02 setzt eine Anmeldung voraus.
-  if (!currentUser) {
-    return session;
+  if (error) {
+    const code = rejectionCode(error, [
+      "NOT_JOINED",
+      "INVALID_CREDENTIAL",
+      "OUTSIDE_WINDOW",
+      "SESSION_NOT_FOUND",
+    ] as const);
+
+    return code
+      ? { kind: "rejected", code }
+      : { kind: "failed", cause: error };
   }
 
-  const participation = session?.participants.find(
-    (participant) => participant.id === currentUser.id,
-  );
-
-  if (!session || getSessionStatus(session) !== "active" || !participation) {
-    return session;
-  }
-
-  const updatedSession: SportSession = {
-    ...session,
-    participants: session.participants.map((participant) =>
-      participant.id === currentUser.id
-        ? { ...participant, status: "checked_in" }
-        : participant,
-    ),
+  const payload = data as {
+    code: "OK" | "ALREADY_CHECKED_IN";
+    checked_in_at: string;
   };
 
-  sessions = sessions.map((entry) =>
-    entry.id === updatedSession.id ? updatedSession : entry,
-  );
-  updateCreatedSession(updatedSession);
-
-  return updatedSession;
+  return {
+    kind: "ok",
+    code: payload.code,
+    data: { checkedInAt: payload.checked_in_at },
+  };
 }

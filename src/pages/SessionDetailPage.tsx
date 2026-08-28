@@ -10,7 +10,7 @@ import {
   Timer,
   Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { StatusBadge } from "../components/sessions/StatusBadge";
 import { CheckInQrCode } from "../components/sessions/CheckInQrCode";
@@ -18,23 +18,114 @@ import { sportDisplayName } from "../data/sports";
 import { getSessionById, joinSession } from "../services/sessionService";
 import { useAuth } from "../auth/authContext";
 import { isSessionFull } from "../types/session";
-import {
-  formatSessionDate,
-  formatSessionTime,
-  getSessionStatus,
-} from "../utils/sessionTime";
+import { formatSessionDate, formatSessionTime } from "../utils/sessionTime";
+import { ErrorState, LoadingState } from "../components/DataStates";
+import { useLoadedData } from "../hooks/useLoadedData";
+import { getSessionPin } from "../services/sessionService";
 
 // Session-Detail gemäß B1 DLG-04 mit rollen- und statusabhängigen Zuständen:
 // Offen / Beigetreten / Organisator / Read-only (UC-03, UC-04, UC-07).
+// Anzeigetexte zu den Ergebniscodes aus F3 AF-01 (A08 8.5.6).
+function joinRejectionText(code: string): string {
+  switch (code) {
+    case "SESSION_FULL":
+      return "Diese Session ist bereits voll. Es gibt keine Warteliste.";
+    case "ALREADY_JOINED":
+      return "Du nimmst an dieser Session bereits teil.";
+    case "SESSION_NOT_JOINABLE":
+      return "Diese Session ist beendet; ein Beitritt ist nicht mehr möglich.";
+    case "NOT_AUTHENTICATED":
+      return "Bitte melde dich an, um beizutreten.";
+    case "SESSION_NOT_FOUND":
+      return "Diese Session existiert nicht mehr.";
+    default:
+      return "Der Beitritt war nicht erfolgreich.";
+  }
+}
+
 export function SessionDetailPage() {
   const { sessionId } = useParams();
   const navigate = useNavigate();
-  const [, setLocalRevision] = useState(0);
-
-  const session = getSessionById(sessionId);
   // DLG-04 ist ohne Anmeldung einsehbar (B1.2); geschützte Aktionen wie der
   // Beitritt leiten dann über B1.5.2 zu DLG-01.
   const { user } = useAuth();
+  const { state, reload } = useLoadedData(
+    () => getSessionById(sessionId),
+    [sessionId],
+  );
+  const session = state.status === "ok" ? state.data : null;
+
+  // Fachliche Ablehnung des Beitritts (F3 AF-01) bzw. technischer Fehler.
+  const [joinMessage, setJoinMessage] = useState<string | null>(null);
+  const [isJoining, setIsJoining] = useState(false);
+  // Die PIN ist nicht Teil von v_session; sie ist nur für Organisator und
+  // bestätigte Teilnehmer sichtbar (N2.2) und wird gesondert geholt. Das
+  // Ergebnis wird zusammen mit der Session-Kennung abgelegt, damit beim
+  // Wechsel der Session nicht kurzzeitig die alte PIN erscheint.
+  const geladeneSessionId = session?.id;
+  const [pinEintrag, setPinEintrag] = useState<{
+    sessionId: string;
+    pin: string | null;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!geladeneSessionId) {
+      return;
+    }
+
+    let aktiv = true;
+    void getSessionPin(geladeneSessionId).then((wert) => {
+      if (aktiv) {
+        setPinEintrag({ sessionId: geladeneSessionId, pin: wert });
+      }
+    });
+
+    return () => {
+      aktiv = false;
+    };
+  }, [geladeneSessionId]);
+
+  const pin =
+    pinEintrag && pinEintrag.sessionId === geladeneSessionId
+      ? pinEintrag.pin
+      : null;
+
+  async function join() {
+    if (!session) {
+      return;
+    }
+
+    setJoinMessage(null);
+    setIsJoining(true);
+    const result = await joinSession(session.id);
+    setIsJoining(false);
+
+    if (result.kind === "ok") {
+      // Belegung und Teilnehmerliste kommen aus der Datenbank; neu laden statt
+      // den Zustand im Dialog fortzuschreiben (A08 8.5.4).
+      reload();
+      return;
+    }
+
+    setJoinMessage(
+      result.kind === "rejected"
+        ? joinRejectionText(result.code)
+        : "Der Beitritt ist gerade nicht möglich. Bitte versuche es erneut.",
+    );
+  }
+
+  if (state.status === "loading") {
+    return <LoadingState label="Session wird geladen …" />;
+  }
+
+  if (state.status === "failed") {
+    return (
+      <ErrorState
+        onRetry={reload}
+        label="Die Session konnte gerade nicht geladen werden."
+      />
+    );
+  }
 
   if (!session) {
     return (
@@ -62,7 +153,7 @@ export function SessionDetailPage() {
   }
 
   const isOrganizer = session.organizerId === user?.id;
-  const status = getSessionStatus(session);
+  const status = session.status;
   const isReadOnly = status === "completed";
   const isFull = isSessionFull(session);
   const currentParticipation = session.participants.find(
@@ -169,11 +260,7 @@ export function SessionDetailPage() {
           <section className="rounded-3xl bg-slate-950 p-4 text-white">
             <div className="flex items-start gap-4">
               <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-white text-slate-950">
-                <CheckInQrCode
-                  sessionId={session.id}
-                  pin={session.pin}
-                  size={68}
-                />
+                <CheckInQrCode sessionId={session.id} pin={pin ?? ""} size={68} />
               </div>
 
               <div className="min-w-0 flex-1">
@@ -186,7 +273,7 @@ export function SessionDetailPage() {
                 <div className="mt-3 flex items-center gap-2">
                   <KeyRound size={16} className="text-emerald-300" />
                   <span className="text-2xl font-extrabold tracking-[0.3em]">
-                    {session.pin}
+                    {pin ?? "····"}
                   </span>
                 </div>
               </div>
@@ -319,16 +406,25 @@ export function SessionDetailPage() {
         {!isReadOnly && !isOrganizer && (
           <div className="sticky bottom-24 z-10 rounded-3xl bg-white/90 p-2 shadow-xl backdrop-blur">
             {canJoin ? (
-              <button
-                type="button"
-                onClick={() => {
-                  joinSession(session.id);
-                  setLocalRevision((revision) => revision + 1);
-                }}
-                className="w-full rounded-2xl bg-blue-600 py-3 font-bold text-white"
-              >
-                Beitreten
-              </button>
+              <div>
+                <button
+                  type="button"
+                  disabled={isJoining}
+                  onClick={() => void join()}
+                  className="w-full rounded-2xl bg-blue-600 py-3 font-bold text-white disabled:opacity-60"
+                >
+                  {isJoining ? "Einen Moment …" : "Beitreten"}
+                </button>
+
+                {joinMessage && (
+                  <p
+                    role="alert"
+                    className="mt-2 px-1 text-xs font-bold text-red-600"
+                  >
+                    {joinMessage}
+                  </p>
+                )}
+              </div>
             ) : hasJoined ? (
               <div className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-50 py-3 font-bold text-emerald-700">
                 <CheckCircle2 size={18} />

@@ -3,8 +3,10 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { SessionCard } from "../components/sessions/SessionCard";
 import { sportDisplayName, sportKeys } from "../data/sports";
-import { getSessionsBySportKey } from "../services/sessionService";
+import { getDiscoverableSessions } from "../services/sessionService";
 import { useAuth } from "../auth/authContext";
+import { ErrorState, LoadingState } from "../components/DataStates";
+import { useLoadedData } from "../hooks/useLoadedData";
 import type { SportKey } from "../types/session";
 import { formatSessionDate, formatSessionTime } from "../utils/sessionTime";
 
@@ -22,9 +24,30 @@ export function DiscoverPage() {
   const [activeFilter, setActiveFilter] = useState<SessionFilter>("Alle");
   const [searchTerm, setSearchTerm] = useState(user?.city ?? "");
 
+  // Die Sportart filtert die Datenbank (indizierte Spalte), die Ortssuche
+  // arbeitet auf der geladenen Menge - B1 DLG-02 lässt den Ort als freie
+  // Eingabe zu, die auch Titel und Sportart trifft.
+  const { state, reload } = useLoadedData(
+    () => getDiscoverableSessions(activeFilter),
+    [activeFilter],
+  );
+
+  if (state.status === "loading") {
+    return <LoadingState label="Sessions werden geladen …" />;
+  }
+
+  if (state.status === "failed") {
+    return (
+      <ErrorState
+        onRetry={reload}
+        label="Die Sessions konnten gerade nicht geladen werden."
+      />
+    );
+  }
+
   // Suche nach Ort/Region und optional Sportart (B1 DLG-02, UC-02).
   const normalizedSearch = searchTerm.trim().toLowerCase();
-  const filteredSessions = getSessionsBySportKey(activeFilter).filter(
+  const filteredSessions = state.data.filter(
     (session) => {
       if (!normalizedSearch) {
         return true;

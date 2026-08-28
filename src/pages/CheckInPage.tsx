@@ -3,7 +3,8 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { checkIn, getSessionById } from "../services/sessionService";
 import { useAuth } from "../auth/authContext";
-import { getSessionStatus } from "../utils/sessionTime";
+import { ErrorState, LoadingState } from "../components/DataStates";
+import { useLoadedData } from "../hooks/useLoadedData";
 
 // Check-in gemäß B1 DLG-06 (UC-08 QR / UC-09 PIN, Regeln in F3 AF-02).
 // Zustände: Scan → PIN-Eingabe → Erfolg / Abgelehnt; Zeitfenster nur bei "active".
@@ -13,23 +14,46 @@ export function CheckInPage() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session") ?? undefined;
   const deepLinkPin = searchParams.get("pin") ?? "";
-  const session = getSessionById(sessionId);
   // Geschützte Aktion nach B1.5.2, also stets angemeldet.
   const { user } = useAuth();
+  const { state, reload } = useLoadedData(
+    () => getSessionById(sessionId),
+    [sessionId],
+  );
+
+  const session = state.status === "ok" ? state.data : null;
   const participation = session?.participants.find(
     (participant) => participant.id === user?.id,
   );
-  const status = session ? getSessionStatus(session) : undefined;
+  // Status kommt aus v_session, damit die Anzeige nicht von der Prüfung in
+  // der RPC abweichen kann (AF-03).
+  const status = session?.status;
 
-  const [view, setView] = useState<CheckInView>(
-    participation?.status === "checked_in"
-      ? "success"
-      : deepLinkPin
-        ? "pin"
-        : "scan",
+  const [gewaehlteAnsicht, setView] = useState<CheckInView>(
+    deepLinkPin ? "pin" : "scan",
   );
   const [pinInput, setPinInput] = useState(deepLinkPin);
   const [pinError, setPinError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Ein bereits erfolgter Check-in wird nicht zurückgenommen (AF-02). Der
+  // Erfolgszustand wird deshalb aus der geladenen Teilnahme abgeleitet und
+  // nicht nachträglich gesetzt.
+  const view: CheckInView =
+    participation?.status === "checked_in" ? "success" : gewaehlteAnsicht;
+
+  if (state.status === "loading") {
+    return <LoadingState label="Session wird geladen …" />;
+  }
+
+  if (state.status === "failed") {
+    return (
+      <ErrorState
+        onRetry={reload}
+        label="Die Session konnte gerade nicht geladen werden."
+      />
+    );
+  }
 
   if (!session) {
     return (
@@ -69,21 +93,34 @@ export function CheckInPage() {
     );
   }
 
-  function submitPin() {
+  async function submitPin() {
     if (!/^\d{4}$/.test(pinInput)) {
       setPinError("Bitte gib genau 4 Ziffern ein.");
       return;
     }
 
-    // Merkmalsprüfung gemäß AF-02 Regel 3 (Ergebniscode INVALID_CREDENTIAL).
-    if (pinInput !== session!.pin) {
-      setPinError("Ungültiger Code für diese Session.");
+    setPinError(null);
+    setIsSubmitting(true);
+    // Teilnahme, Merkmal und Zeitfenster prüft die RPC in einer Operation
+    // (F3 AF-02, ADR-001) - nicht mehr getrennt im Dialog.
+    const result = await checkIn(session!.id, pinInput);
+    setIsSubmitting(false);
+
+    // OK und ALREADY_CHECKED_IN sind beide Erfolg (F3 AF-02-Mapping).
+    if (result.kind === "ok") {
+      setView("success");
       return;
     }
 
-    setPinError(null);
-    checkIn(session!.id);
-    setView("success");
+    if (result.kind === "rejected") {
+      setPinError(checkInRejectionText(result.code));
+      return;
+    }
+
+    // Technischer Fehler: keine internen Details (A08 8.5.6).
+    setPinError(
+      "Der Check-in ist gerade nicht möglich. Bitte versuche es erneut.",
+    );
   }
 
   if (view === "success") {
@@ -124,7 +161,7 @@ export function CheckInPage() {
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          submitPin();
+          void submitPin();
         }}
         className="flex min-h-[780px] flex-col items-center justify-center bg-slate-950 px-4 text-white"
       >
@@ -177,9 +214,10 @@ export function CheckInPage() {
 
         <button
           type="submit"
-          className="mt-6 w-full rounded-2xl bg-emerald-500 py-3 font-bold text-white"
+          disabled={isSubmitting}
+          className="mt-6 w-full rounded-2xl bg-emerald-500 py-3 font-bold text-white disabled:opacity-60"
         >
-          Teilnahme bestätigen
+          {isSubmitting ? "Einen Moment …" : "Teilnahme bestätigen"}
         </button>
 
         <button
@@ -247,6 +285,23 @@ interface BlockedScreenProps {
   message: string;
   linkTo: string;
   linkLabel: string;
+}
+
+// Anzeigetexte zu den Ergebniscodes aus F3 AF-02 (A08 8.5.6: kontextbezogen,
+// sodass erkennbar ist, welche Aktion die Ablehnung ausgelöst hat).
+function checkInRejectionText(code: string): string {
+  switch (code) {
+    case "INVALID_CREDENTIAL":
+      return "Ungültiger Code für diese Session.";
+    case "NOT_JOINED":
+      return "Du bist dieser Session nicht beigetreten.";
+    case "OUTSIDE_WINDOW":
+      return "Der Check-in ist nur während der laufenden Session möglich.";
+    case "SESSION_NOT_FOUND":
+      return "Diese Session existiert nicht mehr.";
+    default:
+      return "Der Check-in war nicht erfolgreich.";
+  }
 }
 
 function BlockedScreen({ title, message, linkTo, linkLabel }: BlockedScreenProps) {

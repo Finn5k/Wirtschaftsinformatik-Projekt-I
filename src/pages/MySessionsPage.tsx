@@ -9,11 +9,9 @@ import {
 } from "../services/sessionService";
 import { useAuth } from "../auth/authContext";
 import type { SportSession } from "../types/session";
-import {
-  formatSessionDate,
-  formatSessionTime,
-  getSessionStatus,
-} from "../utils/sessionTime";
+import { formatSessionDate, formatSessionTime } from "../utils/sessionTime";
+import { ErrorState, LoadingState } from "../components/DataStates";
+import { useLoadedData } from "../hooks/useLoadedData";
 
 // "Meine Sessions" gemäß B1 DLG-07 mit zwei Zuständen (Tabs):
 // Bevorstehend (UC-05) und Vergangen (UC-11, read-only Historie).
@@ -22,8 +20,26 @@ type Tab = "upcoming" | "past";
 export function MySessionsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("upcoming");
 
-  const sessions =
-    activeTab === "upcoming" ? getMyUpcomingSessions() : getMyPastSessions();
+  const { state, reload } = useLoadedData(
+    () =>
+      activeTab === "upcoming" ? getMyUpcomingSessions() : getMyPastSessions(),
+    [activeTab],
+  );
+
+  if (state.status === "loading") {
+    return <LoadingState label="Deine Sessions werden geladen …" />;
+  }
+
+  if (state.status === "failed") {
+    return (
+      <ErrorState
+        onRetry={reload}
+        label="Deine Sessions konnten gerade nicht geladen werden."
+      />
+    );
+  }
+
+  const sessions = state.data;
 
   return (
     <div className="min-h-[780px] bg-slate-50 px-4 py-5">
@@ -133,7 +149,7 @@ function MySessionRow({ session, showCheckInInfo }: MySessionRowProps) {
     (participant) => participant.id === user?.id,
   );
   const wasCheckedIn = myParticipation?.status === "checked_in";
-  const status = getSessionStatus(session);
+  const status = session.status;
 
   return (
     <Link
