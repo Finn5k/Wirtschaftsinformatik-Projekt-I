@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { SessionCard } from "../components/sessions/SessionCard";
 import { sportDisplayName, sportKeys } from "../data/sports";
 import { getSessionsBySportKey } from "../services/sessionService";
-import { getCurrentUser } from "../services/userService";
+import { useAuth } from "../auth/authContext";
 import type { SportKey } from "../types/session";
 import { formatSessionDate, formatSessionTime } from "../utils/sessionTime";
 
@@ -16,9 +16,11 @@ const filters: SessionFilter[] = [
 ];
 
 export function DiscoverPage() {
-  const currentUser = getCurrentUser();
+  // DLG-02 ist ohne Anmeldung nutzbar (UC-02, B1.5.2); ohne Profil entfällt
+  // lediglich die Ortsvorbelegung und die persönliche Ansprache.
+  const { user } = useAuth();
   const [activeFilter, setActiveFilter] = useState<SessionFilter>("Alle");
-  const [searchTerm, setSearchTerm] = useState(currentUser.city);
+  const [searchTerm, setSearchTerm] = useState(user?.city ?? "");
 
   // Suche nach Ort/Region und optional Sportart (B1 DLG-02, UC-02).
   const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -47,7 +49,7 @@ export function DiscoverPage() {
     <div className="min-h-[780px] bg-slate-50 px-4 py-5">
       <header className="mb-5">
         <p className="text-xs font-semibold text-blue-600">
-          Hi, {currentUser.name.split(" ")[0]} 👋
+          {user ? `Hi, ${user.name.split(" ")[0]} 👋` : "Willkommen bei LocalCourt 👋"}
         </p>
         <h1 className="mt-1 text-3xl font-extrabold leading-tight text-slate-950">
           Finde deine nächste

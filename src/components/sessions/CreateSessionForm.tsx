@@ -20,7 +20,7 @@ import { sportDisplayName, sportKeys, sports } from "../../data/sports";
 import { createCourt, getCourts } from "../../services/courtService";
 import { reverseGeocode } from "../../services/geocodingService";
 import { createSession } from "../../services/sessionService";
-import { getCurrentUser } from "../../services/userService";
+import { useAuth } from "../../auth/authContext";
 import type { Court, SportKey, SportSession } from "../../types/session";
 import { CheckInQrCode } from "./CheckInQrCode";
 import {
@@ -67,7 +67,8 @@ function isStartInPast(date: string, time: string) {
 }
 
 export function CreateSessionForm() {
-  const currentUser = getCurrentUser();
+  // Nur über ProtectedRoute erreichbar (B1.5.2), also stets angemeldet.
+  const { user: currentUser } = useAuth();
   const [participantLimit, setParticipantLimit] = useState(10);
   const [durationMin, setDurationMin] = useState(60);
   const [createdSession, setCreatedSession] = useState<SportSession | null>(null);
@@ -81,7 +82,7 @@ export function CreateSessionForm() {
   const geocodingAbortController = useRef<AbortController | null>(null);
 
   const [form, setForm] = useState<FormState>({
-    sportKey: currentUser.preferredSports[0] ?? sportKeys[0],
+    sportKey: currentUser?.preferredSports[0] ?? sportKeys[0],
     title: "",
     description: "",
     date: "",

@@ -2,7 +2,7 @@ import { CheckCircle2, Clock, KeyRound, QrCode, XCircle } from "lucide-react";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { checkIn, getSessionById } from "../services/sessionService";
-import { getCurrentUser } from "../services/userService";
+import { useAuth } from "../auth/authContext";
 import { getSessionStatus } from "../utils/sessionTime";
 
 // Check-in gemäß B1 DLG-06 (UC-08 QR / UC-09 PIN, Regeln in F3 AF-02).
@@ -14,9 +14,10 @@ export function CheckInPage() {
   const sessionId = searchParams.get("session") ?? undefined;
   const deepLinkPin = searchParams.get("pin") ?? "";
   const session = getSessionById(sessionId);
-  const currentUser = getCurrentUser();
+  // Geschützte Aktion nach B1.5.2, also stets angemeldet.
+  const { user } = useAuth();
   const participation = session?.participants.find(
-    (participant) => participant.id === currentUser.id,
+    (participant) => participant.id === user?.id,
   );
   const status = session ? getSessionStatus(session) : undefined;
 

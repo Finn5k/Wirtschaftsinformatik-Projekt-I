@@ -137,6 +137,26 @@ export type ReverseGeocodeResult =
   | Rejected<"GEOCODING_NO_CITY">
   | Failed;
 
+// ------------------------------------------------------------------ NB-02
+// UC-01, B1 DLG-01. Supabase Auth definiert keine F3-Ergebniscodes; die
+// folgenden Codes bilden die fachlich unterscheidbaren Ausgänge von NB-02 ab
+// (S1.3) und folgen derselben Einteilung wie A08 8.5.2.
+
+export type SignInRejection =
+  | "INVALID_CREDENTIALS"
+  // Nur relevant, solange im Supabase-Projekt die E-Mail-Bestätigung aktiv
+  // ist. UC-01 und B1 DLG-01 sehen diesen Schritt nicht vor.
+  | "EMAIL_NOT_CONFIRMED";
+
+export type SignUpRejection =
+  | "EMAIL_ALREADY_REGISTERED"
+  | "EMAIL_NOT_CONFIRMED"
+  | "WEAK_PASSWORD"
+  | "INVALID_EMAIL";
+
+export type SignInResult = Ok<null> | Rejected<SignInRejection> | Failed;
+export type SignUpResult = Ok<null> | Rejected<SignUpRejection> | Failed;
+
 // ----------------------------------------------------------------- Helfer
 
 /** Verengt ein Ergebnis auf den Erfolgsfall. */
