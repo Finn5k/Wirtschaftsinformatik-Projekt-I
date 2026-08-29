@@ -18,6 +18,10 @@ export type LoadState<TData> =
   | { status: "ok"; data: TData }
   | { status: "failed" };
 
+// Stabile Referenz: Ein bei jedem Rendern neu erzeugtes Objekt würde in den
+// aufrufenden Seiten jedes useMemo entwerten, das davon abhängt.
+const LADEZUSTAND: LoadState<never> = { status: "loading" };
+
 export interface LoadedData<TData> {
   state: LoadState<TData>;
   /** Erneut laden — die Wiederholmöglichkeit aus B1.5.4. */
@@ -73,7 +77,7 @@ export function useLoadedData<TData>(
 
   return {
     state:
-      eintrag?.schluessel === schluessel ? eintrag.state : { status: "loading" },
+      eintrag?.schluessel === schluessel ? eintrag.state : LADEZUSTAND,
     reload,
   };
 }
