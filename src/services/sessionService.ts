@@ -67,6 +67,15 @@ function rejectionCode<TCode extends string>(
 
 /** Teilnahmen einer Session, soweit die RLS sie freigibt (N2.2, UC-07). */
 async function loadParticipants(sessionId: string): Promise<Participant[]> {
+  // N2.2 gibt participant nur Angemeldeten frei, und dort nur die eigene Zeile
+  // bzw. dem Organisator die vollständige Liste. Unangemeldet würde die Anfrage
+  // mit 401 abgewiesen; sie zu stellen erzeugte nur Fehlerrauschen.
+  const { data: authState } = await supabase.auth.getSession();
+
+  if (!authState.session) {
+    return [];
+  }
+
   const { data, error } = await supabase
     .from("participant")
     .select("user_id, status, profile(display_name, avatar_url)")
@@ -97,23 +106,15 @@ async function loadDisplayNames(
     return new Map();
   }
 
-  // Ohne Anmeldung gibt N2.2 die Tabelle profile gar nicht frei. Die Anfrage
-  // würde mit 401 abgewiesen; sie zu stellen erzeugte nur Fehlerrauschen in
-  // der Konsole, ohne je ein Ergebnis liefern zu können.
-  const { data: authState } = await supabase.auth.getSession();
-
-  if (!authState.session) {
-    return new Map();
-  }
-
   const { data, error } = await supabase
     .from("profile")
     .select("user_id, display_name")
     .in("user_id", eindeutige);
 
   if (error || !data) {
-    // Fremde Profile sind laut N2.2 nur angemeldet lesbar; ohne Anmeldung
-    // bleibt der Name leer, die Session selbst ist trotzdem sichtbar (UC-02).
+    // Der Anzeigename ist ein Basisfeld und auch unangemeldet lesbar (N2.2,
+    // D1.4). Scheitert die Abfrage dennoch, bleibt der Name leer - die Session
+    // selbst ist davon unabhängig sichtbar (UC-02).
     return new Map();
   }
 
