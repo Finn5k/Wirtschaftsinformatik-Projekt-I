@@ -18,6 +18,11 @@ const filters: SessionFilter[] = [
   ...sportKeys,
 ];
 
+// „Standardregion" aus B1 DLG-03: Gießen als Rückfall, wenn keine Session
+// angezeigt wird. B1 legt die Region nicht namentlich fest; gewählt ist der
+// Hochschulstandort des Teams. Sobald Sessions vorliegen, richtet sich der
+// Ausschnitt nach ihnen (siehe MapViewport) — ein fester Ausschnitt würde sonst
+// eine leere Karte zeigen, obwohl es Sessions gibt, nur eben anderswo.
 const defaultCenter: [number, number] = [50.5841, 8.6784];
 
 function createSessionMarkerIcon(isSelected: boolean) {
@@ -61,15 +66,29 @@ export function MapPage() {
     () => getDiscoverableSessions(activeFilter),
     [activeFilter],
   );
-  const sessions = state.status === "ok" ? state.data : [];
+  const sessions = useMemo(
+    () => (state.status === "ok" ? state.data : []),
+    [state],
+  );
 
-  const mapCenter = useMemo<[number, number]>(() => {
-    if (!selectedSession) {
-      return defaultCenter;
-    }
+  // Eine ausgewählte Session bestimmt den Ausschnitt allein; sonst umfasst er
+  // alle angezeigten Marker (B1 DLG-03, Kartenansicht).
+  const selectedCenter = useMemo<[number, number] | null>(
+    () =>
+      selectedSession
+        ? [selectedSession.court.latitude, selectedSession.court.longitude]
+        : null,
+    [selectedSession],
+  );
 
-    return [selectedSession.court.latitude, selectedSession.court.longitude];
-  }, [selectedSession]);
+  const markerPositions = useMemo<[number, number][]>(
+    () =>
+      sessions.map((session) => [
+        session.court.latitude,
+        session.court.longitude,
+      ]),
+    [sessions],
+  );
 
   function selectFilter(filter: SessionFilter) {
     setActiveFilter(filter);
@@ -151,7 +170,10 @@ export function MapPage() {
             }}
           />
 
-          <MapFlyTo center={mapCenter} />
+          <MapViewport
+            selectedCenter={selectedCenter}
+            positions={markerPositions}
+          />
 
           {sessions.map((session) => {
             const isSelected = selectedSession?.id === session.id;
@@ -286,18 +308,56 @@ export function MapPage() {
   );
 }
 
-interface MapFlyToProps {
-  center: [number, number];
+interface MapViewportProps {
+  /** Ausgewählte Session; hat Vorrang vor der Gesamtansicht. */
+  selectedCenter: [number, number] | null;
+  /** Positionen aller angezeigten Marker. */
+  positions: [number, number][];
 }
 
-function MapFlyTo({ center }: MapFlyToProps) {
+// Bestimmt den Kartenausschnitt (B1 DLG-03, Vorbelegung „Standardregion").
+function MapViewport({ selectedCenter, positions }: MapViewportProps) {
   const map = useMap();
 
+  // Die Eigenschaften sind bei jedem Rendern neue Arrays; als Abhängigkeit
+  // würden sie den Effekt endlos auslösen. Maßgeblich ist ihr Inhalt.
+  const schluessel = selectedCenter
+    ? `auswahl:${selectedCenter.join(",")}`
+    : `marker:${positions.map((position) => position.join(",")).join("|")}`;
+
   useEffect(() => {
-    map.flyTo(center, 13, {
-      duration: 0.8,
+    // Leaflet kennt seine Größe erst, wenn der Container gemessen wurde. Beim
+    // ersten Lauf direkt nach dem Einhängen ist das noch nicht geschehen, und
+    // ein Einpassen würde in einen Container der Größe null rechnen.
+    map.invalidateSize();
+    if (selectedCenter) {
+      map.flyTo(selectedCenter, 13, { duration: 0.8 });
+      return;
+    }
+
+    // Der Übersichtsausschnitt wird ohne Animation gesetzt: Beim Öffnen der
+    // Karte soll sofort der richtige Bereich zu sehen sein, kein Zoomflug.
+    // Animiert wird nur der Sprung zu einer ausgewählten Session (oben).
+    if (positions.length === 0) {
+      map.setView(defaultCenter, 12, { animate: false });
+      return;
+    }
+
+    if (positions.length === 1) {
+      map.setView(positions[0], 13, { animate: false });
+      return;
+    }
+
+    // Mehrere Sessions: Ausschnitt so wählen, dass alle Marker sichtbar sind.
+    // maxZoom verhindert, dass eng beieinanderliegende Courts bis auf
+    // Straßenniveau herangezoomt werden.
+    map.fitBounds(L.latLngBounds(positions), {
+      padding: [48, 48],
+      maxZoom: 14,
+      animate: false,
     });
-  }, [center, map]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [schluessel, map]);
 
   return null;
 }
