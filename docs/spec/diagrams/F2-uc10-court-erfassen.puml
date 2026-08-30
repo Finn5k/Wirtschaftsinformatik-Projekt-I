@@ -15,11 +15,11 @@ else (nein)
   :Organisator vergibt Namen\nund setzt Kartenpin;
   :LocalCourt löst Ort/Adresse\nper Reverse-Geocoding auf;
   if (Reverse-Geocoding erfolgreich?) then (ja)
-    :LocalCourt speichert neuen Court\nmit Koordinaten und Ortsdaten;
+    :LocalCourt übernimmt Name, Koordinaten\nund Ortsdaten als neuen Court;
     :Court steht für die\nSession-Erstellung zur Verfügung;
   else (nein)
     :LocalCourt zeigt Fehlermeldung;
-    :Kein unvollständiger Court wird gespeichert;
+    :Kein unvollständiger Court wird übernommen;
     stop
   endif
 endif

@@ -15,6 +15,9 @@ und die atomaren Fachoperationen aus
 | `…171948_rls` | RLS-Policies und Spalten-GRANTs nach N2.2; `session_pin()`. |
 | `…172141_hardening` | Nachschärfung nach dem Security-Advisor. |
 | `…172434_policy_cleanup` | Zusammengefasste `participant`-Policy, Fremdschlüssel-Indizes. |
+| `…195345_comment_umlaute` | Umlaute in den `comment on`-Texten, die in der Datenbank stehen. |
+| `…195645_rpc_align` | RPC-Rümpfe wortgleich zu den Dateien hier, inklusive der erklärenden Kommentare. |
+| `20260829091301_profile_basics_public` | `display_name`/`avatar_url` auch unangemeldet lesbar (B1 DLG-04, B1.2); `city` bleibt der eigenen Zeile vorbehalten. |
 
 ## Ergebniscodes
 
@@ -45,17 +48,25 @@ anlegen und anwenden. Ein lokales Supabase-CLI ist im Projekt nicht
 eingerichtet; bisher wurden die Migrationen über die Supabase-Verwaltungs-API
 eingespielt.
 
-## Abweichung von N2.2
+## Lesen ohne Anmeldung
 
-N2.2 formuliert die Leserechte auf `session`, `organizer`, `court` und `sport`
-als „lesbar für alle **angemeldeten** Nutzer". Das widerspricht drei anderen
-Stellen der Spezifikation:
+N2.2 formulierte die Leserechte auf `session`, `organizer`, `court` und `sport`
+ursprünglich als „lesbar für alle **angemeldeten** Nutzer" und widersprach damit
+[UC-02](../docs/spec/F2-anwendungsfaelle.md#uc-02--session-suchen) („Anmeldung
+ist für die Suche nicht zwingend erforderlich"),
+[B1.2](../docs/spec/B1-dialogspezifikation.md#b12-dialoglandkarte) und
+[B1.5.2](../docs/spec/B1-dialogspezifikation.md#b152-weiterleitung-nicht-angemeldeter-nutzer).
+Aufgelöst ist das zugunsten von UC-02/B1: Sessions, Courts und Sportarten sind
+auch unangemeldet lesbar, ebenso die Basisfelder eines Profils
+(`display_name`, `avatar_url`), weil DLG-04 den Organisator anzeigt. `city`,
+`participant` und die Session-PIN bleiben geschützt. N2.2 ist entsprechend
+nachgezogen; die Migrationen setzen den heutigen Wortlaut um.
 
-- [UC-02](../docs/spec/F2-anwendungsfaelle.md#uc-02--session-suchen) Vorbedingung: „Anmeldung ist für die Suche nicht zwingend erforderlich"
-- [B1.2](../docs/spec/B1-dialogspezifikation.md#b12-dialoglandkarte): Suche und Detailansicht sind ohne Anmeldung nutzbar
-- [B1.5.2](../docs/spec/B1-dialogspezifikation.md#b152-weiterleitung-nicht-angemeldeter-nutzer): geschützt sind nur Beitreten, Erstellen, Check-in, Meine Sessions, Profil
+## Court-Anlage
 
-Umgesetzt ist die Lesart von UC-02/B1: Sessions, Courts und Sportarten sind
-auch unangemeldet lesbar. Personenbezogene Daten sind davon nicht betroffen —
-`profile` und `participant` bleiben angemeldeten Nutzern vorbehalten. Die
-Formulierung in N2.2 sollte nachgezogen werden.
+`create_session` legt bei Bedarf auch den Court an. Der Kommentar in
+`…171948_rls.sql` verweist dafür noch auf einen eigenen Schreibzugriff
+`courtAnlegen` aus S1.4 — den gibt es dort nicht mehr, die Begründung steht in
+[A06 §6.3](../docs/arch/A06-runtime-view.md#63-session-und-court-erstellen).
+Die angewendete Migration bleibt unverändert, damit Datei und Datenbank
+übereinstimmen.

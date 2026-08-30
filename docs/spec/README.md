@@ -112,16 +112,16 @@ Fachliches Datentypenverzeichnis: Wertebereiche, Aufzählungen und Validierungsr
 ### **B1 — Dialogspezifikation** ✅ (fertig)
 **Datei**: [B1-dialogspezifikation.md](B1-dialogspezifikation.md)
 
-Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste) und Dynamik (Aktionsliste, Zustände). Normativ für das MVP; der UI-Prototyp dient als Illustration.
+Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste) und Dynamik (Aktionsliste, Zustände). Normativ für das MVP; die Screenshots illustrieren nur.
 
 **Inhalte**:
 - Dialoglandkarte (Mermaid) und Index DLG-01–DLG-08 mit UC-/AF-Bezug
 - 8 Dialoge: Anmelden, Entdecken (Liste), Karte, Session-Detail (zustandsabhängig), Session erstellen, Check-in (QR/PIN-Zustände), Meine Sessions (bevorstehend/vergangen), Profil
 - Feldlisten mit Datentyp (D2), Datenmodell-Bezug (D1), Vorbelegung, Muss/Kann, Prüfung
 - Standard-Benutzeraktionen (Navigation, Validierung, Fehler-/Leerzustände) einmal zentral
-- Prototyp-Screenshots je Dialog (illustrativ, nicht bindend für das visuelle Design)
-- Abgleich mit dem aktuellen Frontend: alle acht Dialoge sind im UI-Prototyp realisiert, teilweise mit lokaler Mock-Persistenz, aber noch ohne Backend beziehungsweise serverseitige Persistenz
-- Verbleibende Abweichungen, insbesondere echte Authentifizierung und Autorisierung, serverseitige Persistenz sowie noch nicht durchgängig realisierte API-Fehlerzustände
+- Screenshots je Dialog (illustrativ, nicht bindend für das visuelle Design)
+- Abgleich mit dem Frontend: alle acht Dialoge sind umgesetzt und arbeiten gegen NB-02/NB-03
+- Verbleibende Abweichungen (B1.6): fehlende deklarative Feldprüfung, die Vorbelegung der Ortssuche sowie zwei bewusste MVP-Abgrenzungen
 
 ---
 
@@ -232,7 +232,7 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 
 - **Projekt-Root**: [../../README.md](../../README.md)
 - **Team & Rollen**: [../../TEAMINFO.md](../../TEAMINFO.md)
-- **Frontend-Prototyp**: [../frontend.md](../frontend.md)
+- **Frontend**: [../frontend.md](../frontend.md)
 - **Architektur**: [docs/arch/README.md](../arch/README.md)
 - **Herold-Referenz**: [Herold P1 Example](https://github.com/carstenlucke/herold/blob/main/docs/spec/P1-ziele-rahmenbedingungen.md)
 

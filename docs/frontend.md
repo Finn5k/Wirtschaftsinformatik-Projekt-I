@@ -1,19 +1,19 @@
-# Frontend-Prototyp
+# Frontend
 
 ## Überblick
 
-Der Frontend-Prototyp bildet die acht in
+Das Frontend bildet die acht in
 [B1 — Dialogspezifikation](spec/B1-dialogspezifikation.md) beschriebenen
-MVP-Dialoge als mobile-first React-Anwendung ab. Die Oberflächen sind klickbar
-und zentrale Dialogzustände können simuliert werden. Dabei werden Mockdaten,
-lokaler React-Zustand und `localStorage` für ausgewählte simulierte Zustände
-verwendet.
+MVP-Dialoge als mobile-first React-Anwendung ab. Es arbeitet gegen die realen
+Nachbarsysteme: Anmeldung und Sitzung über NB-02 Supabase Auth, fachliche Daten
+und die drei atomaren Fachoperationen über NB-03 Supabase PostgREST, Karte und
+Reverse-Geocoding über NB-04/NB-05. Mockdaten gibt es nicht mehr.
 
-Alle nachfolgend als realisiert bezeichneten Funktionen sind daher
-**im UI-Prototyp realisiert, teilweise mit lokaler Mock-Persistenz, aber noch
-ohne Backend beziehungsweise serverseitige Persistenz**. Der Prototyp belegt
-die Benutzerführung und Darstellung, nicht die vollständige fachliche und
-technische Umsetzung der beschriebenen Anwendungsfälle.
+Diese Datei hält den Umsetzungsstand je Dialog fest. Normativ ist B1; die
+verbleibenden Abweichungen stehen in
+[B1.6](spec/B1-dialogspezifikation.md#b16-abweichungen-der-umsetzung), die
+technische Einordnung je Querschnittskonzept in
+[A08](arch/A08-crosscutting-concepts.md).
 
 ## Verwendete Technologien
 
@@ -54,24 +54,25 @@ http://localhost:5173
 
 ## Screens und aktueller Realisierungsstand
 
-| B1-Dialog | Route | Im UI-Prototyp realisiert |
+| B1-Dialog | Route | Umgesetzt |
 |---|---|---|
-| DLG-01 Anmelden / Registrieren | `/login` | Umschaltung zwischen Anmeldung und Registrierung, E-Mail-/Passwortfelder, Anzeigename bei Registrierung, clientseitige Validierung und simulierte lokale Anmeldesitzung |
-| DLG-02 Session entdecken | `/discover` | Textsuche, Sportartenfilter, hervorgehobene nächste Session, weitere Session-Karten und Leerzustand |
-| DLG-03 Session-Karte | `/map` | echte Leaflet-/OpenStreetMap-Karte, Sportartenfilter, Session-Marker, Popup, Auswahlkarte, Navigation zum Detail sowie Fehlerzustand mit Wiederholungsmöglichkeit und Wechsel zur Listenansicht |
-| DLG-04 Session-Detail | `/sessions/:sessionId` | Kerndaten, abgeleiteter Status, Belegung, Teilnehmerliste, Organisatoransicht mit echtem QR-Code und PIN, Beitrittszustand, Check-in-Aktion und Read-only-Zustand |
-| DLG-05 Session erstellen | `/sessions/new` | Sportart, Titel, Beschreibung, Datum, Uhrzeit, Dauer, Court-Auswahl oder lokale Neuerfassung, Teilnehmerlimit, Validierung, lokal gespeicherte Session samt Organisator-Teilnahme und Navigation zur neuen Detailansicht |
-| DLG-06 Check-in | `/check-in?session=<id>&pin=<pin>` | Statusprüfung, Deep-Link-Einstieg mit vorbelegter PIN, Hinweis auf Scan per Kamera-App, manuelle PIN-Eingabe, PIN-Validierung sowie Erfolgs- und Sperrzustände |
-| DLG-07 Meine Sessions | `/my-sessions` | Tabs für bevorstehende und vergangene Sessions, Rollenkennzeichnung, Check-in-Information und Leerzustände |
-| DLG-08 Profil | `/profile` | Profilansicht, Bearbeitung und lokale Speicherung von Anzeigename, Ort und Sportpräferenzen, konsistente Verwendung in weiteren Dialogen sowie Abmelden-Navigation |
+| DLG-01 Anmelden / Registrieren | `/login` | Umschaltung zwischen Anmeldung und Registrierung, E-Mail-/Passwortfelder, Anzeigename bei Registrierung, clientseitige Validierung; Anmeldung, Registrierung und Abmeldung über NB-02, Sitzung übersteht einen Reload |
+| DLG-02 Session entdecken | `/discover` | Ortssuche mit Vorbelegung aus dem Profil, Sportartenfilter über die Datenbank, hervorgehobene nächste Session, weitere Session-Karten, Lade-, Fehler- und Leerzustand |
+| DLG-03 Session-Karte | `/map` | Leaflet-/OpenStreetMap-Karte, Sportartenfilter, Session-Marker, Popup, Auswahlkarte, Navigation zum Detail, aus den Treffern abgeleiteter Kartenausschnitt sowie Fehlerzustand mit Wiederholung und Wechsel zur Listenansicht |
+| DLG-04 Session-Detail | `/sessions/:sessionId` | Kerndaten, Status aus `v_session`, Belegung, Teilnehmerliste im Umfang der RLS, Organisatoransicht mit QR-Code und PIN, Beitritt über `join_session` mit den Ergebnistexten aus B1.4.4, Check-in-Einstieg und Read-only-Zustand |
+| DLG-05 Session erstellen | `/sessions/new` | Sportart, Titel, Beschreibung, Datum, Uhrzeit, Dauer, Court-Auswahl oder Neuerfassung per Kartenpin, Teilnehmerlimit, Validierung; Anlage über `create_session` samt Court und Organisator-Teilnahme, danach Wechsel zur Detailansicht |
+| DLG-06 Check-in | `/check-in?session=<id>&pin=<pin>` | Deep-Link-Einstieg mit vorbelegter PIN, Hinweis auf Scan per Kamera-App, manuelle PIN-Eingabe, Prüfung durch `check_in` mit den Ergebnistexten aus B1.4.6, Erfolgs- und Sperrzustände |
+| DLG-07 Meine Sessions | `/my-sessions` | Tabs für bevorstehende und vergangene Sessions, Rollenkennzeichnung, Check-in-Information, Lade-, Fehler- und Leerzustände |
+| DLG-08 Profil | `/profile` | Profilansicht, Bearbeitung von Anzeigename, Ort und Sportpräferenzen gegen `profile`/`sport_preference`, Verwendung in weiteren Dialogen sowie Abmelden |
 
 ### Gemeinsame UI-Funktionen
 
 - durchgängige Hauptnavigation mit Entdecken, Karte, Erstellen, Sessions und Profil
 - mobile-first Layout mit begrenzter Desktop-Darstellung
-- Statusdarstellung für `scheduled`, `active` und `completed`
+- Statusdarstellung für `scheduled`, `active` und `completed`, berechnet von der Datenbank
 - harte Kapazitätsanzeige ohne Warteliste
-- Unterscheidung zwischen Organisator- und Teilnehmeransicht anhand der Mockdaten
+- Unterscheidung zwischen Organisator- und Teilnehmeransicht anhand der geladenen Rolle
+- Lade- und Fehlerzustände nach B1.5.4 über den gemeinsamen Hook `useLoadedData`
 - erklärende Leer- und Nicht-gefunden-Zustände
 - sichtbare Tastaturfokusse, zugängliche Namen für Icon-Aktionen sowie
   semantische Auswahl-, Tab-, Formular- und Fehlerzustände
@@ -112,36 +113,35 @@ src/auth/
   ProtectedRoute.tsx
   authContext.ts
 
+src/hooks/
+  useLoadedData.ts
+
 src/utils/
   checkInUrl.ts
   sessionTime.ts
 ```
 
-## Mockdaten und Service-Schicht
+## Service-Schicht
 
-Der Prototyp verwendet:
-
-```txt
-src/data/mockSessions.ts
-src/data/mockCourts.ts
-src/data/mockUser.ts
-```
-
-Der lesende Zugriff ist teilweise über folgende Services gekapselt:
+Jeder fachliche Datenzugriff läuft über diese vier Module; keine Seite und keine
+Komponente spricht Supabase selbst an
+([ADR-002](arch/A09-architecture-decisions.md#92-adr-002--service-schicht-als-integrationsgrenze-für-fachlichen-datenzugriff-und-geocoding)):
 
 ```txt
-src/services/sessionService.ts
-src/services/userService.ts
-src/services/courtService.ts
-src/services/geocodingService.ts
+src/services/sessionService.ts   Sessions lesen; create_session, join_session, check_in
+src/services/courtService.ts     vorhandene Courts zur Auswahl lesen
+src/services/userService.ts      Profil und Sportpräferenzen (UC-12)
+src/services/geocodingService.ts Reverse-Geocoding eines Kartenpins (NB-05)
 ```
 
-Die Services liefern synchron Mockdaten und teilen Sessionänderungen zwischen
-den Seiten. Neu erstellte Sessions sowie nachfolgende Beitritts- und
-Check-in-Änderungen an diesen Sessions werden zu Demonstrationszwecken in
-`localStorage` gespeichert. Änderungen an den fest eingebauten Sessions und am
-Profil bleiben flüchtig. Eine Backend- oder serverseitige Persistenz besteht
-nicht.
+Dazu kommen drei technische Hilfsmodule ohne fachliche Verantwortung:
+`supabaseConfig.ts` prüft die Umgebungsvariablen, `supabaseClient.ts` stellt den
+Client bereit, `sessionQueries.ts` bildet die Zeilen von `v_session` auf die
+fachlichen Typen ab.
+
+Die Umgebungsvariablen `VITE_SUPABASE_URL` und `VITE_SUPABASE_PUBLISHABLE_KEY`
+stehen in `.env.local` (Vorlage: `.env.example`); fehlen sie, zeigt die
+Anwendung statt eines leeren Bildschirms einen Hinweis.
 
 ## Demonstrierbare Abläufe
 
@@ -162,26 +162,19 @@ Meine Sessions → Bevorstehend / Vergangen → Session-Detail
 ```
 
 ```txt
-Profil → Bearbeiten → lokale Ansicht aktualisieren
+Profil → Bearbeiten → Speichern in profile / sport_preference
 ```
 
-## Tatsächlich noch bestehende Abweichungen
+## Noch bestehende Abweichungen
 
-| Bereich | Aktueller Prototypstand | Soll-/Klärungsbedarf |
+| Bereich | Stand | Offener Bedarf |
 |---|---|---|
-| Backend und Persistenz | Mockdaten, gemeinsamer Laufzeitzustand und lokale Mock-Persistenz für erstellte Sessions, Courts und das Profil | Anbindung an die in P2/S1 vorgesehene Backend- und Auth-Infrastruktur sowie serverseitige Persistenz |
-| Authentifizierung | **erledigt** — Anmeldung, Registrierung und Abmeldung laufen über NB-02 Supabase Auth; die Sitzung übersteht einen Seiten-Reload, Fehler werden nach Ergebniscode unterschieden | offen bleibt nur die E-Mail-Bestätigung: solange sie im Projekt aktiv ist, führt die Registrierung nicht direkt in die App (UC-01) |
-| Zugriffsschutz | **erledigt** — geschützt sind nur die in B1.5.2 genannten Aktionen (Erstellen, Meine Sessions, Check-in, Profil); Suche, Karte und Detailansicht sind ohne Anmeldung nutzbar (UC-02, B1.2). Der Rücksprung zum ursprünglichen Ziel erfolgt nach echter Anmeldung | — |
-| Session-Beitritt | gemeinsamer lokaler Mockzustand aktualisiert Teilnehmerliste, Teilnehmerzahl und „Meine Sessions“ konsistent; bei vorgegebenen Mock-Sessions nicht reloadfest | serverseitig persistenter, atomarer Beitritt nach AF-01 |
-| Session-Erstellung | neuer Datensatz mit Organisator-Teilnahme, lokal erzeugter PIN, `localStorage`-Speicherung und Navigation zur Detailansicht | serverseitige Session- und Court-Persistenz samt atomarer Organisator-Teilnahme |
-| Court-Neuerfassung | verpflichtender Kartenpin, Reverse-Geocoding für Ort und optionale Adresse, Wiederholungsmöglichkeit bei Fehlern und lokale Wiederverwendung über `localStorage` | serverseitige Court-Persistenz fehlt; automatische Dublettenprüfung ist bewusst kein MVP |
-| QR-/PIN-Check-in | QR-Deep-Link und manuelle PIN-Eingabe führen in dieselbe lokale Prüfung; der QR-Code wird clientseitig erzeugt und per Kamera-App des Geräts geöffnet | serverseitige Prüfung, Idempotenz und Persistenz nach AF-02 |
-| Status einer Sport-Session | Status wird aus Startzeit und Dauer abgeleitet | künftig serverseitig maßgebliche Berechnung gemäß [AF-03](spec/F3-anwendungsfunktionen.md#af-03--status-einer-sport-session) |
-| Profil | **erledigt** — Anzeigename, Ort und Präferenzen kommen aus der Tabelle `profile` bzw. `sport_preference` und werden dorthin zurückgeschrieben; `city` ist über `my_profile()` auf die eigene Zeile beschränkt (N2.2). Profilbild bleibt read-only | serverseitige Profilpersistenz fehlt; Profilbild-Upload und -Bearbeitung sind bewusst kein MVP |
-| Karte | OSM-Karte ist real eingebunden; Ladefehler zeigen einen verständlichen Hinweis mit Wiederholungsmöglichkeit und Verweis auf die Listenansicht | Kartendaten und Verfügbarkeit beruhen weiterhin auf dem externen OpenStreetMap-Dienst |
-| Lade-/Netzwerkfehler | Court-Geocoding zeigt Lade-, Fehler- und Wiederholungszustand; übrige Datenzugriffe sind synchron | Muster aus B1.5.4 bei der späteren Backend-Anbindung auf alle asynchronen Aktionen übertragen |
-| Validierung | zentrale Formulare validieren ausgewählte Pflichtangaben | vollständige Umsetzung der Regeln aus D2/N1 und der verbindlichen Fehlertexte aus B1 |
-| Tests | kein Testskript und keine automatisierten UI-Tests | manuelle Prüfung anhand der Akzeptanzkriterien aus F2/F3; automatisierte Tests bleiben optional, da für das MVP weder Testframework noch Test-CI vorgegeben sind (P1 SC-07, N1.3) |
+| Deklarative Feldprüfung | Pflichtfelder, Formate und Wertebereiche werden vollständig in TypeScript geprüft | die HTML-Attribute `required`, `pattern`, `min`/`max` sind nicht gesetzt ([A08 8.2.2](arch/A08-crosscutting-concepts.md#822-deklarative-view-validierung)) |
+| Vorbelegung der Ortssuche | vorbelegt wird `profile.city` | der in B1.4.2 zusätzlich genannte Rückfall auf den letzten Suchort wird nicht gespeichert |
+| Profilbild | wird angezeigt, nicht bearbeitet | Upload und Bearbeitung sind bewusst kein MVP |
+| Court-Dublettenprüfung | findet nicht statt | bewusste MVP-Entscheidung (UC-10) |
+| Karte | OSM-Karte eingebunden; Ladefehler zeigen einen Hinweis mit Wiederholung und Verweis auf die Listenansicht | Kartendaten und Verfügbarkeit beruhen auf dem externen OpenStreetMap-Dienst |
+| Tests | kein Testskript und keine automatisierten Tests | keine Abweichung, sondern die in [N1.3](spec/N1-nichtfunktionale-anforderungen.md#n13-bewusst-nicht-verfolgte-qualitätsziele) getroffene Festlegung: geprüft wird manuell anhand der Akzeptanzkriterien aus F2 und der Algorithmen aus F3 |
 
 ## Offene fachliche und technische Entscheidungen
 

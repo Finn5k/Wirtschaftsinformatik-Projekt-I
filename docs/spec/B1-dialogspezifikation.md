@@ -4,7 +4,7 @@
 
 Dieser Baustein spezifiziert die Benutzerdialoge von LocalCourt nach Siedersleben: die **Dialoglandkarte** (welche Dialoge gibt es, wie navigiert man dazwischen), je Dialog die **Statik** (was sieht der Benutzer — Formular und Feldliste) und die **Dynamik** (was kann der Benutzer tun — Aktionsliste, ggf. Zustände).
 
-B1 beschreibt den **MVP-Sollzustand** und ist damit die verbindliche Referenz für das Frontend. Der vorhandene UI-Prototyp (`src/pages/`) dient als Illustration und Ausgangspunkt. Alle acht spezifizierten Dialoge sind dort inzwischen als klickbare Oberflächen vorhanden, teilweise mit lokaler Mock-Persistenz, jedoch noch ohne Backend beziehungsweise serverseitige Persistenz und teilweise nur als Simulation fachlicher Zustände. Die verbleibenden Abweichungen sind in [B1.6](#b16-abweichungen-des-prototyps) ausgewiesen und widersprechen B1 nicht — sie sind Arbeitsstand.
+B1 beschreibt den **MVP-Sollzustand** und ist damit die verbindliche Referenz für das Frontend. Alle acht spezifizierten Dialoge sind im Frontend (`src/pages/`) vorhanden und arbeiten gegen die reale Datenhaltung: Anmeldung über NB-02, fachliche Daten über NB-03. Die verbleibenden Abweichungen sind in [B1.6](#b16-abweichungen-der-umsetzung) ausgewiesen und widersprechen B1 nicht — sie sind Arbeitsstand.
 
 **Abgrenzung:** Visuelles Design (Farben, Typografie, Pixel-Layout, Komponentenbibliothek) ist nicht Teil von B1. Die Feld- und Aktionslisten definieren, *welche* Informationen und Interaktionen ein Dialog fachlich bietet; das *Wie* der Gestaltung bleibt dem Frontend überlassen (responsive, mobile-first gemäß P1 CON-T-04 und SC-05). Fachliche Regeln hinter den Aktionen stehen in [F3](F3-anwendungsfunktionen.md); Datenobjekte und -typen in [D1](D1-datenmodell.md)/[D2](D2-datentypen.md).
 
@@ -20,7 +20,7 @@ Suche und Detailansicht (DLG-02, DLG-03, DLG-04) sind ohne Anmeldung nutzbar (UC
 
 ### Dialog-Index
 
-| DLG-ID | Name | Realisiert (UC) | Nutzt Regeln (AF) | Route (Prototyp) |
+| DLG-ID | Name | Realisiert (UC) | Nutzt Regeln (AF) | Route |
 |---|---|---|---|---|
 | [DLG-01](#b141-dlg-01--anmelden--registrieren) | Anmelden / Registrieren | UC-01 | — | `/login` |
 | [DLG-02](#b142-dlg-02--session-entdecken-liste) | Session entdecken (Liste) | UC-02 | AF-03 (Sichtbarkeit) | `/discover` |
@@ -53,7 +53,7 @@ Standard-Benutzeraktionen, die in allen Dialogen gleich funktionieren, sind einm
   </tr>
 </table>
 
-> Screenshots aus dem UI-Prototyp (mobiler Viewport); illustrativ, nicht bindend für das visuelle Design ([B1.1](#b11-zweck-und-einordnung)).
+> Screenshots aus der Anwendung (mobiler Viewport); illustrativ, nicht bindend für das visuelle Design ([B1.1](#b11-zweck-und-einordnung)).
 
 | Abschnitt | Inhalt |
 |---|---|
@@ -239,7 +239,7 @@ Der Zustand ergibt sich aus Anmeldung, Rolle, Teilnahme und Session-Status (AF-0
 | Court / Sportort | Eingabe (Muss) | Auswahl oder Neuerfassung | `session.court_id` → `court` | leer | Auswahl aus Verzeichnis **oder** Neuerfassung (UC-10): `name` (Muss), Kartenpin (Muss) → `coordinates`; `city` (Muss) und `address` (Kann) werden per Reverse-Geocoding ermittelt |
 | Teilnehmerlimit | Eingabe (Muss) | Integer | `session.max_participants` | 10 | ≥ 1; Hinweis im Dialog: Organisator belegt einen Platz (AF-01 R4) |
 
-Frühere Prototyp-Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht** Teil dieser Feldliste und im aktuellen Prototyp nicht mehr vorhanden.
+Frühere Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht** Teil dieser Feldliste und im Frontend nicht mehr vorhanden.
 
 **Dynamik**
 
@@ -379,7 +379,7 @@ Diese Aktionen und Muster funktionieren in allen Dialogen gleich und werden dort
 
 ### B1.5.1 Hauptnavigation
 
-Persistente Navigationsleiste (mobil unten) mit fünf Zielen: **Entdecken** (DLG-02), **Karte** (DLG-03), **Erstellen** (DLG-05, hervorgehoben), **Meine Sessions** (DLG-07), **Profil** (DLG-08). Das aktive Ziel ist markiert. DLG-04 und DLG-06 sind Kontextdialoge ohne eigenen Navigationseintrag; die Leiste bleibt sichtbar. Diese Navigationsstruktur ist im UI-Prototyp umgesetzt.
+Persistente Navigationsleiste (mobil unten) mit fünf Zielen: **Entdecken** (DLG-02), **Karte** (DLG-03), **Erstellen** (DLG-05, hervorgehoben), **Meine Sessions** (DLG-07), **Profil** (DLG-08). Das aktive Ziel ist markiert. DLG-04 und DLG-06 sind Kontextdialoge ohne eigenen Navigationseintrag; die Leiste bleibt sichtbar. Diese Navigationsstruktur ist im Frontend umgesetzt.
 
 ### B1.5.2 Weiterleitung nicht angemeldeter Nutzer
 
@@ -401,42 +401,20 @@ Listen ohne Inhalte zeigen einen erklärenden Leerzustand statt einer leeren Fl�
 
 Kontextdialoge (DLG-04, DLG-06) bieten eine Zurück-Aktion zum aufrufenden Dialog; die Browser-Zurück-Funktion verhält sich gleich. Ungespeicherte Formulareingaben gehen dabei verloren (Abbrechen-Semantik, UC-06/UC-12 Alternativszenarien).
 
-## B1.6 Abweichungen des Prototyps
+## B1.6 Abweichungen der Umsetzung
 
-Der aktuelle UI-Prototyp bildet alle Dialoge DLG-01 bis DLG-08 ab. Die nachfolgend genannten Funktionen sind **im UI-Prototyp realisiert, teilweise mit lokaler Mock-Persistenz, aber noch ohne Backend beziehungsweise serverseitige Persistenz**. Eine sichtbare Oberfläche oder lokale Zustandsänderung gilt daher nicht als vollständige Umsetzung des zugehörigen Use Cases oder der Anwendungsfunktion.
+Alle acht Dialoge DLG-01 bis DLG-08 sind umgesetzt und arbeiten gegen die Nachbarsysteme: Anmeldung und Sitzung über NB-02, fachliche Daten und die drei atomaren Fachoperationen über NB-03. Die früher hier geführten Einschränkungen des UI-Prototyps — Mockdaten, simulierte Anmeldung, fehlende serverseitige Prüfung, Persistenz und Ergebniscodes, nicht demonstrierte Lade- und Fehlerzustände, fehlender Karten-Fallback — sind damit entfallen. Der Status einer Session wird nicht mehr im Client abgeleitet, sondern von der Datenbank geliefert ([AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session)).
 
-### Im UI-Prototyp realisiert
+Es bleiben vier Punkte:
 
-| Dialog / Bereich | Realisierter UI-Stand | Begrenzung |
+| Abweichung | Stand | Bezug / offener Bedarf |
 |---|---|---|
-| DLG-01 Anmelden / Registrieren | Zustandswechsel, Eingabefelder, clientseitige Validierung und simulierte lokale Anmeldesitzung | keine echte Authentifizierung über NB-02 und keine Auth-Fehlerbehandlung |
-| DLG-02 Entdecken | Textsuche, Sportartenfilter, Ergebnis- und Leerzustand | Filterung ausschließlich über Mockdaten |
-| DLG-03 Karte | Leaflet-/OpenStreetMap-Karte, Marker, Filter und Vorschau | keine API-Daten und kein Fehler-Fallback |
-| DLG-04 Session-Detail | Kerndaten, abgeleiteter Status, Belegung, Teilnehmerliste, echter QR-Code mit PIN, Organisator-, Beitritts-, Check-in- und Read-only-Darstellung | Rolle und Teilnahme beruhen auf Mockdaten; Änderungen an vorgegebenen Sessions sind nicht reloadfest |
-| DLG-05 Session erstellen | aktuelle Feldgruppe einschließlich Dauer, Court-Auswahl und Neuerfassung per Kartenpin mit Reverse-Geocoding, Validierung, lokal gespeicherte Session mit Organisator-Teilnahme und Wechsel zur Detailansicht | keine serverseitige Session- oder Court-Persistenz |
-| DLG-06 Check-in | Deep-Link-Route mit Session-/PIN-Parametern, Hinweis auf Scan per Kamera-App, PIN-Eingabe, lokale gemeinsame Prüfung, Zeitfensterdarstellung und Erfolg | keine serverseitige Prüfung und Persistenz |
-| DLG-07 Meine Sessions | bevorstehende und vergangene Sessions, Rollen- und Check-in-Anzeige, Leerzustände sowie Anzeige lokal erstellter oder veränderter Sessions | ohne Backend nicht geräteübergreifend und bei vorgegebenen Mock-Sessions nicht reloadfest |
-| DLG-08 Profil | Ansicht, Bearbeitung und lokale Speicherung von Anzeigename, Ort und Sportpräferenzen mit Verwendung in DLG-02, DLG-04 und DLG-05 | keine serverseitige Profilpersistenz; Profilbild entsprechend der MVP-Abgrenzung nicht editierbar |
-| Hauptnavigation | fünf spezifizierte Navigationsziele und Schutz personenbezogener Routen mit Rückkehr zum ursprünglichen Ziel nach simulierter Anmeldung | Zugriffsschutz beruht nur auf einem lokalen Mock-Authentifizierungsmerkmal |
+| Deklarative Feldprüfung | Pflichtfelder, Formate und Wertebereiche werden vollständig in TypeScript geprüft; die HTML-Attribute `required`, `pattern`, `min`/`max` sind nicht gesetzt. | Fachlich gleichwertig — das Absenden unterbleibt und die Meldung erscheint feldbezogen ([B1.5.3](#b153-formular-validierung)); offen bleibt die einfachere Ausdrucksform ([A08 8.2.2](../arch/A08-crosscutting-concepts.md#822-deklarative-view-validierung)). |
+| Vorbelegung der Ortssuche (DLG-02) | Vorbelegt wird `profile.city`; ist dort kein Ort hinterlegt, bleibt das Feld leer. | Der in [B1.4.2](#b142-dlg-02--session-entdecken-liste) zusätzlich genannte Rückfall auf den letzten Suchort wird nicht gespeichert. |
+| Profilbild (DLG-08) | wird angezeigt, aber nicht bearbeitet | entspricht der MVP-Abgrenzung; keine offene Umsetzung |
+| Court-Dublettenprüfung (DLG-05) | findet nicht statt | bewusste MVP-Entscheidung ([UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen)) |
 
-### Tatsächlich verbleibende Abweichungen
-
-| Abweichung | Aktueller Prototypstand | Bezug / offener Bedarf |
-|---|---|---|
-| Backend und Persistenz | Mockdaten, gemeinsamer Laufzeitzustand und lokale Mock-Persistenz für erstellte Sessions, Courts und das Profil | serverseitige Umsetzung der schreibenden Use Cases fehlt |
-| Authentifizierung und Abmeldung | simulierte Anmeldesitzung bleibt über Seiten-Reloads erhalten und wird beim Abmelden entfernt | echte Authentifizierung, Nutzeridentität und Fehlerbehandlung über NB-02 fehlen |
-| Schutz personenbezogener Aktionen | geschützte Routen leiten zu DLG-01 und nach der simulierten Anmeldung zum ursprünglichen Ziel zurück | Durchsetzung anhand einer echten Anmeldesitzung gemäß [B1.5.2](#b152-weiterleitung-nicht-angemeldeter-nutzer) fehlt |
-| Atomarer Beitritt | gemeinsamer Mockzustand aktualisiert Belegung, Teilnehmerliste und DLG-07; Änderungen an vorgegebenen Sessions sind nicht reloadfest | serverseitige Atomarität, Persistenz und vollständige AF-01-Ergebniscodes fehlen |
-| Session-Erstellung | neue Session mit Organisator-Teilnahme, PIN, lokaler Speicherung und Wechsel zur neuen DLG-04 | serverseitige Session- und Court-Persistenz sowie atomare Organisator-Teilnahme fehlen |
-| Court-Neuerfassung | Kartenpin löst Nominatim-Reverse-Geocoding aus; Ort, optionale Adresse und Koordinaten werden gemeinsam angezeigt und der Court lokal gespeichert; Fehler können manuell erneut versucht werden | serverseitige Court-Persistenz fehlt; die bewusste fehlende Dublettenprüfung entspricht dem MVP-Soll |
-| Check-in | echter QR-Code kodiert den Deep-Link; Kamera-App und manuelle PIN-Eingabe führen in dieselbe lokale Teilnahme-, Zeitfenster- und PIN-Prüfung | serverseitige Prüfung, Idempotenz, Persistenz und vollständige AF-02-Ergebniscodes fehlen |
-| Status einer Sport-Session | Status wird aus Startzeit und Dauer abgeleitet | künftig serverseitig maßgebliche Berechnung gemäß [AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session) |
-| Kartenfehler | echte OSM-Karte ist eingebunden | Graceful Degradation zu DLG-02 bei Ausfall fehlt |
-| Lade- und Netzwerkzustände | keine asynchronen Backend-Anfragen | Muster aus [B1.5.4](#b154-fehler--und-ladezustände) sind noch nicht demonstriert |
-| Profil | Anzeigename, Ort und Präferenzen werden lokal gespeichert und nach Seitenwechsel beziehungsweise Reload in den betroffenen Dialogen verwendet; Profilbild wird ausschließlich angezeigt | serverseitige Profilpersistenz fehlt; die fehlende Profilbildbearbeitung entspricht dem MVP-Soll |
-| Validierungsgrenzen | ausgewählte Pflichtfelder werden geprüft | die in D2/N1 festgelegten Validierungsregeln und verbindlichen Fehlertexte aus DLG-04/DLG-06 sind noch nicht vollständig umgesetzt |
-
-Im aktuellen Prototyp sind keine früher dokumentierten Gamification-, Events-/Challenges-, Benachrichtigungs-, Rang-, Sichtbarkeits-, Merken- oder Teilen-Funktionen mehr vorhanden.
+Gamification-, Events-/Challenges-, Benachrichtigungs-, Rang-, Sichtbarkeits-, Merken- oder Teilen-Funktionen sind im Frontend nicht vorhanden.
 
 ## B1.7 Konsistenz und Cross-References
 

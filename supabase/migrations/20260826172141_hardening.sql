@@ -5,7 +5,7 @@
 
 -- ============================================ 1. Trigger-Funktionen kapseln
 -- handle_new_auth_user und delete_organized_sessions sind Trigger-Funktionen.
--- Ueber die Supabase-Standardrechte auf public waren sie zusätzlich als
+-- Über die Supabase-Standardrechte auf public waren sie zusätzlich als
 -- RPC-Endpunkt (/rest/v1/rpc/...) aufrufbar - unbeabsichtigt und ohne jeden
 -- fachlichen Grund. Sie werden ausschließlich vom Trigger aufgerufen und
 -- brauchen für Endnutzer kein Ausführrecht.

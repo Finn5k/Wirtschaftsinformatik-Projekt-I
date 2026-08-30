@@ -12,14 +12,17 @@ skinparam ranksep 60
 
 rectangle "Dialogseiten" as Pages
 rectangle "UI-Komponenten\n(CreateSessionForm)" as UIComp
+rectangle "App-Shell\n(AuthProvider)" as Shell
 
 rectangle "**Service-Schicht**" {
   rectangle "sessionService" as SessionSvc
-  rectangle "userService" as UserSvc
   rectangle "courtService" as CourtSvc
   rectangle "geocodingService" as GeoSvc
+  rectangle "userService" as UserSvc
 
-  SessionSvc --> UserSvc : verwendet\n(getCurrentUser)
+  SessionSvc -[hidden]right-> CourtSvc
+  CourtSvc -[hidden]right-> GeoSvc
+  GeoSvc -[hidden]right-> UserSvc
 }
 
 rectangle "NB-02\nSupabase Auth" as NB02
@@ -27,21 +30,29 @@ rectangle "NB-03\nSupabase PostgREST" as NB03
 rectangle "NB-05\nNominatim" as NB05
 
 Pages -[hidden]right-> UIComp
+UIComp -[hidden]right-> Shell
 
 Pages --> SessionSvc
 Pages --> UserSvc
 UIComp --> CourtSvc
 UIComp --> GeoSvc
 UIComp -[#Black]-> SessionSvc
-UIComp -[#Black]-> UserSvc
+Shell -[#Black]-> UserSvc : Profil laden /\nverwerfen
+
+Shell -[#Black]-> NB02 : Anmeldesitzung\n(JWT)
 
 SessionSvc -[#Black]-> NB03 : Lesen, RPC
-CourtSvc -[#Black]-> NB03 : Lesen, Anlegen
-UserSvc -[#Black]-> NB02 : Nutzerkennung
+CourtSvc -[#Black]-> NB03 : Lesen
 UserSvc -[#Black]-> NB03 : Profil lesen/\naktualisieren
 GeoSvc -[#Black]-> NB05 : Reverse-\nGeocoding
 
 NB02 -[hidden]- NB03
 NB03 -[hidden]- NB05
+
+note bottom of NB03
+  Jeder Aufruf führt das JWT der
+  Sitzung mit; darauf setzen die
+  RLS-Policies auf (N2.2).
+end note
 
 @enduml
