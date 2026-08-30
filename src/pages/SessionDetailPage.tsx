@@ -25,17 +25,20 @@ import { getSessionPin } from "../services/sessionService";
 
 // Session-Detail gemäß B1 DLG-04 mit rollen- und statusabhängigen Zuständen:
 // Offen / Beigetreten / Organisator / Read-only (UC-03, UC-04, UC-07).
-// Anzeigetexte zu den Ergebniscodes aus F3 AF-01 (A08 8.5.6).
+// Anzeigetexte zu den Ergebniscodes aus F3 AF-01. Der Wortlaut ist in B1.4.4
+// verbindlich festgelegt und wird deshalb wortgleich übernommen; B1 ist der
+// zuständige Baustein für Dialogtexte (B1.8). `SESSION_NOT_FOUND` ist kein
+// F3-Code und hat dort keinen Text.
 function joinRejectionText(code: string): string {
   switch (code) {
     case "SESSION_FULL":
-      return "Diese Session ist bereits voll. Es gibt keine Warteliste.";
+      return "Die Session ist bereits voll.";
     case "ALREADY_JOINED":
-      return "Du nimmst an dieser Session bereits teil.";
+      return "Du bist dieser Session bereits beigetreten.";
     case "SESSION_NOT_JOINABLE":
-      return "Diese Session ist beendet; ein Beitritt ist nicht mehr möglich.";
+      return "Dieser Session kannst du nicht mehr beitreten.";
     case "NOT_AUTHENTICATED":
-      return "Bitte melde dich an, um beizutreten.";
+      return "Bitte melde dich an, um der Session beizutreten.";
     case "SESSION_NOT_FOUND":
       return "Diese Session existiert nicht mehr.";
     default:
@@ -55,8 +58,14 @@ export function SessionDetailPage() {
   );
   const session = state.status === "ok" ? state.data : null;
 
-  // Fachliche Ablehnung des Beitritts (F3 AF-01) bzw. technischer Fehler.
-  const [joinMessage, setJoinMessage] = useState<string | null>(null);
+  // Rückmeldung zum Beitritt: Erfolg, fachliche Ablehnung (F3 AF-01) oder
+  // technischer Fehler. B1.4.4 gibt auch für `OK` einen Text vor, deshalb
+  // trägt die Meldung ihren Ton mit — als Fehlermeldung eingefärbt wäre die
+  // Bestätigung irreführend.
+  const [joinMessage, setJoinMessage] = useState<{
+    tone: "ok" | "error";
+    text: string;
+  } | null>(null);
   const [isJoining, setIsJoining] = useState(false);
   // Die PIN ist nicht Teil von v_session; sie ist nur für Organisator und
   // bestätigte Teilnehmer sichtbar (N2.2) und wird gesondert geholt. Das
@@ -103,15 +112,20 @@ export function SessionDetailPage() {
     if (result.kind === "ok") {
       // Belegung und Teilnehmerliste kommen aus der Datenbank; neu laden statt
       // den Zustand im Dialog fortzuschreiben (A08 8.5.4).
+      setJoinMessage({ tone: "ok", text: "Du bist der Session beigetreten." });
       reload();
       return;
     }
 
-    setJoinMessage(
-      result.kind === "rejected"
-        ? joinRejectionText(result.code)
-        : "Der Beitritt ist gerade nicht möglich. Bitte versuche es erneut.",
-    );
+    setJoinMessage({
+      tone: "error",
+      text:
+        result.kind === "rejected"
+          ? joinRejectionText(result.code)
+          : // Für den technischen Fehler gibt B1.4.4 keinen Wortlaut vor
+            // (A08 8.5.6); der Text bleibt deshalb dialogbezogen.
+            "Der Beitritt ist gerade nicht möglich. Bitte versuche es erneut.",
+    });
   }
 
   if (state.status === "loading") {
@@ -406,25 +420,14 @@ export function SessionDetailPage() {
         {!isReadOnly && !isOrganizer && (
           <div className="sticky bottom-24 z-10 rounded-3xl bg-white/90 p-2 shadow-xl backdrop-blur">
             {canJoin ? (
-              <div>
-                <button
-                  type="button"
-                  disabled={isJoining}
-                  onClick={() => void join()}
-                  className="w-full rounded-2xl bg-blue-600 py-3 font-bold text-white disabled:opacity-60"
-                >
-                  {isJoining ? "Einen Moment …" : "Beitreten"}
-                </button>
-
-                {joinMessage && (
-                  <p
-                    role="alert"
-                    className="mt-2 px-1 text-xs font-bold text-red-600"
-                  >
-                    {joinMessage}
-                  </p>
-                )}
-              </div>
+              <button
+                type="button"
+                disabled={isJoining}
+                onClick={() => void join()}
+                className="w-full rounded-2xl bg-blue-600 py-3 font-bold text-white disabled:opacity-60"
+              >
+                {isJoining ? "Einen Moment …" : "Beitreten"}
+              </button>
             ) : hasJoined ? (
               <div className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-50 py-3 font-bold text-emerald-700">
                 <CheckCircle2 size={18} />
@@ -435,6 +438,19 @@ export function SessionDetailPage() {
               <div className="rounded-2xl bg-amber-50 py-3 text-center font-bold text-amber-700">
                 Session ist voll
               </div>
+            )}
+
+            {joinMessage && (
+              <p
+                role="alert"
+                className={`mt-2 px-1 text-xs font-bold ${
+                  joinMessage.tone === "ok"
+                    ? "text-emerald-700"
+                    : "text-red-600"
+                }`}
+              >
+                {joinMessage.text}
+              </p>
             )}
           </div>
         )}

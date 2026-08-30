@@ -35,12 +35,23 @@ export function CheckInPage() {
   const [pinInput, setPinInput] = useState(deepLinkPin);
   const [pinError, setPinError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // B1.4.6 unterscheidet die beiden Erfolgscodes im Anzeigetext: `OK` bestätigt
+  // den Check-in, `ALREADY_CHECKED_IN` bestätigt ihn ohne Änderung. Beide sind
+  // fachlich erfolgreich (AF-02 Idempotenz), deshalb reicht der Code hier nur
+  // bis zur Überschrift.
+  const [erfolgscode, setErfolgscode] = useState<string | null>(null);
 
   // Ein bereits erfolgter Check-in wird nicht zurückgenommen (AF-02). Der
   // Erfolgszustand wird deshalb aus der geladenen Teilnahme abgeleitet und
   // nicht nachträglich gesetzt.
   const view: CheckInView =
     participation?.status === "checked_in" ? "success" : gewaehlteAnsicht;
+
+  // Ohne eigenen Aufruf ist ein bereits gesetzter `checked_in`-Status derselbe
+  // Fall wie ALREADY_CHECKED_IN: bestätigen, nichts ändern (AF-02).
+  const bereitsEingecheckt =
+    erfolgscode === "ALREADY_CHECKED_IN" ||
+    (erfolgscode === null && participation?.status === "checked_in");
 
   if (state.status === "loading") {
     return <LoadingState label="Session wird geladen …" />;
@@ -108,6 +119,7 @@ export function CheckInPage() {
 
     // OK und ALREADY_CHECKED_IN sind beide Erfolg (F3 AF-02-Mapping).
     if (result.kind === "ok") {
+      setErfolgscode(result.code);
       setView("success");
       return;
     }
@@ -117,9 +129,10 @@ export function CheckInPage() {
       return;
     }
 
-    // Technischer Fehler: keine internen Details (A08 8.5.6).
+    // Technischer Fehler: keine internen Details (A08 8.5.6); der Rückfalltext
+    // ist in B1.4.6 wörtlich vorgegeben.
     setPinError(
-      "Der Check-in ist gerade nicht möglich. Bitte versuche es erneut.",
+      "Die Aktion konnte nicht ausgeführt werden. Bitte versuche es erneut.",
     );
   }
 
@@ -131,12 +144,14 @@ export function CheckInPage() {
         </div>
 
         <h1 className="mt-6 text-center text-3xl font-extrabold">
-          Check-in erfolgreich
+          {bereitsEingecheckt
+            ? "Du bist bereits eingecheckt."
+            : "Check-in erfolgreich."}
         </h1>
 
         <p className="mt-3 max-w-xs text-center text-sm leading-6 text-slate-300">
-          Deine Anwesenheit bei „{session.title}“ wurde bestätigt. Viel Spaß
-          bei der Session!
+          Deine Anwesenheit bei „{session.title}“ ist bestätigt. Viel Spaß bei
+          der Session!
         </p>
 
         <Link
@@ -292,7 +307,7 @@ interface BlockedScreenProps {
 function checkInRejectionText(code: string): string {
   switch (code) {
     case "INVALID_CREDENTIAL":
-      return "Ungültiger Code für diese Session.";
+      return "Der QR-Code oder die PIN ist für diese Session ungültig.";
     case "NOT_JOINED":
       return "Du bist dieser Session nicht beigetreten.";
     case "OUTSIDE_WINDOW":
