@@ -104,6 +104,16 @@ export function SessionDetailPage() {
       return;
     }
 
+    // Beitreten ist eine geschützte Aktion: Ohne Anmeldung führt B1.5.2 zuerst
+    // zu DLG-01 und danach hierher zurück (UC-04 Alternativszenario). Die RPC
+    // würde sonst NOT_AUTHENTICATED liefern und der Nutzer bliebe stehen.
+    if (!user) {
+      navigate(
+        `/login?redirect=${encodeURIComponent(`/sessions/${session.id}`)}`,
+      );
+      return;
+    }
+
     setJoinMessage(null);
     setIsJoining(true);
     const result = await joinSession(session.id);
