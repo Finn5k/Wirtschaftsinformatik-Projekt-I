@@ -8,10 +8,12 @@ Region auf einer Karte, treten ihnen bei, und Organisatoren erstellen Sessions,
 verwalten Teilnehmerlimits und wickeln den Check-in per QR-Code oder PIN ab.
 
 > **Status:** Hochschulprojekt (THM, Wirtschaftsinformatik Projekt I) —
-> Spezifikation und Architektur stehen, die **Implementierung läuft**. Die
-> Spezifikation nach Siedersleben-Schema liegt unter
-> [`docs/spec/`](docs/spec/README.md), die Architektur nach arc42 unter
-> [`docs/arch/`](docs/arch/README.md).
+> Spezifikation, Architektur und **MVP-Implementierung** stehen: Alle zwölf
+> Anwendungsfälle aus F2 laufen gegen Supabase. Die Spezifikation nach
+> Siedersleben-Schema liegt unter [`docs/spec/`](docs/spec/README.md), die
+> Architektur nach arc42 unter [`docs/arch/`](docs/arch/README.md); die
+> verbliebenen Abweichungen stehen in
+> [B1.6](docs/spec/B1-dialogspezifikation.md#b16-abweichungen-der-umsetzung).
 
 ## Kernfunktionen (MVP)
 
@@ -42,8 +44,11 @@ Wartelisten, Ratings, Zahlungen, native Apps. Details in
 | Tooling | ESLint, npm |
 
 > Das Datenbankschema mit RLS-Policies und den atomaren RPCs liegt unter
-> [`supabase/migrations/`](supabase/migrations); das Frontend ist noch nicht
-> dagegen verdrahtet. Der verbindliche Stack ist in
+> [`supabase/migrations/`](supabase/migrations); das Frontend spricht
+> ausschließlich über die Service-Schicht (`src/services/`) dagegen. Für den
+> lokalen Start werden `VITE_SUPABASE_URL` und `VITE_SUPABASE_PUBLISHABLE_KEY`
+> in `.env.local` gebraucht (Vorlage: [`.env.example`](.env.example)). Der
+> verbindliche Stack ist in
 > [P2 — Architekturüberblick](docs/spec/P2-architekturueberblick.md) beschrieben.
 
 ## Schnellstart
@@ -68,7 +73,7 @@ npm run preview  # Produktionsbuild lokal ansehen
 ├── docs/
 │   ├── spec/            # Spezifikation nach Siedersleben (P1, P2, F1–F3, D1, D2, S1, …)
 │   ├── arch/            # Architektur nach arc42 (A01–A09, A12) mit ADRs
-│   └── frontend.md      # Frontend-Notizen
+│   └── frontend.md      # Umsetzungsstand je Dialog
 ├── CLAUDE.md            # Projektkonventionen (Commits, Branches, Spec-Schema)
 ├── AGENTS.md            # Verweis auf CLAUDE.md für weitere KI-Werkzeuge
 ├── TEAMINFO.md          # Team, Rollen, Projektidee
