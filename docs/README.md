@@ -4,13 +4,13 @@ Dieses Verzeichnis enthält die Projektdokumentation für **LocalCourt**, eine
 Webanwendung zum Finden, Erstellen und Organisieren von Sport-Sessions auf
 lokalen Courts (React 19, TypeScript, Vite, Tailwind CSS). Die Dokumentation
 gliedert sich in zwei fachlich getrennte Ebenen sowie eine ergänzende
-Statusdokumentation des UI-Prototyps:
+Statusdokumentation des Frontends:
 
 | Verzeichnis/Datei | Ebene | Struktur | Zweck |
 |---|---|---|---|
 | [spec/](spec/README.md) | Spezifikation — *was* und *warum* | [Siedersleben-Schema](spec/E1-leseanleitung.md) | Technologieunabhängige Beschreibung von Zielen, Geschäftsprozessen, Anwendungsfällen, Datenmodell, Dialogen und nichtfunktionalen Anforderungen. |
 | [arch/](arch/README.md) | Architektur — *wie* | arc42 + ADRs | Lösungsstrategie, Bausteinsicht, Laufzeitsichten, Deployment und Architekturentscheidungen zur Umsetzung der Spezifikation. |
-| [frontend.md](frontend.md) | Umsetzungsstand | Screens, Komponenten, Abweichungen | Abgleich des aktuellen UI-Prototyps (Routen, Komponenten, Mockdaten) mit den in `spec/B1` beschriebenen Dialogen. |
+| [frontend.md](frontend.md) | Umsetzungsstand | Screens, Komponenten, Abweichungen | Abgleich des Frontends (Routen, Komponenten, Servicezugriffe) mit den in `spec/B1` beschriebenen Dialogen. |
 | [../supabase/](../supabase/README.md) | Umsetzung — Datenbank | Migrationen | Datenbankschema, RLS-Policies und atomare RPCs; setzt `spec/D1`, `spec/D2`, `spec/N2.2` und `arch/A09` ADR-001 um. |
 
 Die Trennung zwischen Spezifikation und Architektur ist bewusst: `spec/`
@@ -65,7 +65,7 @@ Vorschläge werden vor ihrer Übernahme geprüft und bei Bedarf angepasst.
 | Werkzeug | Einsatzbereich | Verwendung |
 |---|---|---|
 | Claude Code | Spezifikation, Architektur | Analyse bestehender Spezifikation, Architektur und Code; Entwurf und Strukturierung von Spezifikationsbausteinen und arc42-Kapiteln; Unterstützung bei der Erstellung und Überarbeitung von Diagrammen in Spezifikation und Architektur; Konsistenz- und Querverweisprüfung. |
-| ChatGPT | Spezifikation, Projektdokumentation | Formulierungsvorschläge und redaktionelle Überarbeitung einzelner Spezifikationsbausteine sowie Abgleich der Frontend-Statusdokumentation (`docs/frontend.md`) mit dem UI-Prototyp. |
+| ChatGPT | Spezifikation, Projektdokumentation | Formulierungsvorschläge und redaktionelle Überarbeitung einzelner Spezifikationsbausteine sowie Abgleich der Frontend-Statusdokumentation (`docs/frontend.md`) mit dem Code. |
 | Codex | Spezifikation, Projektdokumentation | Ausarbeitung und redaktionelle Überarbeitung von Spezifikationsbausteinen; Nachführen der Frontend-Statusdokumentation nach Codeänderungen; Unterstützung bei der Strukturierung der Architektur-Übersicht (`docs/arch/README.md`). |
 | GitHub Copilot | Spezifikation | Formulierungsunterstützung bei einzelnen frühen Spezifikationsbausteinen (P1, F1, P2, S1). |
 
