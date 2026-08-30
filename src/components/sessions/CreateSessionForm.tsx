@@ -396,11 +396,16 @@ export function CreateSessionForm() {
   }
 
   return (
+    // Die Attribute an den Feldern beschreiben die Regel deklarativ (A08 8.2.2);
+    // noValidate schaltet nur die native Fehlerblase ab, weil B1 die Fehlertexte
+    // feldbezogen vorgibt (B1.5.3) und die Blase weder deren Wortlaut noch
+    // role="alert" und aria-describedby trägt.
     <form
       onSubmit={(event) => {
         event.preventDefault();
         void handleCreateSession();
       }}
+      noValidate
       className="space-y-4"
     >
       <FormSelect
@@ -421,6 +426,7 @@ export function CreateSessionForm() {
         onChange={(value) => updateForm("title", value)}
         error={errors.title}
         placeholder="z.B. Morning Run"
+        required
       />
 
       <FormTextarea
@@ -438,6 +444,7 @@ export function CreateSessionForm() {
         onChange={(value) => updateForm("date", value)}
         error={errors.date}
         type="date"
+        required
       />
 
       <FormInput
@@ -447,6 +454,7 @@ export function CreateSessionForm() {
         onChange={(value) => updateForm("time", value)}
         error={errors.time}
         type="time"
+        required
       />
 
       <StepperField
@@ -487,6 +495,7 @@ export function CreateSessionForm() {
             onChange={(value) => updateForm("newCourtName", value)}
             error={errors.newCourtName}
             placeholder="z.B. Bolzplatz Nordstadt"
+            required
           />
 
           <CourtLocationPicker
@@ -599,6 +608,7 @@ interface FormInputProps {
   error?: string;
   placeholder?: string;
   type?: string;
+  required?: boolean;
 }
 
 function FormInput({
@@ -609,6 +619,7 @@ function FormInput({
   error,
   placeholder,
   type = "text",
+  required = false,
 }: FormInputProps) {
   const inputId = useId();
   const errorId = `${inputId}-error`;
@@ -638,6 +649,7 @@ function FormInput({
             value={value}
             onChange={(event) => onChange(event.target.value)}
             placeholder={placeholder}
+            required={required}
             aria-invalid={Boolean(error)}
             aria-describedby={error ? errorId : undefined}
             className="mt-1 w-full bg-transparent text-sm font-bold text-slate-950 outline-none placeholder:text-slate-400"
@@ -748,6 +760,7 @@ function FormSelect({
             id={inputId}
             value={value}
             onChange={(event) => onChange(event.target.value)}
+            required
             aria-invalid={Boolean(error)}
             aria-describedby={error ? errorId : undefined}
             className="mt-1 w-full bg-transparent text-sm font-bold text-slate-950 outline-none"

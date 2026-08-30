@@ -173,11 +173,16 @@ export function CheckInPage() {
 
   if (view === "pin") {
     return (
+      // Die Attribute an den Feldern beschreiben die Regel deklarativ (A08 8.2.2);
+      // noValidate schaltet nur die native Fehlerblase ab, weil B1 die Fehlertexte
+      // feldbezogen vorgibt (B1.5.3) und die Blase weder deren Wortlaut noch
+      // role="alert" und aria-describedby trägt.
       <form
         onSubmit={(event) => {
           event.preventDefault();
           void submitPin();
         }}
+        noValidate
         className="flex min-h-[780px] flex-col items-center justify-center bg-slate-950 px-4 text-white"
       >
         <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-300">
@@ -210,6 +215,12 @@ export function CheckInPage() {
                 setPinError(null);
               }}
               inputMode="numeric"
+              // Vier Ziffern sind die Wertform aus D2.4; die Regel steht damit
+              // am Feld und nicht nur in submitPin(). Der Vergleich mit der
+              // PIN der Session bleibt der RPC vorbehalten (F3 AF-02).
+              required
+              pattern="[0-9]{4}"
+              maxLength={4}
               placeholder="0000"
               className="min-w-0 flex-1 bg-transparent text-3xl font-extrabold tracking-[0.4em] outline-none placeholder:text-slate-300"
             />
