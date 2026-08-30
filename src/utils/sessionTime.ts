@@ -1,6 +1,9 @@
-import type { SportSession, SessionStatus } from "../types/session";
-
-type SessionTiming = Pick<SportSession, "startAt" | "durationMin">;
+// Darstellung von Zeitpunkten in den Dialogen (B1).
+//
+// Den Sessionstatus leitet dieses Modul bewusst nicht mehr ab: AF-03 wird von
+// `session_status()` in der Datenbank berechnet und über `v_session`
+// geliefert. Eine zweite Berechnung im Client könnte anzeigen, was `check_in`
+// ablehnt, weil beide gegen unterschiedliche Uhren prüfen würden.
 
 const dayFormatter = new Intl.DateTimeFormat("de-DE", {
   weekday: "long",
@@ -19,25 +22,6 @@ const timeFormatter = new Intl.DateTimeFormat("de-DE", {
 
 function startOfLocalDay(date: Date): number {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
-}
-
-export function getSessionStatus(
-  session: SessionTiming,
-  now = new Date(),
-): SessionStatus {
-  const start = Date.parse(session.startAt);
-  const end = start + session.durationMin * 60 * 1000;
-  const current = now.getTime();
-
-  if (current < start) {
-    return "scheduled";
-  }
-
-  if (current < end) {
-    return "active";
-  }
-
-  return "completed";
 }
 
 export function formatSessionDate(

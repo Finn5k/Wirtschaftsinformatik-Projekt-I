@@ -30,17 +30,11 @@ interface MyProfileRow {
   avatar_url: string | null;
 }
 
-// Übergangslösung: `sessionService` arbeitet noch synchron auf Mockdaten und
-// braucht die aktuelle Nutzerkennung. Bis es auf die RPCs umgestellt ist, hält
-// dieses Modul das zuletzt geladene Profil. Entfällt mit dieser Umstellung.
+// Das zuletzt geladene Profil, damit `updateCurrentUser()` die Nutzerkennung
+// und die bisherigen Präferenzen kennt, ohne sie erneut zu laden. Nach außen
+// gereicht wird es nicht: Die Dialogseiten beziehen den angemeldeten Nutzer
+// aus dem `AuthProvider` (A08 8.3), nicht aus diesem Modul.
 let cachedProfile: UserProfile | null = null;
-
-/** Zuletzt geladenes Profil, oder `null`, wenn niemand angemeldet ist. */
-export function getCurrentUser(): UserProfile | null {
-  return cachedProfile
-    ? { ...cachedProfile, preferredSports: [...cachedProfile.preferredSports] }
-    : null;
-}
 
 /**
  * Lädt Profil und Sportpräferenzen des angemeldeten Nutzers (UC-12).
