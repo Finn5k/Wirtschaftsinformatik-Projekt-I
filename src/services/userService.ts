@@ -126,36 +126,66 @@ export async function updateCurrentUser(
     return { kind: "failed", cause: profileUpdate.error };
   }
 
-  // Präferenzen als Menge führen: erst die abgewählten entfernen, dann die
-  // neuen ergänzen. sport_preference hat (user_id, sport_id) als Schlüssel,
-  // ein doppelter Eintrag ist damit ausgeschlossen (D1.4).
-  const sportRows = await supabase
-    .from("sport")
-    .select("sport_id, key")
-    .in("key", preferredSports.length > 0 ? preferredSports : [""]);
+  // Präferenzen als Mengendifferenz führen: nur die abgewählten entfernen und
+  // nur die neu gewählten ergänzen. Ein vorheriges Löschen aller Einträge wäre
+  // kürzer, würde aber bei einem Fehlschlag des folgenden INSERT alle
+  // Präferenzen verlieren — für UC-12 ist das kein hinnehmbarer Zwischenstand.
+  // Ein RPC-Schreibpfad wie bei den drei Fachoperationen ist dafür nicht
+  // vorgesehen: ADR-001 beschränkt ihn auf Erstellung, Beitritt und Check-in.
+  const entfernt = current.preferredSports.filter(
+    (key) => !preferredSports.includes(key),
+  );
+  const ergaenzt = preferredSports.filter(
+    (key) => !current.preferredSports.includes(key),
+  );
 
-  if (sportRows.error) {
-    return { kind: "failed", cause: sportRows.error };
-  }
+  if (entfernt.length > 0 || ergaenzt.length > 0) {
+    const sportRows = await supabase
+      .from("sport")
+      .select("sport_id, key")
+      .in("key", [...entfernt, ...ergaenzt]);
 
-  const sportIds = (sportRows.data ?? []).map((row) => row.sport_id);
+    if (sportRows.error) {
+      return { kind: "failed", cause: sportRows.error };
+    }
 
-  const removal = await supabase
-    .from("sport_preference")
-    .delete()
-    .eq("user_id", current.id);
-
-  if (removal.error) {
-    return { kind: "failed", cause: removal.error };
-  }
-
-  if (sportIds.length > 0) {
-    const insertion = await supabase.from("sport_preference").insert(
-      sportIds.map((sportId) => ({ user_id: current.id, sport_id: sportId })),
+    const sportIdZuSchluessel = new Map(
+      (sportRows.data ?? []).map((row) => [row.key, row.sport_id]),
     );
 
-    if (insertion.error) {
-      return { kind: "failed", cause: insertion.error };
+    const entfernteIds = entfernt
+      .map((key) => sportIdZuSchluessel.get(key))
+      .filter((id) => id !== undefined);
+
+    if (entfernteIds.length > 0) {
+      const removal = await supabase
+        .from("sport_preference")
+        .delete()
+        .eq("user_id", current.id)
+        .in("sport_id", entfernteIds);
+
+      if (removal.error) {
+        return { kind: "failed", cause: removal.error };
+      }
+    }
+
+    // sport_preference hat (user_id, sport_id) als Schlüssel; ein doppelter
+    // Eintrag ist damit ausgeschlossen (D1.4).
+    const ergaenzteIds = ergaenzt
+      .map((key) => sportIdZuSchluessel.get(key))
+      .filter((id) => id !== undefined);
+
+    if (ergaenzteIds.length > 0) {
+      const insertion = await supabase.from("sport_preference").insert(
+        ergaenzteIds.map((sportId) => ({
+          user_id: current.id,
+          sport_id: sportId,
+        })),
+      );
+
+      if (insertion.error) {
+        return { kind: "failed", cause: insertion.error };
+      }
     }
   }
 
