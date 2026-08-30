@@ -351,8 +351,13 @@ function MapViewport({ selectedCenter, positions }: MapViewportProps) {
     // Mehrere Sessions: Ausschnitt so wählen, dass alle Marker sichtbar sind.
     // maxZoom verhindert, dass eng beieinanderliegende Courts bis auf
     // Straßenniveau herangezoomt werden.
+    //
+    // Der Rand ist oben und unten größer als seitlich: Kopfbereich mit Filter
+    // und die Navigationsleiste liegen über der Karte, ein gleichmäßiger Rand
+    // schöbe die äußersten Marker darunter.
     map.fitBounds(L.latLngBounds(positions), {
-      padding: [48, 48],
+      paddingTopLeft: [48, 160],
+      paddingBottomRight: [48, 130],
       maxZoom: 14,
       animate: false,
     });
