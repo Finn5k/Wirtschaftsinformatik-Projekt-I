@@ -53,7 +53,7 @@ Standard-Benutzeraktionen, die in allen Dialogen gleich funktionieren, sind einm
   </tr>
 </table>
 
-> Screenshots aus der Anwendung (mobiler Viewport); illustrativ, nicht bindend für das visuelle Design ([B1.1](#b11-zweck-und-einordnung)).
+> Screenshots aus der laufenden Anwendung (mobiler Viewport, 390 px); die gezeigten Sessions und Profile sind Beispieldaten. Illustrativ, nicht bindend für das visuelle Design ([B1.1](#b11-zweck-und-einordnung)).
 
 | Abschnitt | Inhalt |
 |---|---|
