@@ -17,10 +17,10 @@ Implementierung und ergänzt insbesondere:
 
 Fachliche Anforderungen, Dialogfelder und Ergebniscodes werden hier nicht
 erneut definiert. Dafür bleiben F2, F3 und B1 maßgeblich. Die Architektur
-beschreibt den angestrebten MVP-Zustand; Abweichungen des gegenwärtigen
-UI-Prototyps sind je Querschnittskonzept in
-[A08](A08-crosscutting-concepts.md) ausgewiesen, der detaillierte Abgleich
-steht in [docs/frontend.md](../frontend.md).
+beschreibt den umgesetzten Stand; wo der Code davon abweicht, ist das je
+Querschnittskonzept in [A08](A08-crosscutting-concepts.md) ausgewiesen, der
+Abgleich mit den Dialogen aus B1 steht in
+[docs/frontend.md](../frontend.md).
 
 ## 2. Kapitel
 
@@ -33,7 +33,7 @@ steht in [docs/frontend.md](../frontend.md).
 | [A05 — Bausteinsicht](A05-building-block-view.md) | Whitebox LocalCourt (Ebene 1) und Service-Schicht (Ebene 2), Traceability zu F2/F3. |
 | [A06 — Laufzeitsicht](A06-runtime-view.md) | Session beitreten, Check-in per QR-Code oder PIN, Session und Court erstellen. |
 | [A07 — Verteilungssicht](A07-deployment-view.md) | Produktionsverteilung auf Browser, Vercel und Supabase-Projekt. |
-| [A08 — Querschnittskonzepte](A08-crosscutting-concepts.md) | Datenmodell und Persistenz, Validierung, Zugriffsschutz, atomare Fachoperationen, Fehlerbehandlung — je Konzept mit Abweichung des UI-Prototyps. |
+| [A08 — Querschnittskonzepte](A08-crosscutting-concepts.md) | Datenmodell und Persistenz, Validierung, Zugriffsschutz, atomare Fachoperationen, Fehlerbehandlung — je Konzept mit dem Stand im Code. |
 | [A09 — Architekturentscheidungen](A09-architecture-decisions.md) | ADR-001 (atomare Fachoperationen als RPC) und ADR-002 (Service-Schicht als Integrationsgrenze). |
 | [A12 — Glossar](A12-glossary.md) | Architekturbegriffe, die A01–A09 voraussetzen; fachliche Begriffe stehen in [E2](../spec/E2-glossar.md). |
 

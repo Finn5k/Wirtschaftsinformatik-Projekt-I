@@ -21,9 +21,16 @@ participant "NB-04\nOpenStreetMap-Tiles" as OSM
 participant "NB-05\nNominatim" as Nominatim
 participant "NB-03\nSupabase PostgREST" as API
 
+Create -> CourtSvc : getCourts()
+activate CourtSvc
+CourtSvc -> API : vorhandene Courts lesen
+API --> CourtSvc : Court-Liste
+CourtSvc --> Create : Auswahlliste (UC-10)
+deactivate CourtSvc
+
 Organisator -> Create : Sportart, Titel, Zeit, Dauer,\nTeilnehmerlimit eingeben
 
-opt neuer Court (UC-10)
+opt neuer Court statt Auswahl (UC-10)
   Create -> Map : Kartenpin setzen
   Map -> OSM : Kacheln laden
   OSM --> Map : Kartenbilder
@@ -37,22 +44,13 @@ opt neuer Court (UC-10)
     unvollständiger Court übernommen
     (UC-10 Ausnahmefall)
   end note
-
-  Create -> CourtSvc : createCourt(name, coordinates,\ncity, address)
-  activate CourtSvc
-  CourtSvc -> API : courtAnlegen (JWT)\n(einfacher Schreibzugriff, S1.4)
-  activate API
-  API --> CourtSvc : Court mit id
-  deactivate API
-  CourtSvc --> Create : Court verfügbar
-  deactivate CourtSvc
 end
 
-Create -> Service : createSession(payload mit court_id)
+Create -> Service : createSession(payload mit court_id\n**oder** Court-Feldern)
 activate Service
 Service -> API : RPC create_session (JWT)
 activate API
-API -> API : Session mit PIN (AF-04) sowie\norganizer- und participant-Eintrag\natomar anlegen (N2.2, S1.4)
+API -> API : Court (falls neu), Session mit PIN (AF-04)\nsowie organizer- und participant-Eintrag\natomar anlegen (ADR-001, N2.2, S1.4)
 API --> Service : Session mit PIN
 deactivate API
 Service --> Create : Erfolg
