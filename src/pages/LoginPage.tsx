@@ -117,10 +117,10 @@ export function LoginPage() {
           </p>
         </div>
 
-        // Die Attribute an den Feldern beschreiben die Regel deklarativ (A08 8.2.2);
-        // noValidate schaltet nur die native Fehlerblase ab, weil B1 die Fehlertexte
-        // feldbezogen vorgibt (B1.5.3) und die Blase weder deren Wortlaut noch
-        // role="alert" und aria-describedby trägt.
+        {/* Die Attribute an den Feldern beschreiben die Regel deklarativ
+            (A08 8.2.2); noValidate schaltet nur die native Fehlerblase ab, weil
+            B1 die Fehlertexte feldbezogen vorgibt (B1.5.3) und die Blase weder
+            deren Wortlaut noch role="alert" und aria-describedby trägt. */}
         <form
           onSubmit={(event) => {
             event.preventDefault();
