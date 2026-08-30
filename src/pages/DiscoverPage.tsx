@@ -9,6 +9,10 @@ import { ErrorState, LoadingState } from "../components/DataStates";
 import { useLoadedData } from "../hooks/useLoadedData";
 import type { SportKey } from "../types/session";
 import { formatSessionDate, formatSessionTime } from "../utils/sessionTime";
+import {
+  leseLetztenSuchort,
+  merkeLetztenSuchort,
+} from "../utils/letzterSuchort";
 
 type SessionFilter = "Alle" | SportKey;
 
@@ -22,7 +26,19 @@ export function DiscoverPage() {
   // lediglich die Ortsvorbelegung und die persönliche Ansprache.
   const { user } = useAuth();
   const [activeFilter, setActiveFilter] = useState<SessionFilter>("Alle");
-  const [searchTerm, setSearchTerm] = useState(user?.city ?? "");
+
+  // Vorbelegung nach B1.4.2: `profile.city`, sonst der letzte Suchort, sonst
+  // leer. Gespeichert wird nur, was der Nutzer selbst eingegeben hat; der Rest
+  // wird bei jedem Rendern abgeleitet. Ein Anfangswert allein genügte nicht,
+  // weil das Profil erst mit der wiederhergestellten Sitzung eintrifft.
+  const [eigeneEingabe, setEigeneEingabe] = useState<string | null>(null);
+  const [letzterSuchort] = useState(leseLetztenSuchort);
+  const searchTerm = eigeneEingabe ?? user?.city ?? letzterSuchort;
+
+  function sucheAendern(wert: string) {
+    setEigeneEingabe(wert);
+    merkeLetztenSuchort(wert);
+  }
 
   // Die Sportart filtert die Datenbank (indizierte Spalte), die Ortssuche
   // arbeitet auf der geladenen Menge - B1 DLG-02 lässt den Ort als freie
@@ -89,7 +105,7 @@ export function DiscoverPage() {
         <input
           id="session-search"
           value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
+          onChange={(event) => sucheAendern(event.target.value)}
           className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-slate-400"
           placeholder="Suche nach Ort, Titel oder Sportart ..."
         />
