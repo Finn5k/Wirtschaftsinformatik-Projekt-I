@@ -8,10 +8,10 @@ export function TopBar() {
           </div>
 
           <div>
-            <p className="text-sm font-semibold text-slate-500">LocalCourt</p>
-            <h1 className="text-xl font-bold text-slate-950">
-              UI-Prototyp (MVP)
-            </h1>
+            <p className="text-sm font-semibold text-slate-500">
+              Sport-Sessions in deiner Nähe
+            </p>
+            <h1 className="text-xl font-bold text-slate-950">LocalCourt</h1>
           </div>
         </div>
       </div>
