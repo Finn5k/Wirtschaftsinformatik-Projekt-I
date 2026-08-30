@@ -46,7 +46,7 @@ Fachlicher Datenzugriff auf Sessions, Courts, Teilnahmen und Profile, per Row-Le
 | Aspekt | Inhalt |
 |---|---|
 | Zweck | Lesen von Sessions, Courts, Teilnehmern, Profilen und Sportarten; fachlich geprüftes Anlegen und Aktualisieren. |
-| Schnittstelle | Acht lesende Operationen (u. a. `sessionsSuchen`, `sessionLesen`, `teilnehmerLesen`); drei atomare RPCs — `create_session`, `join_session`, `check_in` —, die Prüfung und Schreibvorgang als unteilbare Einheit ausführen ([F3](F3-anwendungsfunktionen.md)); einfache geprüfte Schreibzugriffe (`courtAnlegen`, `profilAktualisieren`, `sportpraeferenzSetzen`/`-Entfernen`). |
+| Schnittstelle | Acht lesende Operationen (u. a. `sessionsSuchen`, `sessionLesen`, `teilnehmerLesen`); drei atomare RPCs — `create_session`, `join_session`, `check_in` —, die Prüfung und Schreibvorgang als unteilbare Einheit ausführen ([F3](F3-anwendungsfunktionen.md)); einfache geprüfte Schreibzugriffe (`profilAktualisieren`, `sportpraeferenzSetzen`/`-Entfernen`). Das Anlegen eines Courts ist kein eigener Schreibzugriff: Ein neu erfasster Sportort entsteht innerhalb von `create_session`, damit kein Court ohne zugehörige Session zurückbleibt ([UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen)). |
 | Ausgetauschte Daten | Filter bzw. Nutzdaten (Anfrage); Datensätze bzw. Ergebniscode (Antwort). Die Session-PIN ist nur für Organisator und bestätigte Teilnehmer sichtbar. |
 | Abgrenzung | Kein Offline-Betrieb und kein lokaler Datenbestand; ohne NB-03 ist LocalCourt fachlich nicht nutzbar. Nicht genutzt: Echtzeit-Kanäle (Realtime), Dateiablage (Storage — das Profilbild ist nur ein Verweis `avatar_url`) und Edge Functions außerhalb der Datenbank. Ergebniscodes (`OK`, `SESSION_FULL` u. a.) und ihre HTTP-Abbildung stehen in [F3](F3-anwendungsfunktionen.md); die allgemeine Mapping-Konvention in [N2.3](N2-querschnittskonzepte.md#n23-ergebnisweitergabe-und-technisches-mapping). |
 
@@ -78,6 +78,6 @@ Bestimmt bei der Court-Neuerfassung aus dem gesetzten Kartenpin die nächstgeleg
 |---|---|
 | NB-01 Browser | Dialoge aus B1 (kein eigener Protokoll-Contract) |
 | NB-02 Supabase Auth | `registrieren`, `anmelden`, `abmelden`, `sitzungErneuern`, `angemeldetenNutzerLesen` |
-| NB-03 Supabase PostgREST | 8 lesende Operationen; `create_session`, `join_session`, `check_in`; `courtAnlegen`, `profilAktualisieren`, `sportpraeferenzSetzen`/`-Entfernen` |
+| NB-03 Supabase PostgREST | 8 lesende Operationen; `create_session` (legt bei Bedarf den Court mit an), `join_session`, `check_in`; `profilAktualisieren`, `sportpraeferenzSetzen`/`-Entfernen` |
 | NB-04 OpenStreetMap | `kachelnLaden` |
 | NB-05 Nominatim | `ortAufloesen` |
