@@ -117,11 +117,16 @@ export function LoginPage() {
           </p>
         </div>
 
+        // Die Attribute an den Feldern beschreiben die Regel deklarativ (A08 8.2.2);
+        // noValidate schaltet nur die native Fehlerblase ab, weil B1 die Fehlertexte
+        // feldbezogen vorgibt (B1.5.3) und die Blase weder deren Wortlaut noch
+        // role="alert" und aria-describedby trägt.
         <form
           onSubmit={(event) => {
             event.preventDefault();
             void handleSubmit();
           }}
+          noValidate
           className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm"
         >
           <div className="mb-5 grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1.5">
@@ -191,6 +196,7 @@ export function LoginPage() {
               error={errors.password}
               placeholder={isRegister ? "Mindestens 8 Zeichen" : "Dein Passwort"}
               type="password"
+              minLength={isRegister ? 8 : undefined}
             />
           </div>
 
@@ -243,6 +249,7 @@ interface AuthInputProps {
   error?: string;
   placeholder?: string;
   type?: string;
+  minLength?: number;
 }
 
 function AuthInput({
@@ -254,6 +261,7 @@ function AuthInput({
   error,
   placeholder,
   type = "text",
+  minLength,
 }: AuthInputProps) {
   const errorId = `${id}-error`;
 
@@ -282,6 +290,8 @@ function AuthInput({
             value={value}
             onChange={(event) => onChange(event.target.value)}
             placeholder={placeholder}
+            required
+            minLength={minLength}
             aria-invalid={Boolean(error)}
             aria-describedby={error ? errorId : undefined}
             className="mt-1 w-full bg-transparent text-sm font-bold text-slate-950 outline-none placeholder:text-slate-400"
