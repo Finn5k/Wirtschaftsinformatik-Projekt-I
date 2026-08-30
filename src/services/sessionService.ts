@@ -5,7 +5,12 @@ import type {
   JoinSessionResult,
   Ok,
 } from "../types/result";
-import type { Participant, SportKey, SportSession } from "../types/session";
+import type {
+  Participant,
+  ParticipantStatus,
+  SportKey,
+  SportSession,
+} from "../types/session";
 import {
   SESSION_VIEW_COLUMNS,
   type SessionViewRow,
@@ -238,7 +243,10 @@ async function getMySessions(): Promise<SessionListResult> {
   // eigene Zeilen frei (N2.2).
   const [organized, joined] = await Promise.all([
     supabase.from("organizer").select("session_id").eq("user_id", userId),
-    supabase.from("participant").select("session_id").eq("user_id", userId),
+    supabase
+      .from("participant")
+      .select("session_id, status")
+      .eq("user_id", userId),
   ]);
 
   if (organized.error || joined.error) {
@@ -265,10 +273,37 @@ async function getMySessions(): Promise<SessionListResult> {
     return { kind: "failed", cause: error };
   }
 
+  const [sessions, namen] = await Promise.all([
+    toSessions(data as unknown as SessionViewRow[]),
+    loadDisplayNames([userId]),
+  ]);
+
+  // Die eigene Teilnahme wird angehängt, damit DLG-07 je Eintrag den eigenen
+  // Check-in-Stand anzeigen kann (B1.4.7). Die vollständige Teilnehmerliste
+  // bleibt der Detailansicht vorbehalten — hier wäre sie eine Abfrage je
+  // Session, ohne dass der Dialog sie zeigt.
+  const eigeneTeilnahme = new Map(
+    (joined.data ?? []).map((row) => [
+      row.session_id as string,
+      row.status as ParticipantStatus,
+    ]),
+  );
+
   return {
     kind: "ok",
     code: "OK",
-    data: await toSessions(data as unknown as SessionViewRow[]),
+    data: sessions.map((session) => {
+      const status = eigeneTeilnahme.get(session.id);
+
+      return status
+        ? {
+            ...session,
+            participants: [
+              { id: userId, name: namen.get(userId) ?? "", status },
+            ],
+          }
+        : session;
+    }),
   };
 }
 
