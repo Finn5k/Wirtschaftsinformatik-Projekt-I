@@ -405,14 +405,16 @@ Kontextdialoge (DLG-04, DLG-06) bieten eine Zurück-Aktion zum aufrufenden Dialo
 
 Alle acht Dialoge DLG-01 bis DLG-08 sind umgesetzt und arbeiten gegen die Nachbarsysteme: Anmeldung und Sitzung über NB-02, fachliche Daten und die drei atomaren Fachoperationen über NB-03. Die früher hier geführten Einschränkungen des UI-Prototyps — Mockdaten, simulierte Anmeldung, fehlende serverseitige Prüfung, Persistenz und Ergebniscodes, nicht demonstrierte Lade- und Fehlerzustände, fehlender Karten-Fallback — sind damit entfallen. Der Status einer Session wird nicht mehr im Client abgeleitet, sondern von der Datenbank geliefert ([AF-03](F3-anwendungsfunktionen.md#af-03--status-einer-sport-session)).
 
-Es bleiben vier Punkte:
+Ebenso erledigt sind die zuletzt hier geführten Punkte: Pflichtfelder, Formate und Wertebereiche sind deklarativ am Eingabeelement ausgezeichnet, und die Ortssuche fällt auf den zuletzt gesuchten Ort zurück, wenn im Profil keiner hinterlegt ist ([B1.4.2](#b142-dlg-02--session-entdecken-liste)).
 
-| Abweichung | Stand | Bezug / offener Bedarf |
+Die Feldlisten sind damit vollständig umgesetzt. Offen bleiben zwei Punkte, beide bewusst so entschieden:
+
+| Punkt | Stand | Begründung |
 |---|---|---|
-| Deklarative Feldprüfung | Pflichtfelder, Formate und Wertebereiche werden vollständig in TypeScript geprüft; die HTML-Attribute `required`, `pattern`, `min`/`max` sind nicht gesetzt. | Fachlich gleichwertig — das Absenden unterbleibt und die Meldung erscheint feldbezogen ([B1.5.3](#b153-formular-validierung)); offen bleibt die einfachere Ausdrucksform ([A08 8.2.2](../arch/A08-crosscutting-concepts.md#822-deklarative-view-validierung)). |
-| Vorbelegung der Ortssuche (DLG-02) | Vorbelegt wird `profile.city`; ist dort kein Ort hinterlegt, bleibt das Feld leer. | Der in [B1.4.2](#b142-dlg-02--session-entdecken-liste) zusätzlich genannte Rückfall auf den letzten Suchort wird nicht gespeichert. |
-| Profilbild (DLG-08) | wird angezeigt, aber nicht bearbeitet | entspricht der MVP-Abgrenzung; keine offene Umsetzung |
-| Court-Dublettenprüfung (DLG-05) | findet nicht statt | bewusste MVP-Entscheidung ([UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen)) |
+| Profilbild (DLG-08) | wird angezeigt, aber nicht bearbeitet | MVP-Abgrenzung; `avatar_url` ist nur ein Verweis ([S1.4](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)) |
+| Court-Dublettenprüfung (DLG-05) | findet nicht statt | MVP-Entscheidung; fachlich gleiche Courts dürfen mehrfach entstehen ([UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen)) |
+
+Eine Besonderheit der Umsetzung, die keine Abweichung ist: Die Formulare setzen `noValidate`. Die Pflicht- und Formatattribute stehen an den Feldern, die Meldung formuliert aber der Dialog, weil B1 ihren Wortlaut vorgibt ([B1.5.3](#b153-formular-validierung), [A08 8.2.2](../arch/A08-crosscutting-concepts.md#822-deklarative-view-validierung)).
 
 Gamification-, Events-/Challenges-, Benachrichtigungs-, Rang-, Sichtbarkeits-, Merken- oder Teilen-Funktionen sind im Frontend nicht vorhanden.
 

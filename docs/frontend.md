@@ -57,7 +57,7 @@ http://localhost:5173
 | B1-Dialog | Route | Umgesetzt |
 |---|---|---|
 | DLG-01 Anmelden / Registrieren | `/login` | Umschaltung zwischen Anmeldung und Registrierung, E-Mail-/Passwortfelder, Anzeigename bei Registrierung, clientseitige Validierung; Anmeldung, Registrierung und Abmeldung über NB-02, Sitzung übersteht einen Reload |
-| DLG-02 Session entdecken | `/discover` | Ortssuche mit Vorbelegung aus dem Profil, Sportartenfilter über die Datenbank, hervorgehobene nächste Session, weitere Session-Karten, Lade-, Fehler- und Leerzustand |
+| DLG-02 Session entdecken | `/discover` | Ortssuche mit Vorbelegung aus dem Profil, sonst dem zuletzt gesuchten Ort, Sportartenfilter über die Datenbank, hervorgehobene nächste Session, weitere Session-Karten, Lade-, Fehler- und Leerzustand |
 | DLG-03 Session-Karte | `/map` | Leaflet-/OpenStreetMap-Karte, Sportartenfilter, Session-Marker, Popup, Auswahlkarte, Navigation zum Detail, aus den Treffern abgeleiteter Kartenausschnitt sowie Fehlerzustand mit Wiederholung und Wechsel zur Listenansicht |
 | DLG-04 Session-Detail | `/sessions/:sessionId` | Kerndaten, Status aus `v_session`, Belegung, Teilnehmerliste im Umfang der RLS, Organisatoransicht mit QR-Code und PIN, Beitritt über `join_session` mit den Ergebnistexten aus B1.4.4, Check-in-Einstieg und Read-only-Zustand |
 | DLG-05 Session erstellen | `/sessions/new` | Sportart, Titel, Beschreibung, Datum, Uhrzeit, Dauer, Court-Auswahl oder Neuerfassung per Kartenpin, Teilnehmerlimit, Validierung; Anlage über `create_session` samt Court und Organisator-Teilnahme, danach Wechsel zur Detailansicht |
@@ -118,6 +118,7 @@ src/hooks/
 
 src/utils/
   checkInUrl.ts
+  letzterSuchort.ts
   sessionTime.ts
 ```
 
@@ -169,8 +170,6 @@ Profil → Bearbeiten → Speichern in profile / sport_preference
 
 | Bereich | Stand | Offener Bedarf |
 |---|---|---|
-| Deklarative Feldprüfung | Pflichtfelder, Formate und Wertebereiche werden vollständig in TypeScript geprüft | die HTML-Attribute `required`, `pattern`, `min`/`max` sind nicht gesetzt ([A08 8.2.2](arch/A08-crosscutting-concepts.md#822-deklarative-view-validierung)) |
-| Vorbelegung der Ortssuche | vorbelegt wird `profile.city` | der in B1.4.2 zusätzlich genannte Rückfall auf den letzten Suchort wird nicht gespeichert |
 | Profilbild | wird angezeigt, nicht bearbeitet | Upload und Bearbeitung sind bewusst kein MVP |
 | Court-Dublettenprüfung | findet nicht statt | bewusste MVP-Entscheidung (UC-10) |
 | Karte | OSM-Karte eingebunden; Ladefehler zeigen einen Hinweis mit Wiederholung und Verweis auf die Listenansicht | Kartendaten und Verfügbarkeit beruhen auf dem externen OpenStreetMap-Dienst |

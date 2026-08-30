@@ -121,7 +121,7 @@ Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste)
 - Standard-Benutzeraktionen (Navigation, Validierung, Fehler-/Leerzustände) einmal zentral
 - Screenshots je Dialog (illustrativ, nicht bindend für das visuelle Design)
 - Abgleich mit dem Frontend: alle acht Dialoge sind umgesetzt und arbeiten gegen NB-02/NB-03
-- Verbleibende Abweichungen (B1.6): fehlende deklarative Feldprüfung, die Vorbelegung der Ortssuche sowie zwei bewusste MVP-Abgrenzungen
+- Verbleibende Punkte (B1.6): zwei bewusste MVP-Abgrenzungen — Profilbild read-only, keine Court-Dublettenprüfung
 
 ---
 
