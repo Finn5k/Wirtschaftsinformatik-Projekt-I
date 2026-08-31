@@ -66,9 +66,5 @@ Vorschläge werden vor ihrer Übernahme geprüft und bei Bedarf angepasst.
 |---|---|---|
 | Claude Code | Spezifikation, Architektur | Analyse bestehender Spezifikation, Architektur und Code; Entwurf und Strukturierung von Spezifikationsbausteinen und arc42-Kapiteln; Unterstützung bei der Erstellung und Überarbeitung von Diagrammen in Spezifikation und Architektur; Konsistenz- und Querverweisprüfung. |
 | ChatGPT | Spezifikation, Projektdokumentation | Formulierungsvorschläge und redaktionelle Überarbeitung einzelner Spezifikationsbausteine sowie Abgleich der Frontend-Statusdokumentation (`docs/frontend.md`) mit dem Code. |
-| Codex | Spezifikation, Projektdokumentation | Ausarbeitung und redaktionelle Überarbeitung von Spezifikationsbausteinen; Nachführen der Frontend-Statusdokumentation nach Codeänderungen; Unterstützung bei der Strukturierung der Architektur-Übersicht (`docs/arch/README.md`). |
+| Codex | Spezifikation, Implementierung, Projektdokumentation | Ausarbeitung und redaktionelle Überarbeitung von Spezifikationsbausteinen; Unterstützung bei Frontend-Implementierung und -Prüfung; Nachführen der Frontend-Statusdokumentation nach Codeänderungen; Unterstützung bei der Strukturierung der Architektur-Übersicht (`docs/arch/README.md`). |
 | GitHub Copilot | Spezifikation | Formulierungsunterstützung bei einzelnen frühen Spezifikationsbausteinen (P1, F1, P2, S1). |
-
-Für die Implementierung (`src/`) ist bislang keine konkrete KI-Nutzung
-dokumentiert. Sobald sich das ändert, wird diese Deklaration entsprechend
-ergänzt.

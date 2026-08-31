@@ -2,6 +2,7 @@ import { Check, LogOut, Mail, MapPin, Pencil, X } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../auth/authContext";
+import { ProfileAvatar } from "../components/ProfileAvatar";
 import { sportDisplayName, sportKeys } from "../data/sports";
 import { updateCurrentUser } from "../services/userService";
 import type { SportKey } from "../types/session";
@@ -97,10 +98,10 @@ export function ProfilePage() {
         </div>
 
         <div className="flex items-center gap-4">
-          <img
-            src={currentUser.avatarUrl}
-            alt={currentUser.name}
-            className="h-20 w-20 rounded-3xl border-4 border-white/30 object-cover shadow-lg"
+          <ProfileAvatar
+            name={currentUser.name}
+            avatarUrl={currentUser.avatarUrl}
+            size="large"
           />
 
           <div className="min-w-0 flex-1">

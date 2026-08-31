@@ -170,7 +170,7 @@ Profil → Bearbeiten → Speichern in profile / sport_preference
 
 | Bereich | Stand | Offener Bedarf |
 |---|---|---|
-| Profilbild | wird angezeigt, nicht bearbeitet | Upload und Bearbeitung sind bewusst kein MVP |
+| Profilbild | vorhandene Bild-URL wird angezeigt; fehlt sie oder kann das Bild nicht geladen werden, zeigt eine gemeinsame Avatar-Komponente bis zu zwei Initialen | Upload und Bearbeitung sind bewusst kein MVP |
 | Court-Dublettenprüfung | findet nicht statt | bewusste MVP-Entscheidung (UC-10) |
 | Karte | OSM-Karte eingebunden; Ladefehler zeigen einen Hinweis mit Wiederholung und Verweis auf die Listenansicht | Kartendaten und Verfügbarkeit beruhen auf dem externen OpenStreetMap-Dienst |
 | Tests | kein Testskript und keine automatisierten Tests | keine Abweichung, sondern die in [N1.3](spec/N1-nichtfunktionale-anforderungen.md#n13-bewusst-nicht-verfolgte-qualitätsziele) getroffene Festlegung: geprüft wird manuell anhand der Akzeptanzkriterien aus F2 und der Algorithmen aus F3 |
