@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
+import { ProfileAvatar } from "../components/ProfileAvatar";
 import { StatusBadge } from "../components/sessions/StatusBadge";
 import { CheckInQrCode } from "../components/sessions/CheckInQrCode";
 import { sportDisplayName } from "../data/sports";
@@ -338,17 +339,10 @@ export function SessionDetailPage() {
                 className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-3"
               >
                 <div className="flex items-center gap-3">
-                  {participant.avatarUrl ? (
-                    <img
-                      src={participant.avatarUrl}
-                      alt=""
-                      className="h-9 w-9 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
-                      {participant.name.slice(0, 1)}
-                    </div>
-                  )}
+                  <ProfileAvatar
+                    name={participant.name}
+                    avatarUrl={participant.avatarUrl}
+                  />
 
                   <p className="font-semibold text-slate-800">
                     {participant.name}
