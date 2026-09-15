@@ -19,11 +19,17 @@ type Tab = "upcoming" | "past";
 
 export function MySessionsPage() {
   const [activeTab, setActiveTab] = useState<Tab>("upcoming");
+  // Nur über ProtectedRoute erreichbar (B1.5.2), also stets angemeldet; die
+  // Nutzerkennung geht an den Service (ADR-002).
+  const { user } = useAuth();
+  const userId = user?.id ?? null;
 
   const { state, reload } = useLoadedData(
     () =>
-      activeTab === "upcoming" ? getMyUpcomingSessions() : getMyPastSessions(),
-    [activeTab],
+      activeTab === "upcoming"
+        ? getMyUpcomingSessions(userId)
+        : getMyPastSessions(userId),
+    [activeTab, userId],
   );
 
   if (state.status === "loading") {

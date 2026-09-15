@@ -6,7 +6,7 @@ const navItems = [
   { to: "/discover", label: "Entdecken", icon: Search },
   { to: "/map", label: "Karte", icon: Map },
   { to: "/sessions/new", label: "Erstellen", icon: Plus },
-  { to: "/my-sessions", label: "Sessions", icon: CalendarDays },
+  { to: "/my-sessions", label: "Meine Sessions", icon: CalendarDays },
   { to: "/profile", label: "Profil", icon: User },
 ];
 
@@ -24,7 +24,7 @@ export function BottomNavigation() {
               to={item.to}
               className={({ isActive }) =>
                 [
-                  "flex flex-col items-center gap-1 rounded-2xl px-2 py-2 text-xs font-medium transition",
+                  "flex flex-col items-center gap-1 rounded-2xl px-1 py-2 font-medium transition",
                   isActive ? "text-blue-600" : "text-slate-500",
                   item.label === "Erstellen" ? "-mt-5" : "",
                 ].join(" ")
@@ -44,7 +44,7 @@ export function BottomNavigation() {
                   >
                     <Icon size={19} />
                   </span>
-                  <span>{item.label}</span>
+                  <span className="whitespace-nowrap text-[11px]">{item.label}</span>
                 </>
               )}
             </NavLink>

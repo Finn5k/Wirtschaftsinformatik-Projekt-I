@@ -11,10 +11,11 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { ProfileAvatar } from "../components/ProfileAvatar";
 import { StatusBadge } from "../components/sessions/StatusBadge";
 import { CheckInQrCode } from "../components/sessions/CheckInQrCode";
+import { CourtMapPreview } from "../components/sessions/CourtMapPreview";
 import { sportDisplayName } from "../data/sports";
 import { getSessionById, joinSession } from "../services/sessionService";
 import { useAuth } from "../auth/authContext";
@@ -50,12 +51,24 @@ function joinRejectionText(code: string): string {
 export function SessionDetailPage() {
   const { sessionId } = useParams();
   const navigate = useNavigate();
+  // DLG-05 wechselt nach der Erstellung hierher und übergibt die Bestätigung
+  // im Navigationszustand (B1.4.5, UC-06 Schritt 6); ein Reload zeigt sie
+  // nicht erneut.
+  const sessionErstellt = Boolean(
+    (useLocation().state as { sessionErstellt?: boolean } | null)
+      ?.sessionErstellt,
+  );
   // DLG-04 ist ohne Anmeldung einsehbar (B1.2); geschützte Aktionen wie der
-  // Beitritt leiten dann über B1.5.2 zu DLG-01.
-  const { user } = useAuth();
+  // Beitritt leiten dann über B1.5.2 zu DLG-01. Die Nutzerkennung geht an den
+  // Service, damit er die Teilnahmen nur für Angemeldete abfragt (N2.2) —
+  // geladen wird erst, wenn die Sitzung wiederhergestellt ist, sonst käme die
+  // Seite zuerst als Gast und gleich darauf angemeldet.
+  const { status: authStatus, user } = useAuth();
+  const userId = user?.id ?? null;
   const { state, reload } = useLoadedData(
-    () => getSessionById(sessionId),
-    [sessionId],
+    () => getSessionById(sessionId, userId),
+    [sessionId, userId],
+    { bereit: authStatus !== "loading" },
   );
   const session = state.status === "ok" ? state.data : null;
 
@@ -233,6 +246,22 @@ export function SessionDetailPage() {
       </div>
 
       <div className="space-y-5 px-4 py-5">
+        {sessionErstellt && isOrganizer && (
+          <section
+            role="status"
+            className="flex items-start gap-3 rounded-3xl bg-emerald-50 p-4 text-emerald-800"
+          >
+            <CheckCircle2 size={22} className="shrink-0" />
+            <div>
+              <p className="font-bold">Session erstellt.</p>
+              <p className="mt-1 text-sm leading-6">
+                Deine Session ist geplant. Zeige den QR-Code oder nenne die
+                PIN, damit Teilnehmer vor Ort einchecken können.
+              </p>
+            </div>
+          </section>
+        )}
+
         {isReadOnly && (
           <section className="rounded-3xl bg-slate-100 p-4">
             <p className="text-sm font-bold text-slate-700">
@@ -257,11 +286,14 @@ export function SessionDetailPage() {
           </section>
         )}
 
-        <section className="rounded-3xl bg-slate-50 p-4">
-          <p className="text-sm leading-6 text-slate-700">
-            {session.description}
-          </p>
-        </section>
+        {/* Beschreibung ist optional (B1.4.4 „leer möglich"); ohne Text kein leerer Kasten. */}
+        {session.description && (
+          <section className="rounded-3xl bg-slate-50 p-4">
+            <p className="text-sm leading-6 text-slate-700">
+              {session.description}
+            </p>
+          </section>
+        )}
 
         <section className="grid grid-cols-3 gap-3">
           <InfoCard
@@ -306,10 +338,19 @@ export function SessionDetailPage() {
           </section>
         )}
 
+        {/*
+          Teilnehmerbereich nach B1.4.4: Die Belegung sieht jeder; die
+          vollständige Teilnehmerliste mit Check-in-Status nur der Organisator
+          (UC-07, N2.2). Ein beigetretener Teilnehmer sieht ausschließlich seine
+          eigene Teilnahme — mehr gibt die RLS nicht frei, und mehr soll ein
+          fremdes Profil auch nicht preisgeben (N1-QA-03).
+        */}
         <section className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h2 className="font-extrabold text-slate-950">Teilnehmer</h2>
+              <h2 className="font-extrabold text-slate-950">
+                {isOrganizer ? "Teilnehmer" : "Belegung"}
+              </h2>
               <p className="text-sm text-slate-500">
                 {session.participantsCount} von {session.maxParticipants}{" "}
                 Plätzen belegt
@@ -321,7 +362,7 @@ export function SessionDetailPage() {
             </div>
           </div>
 
-          <div className="mb-4 h-3 overflow-hidden rounded-full bg-slate-100">
+          <div className="h-3 overflow-hidden rounded-full bg-slate-100">
             <div
               className="h-full rounded-full bg-blue-600"
               style={{
@@ -332,26 +373,25 @@ export function SessionDetailPage() {
             />
           </div>
 
-          <div className="space-y-3">
-            {session.participants.map((participant) => (
-              <div
-                key={participant.id}
-                className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-3"
-              >
-                <div className="flex items-center gap-3">
-                  <ProfileAvatar
-                    name={participant.name}
-                    avatarUrl={participant.avatarUrl}
-                  />
+          {isOrganizer ? (
+            <div className="mt-4 space-y-3">
+              {session.participants.map((participant) => (
+                <div
+                  key={participant.id}
+                  className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <ProfileAvatar
+                      name={participant.name}
+                      avatarUrl={participant.avatarUrl}
+                    />
 
-                  <p className="font-semibold text-slate-800">
-                    {participant.name}
-                  </p>
-                </div>
+                    <p className="font-semibold text-slate-800">
+                      {participant.name}
+                    </p>
+                  </div>
 
-                {/* Check-in-Status nur für Organisator:innen sichtbar (B1 DLG-04, UC-07) */}
-                {isOrganizer ? (
-                  participant.status === "checked_in" ? (
+                  {participant.status === "checked_in" ? (
                     <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-700">
                       <CheckCircle2 size={13} />
                       Eingecheckt
@@ -360,11 +400,29 @@ export function SessionDetailPage() {
                     <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">
                       Beigetreten
                     </span>
-                  )
-                ) : null}
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            currentParticipation && (
+              <div className="mt-4">
+                <h3 className="mb-2 text-sm font-bold text-slate-700">
+                  Deine Teilnahme
+                </h3>
+                <div className="flex items-center gap-3 rounded-2xl bg-slate-50 px-3 py-3">
+                  <ProfileAvatar
+                    name={currentParticipation.name}
+                    avatarUrl={currentParticipation.avatarUrl}
+                  />
+
+                  <p className="font-semibold text-slate-800">
+                    {currentParticipation.name}
+                  </p>
+                </div>
               </div>
-            ))}
-          </div>
+            )
+          )}
         </section>
 
         {canCheckIn && (
@@ -413,12 +471,8 @@ export function SessionDetailPage() {
             <MapPin className="text-blue-600" size={22} />
           </div>
 
-          <div className="relative h-44 overflow-hidden rounded-3xl bg-slate-100">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#bfdbfe_1px,transparent_1px)] [background-size:22px_22px]" />
-            <div className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-200">
-              <MapPin size={22} />
-            </div>
-          </div>
+          {/* Kartenausschnitt zum Court (B1.4.4, S1.5); ohne Kacheln bleibt der Text. */}
+          <CourtMapPreview court={session.court} />
         </section>
 
         {!isReadOnly && !isOrganizer && (

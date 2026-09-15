@@ -1,5 +1,5 @@
 import { CheckCircle2, Clock, KeyRound, QrCode, XCircle } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import { checkIn, getSessionById } from "../services/sessionService";
 import { useAuth } from "../auth/authContext";
@@ -7,8 +7,15 @@ import { ErrorState, LoadingState } from "../components/DataStates";
 import { useLoadedData } from "../hooks/useLoadedData";
 
 // Check-in gemäß B1 DLG-06 (UC-08 QR / UC-09 PIN, Regeln in F3 AF-02).
-// Zustände: Scan → PIN-Eingabe → Erfolg / Abgelehnt; Zeitfenster nur bei "active".
+// Zustände nach B1.4.6: QR-Einstieg (Deep-Link) → Prüfung → Erfolg / Abgelehnt;
+// alternativ PIN-Eingabe → Prüfung → …; Gesperrt, wenn die Session nicht
+// `active` ist oder keine eigene Teilnahme besteht.
 type CheckInView = "scan" | "pin" | "success";
+
+// Anzeigetext zum Ergebniscode OUTSIDE_WINDOW (B1.4.6, verbindlich). Er gilt
+// auch für den Zustand Gesperrt, damit dieselbe Situation nur einen Wortlaut hat.
+const OUTSIDE_WINDOW_TEXT =
+  "Der Check-in ist nur während der laufenden Session möglich.";
 
 export function CheckInPage() {
   const [searchParams] = useSearchParams();
@@ -16,9 +23,10 @@ export function CheckInPage() {
   const deepLinkPin = searchParams.get("pin") ?? "";
   // Geschützte Aktion nach B1.5.2, also stets angemeldet.
   const { user } = useAuth();
+  const userId = user?.id ?? null;
   const { state, reload } = useLoadedData(
-    () => getSessionById(sessionId),
-    [sessionId],
+    () => getSessionById(sessionId, userId),
+    [sessionId, userId],
   );
 
   const session = state.status === "ok" ? state.data : null;
@@ -53,6 +61,67 @@ export function CheckInPage() {
     erfolgscode === "ALREADY_CHECKED_IN" ||
     (erfolgscode === null && participation?.status === "checked_in");
 
+  const geladeneSessionId = session?.id;
+
+  const submitPin = useCallback(async () => {
+    if (!geladeneSessionId) {
+      return;
+    }
+
+    if (!/^\d{4}$/.test(pinInput)) {
+      setPinError("Bitte gib genau 4 Ziffern ein.");
+      return;
+    }
+
+    setPinError(null);
+    setIsSubmitting(true);
+    // Teilnahme, Merkmal und Zeitfenster prüft die RPC in einer Operation
+    // (F3 AF-02, ADR-001) - nicht mehr getrennt im Dialog.
+    const result = await checkIn(geladeneSessionId, pinInput);
+    setIsSubmitting(false);
+
+    // OK und ALREADY_CHECKED_IN sind beide Erfolg (F3 AF-02-Mapping).
+    if (result.kind === "ok") {
+      setErfolgscode(result.code);
+      setView("success");
+      return;
+    }
+
+    if (result.kind === "rejected") {
+      setPinError(checkInRejectionText(result.code));
+      return;
+    }
+
+    // Technischer Fehler: keine internen Details (A08 8.5.6); der Rückfalltext
+    // ist in B1.4.6 wörtlich vorgegeben.
+    setPinError(
+      "Die Aktion konnte nicht ausgeführt werden. Bitte versuche es erneut.",
+    );
+  }, [geladeneSessionId, pinInput]);
+
+  // QR-Einstieg (UC-08, B1.4.6): Kommt die PIN aus dem Deep-Link, wird die
+  // Prüfung automatisch ausgelöst, sobald Session und Teilnahme geladen sind —
+  // genau einmal je Seitenaufruf, damit weder React noch ein erneutes Rendern
+  // den Aufruf wiederholen. Die Sperrfälle (nicht `active`, keine Teilnahme)
+  // greifen vorher und zeigen das Sperrbild statt eines Aufrufs.
+  const autoCheckInGestartet = useRef(false);
+
+  useEffect(() => {
+    if (
+      !deepLinkPin ||
+      autoCheckInGestartet.current ||
+      !geladeneSessionId ||
+      status !== "active" ||
+      !participation ||
+      participation.status === "checked_in"
+    ) {
+      return;
+    }
+
+    autoCheckInGestartet.current = true;
+    void submitPin();
+  }, [deepLinkPin, geladeneSessionId, status, participation, submitPin]);
+
   if (state.status === "loading") {
     return <LoadingState label="Session wird geladen …" />;
   }
@@ -77,16 +146,16 @@ export function CheckInPage() {
     );
   }
 
-  // Zeitfenster gemäß AF-02 Regel 4: Check-in nur, solange die Session "active" ist.
+  // Zustand Gesperrt (B1.4.6): Die Seite bietet das Formular nur an, wenn
+  // Status und Teilnahme laut Datenbank einen Check-in zulassen. Das ist eine
+  // Anzeigeentscheidung — die fachliche Entscheidung trifft weiterhin
+  // ausschließlich `check_in` (AF-02, ADR-001).
   if (status !== "active") {
     return (
       <BlockedScreen
         title="Check-in nicht möglich"
-        message={
-          status === "scheduled"
-            ? `Der Check-in für „${session.title}" öffnet erst zum Session-Start.`
-            : `„${session.title}" ist bereits beendet — der Check-in ist geschlossen.`
-        }
+        context={session.title}
+        message={OUTSIDE_WINDOW_TEXT}
         linkTo={`/sessions/${session.id}`}
         linkLabel="Zurück zur Session"
       />
@@ -97,42 +166,11 @@ export function CheckInPage() {
     return (
       <BlockedScreen
         title="Check-in nicht möglich"
+        context={session.title}
         message="Du bist dieser Session nicht beigetreten."
         linkTo={`/sessions/${session.id}`}
         linkLabel="Zurück zur Session"
       />
-    );
-  }
-
-  async function submitPin() {
-    if (!/^\d{4}$/.test(pinInput)) {
-      setPinError("Bitte gib genau 4 Ziffern ein.");
-      return;
-    }
-
-    setPinError(null);
-    setIsSubmitting(true);
-    // Teilnahme, Merkmal und Zeitfenster prüft die RPC in einer Operation
-    // (F3 AF-02, ADR-001) - nicht mehr getrennt im Dialog.
-    const result = await checkIn(session!.id, pinInput);
-    setIsSubmitting(false);
-
-    // OK und ALREADY_CHECKED_IN sind beide Erfolg (F3 AF-02-Mapping).
-    if (result.kind === "ok") {
-      setErfolgscode(result.code);
-      setView("success");
-      return;
-    }
-
-    if (result.kind === "rejected") {
-      setPinError(checkInRejectionText(result.code));
-      return;
-    }
-
-    // Technischer Fehler: keine internen Details (A08 8.5.6); der Rückfalltext
-    // ist in B1.4.6 wörtlich vorgegeben.
-    setPinError(
-      "Die Aktion konnte nicht ausgeführt werden. Bitte versuche es erneut.",
     );
   }
 
@@ -308,6 +346,8 @@ export function CheckInPage() {
 
 interface BlockedScreenProps {
   title: string;
+  /** Session-Kontext (B1.4.6 Statik): zeigt, wofür der Check-in gedacht war. */
+  context?: string;
   message: string;
   linkTo: string;
   linkLabel: string;
@@ -322,7 +362,9 @@ function checkInRejectionText(code: string): string {
     case "NOT_JOINED":
       return "Du bist dieser Session nicht beigetreten.";
     case "OUTSIDE_WINDOW":
-      return "Der Check-in ist nur während der laufenden Session möglich.";
+      return OUTSIDE_WINDOW_TEXT;
+    case "NOT_AUTHENTICATED":
+      return "Bitte melde dich an, um einzuchecken.";
     case "SESSION_NOT_FOUND":
       return "Diese Session existiert nicht mehr.";
     default:
@@ -330,7 +372,13 @@ function checkInRejectionText(code: string): string {
   }
 }
 
-function BlockedScreen({ title, message, linkTo, linkLabel }: BlockedScreenProps) {
+function BlockedScreen({
+  title,
+  context,
+  message,
+  linkTo,
+  linkLabel,
+}: BlockedScreenProps) {
   return (
     <div className="flex min-h-[780px] flex-col items-center justify-center bg-slate-950 px-4 text-white">
       <div className="flex h-20 w-20 items-center justify-center rounded-[2rem] bg-white/10 text-slate-300">
@@ -338,6 +386,12 @@ function BlockedScreen({ title, message, linkTo, linkLabel }: BlockedScreenProps
       </div>
 
       <h1 className="mt-6 text-center text-3xl font-extrabold">{title}</h1>
+
+      {context && (
+        <p className="mt-2 max-w-xs text-center text-sm font-bold text-emerald-300">
+          {context}
+        </p>
+      )}
 
       <p className="mt-3 max-w-xs text-center text-sm leading-6 text-slate-300">
         {message}

@@ -118,11 +118,15 @@ export function ProfilePage() {
       </section>
 
       {isEditing ? (
+        // Der Anzeigename ist Muss (B1.4.8) und trägt `required` (A08 8.2.2);
+        // noValidate schaltet nur die native Fehlerblase ab, weil B1 die
+        // Fehlertexte feldbezogen vorgibt (B1.5.3).
         <form
           onSubmit={(event) => {
             event.preventDefault();
             void saveChanges();
           }}
+          noValidate
           className="space-y-4 px-4 pt-5"
         >
           <div className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
@@ -133,6 +137,7 @@ export function ProfilePage() {
                 Anzeigename
               </p>
               <input
+                required
                 aria-invalid={Boolean(nameError)}
                 aria-describedby={nameError ? "profile-name-error" : undefined}
                 value={draftName}
@@ -262,8 +267,10 @@ export function ProfilePage() {
           <button
             type="button"
             onClick={() => {
+              // B1.4.8: Sitzung beenden und zur öffentlichen Sicht DLG-02
+              // wechseln, nicht zur Anmeldung.
               void signOut().then(() => {
-                navigate("/login", { replace: true });
+                navigate("/discover", { replace: true });
               });
             }}
             className="flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white py-3 font-bold text-red-600 shadow-sm"

@@ -70,14 +70,20 @@ function rejectionCode<TCode extends string>(
   return message && codes.includes(message) ? message : null;
 }
 
-/** Teilnahmen einer Session, soweit die RLS sie freigibt (N2.2, UC-07). */
-async function loadParticipants(sessionId: string): Promise<Participant[]> {
+/**
+ * Teilnahmen einer Session, soweit die RLS sie freigibt (N2.2, UC-07).
+ *
+ * Die Nutzerkennung kommt vom Aufrufer: Die Anmeldesitzung hält der
+ * `AuthProvider` (ADR-002); dieses Modul spricht NB-02 nicht selbst an.
+ */
+async function loadParticipants(
+  sessionId: string,
+  userId: string | null,
+): Promise<Participant[]> {
   // N2.2 gibt participant nur Angemeldeten frei, und dort nur die eigene Zeile
   // bzw. dem Organisator die vollständige Liste. Unangemeldet würde die Anfrage
   // mit 401 abgewiesen; sie zu stellen erzeugte nur Fehlerrauschen.
-  const { data: authState } = await supabase.auth.getSession();
-
-  if (!authState.session) {
+  if (!userId) {
     return [];
   }
 
@@ -181,9 +187,13 @@ export async function getDiscoverableSessions(
   };
 }
 
-/** Session-Detail inklusive Teilnahmen, soweit sichtbar (UC-03, UC-07). */
+/**
+ * Session-Detail inklusive Teilnahmen, soweit sichtbar (UC-03, UC-07).
+ * `userId` ist die Kennung des angemeldeten Nutzers, für Gäste `null`.
+ */
 export async function getSessionById(
   sessionId: string | undefined,
+  userId: string | null,
 ): Promise<SessionResult> {
   if (!sessionId) {
     return { kind: "ok", code: "OK", data: null };
@@ -207,7 +217,7 @@ export async function getSessionById(
 
   const row = data as unknown as SessionViewRow;
   const [participants, names] = await Promise.all([
-    loadParticipants(row.session_id),
+    loadParticipants(row.session_id, userId),
     loadDisplayNames([row.organizer_user_id]),
   ]);
 
@@ -230,11 +240,14 @@ export async function getSessionPin(sessionId: string): Promise<string | null> {
   return error ? null : ((data as string | null) ?? null);
 }
 
-/** Eigene Sessions (UC-05, UC-11): organisiert oder mit eigener Teilnahme. */
-async function getMySessions(): Promise<SessionListResult> {
-  const { data: sessionData } = await supabase.auth.getSession();
-  const userId = sessionData.session?.user.id;
-
+/**
+ * Eigene Sessions (UC-05, UC-11): organisiert oder mit eigener Teilnahme.
+ * Die Nutzerkennung stellt der Aufrufer aus dem `AuthProvider` bereit
+ * (ADR-002); ohne Anmeldung gibt es keine eigenen Sessions.
+ */
+async function getMySessions(
+  userId: string | null,
+): Promise<SessionListResult> {
   if (!userId) {
     return { kind: "ok", code: "OK", data: [] };
   }
@@ -307,8 +320,10 @@ async function getMySessions(): Promise<SessionListResult> {
   };
 }
 
-export async function getMyUpcomingSessions(): Promise<SessionListResult> {
-  const result = await getMySessions();
+export async function getMyUpcomingSessions(
+  userId: string | null,
+): Promise<SessionListResult> {
+  const result = await getMySessions(userId);
 
   if (result.kind !== "ok") {
     return result;
@@ -327,8 +342,10 @@ export async function getMyUpcomingSessions(): Promise<SessionListResult> {
 }
 
 /** Historie (UC-11): abgeschlossene Sessions, jüngste zuerst. */
-export async function getMyPastSessions(): Promise<SessionListResult> {
-  const result = await getMySessions();
+export async function getMyPastSessions(
+  userId: string | null,
+): Promise<SessionListResult> {
+  const result = await getMySessions(userId);
 
   if (result.kind !== "ok") {
     return result;
@@ -462,6 +479,7 @@ export async function checkIn(
 
   if (error) {
     const code = rejectionCode(error, [
+      "NOT_AUTHENTICATED",
       "NOT_JOINED",
       "INVALID_CREDENTIAL",
       "OUTSIDE_WINDOW",

@@ -28,12 +28,22 @@ export interface LoadedData<TData> {
   reload: () => void;
 }
 
+export interface LoadedDataOptions {
+  /**
+   * Solange `false`, bleibt der Ladezustand stehen und `load` wird nicht
+   * aufgerufen — etwa bis die Anmeldesitzung wiederhergestellt ist, damit ein
+   * öffentlicher Dialog nicht erst anonym und dann angemeldet lädt (A08 8.3).
+   */
+  bereit?: boolean;
+}
+
 export function useLoadedData<TData>(
   load: () => Promise<Ok<TData> | Failed>,
   dependencies: readonly unknown[],
+  { bereit = true }: LoadedDataOptions = {},
 ): LoadedData<TData> {
   const [versuch, setVersuch] = useState(0);
-  const schluessel = `${JSON.stringify(dependencies)}#${versuch}`;
+  const schluessel = `${JSON.stringify(dependencies)}#${versuch}#${bereit}`;
 
   // Das Ergebnis wird zusammen mit dem Schlüssel abgelegt, zu dem es gehört.
   // Der Ladezustand ergibt sich daraus, dass noch kein Ergebnis zum aktuellen
@@ -49,6 +59,10 @@ export function useLoadedData<TData>(
   }, []);
 
   useEffect(() => {
+    if (!bereit) {
+      return;
+    }
+
     let aktiv = true;
 
     void load().then((result) => {

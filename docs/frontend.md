@@ -57,17 +57,17 @@ http://localhost:5173
 | B1-Dialog | Route | Umgesetzt |
 |---|---|---|
 | DLG-01 Anmelden / Registrieren | `/login` | Umschaltung zwischen Anmeldung und Registrierung, E-Mail-/Passwortfelder, Anzeigename bei Registrierung, clientseitige Validierung; Anmeldung, Registrierung und Abmeldung über NB-02, Sitzung übersteht einen Reload |
-| DLG-02 Session entdecken | `/discover` | Ortssuche mit Vorbelegung aus dem Profil, sonst dem zuletzt gesuchten Ort, Sportartenfilter über die Datenbank, hervorgehobene nächste Session, weitere Session-Karten, Lade-, Fehler- und Leerzustand |
-| DLG-03 Session-Karte | `/map` | Leaflet-/OpenStreetMap-Karte, Sportartenfilter, Session-Marker, Popup, Auswahlkarte, Navigation zum Detail, aus den Treffern abgeleiteter Kartenausschnitt sowie Fehlerzustand mit Wiederholung und Wechsel zur Listenansicht |
-| DLG-04 Session-Detail | `/sessions/:sessionId` | Kerndaten, Status aus `v_session`, Belegung, Teilnehmerliste im Umfang der RLS, Organisatoransicht mit QR-Code und PIN, Beitritt über `join_session` mit den Ergebnistexten aus B1.4.4, Check-in-Einstieg und Read-only-Zustand |
+| DLG-02 Session entdecken | `/discover` | Ortssuche auf `court.city` mit Vorbelegung aus dem Profil, sonst dem zuletzt gesuchten Ort, Sportartenfilter über die Datenbank, hervorgehobene nächste Session, weitere Session-Karten, Lade-, Fehler- und Leerzustand |
+| DLG-03 Session-Karte | `/map` | Leaflet-/OpenStreetMap-Karte, Sportartenfilter, Session-Marker, Vorschaukarte (per Kartentipp wieder schließbar), Navigation zum Detail, aus den Treffern abgeleiteter Kartenausschnitt sowie Fehlerzustand mit Wiederholung und Wechsel zur Listenansicht |
+| DLG-04 Session-Detail | `/sessions/:sessionId` | Kerndaten, Status aus `v_session`, Belegung für alle, eigene Teilnahme für Beigetretene, vollständige Teilnehmerliste mit Check-in-Status für den Organisator, Kartenausschnitt zum Court, Organisatoransicht mit QR-Code und PIN, Bestätigung nach der Erstellung, Beitritt über `join_session` mit den Ergebnistexten aus B1.4.4, Check-in-Einstieg und Read-only-Zustand mit Ergebnisdaten |
 | DLG-05 Session erstellen | `/sessions/new` | Sportart, Titel, Beschreibung, Datum, Uhrzeit, Dauer, Court-Auswahl oder Neuerfassung per Kartenpin, Teilnehmerlimit, Validierung; Anlage über `create_session` samt Court und Organisator-Teilnahme, danach Wechsel zur Detailansicht |
-| DLG-06 Check-in | `/check-in?session=<id>&pin=<pin>` | Deep-Link-Einstieg mit vorbelegter PIN, Hinweis auf Scan per Kamera-App, manuelle PIN-Eingabe, Prüfung durch `check_in` mit den Ergebnistexten aus B1.4.6, Erfolgs- und Sperrzustände |
+| DLG-06 Check-in | `/check-in?session=<id>&pin=<pin>` | Deep-Link-Einstieg mit automatischer Prüfung, Hinweis auf Scan per Kamera-App, manuelle PIN-Eingabe, Prüfung durch `check_in` mit den Ergebnistexten aus B1.4.6, Erfolgszustand und Sperrzustand mit demselben Wortlaut |
 | DLG-07 Meine Sessions | `/my-sessions` | Tabs für bevorstehende und vergangene Sessions, Rollenkennzeichnung, Check-in-Information, Lade-, Fehler- und Leerzustände |
-| DLG-08 Profil | `/profile` | Profilansicht, Bearbeitung von Anzeigename, Ort und Sportpräferenzen gegen `profile`/`sport_preference`, Verwendung in weiteren Dialogen sowie Abmelden |
+| DLG-08 Profil | `/profile` | Profilansicht, Bearbeitung von Anzeigename, Ort und Sportpräferenzen gegen `profile`/`sport_preference`, Verwendung in weiteren Dialogen sowie Abmelden mit Rückkehr zu DLG-02 |
 
 ### Gemeinsame UI-Funktionen
 
-- durchgängige Hauptnavigation mit Entdecken, Karte, Erstellen, Sessions und Profil
+- durchgängige Hauptnavigation mit Entdecken, Karte, Erstellen, Meine Sessions und Profil
 - mobile-first Layout mit begrenzter Desktop-Darstellung
 - Statusdarstellung für `scheduled`, `active` und `completed`, berechnet von der Datenbank
 - harte Kapazitätsanzeige ohne Warteliste
@@ -82,6 +82,11 @@ http://localhost:5173
 Wichtige Komponenten:
 
 ```txt
+src/components/
+  ConfigurationNotice.tsx   Hinweis bei fehlenden Umgebungsvariablen
+  DataStates.tsx            Lade- und Fehleranzeige nach B1.5.4
+  ProfileAvatar.tsx         Profilbild oder Initialen
+
 src/components/layout/
   AppLayout.tsx
   BottomNavigation.tsx
@@ -90,6 +95,8 @@ src/components/layout/
 src/components/sessions/
   CheckInQrCode.tsx
   CourtLocationPicker.tsx
+  CourtMapPreview.tsx       Kartenausschnitt zum Court in DLG-04
+  courtMarkerIcon.ts        gemeinsamer Court-Pin für Picker und Ausschnitt
   CreateSessionForm.tsx
   SessionCard.tsx
   StatusBadge.tsx

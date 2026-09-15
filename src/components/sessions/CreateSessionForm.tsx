@@ -1,9 +1,7 @@
 import {
   Calendar,
-  CheckCircle2,
   Clock,
   FileText,
-  KeyRound,
   LoaderCircle,
   MapPin,
   Minus,
@@ -15,8 +13,8 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import { useId, useRef, useState } from "react";
-import { Link } from "react-router";
-import { sportDisplayName, sportKeys, sports } from "../../data/sports";
+import { useNavigate } from "react-router";
+import { sportKeys, sports } from "../../data/sports";
 import { getCourts } from "../../services/courtService";
 import { ErrorState, LoadingState } from "../DataStates";
 import { useLoadedData } from "../../hooks/useLoadedData";
@@ -24,7 +22,6 @@ import { reverseGeocode } from "../../services/geocodingService";
 import { createSession } from "../../services/sessionService";
 import { useAuth } from "../../auth/authContext";
 import type { SportKey } from "../../types/session";
-import { CheckInQrCode } from "./CheckInQrCode";
 import {
   CourtLocationPicker,
   type CourtCoordinates,
@@ -71,14 +68,9 @@ function isStartInPast(date: string, time: string) {
 export function CreateSessionForm() {
   // Nur über ProtectedRoute erreichbar (B1.5.2), also stets angemeldet.
   const { user: currentUser } = useAuth();
+  const navigate = useNavigate();
   const [participantLimit, setParticipantLimit] = useState(10);
   const [durationMin, setDurationMin] = useState(60);
-  // Nach dem Anlegen liefert die RPC nur Kennung und PIN; die Vorschau nutzt
-  // die Formularwerte, die Detailansicht die Datenbank (ADR-001).
-  const [createdSession, setCreatedSession] = useState<{
-    sessionId: string;
-    pin: string;
-  } | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
@@ -265,7 +257,14 @@ export function CreateSessionForm() {
     setIsSubmitting(false);
 
     if (result.kind === "ok") {
-      setCreatedSession(result.data);
+      // B1.4.5: Wechsel zu DLG-04 im Organisator-Zustand mit Bestätigung;
+      // QR-Code und PIN zeigt die Detailansicht dort selbst (UC-06 Schritt 6).
+      // `replace`, damit die Zurück-Navigation nicht auf das leere Formular
+      // führt, sondern zum aufrufenden Dialog (B1.5.6).
+      navigate(`/sessions/${result.data.sessionId}`, {
+        replace: true,
+        state: { sessionErstellt: true },
+      });
       return;
     }
 
@@ -304,94 +303,6 @@ export function CreateSessionForm() {
         onRetry={reloadCourts}
         label="Die Sportorte konnten gerade nicht geladen werden."
       />
-    );
-  }
-
-  if (createdSession) {
-    const angelegterCourt = courts.find((entry) => entry.id === form.courtId);
-    const courtLabel = angelegterCourt
-      ? `${angelegterCourt.name}, ${angelegterCourt.city}`
-      : `${form.newCourtName.trim()}, ${form.newCourtCity.trim()}`;
-
-    return (
-      <div className="space-y-4">
-        <section className="rounded-[2rem] bg-gradient-to-br from-blue-600 via-cyan-500 to-emerald-400 p-5 text-white shadow-lg shadow-blue-100">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 backdrop-blur">
-            <CheckCircle2 size={30} />
-          </div>
-
-          <h2 className="mt-5 text-2xl font-extrabold">Session erstellt</h2>
-
-          <p className="mt-2 text-sm leading-6 text-white/85">
-            Deine Session ist geplant. Teile QR-Code oder PIN mit deinen
-            Teilnehmern für den Check-in vor Ort.
-          </p>
-        </section>
-
-        <section className="rounded-3xl bg-slate-950 p-5 text-white">
-          <div className="flex items-start gap-4">
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-2xl bg-white text-slate-950">
-              <CheckInQrCode
-                sessionId={createdSession.sessionId}
-                pin={createdSession.pin}
-                size={80}
-              />
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-emerald-300">
-                Check-in-Code (nur für dich als Organisator:in)
-              </p>
-
-              <div className="mt-3 flex items-center gap-2">
-                <KeyRound size={18} className="text-emerald-300" />
-                <span className="text-3xl font-extrabold tracking-[0.3em]">
-                  {createdSession.pin}
-                </span>
-              </div>
-
-              <p className="mt-3 text-xs leading-5 text-slate-300">
-                QR-Code und PIN bleiben für die gesamte Session gültig.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
-          <p className="text-xs font-bold text-blue-600">Vorschau</p>
-          <h3 className="mt-1 text-xl font-extrabold text-slate-950">
-            {form.title}
-          </h3>
-
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            {form.description || "Keine Beschreibung angegeben."}
-          </p>
-
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <PreviewItem label="Sportart" value={sportDisplayName(form.sportKey)} />
-            <PreviewItem label="Datum" value={form.date} />
-            <PreviewItem label="Uhrzeit" value={form.time} />
-            <PreviewItem label="Dauer" value={`${durationMin} Min.`} />
-            <PreviewItem label="Sportort" value={courtLabel} />
-            <PreviewItem label="Teilnehmerlimit" value={`${participantLimit}`} />
-          </div>
-        </section>
-
-        <Link
-          to="/discover"
-          className="block w-full rounded-2xl bg-blue-600 py-3 text-center font-bold text-white"
-        >
-          Zum Entdecken
-        </Link>
-
-        <button
-          type="button"
-          onClick={() => setCreatedSession(null)}
-          className="w-full rounded-2xl border border-slate-200 bg-white py-3 font-bold text-blue-600"
-        >
-          Weitere Session erstellen
-        </button>
-      </div>
     );
   }
 
@@ -845,20 +756,6 @@ function StepperField({
           </button>
         </div>
       </div>
-    </div>
-  );
-}
-
-interface PreviewItemProps {
-  label: string;
-  value: string;
-}
-
-function PreviewItem({ label, value }: PreviewItemProps) {
-  return (
-    <div className="rounded-2xl bg-slate-50 p-3">
-      <p className="text-xs text-slate-500">{label}</p>
-      <p className="mt-1 text-sm font-extrabold text-slate-950">{value}</p>
     </div>
   );
 }

@@ -5,8 +5,9 @@ import type { UserProfile } from "../types/user";
 import { supabase } from "./supabaseClient";
 
 // Profilzugriff über NB-03 (S1.4 `profilAktualisieren`,
-// `sportpraeferenzSetzen`/`-Entfernen`) und die Nutzerkennung aus NB-02 —
-// der NB-02-Ausschnitt, den ADR-002 ausdrücklich der Service-Schicht zuordnet.
+// `sportpraeferenzSetzen`/`-Entfernen`). NB-02 spricht dieses Modul nicht an:
+// Die Anmeldesitzung hält der `AuthProvider`, und die Nutzerkennung bestimmt
+// die Datenbank serverseitig aus dem mitgeführten JWT (`auth.uid()`, ADR-002).
 //
 // Das eigene Profil kommt über die RPC `my_profile()`: N2.2 gibt von fremden
 // Profilen nur `display_name` und `avatar_url` frei, `city` bleibt der eigenen
