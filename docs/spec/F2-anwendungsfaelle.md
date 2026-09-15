@@ -73,7 +73,7 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 |---|---|
 | Identifier | UC-03 |
 | Name | Session-Detail ansehen |
-| Beschreibung | Aus Suche, eigener Session-Liste oder Historie öffnet ein Nutzer die Detailansicht einer Session und sieht fachlich relevante Details wie Sportart, Zeit, Ort, Beschreibung, Kapazität, Organisator und Teilnehmerstatus, damit er beurteilen kann, ob die Session für ihn relevant ist. Von anderen Nutzern werden dabei ausschließlich Anzeigename und optionales Profilbild angezeigt; weitere Profil- oder Authentifizierungsdaten bleiben verborgen. |
+| Beschreibung | Aus Suche, eigener Session-Liste oder Historie öffnet ein Nutzer die Detailansicht einer Session und sieht fachlich relevante Details wie Sportart, Zeit, Ort, Beschreibung, Kapazität, Organisator und Teilnehmerstatus, damit er beurteilen kann, ob die Session für ihn relevant ist. Die Belegung („x von max") sieht jeder; fremde Teilnahmen werden nur dem Organisator angezeigt (UC-07), ein beigetretener Teilnehmer sieht lediglich seine eigene. Wo Profildaten erscheinen — beim Organisator und in der Teilnehmerliste —, sind es ausschließlich Anzeigename und optionales Profilbild; weitere Profil- oder Authentifizierungsdaten bleiben verborgen. |
 | Auslöser | Nutzer wählt eine Session aus einer Liste oder Karte aus. |
 | Akteure | Teilnehmer oder Organisator (primär); Browser / React-Frontend, Supabase PostgREST / PostgreSQL, OpenStreetMap / Leaflet (unterstützend). |
 | Vorbedingung | Die Session existiert und ist für den Nutzer sichtbar. |

@@ -179,21 +179,22 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 | Datum / Uhrzeit / Dauer | Anzeige | Timestamp, Duration | `session.start_at`, `duration_min` | — | Ende = Start + Dauer |
 | Sportort | Anzeige | Text (+ Kartenausschnitt) | `court.name`, `city`; Karte nur bei Koordinaten | — | — |
 | Organisator | Anzeige | Text | `profile.display_name` via `organizer.user_id` | — | — |
-| Belegung | Anzeige | Text/Balken | abgeleitet `confirmed_count` / `max_participants` | — | — |
-| Teilnehmerliste | Anzeige | Liste | `participant` (→ `profile.display_name`, optional `profile.avatar_url`, `status`) | — | Für andere Nutzer sind ausschließlich Anzeigename und optionales Profilbild sichtbar; Check-in-Status nur für Organisator |
+| Belegung | Anzeige | Text/Balken | abgeleitet `confirmed_count` / `max_participants` | — | in jedem Zustand sichtbar |
+| Teilnehmerliste | Anzeige | Liste | `participant` (→ `profile.display_name`, optional `profile.avatar_url`, `status`) | — | **nur Organisator-Zustand** (UC-07): je Teilnehmer Anzeigename, optionales Profilbild und Check-in-Status. Andere Nutzer sehen keine fremden Teilnahmen — ein beigetretener Teilnehmer nur seine eigene (Anzeigename, Profilbild), ein Gast oder nicht Beigetretener nur die Belegung ([N2.2](N2-querschnittskonzepte.md#n22-row-level-security-rls), N1-QA-03) |
+| Ergebnisdaten | Anzeige | Text | abgeleitet `confirmed_count`, Anzahl `participant` mit `status = checked_in` | — | **nur Organisator im Zustand *Read-only*** (UC-11): bestätigte Teilnehmerzahl und Check-in-Anzahl, zusätzlich zur Teilnehmerliste mit Check-in-Status; keine Statistiken oder Auswertungen |
 | QR-Code + PIN | Anzeige | `QrContent`, `Pin` | abgeleitet `qr_content`, `session.pin` | — | **nur Organisator-Zustand** (AF-04) |
 
 **Zustände und verfügbare Aktionen**
 
 Der Zustand ergibt sich aus Anmeldung, Rolle, Teilnahme und Session-Status (AF-03/AF-01):
 
-| Zustand | Bedingung | Beitreten | Zum Check-in | QR/PIN sichtbar | Teilnehmer-Check-in-Status |
+| Zustand | Bedingung | Beitreten | Zum Check-in | QR/PIN sichtbar | Teilnehmerliste |
 |---|---|---|---|---|---|
-| *Gast* | nicht angemeldet | → DLG-01 | nein | nein | nein |
-| *Offen* | angemeldet, nicht beigetreten, `scheduled`/`active` | ja (AF-01) | nein | nein | nein |
-| *Beigetreten* | Teilnahme `confirmed`, `scheduled`/`active` | nein (bereits Teilnehmer) | ja, bei `active` | nein | nein |
-| *Organisator* | Nutzer hat `organizer`-Eintrag für diese Session | nein (zählt bereits, AF-01 R3) | nein | ja | ja (UC-07) |
-| *Read-only* | `completed` | nein | nein | nein | ja für Organisator (UC-11) |
+| *Gast* | nicht angemeldet | → DLG-01 | nein | nein | nein (nur Belegung) |
+| *Offen* | angemeldet, nicht beigetreten, `scheduled`/`active` | ja (AF-01) | nein | nein | nein (nur Belegung) |
+| *Beigetreten* | Teilnahme `confirmed`, `scheduled`/`active` | nein (bereits Teilnehmer) | ja, bei `active` | nein | nur eigene Teilnahme |
+| *Organisator* | Nutzer hat `organizer`-Eintrag für diese Session | nein (zählt bereits, AF-01 R3) | nein | ja | vollständig, mit Check-in-Status (UC-07) |
+| *Read-only* | `completed` | nein | nein | nein | wie oben je Rolle; Organisator zusätzlich Ergebnisdaten (UC-11) |
 
 **Dynamik**
 
@@ -270,7 +271,7 @@ Frühere Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht** Teil di
 | Einstiegspunkte | DLG-04 („Zum Check-in", Zustand *Beigetreten* + `active`); **Deep-Link** aus QR-Scan mit der Gerätekamera (`…/check-in?session=<id>&pin=<pin>`, AF-04). Nicht angemeldet → DLG-01, danach zurück. |
 | Ergebnis | Teilnahmestatus `checked_in` mit Zeitstempel — oder begründete Ablehnung, Status unverändert (AF-02). |
 
-**Zustände:** *QR-Einstieg* (PIN kommt aus dem Deep-Link) → *Prüfung* → *Erfolg* oder *Abgelehnt*; alternativ *PIN-Eingabe* (manuell, UC-09) → *Prüfung* → …
+**Zustände:** *QR-Einstieg* (PIN kommt aus dem Deep-Link, Prüfung startet ohne weitere Nutzeraktion) → *Prüfung* → *Erfolg* oder *Abgelehnt*; alternativ *PIN-Eingabe* (manuell, UC-09) → *Prüfung* → … Ist die Session laut Datenbank nicht `active` oder besteht keine eigene Teilnahme, zeigt der Dialog statt der Eingabe den Zustand *Gesperrt*: Session-Kontext, der Ergebnistext zu `OUTSIDE_WINDOW` bzw. `NOT_JOINED` (Tabelle unten) und der Rücksprung zu DLG-04. Das ist eine Anzeigeentscheidung auf Basis der von der Datenbank gelieferten Werte; die fachliche Entscheidung trifft in jedem Fall AF-02.
 
 **Statik**
 
@@ -325,8 +326,10 @@ Der Dialog hat zwei Zustände (Tabs): *Bevorstehend* (UC-05, Status `scheduled`/
 |---|---|---|---|---|---|
 | Tab-Auswahl | Eingabe (Kann) | Umschalter | — | *Bevorstehend* | — |
 | Session-Liste | Anzeige | Liste | `session` (title, sport, start_at, `status`), Rolle (Organisator/Teilnehmer aus `organizer` bzw. `participant`) | — | nur Sessions mit eigener Teilnahme oder Organisatorrolle (UC-05); Rolle unterscheidbar; *Bevorstehend*: `start_at` aufsteigend, *Vergangen*: Ende absteigend |
-| Ergebnisdaten (nur *Vergangen*, Organisator) | Anzeige | Text/Liste | Session-Kerndaten, abgeleitet `confirmed_count`, Anzahl `checked_in`, Teilnehmerliste | — | Titel, Sportart, Court, Datum, Startzeit, Dauer, bestätigte Teilnehmerzahl, Check-in-Anzahl sowie Teilnehmerliste mit Check-in-Status; keine Statistiken, Exporte oder sessionübergreifenden Auswertungen |
+| Eigener Check-in-Stand (nur *Vergangen*, Teilnehmer) | Anzeige | Text | eigener `participant.status` | — | „Du warst eingecheckt" / „Kein Check-in erfolgt" (UC-11) |
 | Leerer Zustand | Anzeige | Text | — | — | je Tab ([B1.5.5](#b155-leere-zustände)) |
+
+Die Ergebnisdaten einer vergangenen Session für den Organisator — bestätigte Teilnehmerzahl, Check-in-Anzahl und die Teilnehmerliste mit Check-in-Status (UC-11) — zeigt nicht die Liste, sondern [DLG-04](#b144-dlg-04--session-detail) im Zustand *Read-only*; die Liste führt zu ihr. Statistiken, Exporte oder sessionübergreifende Auswertungen gibt es nicht.
 
 **Dynamik**
 
