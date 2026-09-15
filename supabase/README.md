@@ -18,6 +18,7 @@ und die atomaren Fachoperationen aus
 | `…195345_comment_umlaute` | Umlaute in den `comment on`-Texten, die in der Datenbank stehen. |
 | `…195645_rpc_align` | RPC-Rümpfe wortgleich zu den Dateien hier, inklusive der erklärenden Kommentare. |
 | `20260829091301_profile_basics_public` | `display_name`/`avatar_url` auch unangemeldet lesbar (B1 DLG-04, B1.2); `city` bleibt der eigenen Zeile vorbehalten. |
+| `20260915133001_court_insert_only_via_rpc` | INSERT-Recht und Policy `court_insert` auf `court` zurückgenommen; Courts entstehen nur noch in `create_session` (S1.4, ADR-001). |
 
 ## Ergebniscodes
 
@@ -64,9 +65,10 @@ nachgezogen; die Migrationen setzen den heutigen Wortlaut um.
 
 ## Court-Anlage
 
-`create_session` legt bei Bedarf auch den Court an. Der Kommentar in
-`…171948_rls.sql` verweist dafür noch auf einen eigenen Schreibzugriff
-`courtAnlegen` aus S1.4 — den gibt es dort nicht mehr, die Begründung steht in
-[A06 §6.3](../docs/arch/A06-runtime-view.md#63-session-und-court-erstellen).
-Die angewendete Migration bleibt unverändert, damit Datei und Datenbank
-übereinstimmen.
+`create_session` legt bei Bedarf auch den Court an; einen eigenen Schreibzugriff
+`courtAnlegen` gibt es seit der Streichung aus S1.4 nicht mehr, die Begründung
+steht in [A06 §6.3](../docs/arch/A06-runtime-view.md#63-session-und-court-erstellen).
+Die erste RLS-Fassung (`…171948_rls.sql`) hatte `authenticated` dennoch ein
+INSERT auf `court` erteilt; `…133001_court_insert_only_via_rpc` nimmt Recht und
+Policy zurück. Der Kommentar in `…171948_rls.sql` bleibt unverändert stehen,
+damit Datei und Datenbank übereinstimmen — maßgeblich ist die Folgemigration.
