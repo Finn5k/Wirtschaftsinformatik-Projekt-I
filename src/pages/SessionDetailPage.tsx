@@ -15,6 +15,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { ProfileAvatar } from "../components/ProfileAvatar";
 import { StatusBadge } from "../components/sessions/StatusBadge";
 import { CheckInQrCode } from "../components/sessions/CheckInQrCode";
+import { CourtMapPreview } from "../components/sessions/CourtMapPreview";
 import { sportDisplayName } from "../data/sports";
 import { getSessionById, joinSession } from "../services/sessionService";
 import { useAuth } from "../auth/authContext";
@@ -470,12 +471,8 @@ export function SessionDetailPage() {
             <MapPin className="text-blue-600" size={22} />
           </div>
 
-          <div className="relative h-44 overflow-hidden rounded-3xl bg-slate-100">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#bfdbfe_1px,transparent_1px)] [background-size:22px_22px]" />
-            <div className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-200">
-              <MapPin size={22} />
-            </div>
-          </div>
+          {/* Kartenausschnitt zum Court (B1.4.4, S1.5); ohne Kacheln bleibt der Text. */}
+          <CourtMapPreview court={session.court} />
         </section>
 
         {!isReadOnly && !isOrganizer && (
