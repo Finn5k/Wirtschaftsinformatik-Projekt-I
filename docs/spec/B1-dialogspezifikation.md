@@ -140,7 +140,8 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 
 | Aktion | Auslöser | Vorbedingung | Wirkung |
 |---|---|---|---|
-| Marker auswählen | Tippen auf Marker | — | *Dialog*: Vorschaukarte der Session einblenden, Karte zentriert |
+| Marker auswählen | Tippen auf Marker | — | *Dialog*: Vorschaukarte der Session einblenden, Karte zentriert; die Vorschaukarte ist die einzige Anzeige zur Auswahl, kein zusätzliches Hinweisfenster am Marker |
+| Auswahl aufheben | Tippen auf die Karte außerhalb eines Markers | Marker ausgewählt | *Dialog*: Vorschaukarte ausblenden, Ausschnitt unverändert |
 | Session ansehen | Schaltfläche in Vorschaukarte | Marker ausgewählt | *Dialog*: Wechsel zu [DLG-04](#b144-dlg-04--session-detail) |
 | Filter wählen | Sportart-Chip | — | *UC-02*: Marker werden neu gefiltert |
 | Ansicht zurücksetzen | Zentrier-Schaltfläche | — | *Dialog*: Auswahl aufheben, Standardausschnitt |

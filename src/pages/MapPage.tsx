@@ -2,14 +2,20 @@ import L from "leaflet";
 import { AlertTriangle, LocateFixed, Navigation, RefreshCw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import {
+  MapContainer,
+  Marker,
+  TileLayer,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
 import { StatusBadge } from "../components/sessions/StatusBadge";
 import { sportDisplayName, sportKeys } from "../data/sports";
 import { getDiscoverableSessions } from "../services/sessionService";
 import { ErrorState, LoadingState } from "../components/DataStates";
 import { useLoadedData } from "../hooks/useLoadedData";
 import type { SportKey, SportSession } from "../types/session";
-import { formatSessionDate, formatSessionTime } from "../utils/sessionTime";
+import { formatSessionTime } from "../utils/sessionTime";
 
 type SessionFilter = "Alle" | SportKey;
 
@@ -60,6 +66,10 @@ export function MapPage() {
   );
   const [mapUnavailable, setMapUnavailable] = useState(false);
   const [tileLayerKey, setTileLayerKey] = useState(0);
+  // Zentrier-Schaltfläche: Auswahl aufheben und die Übersicht wiederherstellen
+  // (B1.4.3 „Ansicht zurücksetzen"). Das bloße Aufheben der Auswahl lässt den
+  // Ausschnitt stehen; deshalb ein eigener Zähler statt nur `selectedSession`.
+  const [uebersichtAnforderung, setUebersichtAnforderung] = useState(0);
 
   // Nur zukünftige/laufende Sessions, gefiltert nach Sportart (B1 DLG-03, UC-02).
   const { state, reload } = useLoadedData(
@@ -114,7 +124,7 @@ export function MapPage() {
   }
 
   return (
-    <div className="relative -mb-24 overflow-hidden bg-slate-100">
+    <div className="relative -mb-24 overflow-hidden bg-slate-100 md:rounded-[2rem]">
       <header className="absolute left-0 right-0 top-0 z-[1000] px-4 pt-5">
         <div className="mb-4">
           <div className="inline-block rounded-3xl bg-white/90 px-4 py-3 shadow-sm backdrop-blur">
@@ -149,8 +159,13 @@ export function MapPage() {
         </div>
       </header>
 
-      {/* Höhe = Viewport minus Bottom-Navigation, damit die Karte bündig bis zur Navigation reicht */}
-      <div className="h-[calc(100dvh-5.5rem)] w-full">
+      {/*
+        Mobil: Viewport minus Navigationsleiste, damit die Karte bündig bis zur
+        Leiste reicht. Desktop: die feste Höhe des Seitenrahmens (AppLayout,
+        md:min-h-[850px]) — sonst bliebe unter der Karte ein weißer Rest des
+        Rahmens sichtbar, sobald die Seite scrollt.
+      */}
+      <div className="h-[calc(100dvh-5.5rem)] w-full md:h-[850px]">
         <MapContainer
           center={defaultCenter}
           zoom={12}
@@ -173,7 +188,9 @@ export function MapPage() {
           <MapViewport
             selectedCenter={selectedCenter}
             positions={markerPositions}
+            uebersichtAnforderung={uebersichtAnforderung}
           />
+          <DeselectOnMapClick onDeselect={() => setSelectedSession(null)} />
 
           {sessions.map((session) => {
             const isSelected = selectedSession?.id === session.id;
@@ -185,18 +202,15 @@ export function MapPage() {
                 position={[session.court.latitude, session.court.longitude]}
                 icon={createSessionMarkerIcon(isSelected)}
                 eventHandlers={{
-                  click: () => setSelectedSession(session),
+                  click: (event) => {
+                    // Der Klick soll die Session auswählen, nicht zugleich als
+                    // Kartenklick die Auswahl wieder aufheben (Leaflet reicht
+                    // Ereignisse vom Marker an die Karte weiter).
+                    L.DomEvent.stopPropagation(event.originalEvent);
+                    setSelectedSession(session);
+                  },
                 }}
-              >
-                <Popup>
-                  <strong>{session.title}</strong>
-                  <br />
-                  {session.court.name}
-                  <br />
-                  {formatSessionDate(session.startAt)} ·{" "}
-                  {formatSessionTime(session.startAt)}
-                </Popup>
-              </Marker>
+              />
             );
           })}
         </MapContainer>
@@ -239,8 +253,11 @@ export function MapPage() {
       {!mapUnavailable && (
         <button
           type="button"
-          aria-label="Kartenauswahl zurücksetzen"
-          onClick={() => setSelectedSession(null)}
+          aria-label="Ansicht zurücksetzen"
+          onClick={() => {
+            setSelectedSession(null);
+            setUebersichtAnforderung((current) => current + 1);
+          }}
           className="absolute right-4 top-44 z-[1000] flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-lg"
         >
           <LocateFixed size={22} />
@@ -309,35 +326,44 @@ export function MapPage() {
 }
 
 interface MapViewportProps {
-  /** Ausgewählte Session; hat Vorrang vor der Gesamtansicht. */
+  /** Ausgewählte Session; ein Wechsel darauf fliegt die Karte dorthin. */
   selectedCenter: [number, number] | null;
   /** Positionen aller angezeigten Marker. */
   positions: [number, number][];
+  /** Zähler der Zentrier-Schaltfläche; jede Erhöhung stellt die Übersicht her. */
+  uebersichtAnforderung: number;
 }
 
 // Bestimmt den Kartenausschnitt (B1 DLG-03, Vorbelegung „Standardregion").
-function MapViewport({ selectedCenter, positions }: MapViewportProps) {
+//
+// Zwei getrennte Auslöser: Die Übersicht (alle Marker) wird beim Öffnen, bei
+// geänderter Markermenge (Filter) und auf die Zentrier-Schaltfläche hin
+// eingepasst; die Auswahl eines Markers fliegt zur Session. Das Aufheben der
+// Auswahl ändert den Ausschnitt dagegen nicht (B1.4.3 „Auswahl aufheben") —
+// der Nutzer soll dort bleiben, wo er gerade hingesehen hat.
+function MapViewport({
+  selectedCenter,
+  positions,
+  uebersichtAnforderung,
+}: MapViewportProps) {
   const map = useMap();
 
   // Die Eigenschaften sind bei jedem Rendern neue Arrays; als Abhängigkeit
   // würden sie den Effekt endlos auslösen. Maßgeblich ist ihr Inhalt.
-  const schluessel = selectedCenter
-    ? `auswahl:${selectedCenter.join(",")}`
-    : `marker:${positions.map((position) => position.join(",")).join("|")}`;
+  const markerSchluessel = positions
+    .map((position) => position.join(","))
+    .join("|");
+  const auswahlSchluessel = selectedCenter?.join(",") ?? null;
 
   useEffect(() => {
     // Leaflet kennt seine Größe erst, wenn der Container gemessen wurde. Beim
     // ersten Lauf direkt nach dem Einhängen ist das noch nicht geschehen, und
     // ein Einpassen würde in einen Container der Größe null rechnen.
     map.invalidateSize();
-    if (selectedCenter) {
-      map.flyTo(selectedCenter, 13, { duration: 0.8 });
-      return;
-    }
 
     // Der Übersichtsausschnitt wird ohne Animation gesetzt: Beim Öffnen der
     // Karte soll sofort der richtige Bereich zu sehen sein, kein Zoomflug.
-    // Animiert wird nur der Sprung zu einer ausgewählten Session (oben).
+    // Animiert wird nur der Sprung zu einer ausgewählten Session (unten).
     if (positions.length === 0) {
       map.setView(defaultCenter, 12, { animate: false });
       return;
@@ -362,7 +388,23 @@ function MapViewport({ selectedCenter, positions }: MapViewportProps) {
       animate: false,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [schluessel, map]);
+  }, [markerSchluessel, uebersichtAnforderung, map]);
+
+  useEffect(() => {
+    if (selectedCenter) {
+      map.flyTo(selectedCenter, 13, { duration: 0.8 });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [auswahlSchluessel, map]);
+
+  return null;
+}
+
+// Ein Tipp auf die Karte außerhalb eines Markers hebt die Auswahl auf und
+// blendet die Vorschaukarte aus (B1.4.3 „Auswahl aufheben"). Marker-Klicks
+// erreichen diesen Handler nicht, weil der Marker die Weitergabe stoppt.
+function DeselectOnMapClick({ onDeselect }: { onDeselect: () => void }) {
+  useMapEvents({ click: onDeselect });
 
   return null;
 }
