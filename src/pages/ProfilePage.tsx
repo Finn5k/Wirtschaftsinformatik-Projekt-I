@@ -262,8 +262,10 @@ export function ProfilePage() {
           <button
             type="button"
             onClick={() => {
+              // B1.4.8: Sitzung beenden und zur öffentlichen Sicht DLG-02
+              // wechseln, nicht zur Anmeldung.
               void signOut().then(() => {
-                navigate("/login", { replace: true });
+                navigate("/discover", { replace: true });
               });
             }}
             className="flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white py-3 font-bold text-red-600 shadow-sm"
