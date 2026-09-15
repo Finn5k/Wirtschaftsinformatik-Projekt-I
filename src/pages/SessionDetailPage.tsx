@@ -285,11 +285,14 @@ export function SessionDetailPage() {
           </section>
         )}
 
-        <section className="rounded-3xl bg-slate-50 p-4">
-          <p className="text-sm leading-6 text-slate-700">
-            {session.description}
-          </p>
-        </section>
+        {/* Beschreibung ist optional (B1.4.4 „leer möglich"); ohne Text kein leerer Kasten. */}
+        {session.description && (
+          <section className="rounded-3xl bg-slate-50 p-4">
+            <p className="text-sm leading-6 text-slate-700">
+              {session.description}
+            </p>
+          </section>
+        )}
 
         <section className="grid grid-cols-3 gap-3">
           <InfoCard
@@ -334,10 +337,19 @@ export function SessionDetailPage() {
           </section>
         )}
 
+        {/*
+          Teilnehmerbereich nach B1.4.4: Die Belegung sieht jeder; die
+          vollständige Teilnehmerliste mit Check-in-Status nur der Organisator
+          (UC-07, N2.2). Ein beigetretener Teilnehmer sieht ausschließlich seine
+          eigene Teilnahme — mehr gibt die RLS nicht frei, und mehr soll ein
+          fremdes Profil auch nicht preisgeben (N1-QA-03).
+        */}
         <section className="rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h2 className="font-extrabold text-slate-950">Teilnehmer</h2>
+              <h2 className="font-extrabold text-slate-950">
+                {isOrganizer ? "Teilnehmer" : "Belegung"}
+              </h2>
               <p className="text-sm text-slate-500">
                 {session.participantsCount} von {session.maxParticipants}{" "}
                 Plätzen belegt
@@ -349,7 +361,7 @@ export function SessionDetailPage() {
             </div>
           </div>
 
-          <div className="mb-4 h-3 overflow-hidden rounded-full bg-slate-100">
+          <div className="h-3 overflow-hidden rounded-full bg-slate-100">
             <div
               className="h-full rounded-full bg-blue-600"
               style={{
@@ -360,26 +372,25 @@ export function SessionDetailPage() {
             />
           </div>
 
-          <div className="space-y-3">
-            {session.participants.map((participant) => (
-              <div
-                key={participant.id}
-                className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-3"
-              >
-                <div className="flex items-center gap-3">
-                  <ProfileAvatar
-                    name={participant.name}
-                    avatarUrl={participant.avatarUrl}
-                  />
+          {isOrganizer ? (
+            <div className="mt-4 space-y-3">
+              {session.participants.map((participant) => (
+                <div
+                  key={participant.id}
+                  className="flex items-center justify-between rounded-2xl bg-slate-50 px-3 py-3"
+                >
+                  <div className="flex items-center gap-3">
+                    <ProfileAvatar
+                      name={participant.name}
+                      avatarUrl={participant.avatarUrl}
+                    />
 
-                  <p className="font-semibold text-slate-800">
-                    {participant.name}
-                  </p>
-                </div>
+                    <p className="font-semibold text-slate-800">
+                      {participant.name}
+                    </p>
+                  </div>
 
-                {/* Check-in-Status nur für Organisator:innen sichtbar (B1 DLG-04, UC-07) */}
-                {isOrganizer ? (
-                  participant.status === "checked_in" ? (
+                  {participant.status === "checked_in" ? (
                     <span className="flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-700">
                       <CheckCircle2 size={13} />
                       Eingecheckt
@@ -388,11 +399,29 @@ export function SessionDetailPage() {
                     <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">
                       Beigetreten
                     </span>
-                  )
-                ) : null}
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            currentParticipation && (
+              <div className="mt-4">
+                <h3 className="mb-2 text-sm font-bold text-slate-700">
+                  Deine Teilnahme
+                </h3>
+                <div className="flex items-center gap-3 rounded-2xl bg-slate-50 px-3 py-3">
+                  <ProfileAvatar
+                    name={currentParticipation.name}
+                    avatarUrl={currentParticipation.avatarUrl}
+                  />
+
+                  <p className="font-semibold text-slate-800">
+                    {currentParticipation.name}
+                  </p>
+                </div>
               </div>
-            ))}
-          </div>
+            )
+          )}
         </section>
 
         {canCheckIn && (
