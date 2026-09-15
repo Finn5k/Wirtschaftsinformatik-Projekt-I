@@ -23,10 +23,13 @@ export function CourtMapPreview({ court }: CourtMapPreviewProps) {
   }
 
   return (
+    // `isolate` öffnet einen eigenen Stapelkontext: Leaflet setzt seine Ebenen
+    // intern auf z-index 400+, die sonst den schwebenden Beitreten-Balken
+    // (z-10) der Detailansicht überdecken würden.
     <div
       role="img"
       aria-label={`Kartenausschnitt: ${court.name}, ${court.city}`}
-      className="h-44 overflow-hidden rounded-3xl"
+      className="isolate h-44 overflow-hidden rounded-3xl"
     >
       <MapContainer
         center={[court.latitude, court.longitude]}
