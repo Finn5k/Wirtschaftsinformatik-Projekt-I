@@ -11,7 +11,7 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { ProfileAvatar } from "../components/ProfileAvatar";
 import { StatusBadge } from "../components/sessions/StatusBadge";
 import { CheckInQrCode } from "../components/sessions/CheckInQrCode";
@@ -50,6 +50,13 @@ function joinRejectionText(code: string): string {
 export function SessionDetailPage() {
   const { sessionId } = useParams();
   const navigate = useNavigate();
+  // DLG-05 wechselt nach der Erstellung hierher und übergibt die Bestätigung
+  // im Navigationszustand (B1.4.5, UC-06 Schritt 6); ein Reload zeigt sie
+  // nicht erneut.
+  const sessionErstellt = Boolean(
+    (useLocation().state as { sessionErstellt?: boolean } | null)
+      ?.sessionErstellt,
+  );
   // DLG-04 ist ohne Anmeldung einsehbar (B1.2); geschützte Aktionen wie der
   // Beitritt leiten dann über B1.5.2 zu DLG-01.
   const { user } = useAuth();
@@ -233,6 +240,22 @@ export function SessionDetailPage() {
       </div>
 
       <div className="space-y-5 px-4 py-5">
+        {sessionErstellt && isOrganizer && (
+          <section
+            role="status"
+            className="flex items-start gap-3 rounded-3xl bg-emerald-50 p-4 text-emerald-800"
+          >
+            <CheckCircle2 size={22} className="shrink-0" />
+            <div>
+              <p className="font-bold">Session erstellt.</p>
+              <p className="mt-1 text-sm leading-6">
+                Deine Session ist geplant. Zeige den QR-Code oder nenne die
+                PIN, damit Teilnehmer vor Ort einchecken können.
+              </p>
+            </div>
+          </section>
+        )}
+
         {isReadOnly && (
           <section className="rounded-3xl bg-slate-100 p-4">
             <p className="text-sm font-bold text-slate-700">
