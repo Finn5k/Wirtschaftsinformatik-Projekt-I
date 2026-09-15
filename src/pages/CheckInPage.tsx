@@ -16,9 +16,10 @@ export function CheckInPage() {
   const deepLinkPin = searchParams.get("pin") ?? "";
   // Geschützte Aktion nach B1.5.2, also stets angemeldet.
   const { user } = useAuth();
+  const userId = user?.id ?? null;
   const { state, reload } = useLoadedData(
-    () => getSessionById(sessionId),
-    [sessionId],
+    () => getSessionById(sessionId, userId),
+    [sessionId, userId],
   );
 
   const session = state.status === "ok" ? state.data : null;

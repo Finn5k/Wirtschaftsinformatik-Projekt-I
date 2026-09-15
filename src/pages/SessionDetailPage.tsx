@@ -58,11 +58,16 @@ export function SessionDetailPage() {
       ?.sessionErstellt,
   );
   // DLG-04 ist ohne Anmeldung einsehbar (B1.2); geschützte Aktionen wie der
-  // Beitritt leiten dann über B1.5.2 zu DLG-01.
-  const { user } = useAuth();
+  // Beitritt leiten dann über B1.5.2 zu DLG-01. Die Nutzerkennung geht an den
+  // Service, damit er die Teilnahmen nur für Angemeldete abfragt (N2.2) —
+  // geladen wird erst, wenn die Sitzung wiederhergestellt ist, sonst käme die
+  // Seite zuerst als Gast und gleich darauf angemeldet.
+  const { status: authStatus, user } = useAuth();
+  const userId = user?.id ?? null;
   const { state, reload } = useLoadedData(
-    () => getSessionById(sessionId),
-    [sessionId],
+    () => getSessionById(sessionId, userId),
+    [sessionId, userId],
+    { bereit: authStatus !== "loading" },
   );
   const session = state.status === "ok" ? state.data : null;
 
