@@ -363,6 +363,8 @@ function checkInRejectionText(code: string): string {
       return "Du bist dieser Session nicht beigetreten.";
     case "OUTSIDE_WINDOW":
       return OUTSIDE_WINDOW_TEXT;
+    case "NOT_AUTHENTICATED":
+      return "Bitte melde dich an, um einzuchecken.";
     case "SESSION_NOT_FOUND":
       return "Diese Session existiert nicht mehr.";
     default:

@@ -93,6 +93,11 @@ export type CheckInRejection =
   | "NOT_JOINED"
   | "INVALID_CREDENTIAL"
   | "OUTSIDE_WINDOW"
+  // Die beiden folgenden Codes stehen nicht in F3 AF-02, die RPC liefert sie
+  // aber wie bei `join_session`: fehlende Anmeldung (401) und unbekannte
+  // Session-Kennung (404). Beide sind fachliche Ablehnungen, keine technischen
+  // Fehler (A08 8.5.2, Abgrenzungsregel).
+  | "NOT_AUTHENTICATED"
   | "SESSION_NOT_FOUND";
 
 export interface CheckInData {

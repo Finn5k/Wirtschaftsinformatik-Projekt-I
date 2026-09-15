@@ -479,6 +479,7 @@ export async function checkIn(
 
   if (error) {
     const code = rejectionCode(error, [
+      "NOT_AUTHENTICATED",
       "NOT_JOINED",
       "INVALID_CREDENTIAL",
       "OUTSIDE_WINDOW",
