@@ -40,9 +40,9 @@ export function DiscoverPage() {
     merkeLetztenSuchort(wert);
   }
 
-  // Die Sportart filtert die Datenbank (indizierte Spalte), die Ortssuche
-  // arbeitet auf der geladenen Menge - B1 DLG-02 lässt den Ort als freie
-  // Eingabe zu, die auch Titel und Sportart trifft.
+  // Die Sportart filtert die Datenbank (indizierte Spalte); die Ortssuche
+  // arbeitet auf der geladenen Menge, weil die erwartete Ergebnismenge klein
+  // bleibt (A08 8.4).
   const { state, reload } = useLoadedData(
     () => getDiscoverableSessions(activeFilter),
     [activeFilter],
@@ -61,24 +61,14 @@ export function DiscoverPage() {
     );
   }
 
-  // Suche nach Ort/Region und optional Sportart (B1 DLG-02, UC-02).
+  // Ort/Region filtert ausschließlich auf `court.city` (B1.4.2, UC-02); leer
+  // bedeutet keine Ortseinschränkung. Titel oder Sportart werden bewusst nicht
+  // durchsucht — die Sportart hat ihren eigenen Filter.
   const normalizedSearch = searchTerm.trim().toLowerCase();
   const filteredSessions = state.data.filter(
-    (session) => {
-      if (!normalizedSearch) {
-        return true;
-      }
-
-      return [
-        session.title,
-        session.court.name,
-        session.court.city,
-        sportDisplayName(session.sportKey),
-      ]
-        .join(" ")
-        .toLowerCase()
-        .includes(normalizedSearch);
-    },
+    (session) =>
+      !normalizedSearch ||
+      session.court.city.toLowerCase().includes(normalizedSearch),
   );
 
   const featuredSession = filteredSessions[0];
@@ -100,14 +90,14 @@ export function DiscoverPage() {
       <div className="mb-4 flex items-center gap-2 rounded-2xl bg-white px-3 py-3 shadow-sm">
         <Search size={18} className="text-slate-400" />
         <label htmlFor="session-search" className="sr-only">
-          Sessions durchsuchen
+          Ort oder Region
         </label>
         <input
           id="session-search"
           value={searchTerm}
           onChange={(event) => sucheAendern(event.target.value)}
           className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-slate-400"
-          placeholder="Suche nach Ort, Titel oder Sportart ..."
+          placeholder="Ort oder Region, z. B. Gießen"
         />
       </div>
 
@@ -145,7 +135,7 @@ export function DiscoverPage() {
                 <p className="text-sm text-slate-500">
                   {activeFilter === "Alle"
                     ? "Bald in deiner Nähe"
-                    : `Passend für ${activeFilter}`}
+                    : `Passend für ${sportDisplayName(activeFilter)}`}
                 </p>
               </div>
 
