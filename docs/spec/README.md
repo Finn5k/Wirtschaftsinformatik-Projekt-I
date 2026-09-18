@@ -35,10 +35,8 @@ Beschreibt aus Anwendungssicht, wie sich LocalCourt in seine Umgebung einbettet:
 - Welche Koppelung und Häufigkeit der Kommunikation?
 
 **Inhalte**:
-- Systemkontext-Diagramm (Browser ↔ Supabase ↔ PostgreSQL, OpenStreetMap/Nominatim)
+- Systemkontext-Diagramm (LocalCourt als Blackbox mit den Akteuren Teilnehmer/Organisator und den Nachbarsystemen NB-01 bis NB-05)
 - Nachbarsysteme-Inventar (NB-01: Browser, NB-02: Supabase Auth, NB-03: Supabase PostgREST, NB-04: OpenStreetMap/Leaflet, NB-05: Nominatim)
-- Deployment-Topologie & Infrastruktur
-- 3 kritische Datenflüsse: Session erstellen, Session entdecken/beitreten, Check-in
 - Bewusste Ausschlüsse (KI-APIs, Payment, E-Mail-Services, Message Queues)
 
 **Hinweis**: Interne Komponentenarchitektur, React-Komponenten, API-Struktur, Laufzeitsichten, Deployment-Details und Architekturentscheidungen stehen in der [Architekturdokumentation](../arch/README.md).
@@ -115,7 +113,7 @@ Fachliches Datentypenverzeichnis: Wertebereiche, Aufzählungen und Validierungsr
 Benutzerdialoge nach Siedersleben: Dialoglandkarte, je Dialog Statik (Feldliste) und Dynamik (Aktionsliste, Zustände). Normativ für das MVP; die Screenshots illustrieren nur.
 
 **Inhalte**:
-- Dialoglandkarte (Mermaid) und Index DLG-01–DLG-08 mit UC-/AF-Bezug
+- Dialoglandkarte (PlantUML) und Index DLG-01–DLG-08 mit UC-/AF-Bezug
 - 8 Dialoge: Anmelden, Entdecken (Liste), Karte, Session-Detail (zustandsabhängig), Session erstellen, Check-in (QR/PIN-Zustände), Meine Sessions (bevorstehend/vergangen), Profil
 - Feldlisten mit Datentyp (D2), Datenmodell-Bezug (D1), Vorbelegung, Muss/Kann, Prüfung
 - Standard-Benutzeraktionen (Navigation, Validierung, Fehler-/Leerzustände) einmal zentral
@@ -158,8 +156,18 @@ LocalCourt ist ein Greenfield-Projekt (siehe NG-09); es gibt keine Altdaten und 
 
 ---
 
-### **S3 — Inbetriebnahme** 🔄 (nach der Implementierung)
-Installation, Umgebungseinrichtung, Betrieb auf Supabase/Vercel sowie Start- und Betriebsablauf lassen sich erst beschreiben, wenn die Anwendung tatsächlich betrieben wird. S3 wird deshalb bewusst nach der Implementierungsphase gepflegt.
+### **S3 — Inbetriebnahme** ✅ (dokumentiert)
+**Datei**: [S3-inbetriebnahme.md](S3-inbetriebnahme.md)
+
+Voraussetzungen, persistente Zustände und Abläufe für die Inbetriebnahme von LocalCourt auf den verwalteten Plattformen Vercel und Supabase — auf Spezifikationsebene, nicht als Betriebs-Runbook.
+
+**Inhalte**:
+- Rahmen und Konventionen (Managed-Plattformen, kein eigener Server, kein Scheduler)
+- Voraussetzungen und persistente Zustände je Plattform
+- Geplanter Ablauf der Erstinbetriebnahme, unterschieden von der nachgewiesenen Durchführung
+- Laufende Releases (Vercel-Git-Integration, Supabase-Migrationen) und Abgrenzung
+
+**Offen**: Die vollständige produktive Erstinbetriebnahme — insbesondere ein bereits angelegtes, konfiguriertes und Ende-zu-Ende geprüftes Vercel-Projekt — ist bisher nicht verifiziert (siehe [S3.4](S3-inbetriebnahme.md#s34-erstinbetriebnahme)).
 
 ---
 
@@ -224,7 +232,7 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 7. **B2/B3/S2** (✅ als nicht anwendbar dokumentiert)
 8. **Architektur pflegen**: Interne Architektur in [docs/arch/README.md](../arch/README.md) mit der Spezifikation und Implementierung synchron halten
 9. **Anforderungen umsetzen**: Anforderungen aus P1/F1–F3/D1–D2/N1 nachvollziehbar in Architektur, Code und Tests umsetzen
-10. **S3 ergänzen**: Inbetriebnahme nach der Implementierung dokumentieren
+10. **S3 prüfen und pflegen** (✅ vorhanden): Inbetriebnahme aktuell halten und die noch offene Verifikation der produktiven Erstinbetriebnahme nachziehen, sobald sie erfolgt ist
 
 ---
 
