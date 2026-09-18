@@ -1,7 +1,7 @@
-import { KeyRound, Mail, User } from "lucide-react";
+import { ArrowLeft, KeyRound, Mail, User } from "lucide-react";
 import type { ReactNode } from "react";
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { useAuth } from "../auth/authContext";
 
 // Anmelden / Registrieren gemäß B1 DLG-01 (UC-01) über NB-02 Supabase Auth (S1.3).
@@ -104,6 +104,17 @@ export function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 px-4 py-8">
       <div className="w-full max-w-md">
+        {/* Rückweg zur öffentlichen Sicht (B1.2: DLG-02 ohne Anmeldung nutzbar).
+            Ein Link statt navigate(-1), damit er auch beim Direktaufruf von
+            /login ohne Verlauf funktioniert. */}
+        <Link
+          to="/discover"
+          className="mb-6 inline-flex items-center gap-2 text-sm font-bold text-slate-600"
+        >
+          <ArrowLeft size={16} aria-hidden="true" />
+          Zurück zu Entdecken
+        </Link>
+
         <div className="mb-8 text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-3xl bg-blue-600 text-xl font-extrabold text-white shadow-lg shadow-blue-200">
             LC
