@@ -336,7 +336,7 @@ export function CreateSessionForm() {
         value={form.title}
         onChange={(value) => updateForm("title", value)}
         error={errors.title}
-        placeholder="z.B. Morning Run"
+        placeholder="Titel der Session eingeben"
         required
       />
 
@@ -354,6 +354,7 @@ export function CreateSessionForm() {
         value={form.date}
         onChange={(value) => updateForm("date", value)}
         error={errors.date}
+        emptyHint="Datum auswählen"
         type="date"
         required
       />
@@ -364,6 +365,7 @@ export function CreateSessionForm() {
         value={form.time}
         onChange={(value) => updateForm("time", value)}
         error={errors.time}
+        emptyHint="Uhrzeit auswählen"
         type="time"
         required
       />
@@ -518,6 +520,8 @@ interface FormInputProps {
   onChange: (value: string) => void;
   error?: string;
   placeholder?: string;
+  // Hinweistext für native Datums-/Zeitfelder, solange sie leer sind.
+  emptyHint?: string;
   type?: string;
   required?: boolean;
 }
@@ -529,11 +533,17 @@ function FormInput({
   onChange,
   error,
   placeholder,
+  emptyHint,
   type = "text",
   required = false,
 }: FormInputProps) {
   const inputId = useId();
   const errorId = `${inputId}-error`;
+  const pointerType = useRef("");
+  // Eine Teileingabe ("12:--") lässt `value` leer und löst kein input-Event
+  // aus; erst beim Verlassen zeigt `validity.badInput`, dass sie vorliegt.
+  const [partial, setPartial] = useState(false);
+  const showHint = Boolean(emptyHint) && !value && !partial;
 
   return (
     <label
@@ -554,17 +564,58 @@ function FormInput({
 
         <div className="min-w-0 flex-1">
           <p className="text-xs font-semibold text-slate-500">{label}</p>
-          <input
-            id={inputId}
-            type={type}
-            value={value}
-            onChange={(event) => onChange(event.target.value)}
-            placeholder={placeholder}
-            required={required}
-            aria-invalid={Boolean(error)}
-            aria-describedby={error ? errorId : undefined}
-            className="mt-1 w-full bg-transparent text-sm font-bold text-slate-950 outline-none placeholder:text-slate-400"
-          />
+          {/* Datums- und Zeitfelder zeigen leer je nach Browser einen Platzhalter
+              ("tt.mm.jjjj") oder sogar einen konkreten Vorschlag (heutiges
+              Datum), obwohl `value` leer ist. Solange kein Wert gewählt ist,
+              bleibt das native Feld daher unsichtbar, aber bedienbar, und ein
+              Hinweis liegt darüber. Mit Maus wird das Feld beim Fokus sichtbar,
+              damit sich Segmente tippen lassen; auf Touchgeräten bleibt der
+              Hinweis, weil dort der Picker die Eingabe übernimmt. Eine
+              Teileingabe bleibt sichtbar, statt hinter dem Hinweis zu
+              verschwinden. */}
+          <div className="group relative mt-1">
+            <input
+              id={inputId}
+              type={type}
+              value={value}
+              onChange={(event) => onChange(event.target.value)}
+              onBlur={(event) => setPartial(event.currentTarget.validity.badInput)}
+              onPointerDown={(event) => {
+                pointerType.current = event.pointerType;
+              }}
+              onMouseDown={(event) => {
+                // Der erste Mausklick auf den Hinweis träfe sonst ein beliebiges
+                // Segment, weil die Segmente darunter unsichtbar sind. focus()
+                // beginnt im ersten Segment (Stunde). Touch und Stift bleiben
+                // unberührt, damit der Picker öffnet.
+                if (
+                  showHint &&
+                  pointerType.current === "mouse" &&
+                  document.activeElement !== event.currentTarget
+                ) {
+                  event.preventDefault();
+                  event.currentTarget.focus();
+                }
+              }}
+              placeholder={placeholder}
+              required={required}
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? errorId : undefined}
+              className={[
+                "w-full bg-transparent text-sm font-bold outline-none placeholder:text-slate-400",
+                value ? "text-slate-950" : "text-slate-400",
+                showHint ? "opacity-0 pointer-fine:group-focus-within:opacity-100" : "",
+              ].join(" ")}
+            />
+            {showHint && (
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 flex items-center pl-px text-sm font-bold text-slate-400 pointer-fine:group-focus-within:invisible"
+              >
+                {emptyHint}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
