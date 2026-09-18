@@ -65,6 +65,21 @@ function isStartInPast(date: string, time: string) {
   return Number.isFinite(startAt.getTime()) && startAt.getTime() < Date.now();
 }
 
+const DURATION_STEP_MIN = 15;
+
+// Springt auf den nächsten Schritt des 15-Minuten-Rasters statt einen festen
+// Betrag zu addieren: Die Mindestdauer 1 (B1 DLG-05, D2.6) liegt nicht auf dem
+// Raster, sonst entstünde 1 → 16 → 31. Eine Obergrenze gibt es nicht (D2.6).
+function nextDuration(current: number, direction: 1 | -1) {
+  const stepIndex = current / DURATION_STEP_MIN;
+  const next =
+    direction === 1
+      ? (Math.floor(stepIndex) + 1) * DURATION_STEP_MIN
+      : (Math.ceil(stepIndex) - 1) * DURATION_STEP_MIN;
+
+  return Math.max(1, next);
+}
+
 export function CreateSessionForm() {
   // Nur über ProtectedRoute erreichbar (B1.5.2), also stets angemeldet.
   const { user: currentUser } = useAuth();
@@ -118,8 +133,8 @@ export function CreateSessionForm() {
     setParticipantLimit((current) => Math.max(1, current + delta));
   }
 
-  function changeDuration(delta: number) {
-    setDurationMin((current) => Math.max(1, current + delta));
+  function changeDuration(direction: 1 | -1) {
+    setDurationMin((current) => nextDuration(current, direction));
   }
 
   async function lookupCourtLocation(coordinates: CourtCoordinates) {
@@ -373,8 +388,8 @@ export function CreateSessionForm() {
         label="Dauer"
         description="Bestimmt das Session-Ende und den Check-in-Zeitraum"
         value={`${durationMin} Min.`}
-        onDecrease={() => changeDuration(-15)}
-        onIncrease={() => changeDuration(15)}
+        onDecrease={() => changeDuration(-1)}
+        onIncrease={() => changeDuration(1)}
       />
 
       <FormSelect
