@@ -9,7 +9,8 @@ verwalten Teilnehmerlimits und wickeln den Check-in per QR-Code oder PIN ab.
 
 > **Status:** Hochschulprojekt (THM, Wirtschaftsinformatik Projekt I) —
 > Spezifikation, Architektur und **MVP-Implementierung** stehen: Alle zwölf
-> Anwendungsfälle aus F2 laufen gegen Supabase. Die Spezifikation nach
+> Anwendungsfälle aus F2 laufen gegen Supabase, die Anwendung ist unter
+> <https://local-court.vercel.app> in Betrieb. Die Spezifikation nach
 > Siedersleben-Schema liegt unter [`docs/spec/`](docs/spec/README.md), die
 > Architektur nach arc42 unter [`docs/arch/`](docs/arch/README.md); die
 > verbliebenen Abweichungen stehen in
@@ -51,17 +52,24 @@ Wartelisten, Ratings, Zahlungen, native Apps. Details in
 > verbindliche Stack ist in
 > [P2 — Architekturüberblick](docs/spec/P2-architekturueberblick.md) beschrieben.
 
-## Schnellstart
+## Schnellstart (lokale Entwicklung)
 
-Voraussetzungen: Node.js (LTS) und npm.
+Voraussetzungen: Node.js (LTS) und npm. Ein Backend ist lokal nicht zu
+starten: Auch der Dev-Server spricht mit dem gemeinsamen Supabase-Projekt,
+dessen Schema bereits angewendet ist — Testdaten landen also in der
+Produktionsdatenbank.
 
 ```bash
-npm install      # Abhängigkeiten installieren
-npm run dev      # Dev-Server (Vite) starten
-npm run build    # Produktionsbuild (tsc + vite build)
-npm run lint     # ESLint
-npm run preview  # Produktionsbuild lokal ansehen
+cp .env.example .env.local   # Publishable Key aus dem Supabase-Dashboard eintragen
+npm install                  # Abhängigkeiten installieren
+npm run dev                  # Dev-Server (Vite) starten
+npm run build                # Produktionsbuild (tsc + vite build)
+npm run lint                 # ESLint
+npm run preview              # Produktionsbuild lokal ansehen
 ```
+
+Der produktive Betrieb (Vercel, Supabase, Releases, Rollback) ist in
+[S3 — Inbetriebnahme](docs/spec/S3-inbetriebnahme.md) beschrieben.
 
 ## Projektstruktur
 
@@ -71,7 +79,7 @@ npm run preview  # Produktionsbuild lokal ansehen
 ├── supabase/
 │   └── migrations/      # Datenbankschema, RLS-Policies, atomare RPCs
 ├── docs/
-│   ├── spec/            # Spezifikation nach Siedersleben (P1, P2, F1–F3, D1, D2, S1, …)
+│   ├── spec/            # Spezifikation nach Siedersleben (P1, P2, F1–F3, D1, D2, B1, S1, S3, N1, N2, E1, E2)
 │   ├── arch/            # Architektur nach arc42 (A01–A09, A12) mit ADRs
 │   └── frontend.md      # Umsetzungsstand je Dialog
 ├── CLAUDE.md            # Projektkonventionen (Commits, Branches, Spec-Schema)
