@@ -156,18 +156,16 @@ LocalCourt ist ein Greenfield-Projekt (siehe NG-09); es gibt keine Altdaten und 
 
 ---
 
-### **S3 — Inbetriebnahme** ✅ (dokumentiert)
+### **S3 — Inbetriebnahme** ✅ (fertig)
 **Datei**: [S3-inbetriebnahme.md](S3-inbetriebnahme.md)
 
 Voraussetzungen, persistente Zustände und Abläufe für die Inbetriebnahme von LocalCourt auf den verwalteten Plattformen Vercel und Supabase — auf Spezifikationsebene, nicht als Betriebs-Runbook.
 
 **Inhalte**:
 - Rahmen und Konventionen (Managed-Plattformen, kein eigener Server, kein Scheduler)
-- Voraussetzungen und persistente Zustände je Plattform
-- Geplanter Ablauf der Erstinbetriebnahme, unterschieden von der nachgewiesenen Durchführung
-- Laufende Releases (Vercel-Git-Integration, Supabase-Migrationen) und Abgrenzung
-
-**Offen**: Die vollständige produktive Erstinbetriebnahme — insbesondere ein bereits angelegtes, konfiguriertes und Ende-zu-Ende geprüftes Vercel-Projekt — ist bisher nicht verifiziert (siehe [S3.4](S3-inbetriebnahme.md#s34-erstinbetriebnahme)).
+- Voraussetzungen und persistente Zustände je Plattform (inkl. Dashboard-Einstellungen, die nicht in den Migrationen liegen)
+- Erstinbetriebnahme mit Reihenfolge und nachgewiesener Durchführung; Produktionsadresse <https://local-court.vercel.app>
+- Laufende Releases (Vercel-Git-Integration, Supabase-Migrationen), Rollback und Point of no Return, Abgrenzung
 
 ---
 
@@ -232,7 +230,7 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 7. **B2/B3/S2** (✅ als nicht anwendbar dokumentiert)
 8. **Architektur pflegen**: Interne Architektur in [docs/arch/README.md](../arch/README.md) mit der Spezifikation und Implementierung synchron halten
 9. **Anforderungen umsetzen**: Anforderungen aus P1/F1–F3/D1–D2/N1 nachvollziehbar in Architektur, Code und Tests umsetzen
-10. **S3 prüfen und pflegen** (✅ vorhanden): Inbetriebnahme aktuell halten und die noch offene Verifikation der produktiven Erstinbetriebnahme nachziehen, sobald sie erfolgt ist
+10. **S3 prüfen und pflegen** (✅ vorhanden): Inbetriebnahme aktuell halten, insbesondere bei Änderungen an Plattform-Einstellungen, die nicht im Repository liegen
 
 ---
 

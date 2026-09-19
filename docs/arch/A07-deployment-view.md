@@ -6,7 +6,7 @@ Dieses Kapitel bildet die Bausteine aus [A05](A05-building-block-view.md) auf di
 
 ### 7.1.1 Produktionsumgebung
 
-Für LocalCourt ist nur die Produktionsverteilung architektonisch relevant dokumentiert; eine gesonderte Staging- oder Deployment-Entwicklungsumgebung ist nicht spezifiziert. Die beteiligten Knoten übernehmen dabei unterschiedliche Rollen und sind keine austauschbaren, gleichartigen Laufzeitorte.
+Für LocalCourt ist nur die Produktionsverteilung architektonisch relevant dokumentiert; eine gesonderte Staging- oder Deployment-Entwicklungsumgebung ist nicht spezifiziert. Die beteiligten Knoten übernehmen dabei unterschiedliche Rollen und sind keine austauschbaren, gleichartigen Laufzeitorte. Ablauf und Nachweis der Inbetriebnahme, die Produktionsadresse sowie Release- und Rollback-Regeln stehen in [S3](../spec/S3-inbetriebnahme.md); dieses Kapitel beschreibt nur die Topologie.
 
 ![Verteilungssicht LocalCourt](diagrams-png/A07-deployment-view.png)
 
