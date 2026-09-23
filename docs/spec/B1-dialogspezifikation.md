@@ -85,6 +85,7 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 | Anmelden | Schaltfläche „Anmelden" | Zustand *Anmelden*, Felder gültig | *UC-01*: Prüfung über Supabase Auth; bei Erfolg angemeldet, Rücksprung zum Ursprung; bei Fehler Meldung ([B1.5.4](#b154-fehler--und-ladezustände)), Zustand unverändert |
 | Registrieren | Schaltfläche „Konto erstellen" | Zustand *Registrieren*, Felder gültig | *UC-01*: Konto + `profile` anlegen; danach wie Anmelden |
 | Zustand wechseln | Link „Registrieren" / „Anmelden" | — | *Dialog*: Umschalten der Zustände |
+| Zurück zu Entdecken | Link oben im Dialog | — (in beiden Zuständen) | *Dialog*: Wechsel zu DLG-02 ohne Anmeldung, kein eigener Use Case; ein vorhandener Redirect-Zielpfad wird nicht weiterverfolgt |
 
 ### B1.4.2 DLG-02 — Session entdecken (Liste)
 
@@ -235,9 +236,9 @@ Der Zustand ergibt sich aus Anmeldung, Rolle, Teilnahme und Session-Status (AF-0
 | Sportart | Eingabe (Muss) | Auswahl | `session.sport_id` → `sport` | erste bevorzugte Sportart des Nutzers, sonst erster Katalogeintrag | Wert aus `sport`-Katalog |
 | Titel | Eingabe (Muss) | Text | `session.title` | leer | nicht leer; Länge → N1 |
 | Beschreibung | Eingabe (Kann) | Text | `session.description` | leer | Länge → N1 |
-| Datum | Eingabe (Muss) | Datum | `session.start_at` (Datumsteil) | leer | zusammen mit Uhrzeit: in der Zukunft (UC-06) |
-| Uhrzeit | Eingabe (Muss) | Uhrzeit | `session.start_at` (Zeitteil) | leer | s. o. |
-| Dauer (Minuten) | Eingabe (Muss) | `Duration` | `session.duration_min` | 60 | ≥ 1; bestimmt Ende und Auto-Close (AF-03) |
+| Datum | Eingabe (Muss) | Datum | `session.start_at` (Datumsteil) | leer | zusammen mit Uhrzeit: in der Zukunft (UC-06); „Datum auswählen" ist ein Bedienhinweis im leeren Feld, keine Vorbelegung; bei einer nativen Teileingabe wird er nicht angezeigt |
+| Uhrzeit | Eingabe (Muss) | Uhrzeit | `session.start_at` (Zeitteil) | leer | s. o.; Bedienhinweis „Uhrzeit auswählen" |
+| Dauer (Minuten) | Eingabe (Muss) | `Duration` | `session.duration_min` | 60 | ≥ 1; bestimmt Ende und Auto-Close (AF-03). Die Bedienung mit +/− springt in 15-Minuten-Schritten auf das Raster, der Mindestwert bleibt 1 Minute. Das Raster ist eine Bedienhilfe, keine fachliche Einschränkung von [D2.6](D2-datentypen.md#d26-duration) |
 | Court / Sportort | Eingabe (Muss) | Auswahl oder Neuerfassung | `session.court_id` → `court` | leer | Auswahl aus Verzeichnis **oder** Neuerfassung (UC-10): `name` (Muss), Kartenpin (Muss) → `coordinates`; `city` (Muss) und `address` (Kann) werden per Reverse-Geocoding ermittelt |
 | Teilnehmerlimit | Eingabe (Muss) | Integer | `session.max_participants` | 10 | ≥ 1; Hinweis im Dialog: Organisator belegt einen Platz (AF-01 R4) |
 
@@ -403,7 +404,7 @@ Listen ohne Inhalte zeigen einen erklärenden Leerzustand statt einer leeren Fl�
 
 ### B1.5.6 Zurück-Navigation
 
-Kontextdialoge (DLG-04, DLG-06) bieten eine Zurück-Aktion zum aufrufenden Dialog; die Browser-Zurück-Funktion verhält sich gleich. Ungespeicherte Formulareingaben gehen dabei verloren (Abbrechen-Semantik, UC-06/UC-12 Alternativszenarien).
+Kontextdialoge (DLG-04, DLG-06) bieten eine Zurück-Aktion zum aufrufenden Dialog; die Browser-Zurück-Funktion verhält sich gleich. Ungespeicherte Formulareingaben gehen dabei verloren (Abbrechen-Semantik, UC-06/UC-12 Alternativszenarien). DLG-01 bietet als Einstiegsdialog eine feste Rückkehr zu DLG-02 statt einer Verlaufsnavigation ([B1.4.1](#b141-dlg-01--anmelden--registrieren)).
 
 ## B1.6 Abweichungen der Umsetzung
 
