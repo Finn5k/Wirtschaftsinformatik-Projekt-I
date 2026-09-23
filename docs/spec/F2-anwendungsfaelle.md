@@ -142,7 +142,7 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 | Akteure | Organisator (primär); Browser / React-Frontend, Supabase Auth, Supabase PostgREST / PostgreSQL (unterstützend). |
 | Vorbedingung | Nutzer ist angemeldet und Organisator der Session. |
 | Nachbedingung | Teilnehmerliste und Statusinformationen sind angezeigt; keine Teilnehmerdaten werden unberechtigt offengelegt. |
-| Hauptszenario | 1. Organisator öffnet eine eigene Session.<br>2. LocalCourt prüft die Berechtigung.<br>3. LocalCourt zeigt Teilnehmer und deren Teilnahme- bzw. Check-in-Status.<br>4. Organisator kann die Liste während der Session erneut laden oder aktualisiert sehen.<br><br>![UC-07 Teilnehmerliste anzeigen — Hauptszenario](diagrams-png/F2-uc07-teilnehmerliste-anzeigen.png) |
+| Hauptszenario | 1. Organisator öffnet eine eigene Session.<br>2. LocalCourt prüft die Berechtigung.<br>3. LocalCourt zeigt Teilnehmer und deren Teilnahme- bzw. Check-in-Status.<br>4. Neue Beitritte und Check-ins anderer Nutzer erscheinen nach erneutem Öffnen bzw. Neuladen der Session.<br><br>![UC-07 Teilnehmerliste anzeigen — Hauptszenario](diagrams-png/F2-uc07-teilnehmerliste-anzeigen.png) |
 | Alternative Szenarien | Bei keiner Teilnahme zeigt LocalCourt eine leere Liste mit Teilnehmerzahl 0. |
 | Ausnahmefälle | Nutzer ist nicht Organisator, Session existiert nicht oder Daten können nicht geladen werden. |
 | Qualität | Datenschutz, klare Statusanzeige, Aktualität. |

@@ -204,7 +204,6 @@ Der Zustand ergibt sich aus Anmeldung, Rolle, Teilnahme und Session-Status (AF-0
 | Beitreten | Schaltfläche „Beitreten" | Zustand *Offen* | *UC-04 / AF-01*: atomare Prüfung; bei `OK` Teilnahme `confirmed`, Belegung aktualisiert; Ergebnistexte gemäß nachfolgender Tabelle |
 | Zum Check-in | Schaltfläche „Zum Check-in" | Zustand *Beigetreten*, Status `active` | *Dialog*: Wechsel zu [DLG-06](#b146-dlg-06--check-in) |
 | QR/PIN anzeigen | Bereich in Organisator-Sicht | Zustand *Organisator*, Status `scheduled`/`active` | *Dialog*: QR-Code (AF-04) und PIN prominent anzeigen, für Teilnehmer-Check-in (UC-08/09) |
-| Teilnehmerliste aktualisieren | erneutes Laden / automatische Aktualisierung | Zustand *Organisator* | *UC-07*: aktuelle Teilnahme- und Check-in-Stände |
 
 **Ergebnistexte für den Beitritt (AF-01)**
 
