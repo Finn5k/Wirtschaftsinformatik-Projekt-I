@@ -88,7 +88,7 @@ LocalCourt löst das Problem der dezentralisierten Koordination: Heute brauchen 
 | **SC-01** | **MVP Go-Live** | System ist deploybar und funktionsfähig; Mind. 1 Session kann erstellt und anderen beigetreten werden. |
 | **SC-02** | **Session-Creation Workflow UX** | Neue Session wird in < 2 Minuten aus dem Nichts erstellt (inklusive Court-Auswahl, Teilnehmerlimit, Uhrzeit). |
 | **SC-03** | **Session-Discovery Speed** | Nutzer findet 3+ passende Sessions in seiner Region in < 3 Minuten (via Filter/Suche). |
-| **SC-04** | **System Stability** | System läuft ohne ungeplante Ausfälle im Free-Tier-Budget und hält Last von ~100–500 aktiven Nutzern aus (je nach Provider-Plan). |
+| **SC-04** | **System Stability** | Das System wird innerhalb der vorgesehenen Free-Tier-Kontingente von Vercel und Supabase betrieben (CON-T-02, CON-T-05). Eine Zielnutzerzahl sowie Zusagen zu Verfügbarkeit oder Verhalten unter Last werden nicht festgelegt (siehe [N1.3](N1-nichtfunktionale-anforderungen.md#n13-bewusst-nicht-verfolgte-qualitätsziele)). |
 | **SC-05** | **Mobile Usability** | Viewport ≤ 768px: Alle Kernworkflows (Session finden, beitreten, Profile sehen) sind intuitiv und ohne Brüche nutzbar. |
 | **SC-06** | **Team-Acceptance** | Spec, Implementation, QA, und Frontend signalisieren Zufriedenheit mit Feature-Vollständigkeit und Codequalität. |
 | **SC-07** | **Deployment Automation** | Deployment auf Production erfolgt automatisiert über die Git-Integration von Vercel: Ein Push auf `main` löst Build und Veröffentlichung aus, reine Dokumentationsänderungen werden übersprungen. Keine manuellen Deployment-Schritte. Eine darüber hinausgehende CI-Pipeline für Lint und Tests ist im MVP nicht eingerichtet. |
