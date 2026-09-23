@@ -1,32 +1,24 @@
 # 9 Architekturentscheidungen
 
-Dieses Kapitel dokumentiert die Entscheidungen, bei denen für LocalCourt zwischen mehreren realistischen Lösungsalternativen gewählt wurde: Kontext, Optionen, Entscheidung und Begründung. Randbedingungen aus [P1](../spec/P1-ziele-rahmenbedingungen.md)/[A02](A02-architecture-constraints.md) — PostgreSQL über Supabase (TECH-01), Hosting im Free-/Student-Tier auf Vercel/Supabase ohne eigenen Node-Backend-Server (TECH-02/TECH-03), OpenStreetMap/Nominatim als Nachbarsysteme (TECH-07) — sind bereits verbindlich festgelegt und werden hier nicht als eigene Entscheidung wiederholt, ebenso wenig die Lösungsstrategie aus [A04](A04-solution-strategy.md) oder die Bausteinstruktur aus [A05](A05-building-block-view.md). Die folgenden zwei Entscheidungen betreffen, wie innerhalb dieser Randbedingungen konkrete architektonische Probleme gelöst werden.
+Dieses Kapitel dokumentiert die Entscheidungen, bei denen für LocalCourt zwischen mehreren realistischen Lösungsalternativen gewählt wurde: Kontext, Optionen, Entscheidung und Begründung. Randbedingungen aus [P1](../spec/P1-ziele-rahmenbedingungen.md)/[A02](A02-architecture-constraints.md) — PostgreSQL über Supabase (TECH-01), Hosting im Free-/Student-Tier auf Vercel/Supabase ohne eigenen Node-Backend-Server (TECH-02/TECH-03), OpenStreetMap/Nominatim als Nachbarsysteme (TECH-07) — sind bereits verbindlich festgelegt und werden hier nicht als eigene Entscheidung wiederholt, ebenso wenig die Lösungsstrategie aus [A04](A04-solution-strategy.md) oder die Bausteinstruktur aus [A05](A05-building-block-view.md). Die folgenden vier Entscheidungen betreffen, wie innerhalb dieser Randbedingungen konkrete architektonische Probleme gelöst werden.
 
 ## 9.1 ADR-001 — Atomare Fachoperationen über PostgreSQL-Funktionen (RPC) statt clientseitiger Prüfung
 
 **Status:** Angenommen
 
-**Kontext:**
-
-Die Kapazitätsgrenze einer Session ([F3 AF-01](../spec/F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel)) und die Einmaligkeit eines Check-ins ([AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung)) müssen auch bei gleichzeitigen Zugriffen mehrerer Nutzer konsistent bleiben ([N1-QA-01](../spec/N1-nichtfunktionale-anforderungen.md#n1-qa-01--konsistenz-von-beitritt-und-check-in)). Zusätzlich müssen bei der Session-Erstellung die zusammengehörigen Datensätze — Session, Organisator-Eintrag und die Teilnahme des Organisators als Teilnehmer ([D1.5](../spec/D1-datenmodell.md#d15-beziehungen) Invariante „Organisator-als-Teilnehmer") — gemeinsam entstehen, ohne dass ein Zwischenschritt fehlschlagen und einen unvollständigen Datensatz hinterlassen kann ([N2.2](../spec/N2-querschnittskonzepte.md#n22-row-level-security-rls), [A06 §6.3](A06-runtime-view.md#63-session-und-court-erstellen)). Da TECH-03 einen eigenen Node-Backend-Server ausschließt und der Datenzugriff ausschließlich über Supabase PostgREST läuft ([S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest)), stellt sich die Frage, wo und wie diese mehrschrittigen Prüf- und Schreibvorgänge für Session-Erstellung, Beitritt und Check-in ausgeführt werden, ohne die jeweilige Invariante zu verletzen.
+**Kontext:** Kapazitätsgrenze ([F3 AF-01](../spec/F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel)) und einmaliger Check-in ([AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung)) müssen auch bei gleichzeitigen Zugriffen halten ([N1-QA-01](../spec/N1-nichtfunktionale-anforderungen.md#n1-qa-01--konsistenz-von-beitritt-und-check-in)); bei der Erstellung müssen Session, Organisator-Eintrag und Organisator-Teilnahme gemeinsam entstehen ([D1.5](../spec/D1-datenmodell.md#d15-beziehungen)). Ohne eigenen Backend-Server (TECH-03) ist offen, wo diese mehrschrittigen Prüf- und Schreibvorgänge unteilbar laufen.
 
 **Optionen:**
 
-| Option | Beschreibung | Vorteile | Nachteile |
-|---|---|---|---|
-| **A — Clientseitig gesteuerte Einzelschritte** | Frontend prüft Bedingungen (z. B. Kapazität, Doppelbeitritt) bzw. legt zusammengehörige Datensätze (Session, Organisator-Eintrag, Organisator-Teilnahme) in mehreren aufeinanderfolgenden Aufrufen an. | Keine Datenbank-Funktionen nötig, Fachlogik bleibt in TypeScript. | Zeitfenster zwischen Prüfung und Schreiben (TOCTOU) bei gleichzeitigen Zugriffen; Risiko unvollständiger Datensätze bei Abbruch zwischen den Einzelschritten (z. B. Session ohne Organisator-Eintrag); eine umgangene Client-Prüfung wird nicht aufgefangen. |
-| **B — Unique-Constraint mit Retry** | Ein Datenbank-Constraint verhindert Doppelbeitritt; Kapazitätsprüfung bleibt clientseitig, bei Konflikt wird erneut versucht; mehrzeilige Erstellung bleibt mehrere Einzelaufrufe. | Kein PL/pgSQL-Code für die Kapazitätsprüfung. | Kapazitätsprüfung selbst bleibt clientseitig anfällig; zusätzliche Retry-Logik und uneinheitliche Fehlerbehandlung im Client; löst das Problem zusammengehöriger Datensätze bei der Erstellung nicht. |
-| **C — Atomare PostgreSQL-Funktion (RPC)** | Prüfung (Anmeldung, Sessionstatus, Doppelbeitritt, Kapazität bzw. Merkmal/Zeitfenster) bzw. die zusammengehörige Erzeugung mehrerer Datensätze laufen serverseitig als eine unteilbare Transaktion, aufgerufen über PostgREST-RPC (`create_session`, `join_session`, `check_in`). | Kapazitäts- und Check-in-Invariante sowie die Vollständigkeit der bei `create_session` erzeugten Datensätze sind datenbankseitig garantiert, unabhängig vom Client-Verhalten; für `join_session` und `check_in` können die in [F3](../spec/F3-anwendungsfunktionen.md)/[N2.3](../spec/N2-querschnittskonzepte.md#n23-ergebnisweitergabe-und-technisches-mapping) spezifizierten fachlichen Ergebniscodes unverändert an den Aufrufer zurückgegeben werden. | Fachlogik liegt teilweise in PL/pgSQL statt TypeScript; RPC-Funktionen benötigen eigene Tests und Wartung. |
+| Option | Vorteile | Nachteile |
+|---|---|---|
+| **A — Einzelschritte im Client** | Keine Datenbankfunktionen; Logik bleibt in TypeScript | Zeitfenster zwischen Prüfen und Schreiben (TOCTOU); unvollständige Datensätze bei Abbruch; umgangene Client-Prüfung wird nicht aufgefangen |
+| **B — Unique-Constraint mit Retry** | Kein PL/pgSQL für den Doppelbeitritt | Kapazitätsprüfung bleibt im Client anfällig; Retry-Logik im Client; löst die Erstellung nicht |
+| **C — Atomare PostgreSQL-Funktionen (RPC)** `create_session`, `join_session`, `check_in` | Invarianten datenbankseitig garantiert, unabhängig vom Client; Ergebniscodes aus F3 gehen unverändert an den Aufrufer | Fachlogik teils in PL/pgSQL; eigene Tests und Wartung |
 
-**Entscheidung:** Option C — atomare PostgreSQL-Funktionen als alleiniger Schreibpfad für Session-Erstellung, Beitritt und Check-in.
+**Entscheidung:** Option C — die drei RPCs sind der alleinige Schreibpfad für Erstellung, Beitritt und Check-in. F3 AF-01 verlangt „Atomarität statt Reihenfolgegarantie", und ohne Backend-Schicht ist die Datenbank der einzige Ort, an dem das unteilbar geht. `create_session` legt Session, Organisator-Eintrag, Organisator-Teilnahme und einen neu erfassten Court in einer Transaktion an, damit kein fehlschlagender Zwischenschritt die Invariante „Organisator zählt als Teilnehmer" verletzt oder einen verwaisten Court hinterlässt; ein eigenes Ergebniscode-Set ist für sie nicht spezifiziert.
 
-**Begründung:**
-
-[F3 AF-01](../spec/F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel) verlangt ausdrücklich „Atomarität statt Reihenfolgegarantie" für Prüfung und Anlage einer Teilnahme; [N1-QA-01](../spec/N1-nichtfunktionale-anforderungen.md#n1-qa-01--konsistenz-von-beitritt-und-check-in) macht dies zum geprüften Qualitätsziel. Für `join_session` und `check_in` sind die zugehörigen fachlichen Ergebniscodes und ihr HTTP-Mapping bei der jeweiligen Anwendungsfunktion in F3 festgelegt (u. a. [F3 AF-01](../spec/F3-anwendungsfunktionen.md#af-01--beitritts--und-kapazitätsregel): `SESSION_FULL`, `ALREADY_JOINED`; [F3 AF-02](../spec/F3-anwendungsfunktionen.md#af-02--check-in-validierung): `INVALID_CREDENTIAL`, `OUTSIDE_WINDOW`, `ALREADY_CHECKED_IN`); die allgemeine Mapping-Konvention steht in [N2.3](../spec/N2-querschnittskonzepte.md#n23-ergebnisweitergabe-und-technisches-mapping). `create_session` ist in [S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) ebenfalls als eine der drei atomaren RPCs benannt, jedoch aus einem anderen Grund: Die Funktion muss Session, Organisator-Eintrag und die Teilnahme des Organisators in einem Schritt anlegen, damit die Invariante „Organisator zählt ab Erstellung als Teilnehmer" ([D1.5](../spec/D1-datenmodell.md#d15-beziehungen), [F1 GP-01](../spec/F1-geschaeftsprozesse.md#f11-geschäftsprozess-sportgelegenheit-zustande-bringen-gp-01) A2) nicht durch einen fehlschlagenden Zwischenschritt verletzt werden kann — belegt durch [N2.2](../spec/N2-querschnittskonzepte.md#n22-row-level-security-rls) („kein Schreibzugriff außer über die Erstellungs-RPC, die `organizer`- und `participant`-Eintrag atomar mit der Session anlegt") und [A06 §6.3](A06-runtime-view.md#63-session-und-court-erstellen) („`create_session` ist atomar für Session und Organisator-Teilnahme"); ein eigenes Ergebniscode-Set für `create_session` ist dabei nicht spezifiziert. Da TECH-03 eine eigene Backend-Schicht ausschließt, ist die Datenbank in allen drei Fällen der einzige Ort, an dem diese Vorgänge unteilbar ausgeführt werden können; [A04](A04-solution-strategy.md#43-lösungsansätze-je-qualitätsziel) beschreibt das resultierende Verhalten.
-
-**Umsetzung:** Die drei Funktionen liegen als PL/pgSQL-Funktionen unter [`supabase/migrations/`](../../supabase/migrations); `createSession()`/`joinSession()`/`checkIn()` in `src/services/sessionService.ts` rufen ausschließlich sie auf und treffen selbst keine fachliche Entscheidung ([A08 §8.4](A08-crosscutting-concepts.md#84-atomare-fachoperationen-und-datenzugriff-über-die-service-schicht)). `join_session` sperrt die Session-Zeile (`select … for update`), bevor es die Belegung zählt — dadurch kann die Kapazitätsgrenze auch bei gleichzeitigen Beitritten nicht überschritten werden. Die Ergebniscodes aus F3 werden als SQLSTATE `PTxyz` geworfen, was PostgREST in den in F3 festgelegten HTTP-Status übersetzt ([`supabase/README.md`](../../supabase/README.md)).
-
-Über die drei spezifizierten Operationen hinaus hat sich eine Erweiterung ergeben: Ein neu erfasster Court wird nicht vorab über einen eigenen Schreibzugriff angelegt, sondern innerhalb von `create_session` — sonst bliebe bei einem Fehlschlag der Session-Erstellung ein verwaister Court zurück, also genau der unvollständige Zwischenstand, den diese Entscheidung ausschließt ([A06 §6.3](A06-runtime-view.md#63-session-und-court-erstellen)).
+**Umsetzung:** [`supabase/migrations/`](../../supabase/migrations); `join_session` sperrt die Session-Zeile (`for update`) vor dem Zählen; Ergebniscodes als SQLSTATE `PTxyz` ([`supabase/README.md`](../../supabase/README.md)); Aufruf nur über `sessionService` ([A08 §8.4](A08-crosscutting-concepts.md#84-atomare-fachoperationen-und-datenzugriff-über-die-service-schicht)).
 
 ---
 
@@ -34,19 +26,53 @@ Die Kapazitätsgrenze einer Session ([F3 AF-01](../spec/F3-anwendungsfunktionen.
 
 **Status:** Angenommen
 
-**Kontext:**
-
-Dialogseiten benötigen fachlichen Datenzugriff über Supabase PostgREST (NB-03) und Reverse-Geocoding über Nominatim (NB-05); für UC-12 (Profil) zusätzlich die Nutzerkennung aus Supabase Auth (NB-02). Zu entscheiden ist, ob UI-Komponenten und Dialogseiten diese Nachbarsysteme direkt ansprechen oder über eine dedizierte Zwischenschicht.
+**Kontext:** Dialogseiten brauchen fachlichen Datenzugriff über PostgREST (NB-03) und Reverse-Geocoding über Nominatim (NB-05). Ohne serverseitige Zwischenschicht ([A04 §4.2](A04-solution-strategy.md#42-top-level-zerlegung)) liegen Tabellennamen, RPC-Signaturen und Ergebniscodes zwangsläufig im Client; offen ist, ob gebündelt oder über die Dialogseiten verteilt.
 
 **Optionen:**
 
-| Option | Beschreibung | Vorteile | Nachteile |
-|---|---|---|---|
-| **A — Direkter Zugriff je Dialogseite** | Jede Seite ruft Supabase-Client-Methoden bzw. den Nominatim-Endpunkt selbst auf. | Kein zusätzliches Modul, weniger Indirektion. | Backend-Details (Tabellennamen, RPC-Signaturen, Ergebniscodes) verteilen sich über alle Dialogseiten; eine Umstellung von Mock- auf reale Daten erfordert Änderungen an jeder Seite einzeln. |
-| **B — Service-Schicht als einziger Zugriffspfad** | Dialogseiten rufen für fachlichen Datenzugriff und Geocoding ausschließlich Funktionen aus `src/services/` auf; nur diese Module kennen die fachlichen PostgREST-/RPC-Details beziehungsweise den Nominatim-Endpunkt. | Backend-Anbindung ist an einer Stelle austauschbar (Mock → Supabase), ohne Dialogseiten anzupassen; Fehlerbehandlung und Ergebniscode-Übersetzung sind zentralisiert. | Zusätzliche Abstraktionsebene; Service-Signaturen müssen für alle Aufrufer passen. |
+| Option | Vorteile | Nachteile |
+|---|---|---|
+| **A — Direkter Zugriff je Dialogseite** | Weniger Indirektion | Backend-Details über alle Seiten verteilt; Umstellung Mock → Supabase an jeder Seite einzeln |
+| **B — Service-Schicht** `src/services/` als einziger Zugriffspfad | Anbindung an einer Stelle austauschbar; Fehlerbehandlung und Ergebniscode-Übersetzung zentral | Zusätzliche Abstraktionsebene; Signaturen müssen allen Aufrufern passen |
 
-**Entscheidung:** Option B — Service-Schicht (`sessionService`, `courtService`, `userService`, `geocodingService`) als einziger fachlicher Zugriffspfad der UI auf NB-03 (vollständig) und NB-05 (vollständig). NB-02 liegt außerhalb dieser Grenze: Die Auth-Sitzung (Login/Logout/Redirect) ist Teil des Bausteins App-Shell & Navigation, und die Nutzerkennung für UC-12 bestimmt die Datenbank serverseitig aus dem mitgeführten JWT (`auth.uid()`), statt dass ein Servicemodul sie bei NB-02 erfragt.
+**Entscheidung:** Option B — `sessionService`, `courtService`, `userService` (NB-03) und `geocodingService` (NB-05) sind der einzige fachliche Zugriffspfad der UI. Das hat sich bewährt: Die Umstellung von Mockdaten auf Supabase änderte nur `src/services/`, die Dialogseiten erhielten lediglich Lade- und Fehlerzustände ([A08 §8.5.7](A08-crosscutting-concepts.md#857-stand-der-umsetzung)). Die Auth-Sitzung (NB-02) liegt außerhalb dieser Grenze beim Baustein App-Shell & Navigation (`src/auth/`): Die RPCs bestimmen die Nutzerkennung serverseitig über `auth.uid()`, und wo ein Lesezugriff sie braucht, übergibt die Dialogseite sie aus dem `AuthProvider` — kein Servicemodul liest die Sitzung selbst.
 
-**Begründung:**
+**Umsetzung:** `src/services/` mit gemeinsamem Client `supabaseClient.ts`; Zuordnung der Module zu den Nachbarsystemen in [A05 §5.4](A05-building-block-view.md#54-whitebox-service-schicht--ebene-2).
 
-[A04 §4.2](A04-solution-strategy.md#42-top-level-zerlegung) hält fest, dass LocalCourt keine eigene serverseitige Zwischenschicht besitzt: Ohne eine solche Schicht liegen die Details der Nachbarsysteme — Tabellennamen, RPC-Signaturen, Ergebniscodes — unvermeidlich im Client, und die Entscheidung ist nur, ob sie an einer Stelle gebündelt oder über die Dialogseiten verteilt werden. Die Bündelung hat sich bewährt: Die Umstellung von Mockdaten auf Supabase hat ausschließlich die Module unter `src/services/` verändert, die Dialogseiten mussten dafür nicht neu strukturiert werden — sie erhielten lediglich Lade- und Fehlerzustände, weil die Aufrufe nun asynchron sind ([A08 §8.5.7](A08-crosscutting-concepts.md#857-stand-der-umsetzung)). `sessionService`, `courtService` und `userService` decken die in [S1.4](../spec/S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) beschriebenen fachlichen Datenzugriffe ab, `geocodingService` NB-05 gemäß [S1.6](../spec/S1-nachbarsysteme.md#s16-nb-05--nominatim-reverse-geocoding). [A05 §5.4](A05-building-block-view.md#54-whitebox-service-schicht--ebene-2) ordnet alle drei datenhaltenden Module NB-03 zu und `geocodingService` NB-05. Die Auth-Sitzung selbst liegt außerhalb dieser Grenze: [A05 §5.1](A05-building-block-view.md#51-whitebox-localcourt--ebene-1) ordnet den Zugriffsschutz über die Supabase-Auth-Sitzung (NB-02) explizit dem Baustein App-Shell & Navigation zu (`src/auth/`), nicht der Service-Schicht — im Code entsprechend `AuthProvider`/`ProtectedRoute` statt eines Service-Moduls. Die hier dokumentierte Entscheidung betrifft daher ausschließlich die Integrationsgrenze für NB-03 und NB-05; NB-02 liegt vollständig beim Baustein App-Shell & Navigation. Kein Servicemodul liest die Anmeldesitzung — wo ein Lesezugriff die Nutzerkennung braucht, übergibt die Dialogseite sie als Parameter aus dem `AuthProvider` ([A05 §5.4](A05-building-block-view.md#54-whitebox-service-schicht--ebene-2)).
+---
+
+## 9.3 ADR-003 — Session-Status in einer Datenbankfunktion ableiten statt im Client
+
+**Status:** Angenommen
+
+**Kontext:** Nach [F3 AF-03](../spec/F3-anwendungsfunktionen.md#af-03--status-einer-sport-session) wird der Status bei jeder Abfrage abgeleitet, nicht gespeichert — ein Scheduler scheidet aus. *Wo* abgeleitet wird, lässt [D1.6](../spec/D1-datenmodell.md#d16-abgeleitete-merkmale) offen. Gebraucht wird der Status in der Anzeige und in den RPCs (`check_in` nur bei `active`, `join_session` nicht bei `completed`), die nach ADR-001 in der Datenbank prüfen.
+
+**Optionen:**
+
+| Option | Vorteile | Nachteile |
+|---|---|---|
+| **A — Im Client** (TypeScript, Gerätezeit) | Keine Datenbankfunktion für die Anzeige | Regel doppelt, gegen zwei Uhren: Anzeige kann einen Check-in anbieten, den `check_in` mit `OUTSIDE_WINDOW` ablehnt |
+| **B — Eine Datenbankfunktion** `session_status()` für `v_session` und RPCs | Eine Definition, eine Uhr; Status in Abfragen filterbar | Regel in SQL; Anzeige erst nach Neuladen aktuell |
+
+**Entscheidung:** Option B — `session_status()` ist die einzige Definition von AF-03. Option A war bis Ende August umgesetzt (`getSessionStatus`, entfernt in `a9a568a`) und hat genau den Widerspruch zwischen Anzeige und RPC erzeugt. Die verzögerte Aktualität der Anzeige wird hingenommen, weil die RPC jeden Check-in außerhalb des Zeitfensters ablehnt.
+
+**Umsetzung:** [`supabase/migrations/20260826171838_views.sql`](../../supabase/migrations/20260826171838_views.sql); Regel in [A08 §8.1.4](A08-crosscutting-concepts.md#814-abgeleitete-und-redundante-daten).
+
+---
+
+## 9.4 ADR-004 — Sportarten-Katalog als statisches Frontend-Modul statt Laden zur Laufzeit
+
+**Status:** Angenommen
+
+**Kontext:** [D1.4](../spec/D1-datenmodell.md#sport--sportart-katalog) führt `sport` als Referenzkatalog, den keine Endnutzer pflegen; in der Datenbank per Seed-Migration befüllt. Das Frontend braucht Schlüssel und Anzeigenamen in Filtern, Formularen, Profil und auf jeder Session.
+
+**Optionen:**
+
+| Option | Vorteile | Nachteile |
+|---|---|---|
+| **A — Laden zur Laufzeit** aus `sport` | Eine Quelle; neue Sportart ohne Frontend-Änderung | Lade- und Fehlerzustand vor jedem Filter und Formular; `SportKey` kein Union-Typ |
+| **B — Statisches Modul** `src/data/sports.ts` | Kein Ladezustand; Compiler prüft jeden Schlüssel | Zwei Quellen von Hand synchron halten; nur in der DB ergänzte Sportart erscheint als „Sonstiges" |
+
+**Entscheidung:** Option B — das Frontend führt den Katalog als statisches Modul. Eine neue Sportart ist eine Migration durch das Team selbst ([A02](A02-architecture-constraints.md#22-organisatorische-randbedingungen) ORG-02), das Modul wird in derselben Änderung mitgezogen. Verbindung zur Datenbank ist der stabile Schlüssel aus D1.4, nicht die ID; nur `createSession()` löst ihn einmalig in die `sport_id` auf.
+
+**Umsetzung:** [`src/data/sports.ts`](../../src/data/sports.ts) spiegelt [`20260826171822_seed_sport.sql`](../../supabase/migrations/20260826171822_seed_sport.sql); Typabbildung in [A08 §8.1.2](A08-crosscutting-concepts.md#812-abbildung-fachlicher-daten-auf-typescript).
