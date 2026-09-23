@@ -81,18 +81,19 @@ export function SessionDetailPage() {
     text: string;
   } | null>(null);
   const [isJoining, setIsJoining] = useState(false);
-  // Die PIN ist nicht Teil von v_session; sie ist nur für Organisator und
-  // bestätigte Teilnehmer sichtbar (N2.2) und wird gesondert geholt. Das
-  // Ergebnis wird zusammen mit der Session-Kennung abgelegt, damit beim
+  // Die PIN ist nicht Teil von v_session; sie ist nur für den Organisator
+  // abrufbar (N2.2) und wird gesondert geholt, für alle anderen gar nicht erst.
+  // Das Ergebnis wird zusammen mit der Session-Kennung abgelegt, damit beim
   // Wechsel der Session nicht kurzzeitig die alte PIN erscheint.
   const geladeneSessionId = session?.id;
+  const ladePin = !!user && session?.organizerId === user.id;
   const [pinEintrag, setPinEintrag] = useState<{
     sessionId: string;
     pin: string | null;
   } | null>(null);
 
   useEffect(() => {
-    if (!geladeneSessionId) {
+    if (!geladeneSessionId || !ladePin) {
       return;
     }
 
@@ -106,7 +107,7 @@ export function SessionDetailPage() {
     return () => {
       aktiv = false;
     };
-  }, [geladeneSessionId]);
+  }, [geladeneSessionId, ladePin]);
 
   const pin =
     pinEintrag && pinEintrag.sessionId === geladeneSessionId
