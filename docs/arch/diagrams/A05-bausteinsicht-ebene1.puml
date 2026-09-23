@@ -44,7 +44,7 @@ Organisator --> NB01
 NB01 --> Shell : Nutzeraktion
 
 UI -[#Black]-> NB04 : Kartenkacheln
-Services -[#Black]-> NB02 : Anmeldung, Sitzung
+Shell -[#Black]-> NB02 : Anmeldung, Sitzung
 Services -[#Black]-> NB03 : Lesen, RPC
 Services -[#Black]-> NB05 : Reverse-Geocoding
 
