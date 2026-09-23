@@ -47,7 +47,8 @@ entsprechen den Versionen in der Migrationshistorie des Projekts.
 Für neue Migrationen: Datei nach dem Muster `<UTC-Zeitstempel>_<name>.sql`
 anlegen und anwenden. Ein lokales Supabase-CLI ist im Projekt nicht
 eingerichtet; bisher wurden die Migrationen über die Supabase-Verwaltungs-API
-eingespielt.
+eingespielt. Ein eigenes, neues Projekt aufzusetzen beschreibt
+[`INSTALL.md`, Abschnitt 6](../INSTALL.md#6-eigenes-supabase-projekt).
 
 ## Lesen ohne Anmeldung
 

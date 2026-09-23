@@ -28,29 +28,8 @@ technische Einordnung je Querschnittskonzept in
 
 ## Starten des Frontends
 
-Abhängigkeiten installieren:
-
-```bash
-npm install
-```
-
-Lokalen Entwicklungsserver starten:
-
-```bash
-npm run dev
-```
-
-Build prüfen:
-
-```bash
-npm run build
-```
-
-Standardmäßig läuft die App lokal unter:
-
-```txt
-http://localhost:5173
-```
+Installation, Konfiguration und lokaler Start stehen in
+[`INSTALL.md`](../INSTALL.md).
 
 ## Screens und aktueller Realisierungsstand
 

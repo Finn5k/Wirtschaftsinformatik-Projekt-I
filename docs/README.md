@@ -11,6 +11,7 @@ Statusdokumentation des Frontends:
 | [spec/](spec/README.md) | Spezifikation — *was* und *warum* | [Siedersleben-Schema](spec/E1-leseanleitung.md) | Technologieunabhängige Beschreibung von Zielen, Geschäftsprozessen, Anwendungsfällen, Datenmodell, Dialogen und nichtfunktionalen Anforderungen. |
 | [arch/](arch/README.md) | Architektur — *wie* | arc42 + ADRs | Lösungsstrategie, Bausteinsicht, Laufzeitsichten, Deployment und Architekturentscheidungen zur Umsetzung der Spezifikation. |
 | [frontend.md](frontend.md) | Umsetzungsstand | Screens, Komponenten, Abweichungen | Abgleich des Frontends (Routen, Komponenten, Servicezugriffe) mit den in `spec/B1` beschriebenen Dialogen. |
+| [../INSTALL.md](../INSTALL.md) | Umsetzung — Inbetriebnahme | Schritt-für-Schritt-Anleitung | Klonen, Konfiguration, lokaler Start, Prüfschritte, eigenes Supabase-Projekt, Fehlerbehebung; die fachlichen Zusagen dazu stehen in `spec/S3`. |
 | [../supabase/](../supabase/README.md) | Umsetzung — Datenbank | Migrationen | Datenbankschema, RLS-Policies und atomare RPCs; setzt `spec/D1`, `spec/D2`, `spec/N2.2` und `arch/A09` ADR-001 um. |
 | Eingesetzte KI-Werkzeuge | Spezifikation, Architektur, Umsetzung | je ein Abschnitt | Offenlegung je Bereich: [Spezifikation](spec/README.md#eingesetzte-ki-werkzeuge), [Architektur](arch/README.md#3-eingesetzte-ki-werkzeuge), [Implementierung](../README.md#eingesetzte-ki-werkzeuge). |
 

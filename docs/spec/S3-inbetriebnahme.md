@@ -81,4 +81,5 @@ Frontend-Rollback und die Rücknahme einer Datenbankmigration sind zwei getrennt
 | [N2.2](N2-querschnittskonzepte.md#n22-row-level-security-rls) | Row-Level-Security als Zugriffsschutz im laufenden Betrieb |
 | [supabase/README.md](../../supabase/README.md) | Migrationen, Ergebniscodes, Anwenden neuer Migrationen |
 | [`.env.example`](../../.env.example) | Konfigurationswerte |
+| [`INSTALL.md`](../../INSTALL.md) | Handgriffe zu S3: Klonen, Konfiguration, lokaler Start, Prüfschritte, eigenes Supabase-Projekt |
 | [docs/spec/README.md](README.md) | B2, S2 als nicht anwendbar dokumentiert |

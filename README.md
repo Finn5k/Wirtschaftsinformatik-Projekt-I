@@ -54,22 +54,16 @@ Wartelisten, Ratings, Zahlungen, native Apps. Details in
 
 ## Schnellstart (lokale Entwicklung)
 
-Voraussetzungen: Node.js (LTS) und npm. Ein Backend ist lokal nicht zu
-starten: Auch der Dev-Server spricht mit dem gemeinsamen Supabase-Projekt,
-dessen Schema bereits angewendet ist — Testdaten landen also in der
-Produktionsdatenbank.
-
 ```bash
-cp .env.example .env.local   # Publishable Key aus dem Supabase-Dashboard eintragen
-npm install                  # Abhängigkeiten installieren
-npm run dev                  # Dev-Server (Vite) starten
-npm run build                # Produktionsbuild (tsc + vite build)
-npm run lint                 # ESLint
-npm run preview              # Produktionsbuild lokal ansehen
+cp .env.example .env.local   # Publishable Key eintragen
+npm ci
+npm run dev                  # http://localhost:5173
 ```
 
-Der produktive Betrieb (Vercel, Supabase, Releases, Rollback) ist in
-[S3 — Inbetriebnahme](docs/spec/S3-inbetriebnahme.md) beschrieben.
+Auch der Dev-Server arbeitet gegen das gemeinsame Supabase-Projekt —
+Testdaten landen in der Produktionsdatenbank. Voraussetzungen,
+Prüfschritte, eigenes Supabase-Projekt und Fehlerbehebung:
+[`INSTALL.md`](INSTALL.md).
 
 ## Projektstruktur
 
@@ -82,6 +76,7 @@ Der produktive Betrieb (Vercel, Supabase, Releases, Rollback) ist in
 │   ├── spec/            # Spezifikation nach Siedersleben (P1, P2, F1–F3, D1, D2, B1, S1, S3, N1, N2, E1, E2)
 │   ├── arch/            # Architektur nach arc42 (A01–A09, A12) mit ADRs
 │   └── frontend.md      # Umsetzungsstand je Dialog
+├── INSTALL.md           # Installation und Inbetriebnahme
 ├── CLAUDE.md            # Projektkonventionen (Commits, Branches, Spec-Schema)
 ├── AGENTS.md            # Verweis auf CLAUDE.md für weitere KI-Werkzeuge
 ├── TEAMINFO.md          # Team, Rollen, Projektidee
