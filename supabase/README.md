@@ -19,6 +19,7 @@ und die atomaren Fachoperationen aus
 | `…195645_rpc_align` | RPC-Rümpfe wortgleich zu den Dateien hier, inklusive der erklärenden Kommentare. |
 | `20260829091301_profile_basics_public` | `display_name`/`avatar_url` auch unangemeldet lesbar (B1 DLG-04, B1.2); `city` bleibt der eigenen Zeile vorbehalten. |
 | `20260915133001_court_insert_only_via_rpc` | INSERT-Recht und Policy `court_insert` auf `court` zurückgenommen; Courts entstehen nur noch in `create_session` (S1.4, ADR-001). |
+| `20260923100000_session_pin_organizer_only` | `session_pin()` gibt die PIN nur noch dem Organisator zurück, nicht mehr bestätigten Teilnehmern (N2.2, B1 DLG-04). |
 
 ## Ergebniscodes
 
@@ -73,3 +74,13 @@ Die erste RLS-Fassung (`…171948_rls.sql`) hatte `authenticated` dennoch ein
 INSERT auf `court` erteilt; `…133001_court_insert_only_via_rpc` nimmt Recht und
 Policy zurück. Der Kommentar in `…171948_rls.sql` bleibt unverändert stehen,
 damit Datei und Datenbank übereinstimmen — maßgeblich ist die Folgemigration.
+
+## Session-PIN
+
+`session_pin()` gibt die PIN ausschließlich dem Organisator der Session zurück;
+für Teilnehmer, andere Nutzer und Nicht-Angemeldete liefert sie `NULL`. Die
+erste Fassung in `…171948_rls.sql` gab sie auch bestätigten Teilnehmern frei und
+blieb als Historie unverändert stehen; maßgeblich ist
+`…20260923100000_session_pin_organizer_only`. Teilnehmer erhalten die PIN vom
+Organisator vor Ort und geben sie im Check-in ein; `check_in` vergleicht sie
+serverseitig und ist von der Änderung nicht berührt.
