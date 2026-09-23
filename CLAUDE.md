@@ -58,7 +58,7 @@ Beispiele aus der Projekt-Historie: `docs(spec): add F2 use cases`,
   (Geschäftsprozess `GP-nn`, Use Case `UC-nn`, Anwendungsfunktion `AF-nn`, Ziel `G-nn`, Nicht-Ziel `NG-nn`).
 - Alle Dokumente sind auf **Deutsch** verfasst; Tabellen/Listen werden Prosa vorgezogen.
 - Querverweise zwischen Bausteinen werden explizit als Markdown-Links gesetzt.
-- **KI-Werkzeug-Offenlegung (verpflichtend):** Der Einsatz von KI- und Assistenzwerkzeugen wird projektweit **zentral** in [docs/README.md, Abschnitt „Deklaration von Hilfsmitteln"](docs/README.md#deklaration-von-hilfsmitteln) dokumentiert (Tabelle mit Werkzeug, Einsatzbereich, Verwendung; Prüfung/Verantwortung zentral vorangestellt). Einzelne Spezifikationsbausteine und Architekturkapitel führen keinen eigenen KI-Abschnitt mehr; die zentrale Deklaration wird bei relevanter Änderung der Werkzeugnutzung aktuell gehalten.
+- **KI-Werkzeug-Offenlegung (verpflichtend):** Der Einsatz von KI- und Assistenzwerkzeugen wird in **drei** kurzen Abschnitten „Eingesetzte KI-Werkzeuge" dokumentiert, je einer für [Spezifikation](docs/spec/README.md#eingesetzte-ki-werkzeuge), [Architektur](docs/arch/README.md#3-eingesetzte-ki-werkzeuge) und [Implementierung](README.md#eingesetzte-ki-werkzeuge). Jeder Abschnitt nennt nur die in seinem Bereich eingesetzten Werkzeuge und beantwortet: welche Werkzeuge, wofür, wie die Ergebnisse geprüft und überarbeitet wurden. Die Einsatzzwecke werden werkzeugunabhängig aufgeführt, ohne Zuordnung zu einzelnen Werkzeugen. Eine zentrale Gesamtdeklaration entfällt; einzelne Bausteine und Kapitel führen keinen eigenen KI-Abschnitt. Die drei Abschnitte werden bei relevanter Änderung der Werkzeugnutzung aktuell gehalten.
 
 ## Referenzprojekte (Vorgaben des Professors)
 

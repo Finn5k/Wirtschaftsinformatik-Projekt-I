@@ -249,4 +249,26 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 - Alle Dokumente sollten in **Deutsch** geschrieben sein (konsistent mit TEAMINFO.md und Hochschul-Kontext).
 - Tabellen und Listen bevorzugen statt Prosa-Fließtext, wo möglich.
 - Querverweise zwischen Bausteinen, z. B. F2 → F3/D1/B1/N1 und D1 → D2, sollen explizit als relative Markdown-Links dokumentiert werden.
-- Nach Abschluss jeder Phase: Spec-Lead (Afrem) + Project-Lead (Finn) reviewen.
+- Änderungen werden vor dem Pull Request selbst geprüft und im Pull Request bei Bedarf vom Team reviewt.
+
+---
+
+## Eingesetzte KI-Werkzeuge
+
+Gilt für alle Bausteine der Spezifikation. Architektur und Implementierung
+führen eigene Abschnitte ([Architektur](../arch/README.md#3-eingesetzte-ki-werkzeuge),
+[Implementierung](../../README.md#eingesetzte-ki-werkzeuge)).
+
+**Werkzeuge:** Claude Code, ChatGPT, Codex, GitHub Copilot
+
+**Einsatz:**
+
+- Entwurf und Strukturierung von Bausteinen
+- Ausarbeitung, Formulierungsvorschläge und redaktionelle Überarbeitung
+- Erstellung und Überarbeitung von Diagrammen
+- Konsistenz- und Querverweisprüfung zwischen den Bausteinen
+
+**Prüfung:** Wer eine Änderung mit KI-Unterstützung erstellt, prüft und
+überarbeitet sie zuerst selbst. Danach geht sie per Pull Request ins
+Repository, wird dort bei Bedarf vom Team erneut geprüft und erst dann nach
+`main` übernommen. Die fachliche Verantwortung bleibt beim Team.

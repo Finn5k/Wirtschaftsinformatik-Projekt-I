@@ -42,6 +42,8 @@ LocalCourt ist eine Webanwendung zur Organisation spontaner Sport-Sessions auf l
 
 ## Eingesetzte KI-Werkzeuge
 
-Der projektweite Einsatz von KI- und Assistenzwerkzeugen wird zentral in
-[docs/README.md, Abschnitt „Deklaration von Hilfsmitteln“](docs/README.md#deklaration-von-hilfsmitteln)
-dokumentiert.
+Der Einsatz von KI- und Assistenzwerkzeugen wird je Bereich in einem eigenen
+Abschnitt dokumentiert:
+[Spezifikation](docs/spec/README.md#eingesetzte-ki-werkzeuge),
+[Architektur](docs/arch/README.md#3-eingesetzte-ki-werkzeuge),
+[Implementierung](README.md#eingesetzte-ki-werkzeuge).
