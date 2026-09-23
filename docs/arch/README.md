@@ -34,7 +34,7 @@ Abgleich mit den Dialogen aus B1 steht in
 | [A06 — Laufzeitsicht](A06-runtime-view.md) | Session beitreten, Check-in per QR-Code oder PIN, Session und Court erstellen. |
 | [A07 — Verteilungssicht](A07-deployment-view.md) | Produktionsverteilung auf Browser, Vercel und Supabase-Projekt. |
 | [A08 — Querschnittskonzepte](A08-crosscutting-concepts.md) | Datenmodell und Persistenz, Validierung, Zugriffsschutz, atomare Fachoperationen, Fehlerbehandlung — je Konzept mit dem Stand im Code. |
-| [A09 — Architekturentscheidungen](A09-architecture-decisions.md) | ADR-001 (atomare Fachoperationen als RPC) und ADR-002 (Service-Schicht als Integrationsgrenze). |
+| [A09 — Architekturentscheidungen](A09-architecture-decisions.md) | ADR-001 (atomare Fachoperationen als RPC), ADR-002 (Service-Schicht als Integrationsgrenze), ADR-003 (Session-Status in der Datenbank) und ADR-004 (statischer Sportarten-Katalog). |
 | [A12 — Glossar](A12-glossary.md) | Architekturbegriffe, die A01–A09 voraussetzen; fachliche Begriffe stehen in [E2](../spec/E2-glossar.md). |
 
 A10 und A11 werden nicht geführt: Die prüfbaren Qualitätsanforderungen stehen
