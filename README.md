@@ -111,8 +111,24 @@ alle Bausteine und deren aktuellen Bearbeitungsstand.
 
 ## Eingesetzte KI-Werkzeuge
 
-Der Einsatz von KI-/Assistenzwerkzeugen ist zentral und projektweit in
-[docs/README.md, Abschnitt „Deklaration von Hilfsmitteln"](docs/README.md#deklaration-von-hilfsmitteln)
-dokumentiert (Werkzeuge, Einsatzbereiche, Prüfung/Verantwortung). Alle
-KI-Beiträge werden manuell geprüft und überarbeitet; die fachliche
-Verantwortung bleibt beim Team.
+Gilt für die gesamte Implementierung (Frontend und Datenbank) einschließlich
+der zugehörigen Dokumentation. Spezifikation
+und Architektur führen eigene Abschnitte
+([Spezifikation](docs/spec/README.md#eingesetzte-ki-werkzeuge),
+[Architektur](docs/arch/README.md#3-eingesetzte-ki-werkzeuge)).
+
+**Werkzeuge:** Claude Code, ChatGPT, Codex
+
+**Einsatz:**
+
+- Frontend-Implementierung (Supabase-Anbindung, Auth, Services, Typen, Dialoge)
+  und Fehlerbehebung
+- Datenbank-Migrationen und RLS-Policies
+- Prüfung von Codeänderungen
+- Nachführen von `docs/frontend.md` und Abgleich mit dem Code
+
+**Prüfung:** Wer eine Änderung mit KI-Unterstützung erstellt, prüft sie zuerst
+selbst (`npm run lint`, `npm run build`, manuelle Prüfung der betroffenen
+Dialoge im Browser). Danach geht sie per Pull Request ins Repository, wird dort
+bei Bedarf vom Team erneut geprüft und erst dann nach `main` übernommen. Die
+fachliche Verantwortung bleibt beim Team.

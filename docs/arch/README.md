@@ -40,3 +40,24 @@ Abgleich mit den Dialogen aus B1 steht in
 A10 und A11 werden nicht geführt: Die prüfbaren Qualitätsanforderungen stehen
 vollständig in [N1](../spec/N1-nichtfunktionale-anforderungen.md), ein eigenes
 Risikokapitel wird für das MVP nicht gepflegt.
+
+## 3. Eingesetzte KI-Werkzeuge
+
+Gilt für die gesamte Architekturdokumentation einschließlich der ADRs. Spezifikation und
+Implementierung führen eigene Abschnitte
+([Spezifikation](../spec/README.md#eingesetzte-ki-werkzeuge),
+[Implementierung](../../README.md#eingesetzte-ki-werkzeuge)).
+
+**Werkzeuge:** Claude Code, Codex
+
+**Einsatz:**
+
+- Entwurf und Strukturierung der arc42-Kapitel und dieser Übersicht
+- Erstellung und Überarbeitung von Diagrammen
+- Konsistenzprüfung gegen Spezifikation und Code
+
+**Prüfung:** Wer eine Änderung mit KI-Unterstützung erstellt, prüft und
+überarbeitet sie zuerst selbst und gleicht sie mit Spezifikation und Code ab.
+Danach geht sie per Pull Request ins Repository, wird dort bei Bedarf vom Team
+erneut geprüft und erst dann nach `main` übernommen. Die fachliche
+Verantwortung bleibt beim Team.

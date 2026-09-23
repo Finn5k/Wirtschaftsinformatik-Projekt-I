@@ -12,6 +12,7 @@ Statusdokumentation des Frontends:
 | [arch/](arch/README.md) | Architektur — *wie* | arc42 + ADRs | Lösungsstrategie, Bausteinsicht, Laufzeitsichten, Deployment und Architekturentscheidungen zur Umsetzung der Spezifikation. |
 | [frontend.md](frontend.md) | Umsetzungsstand | Screens, Komponenten, Abweichungen | Abgleich des Frontends (Routen, Komponenten, Servicezugriffe) mit den in `spec/B1` beschriebenen Dialogen. |
 | [../supabase/](../supabase/README.md) | Umsetzung — Datenbank | Migrationen | Datenbankschema, RLS-Policies und atomare RPCs; setzt `spec/D1`, `spec/D2`, `spec/N2.2` und `arch/A09` ADR-001 um. |
+| Eingesetzte KI-Werkzeuge | Spezifikation, Architektur, Umsetzung | je ein Abschnitt | Offenlegung je Bereich: [Spezifikation](spec/README.md#eingesetzte-ki-werkzeuge), [Architektur](arch/README.md#3-eingesetzte-ki-werkzeuge), [Implementierung](../README.md#eingesetzte-ki-werkzeuge). |
 
 Die Trennung zwischen Spezifikation und Architektur ist bewusst: `spec/`
 beschreibt die fachlichen Anforderungen — Ziele, Prozesse, Anwendungsfälle,
@@ -47,24 +48,3 @@ Branches, Spezifikationsschema) in [../CLAUDE.md](../CLAUDE.md).
 LocalCourt befindet sich in aktiver Entwicklung. Spezifikation, Architektur
 und Frontend-Dokumentation werden fortlaufend aktualisiert und an den
 jeweils aktuellen Projektstand angepasst.
-
-## Deklaration von Hilfsmitteln
-
-Im Projekt LocalCourt werden KI-gestützte Werkzeuge unterstützend
-eingesetzt. Diese Deklaration wird zentral für das gesamte Projekt geführt
-und ersetzt die zuvor in einzelnen Spezifikations- und
-Architekturdokumenten enthaltenen Abschnitte zu eingesetzten
-KI-Werkzeugen.
-
-Dokumentiert wird der jeweils tatsächlich erfolgte Einsatz in
-Spezifikation, Architektur, Implementierung und weiterer
-Projektdokumentation. Die fachliche Verantwortung und Freigabe aller
-Inhalte bleibt beim Team. KI-generierte oder KI-überarbeitete Inhalte und
-Vorschläge werden vor ihrer Übernahme geprüft und bei Bedarf angepasst.
-
-| Werkzeug | Einsatzbereich | Verwendung |
-|---|---|---|
-| Claude Code | Spezifikation, Architektur | Analyse bestehender Spezifikation, Architektur und Code; Entwurf und Strukturierung von Spezifikationsbausteinen und arc42-Kapiteln; Unterstützung bei der Erstellung und Überarbeitung von Diagrammen in Spezifikation und Architektur; Konsistenz- und Querverweisprüfung. |
-| ChatGPT | Spezifikation, Projektdokumentation | Formulierungsvorschläge und redaktionelle Überarbeitung einzelner Spezifikationsbausteine sowie Abgleich der Frontend-Statusdokumentation (`docs/frontend.md`) mit dem Code. |
-| Codex | Spezifikation, Implementierung, Projektdokumentation | Ausarbeitung und redaktionelle Überarbeitung von Spezifikationsbausteinen; Unterstützung bei Frontend-Implementierung und -Prüfung; Nachführen der Frontend-Statusdokumentation nach Codeänderungen; Unterstützung bei der Strukturierung der Architektur-Übersicht (`docs/arch/README.md`). |
-| GitHub Copilot | Spezifikation | Formulierungsunterstützung bei einzelnen frühen Spezifikationsbausteinen (P1, F1, P2, S1). |
