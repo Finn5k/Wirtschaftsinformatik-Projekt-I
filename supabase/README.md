@@ -32,11 +32,12 @@ Die RPCs werfen fachliche Ergebniscodes als SQLSTATE `PTxyz`; PostgREST
 | `INVALID_CREDENTIAL` | 400 | AF-02 |
 | `NOT_AUTHENTICATED` | 401 | AF-01, AF-02 |
 | `NOT_JOINED` | 403 | AF-02 |
+| `SESSION_NOT_FOUND` | 404 | AF-01, AF-02 |
 | `SESSION_NOT_JOINABLE`, `ALREADY_JOINED`, `SESSION_FULL`, `OUTSIDE_WINDOW` | 409 | AF-01, AF-02 |
 
-`START_IN_PAST`, `COURT_INCOMPLETE` (400) und `SESSION_NOT_FOUND` (404) sind
-Eingabe- bzw. Existenzfehler ohne F3-Entsprechung — F3 definiert für
-`create_session` bewusst kein eigenes Ergebniscode-Set.
+`START_IN_PAST` und `COURT_INCOMPLETE` (400) sind Eingabefehler ohne
+F3-Entsprechung — F3 definiert für `create_session` bewusst kein eigenes
+Ergebniscode-Set.
 
 ## Anwenden
 
