@@ -13,7 +13,9 @@ Dort geregelt:
   erlaubte `type`- und `scope`-Werte, Freigabe der Commit-Nachricht vor dem Commit
 - Aufbau der Spezifikation nach Siedersleben unter `docs/spec/`, stabile IDs,
   Sprache und Querverweis-Konventionen
-- Verpflichtende, zentrale Offenlegung eingesetzter KI-Werkzeuge unter `docs/README.md`
+- Verpflichtende Offenlegung eingesetzter KI-Werkzeuge in drei Abschnitten:
+  Spezifikation (`docs/spec/README.md`), Architektur (`docs/arch/README.md`),
+  Implementierung (`README.md`)
 - Referenzprojekte des Professors
 - Branch- und Pull-Request-Konventionen
 
