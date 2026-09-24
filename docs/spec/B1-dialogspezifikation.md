@@ -213,6 +213,7 @@ Der Zustand ergibt sich aus Anmeldung, Rolle, Teilnahme und Session-Status (AF-0
 |---|---|
 | `OK` | „Du bist der Session beigetreten.“ |
 | `NOT_AUTHENTICATED` | „Bitte melde dich an, um der Session beizutreten.“ |
+| `SESSION_NOT_FOUND` | „Diese Session existiert nicht mehr.“ |
 | `SESSION_NOT_JOINABLE` | „Dieser Session kannst du nicht mehr beitreten.“ |
 | `ALREADY_JOINED` | „Du bist dieser Session bereits beigetreten.“ |
 | `SESSION_FULL` | „Die Session ist bereits voll.“ |
@@ -296,6 +297,8 @@ Frühere Felder „Empfohlener Rang" und „Sichtbarkeit" sind **nicht** Teil di
 | Ergebniscode | Anzeigetext |
 |---|---|
 | `OK` | „Check-in erfolgreich.“ |
+| `NOT_AUTHENTICATED` | „Bitte melde dich an, um einzuchecken.“ |
+| `SESSION_NOT_FOUND` | „Diese Session existiert nicht mehr.“ |
 | `NOT_JOINED` | „Du bist dieser Session nicht beigetreten." (Verweis auf DLG-04 / Beitreten) |
 | `INVALID_CREDENTIAL` | „Der QR-Code oder die PIN ist für diese Session ungültig.“ |
 | `OUTSIDE_WINDOW` | „Der Check-in ist nur während der laufenden Session möglich.“ |

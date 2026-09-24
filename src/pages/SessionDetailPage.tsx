@@ -29,8 +29,8 @@ import { getSessionPin } from "../services/sessionService";
 // Offen / Beigetreten / Organisator / Read-only (UC-03, UC-04, UC-07).
 // Anzeigetexte zu den Ergebniscodes aus F3 AF-01. Der Wortlaut ist in B1.4.4
 // verbindlich festgelegt und wird deshalb wortgleich übernommen; B1 ist der
-// zuständige Baustein für Dialogtexte (B1.8). `SESSION_NOT_FOUND` ist kein
-// F3-Code und hat dort keinen Text.
+// zuständige Baustein für Dialogtexte (B1.8). Das gilt auch für
+// `SESSION_NOT_FOUND`, den F3 AF-01 mit 404 führt.
 function joinRejectionText(code: string): string {
   switch (code) {
     case "SESSION_FULL":

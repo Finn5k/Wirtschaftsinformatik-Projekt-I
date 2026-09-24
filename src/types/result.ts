@@ -56,15 +56,14 @@ export interface Failed {
 // Ergebniscodes und HTTP-Zuordnung stehen in F3; die Datenbank transportiert
 // sie als SQLSTATE PTxyz (siehe supabase/migrations/, ADR-001).
 
-/** Ablehnungen aus F3 AF-01 (401 bzw. 409). */
+/** Ablehnungen aus F3 AF-01 (401, 404 bzw. 409). */
 export type JoinSessionRejection =
   | "NOT_AUTHENTICATED"
   | "SESSION_NOT_JOINABLE"
   | "ALREADY_JOINED"
   | "SESSION_FULL"
-  // Kein F3-Ergebniscode: Die RPC meldet damit eine unbekannte Session-Kennung
-  // (404). Fachlich dennoch eine Ablehnung, weil die Anfrage verarbeitet und
-  // beantwortet wurde (A08 8.5.2, Abgrenzungsregel).
+  // Unbekannte Session-Kennung (404). Eine fachliche Ablehnung, weil die
+  // Anfrage verarbeitet und beantwortet wurde (A08 8.5.2, Abgrenzungsregel).
   | "SESSION_NOT_FOUND";
 
 export interface JoinSessionData {
@@ -88,14 +87,13 @@ export type JoinSessionResult =
  */
 export type CheckInSuccess = "OK" | "ALREADY_CHECKED_IN";
 
-/** Ablehnungen aus F3 AF-02 (403, 400, 409). */
+/** Ablehnungen aus F3 AF-02 (401, 403, 404, 400, 409). */
 export type CheckInRejection =
   | "NOT_JOINED"
   | "INVALID_CREDENTIAL"
   | "OUTSIDE_WINDOW"
-  // Die beiden folgenden Codes stehen nicht in F3 AF-02, die RPC liefert sie
-  // aber wie bei `join_session`: fehlende Anmeldung (401) und unbekannte
-  // Session-Kennung (404). Beide sind fachliche Ablehnungen, keine technischen
+  // Fehlende Anmeldung (401) und unbekannte Session-Kennung (404) wie bei
+  // `join_session`. Beide sind fachliche Ablehnungen, keine technischen
   // Fehler (A08 8.5.2, Abgrenzungsregel).
   | "NOT_AUTHENTICATED"
   | "SESSION_NOT_FOUND";

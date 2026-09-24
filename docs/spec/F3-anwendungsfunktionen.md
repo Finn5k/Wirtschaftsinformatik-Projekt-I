@@ -22,7 +22,7 @@ F3 enthält fachliche Berechnungs-, Prüf- und Entscheidungslogik, die für eine
 | Zweck | Entscheidet für einen Beitrittswunsch, ob er zulässig ist, und reserviert bei Zulässigkeit genau einen Platz, ohne die Kapazität zu überschreiten. |
 | Eingaben | Angemeldeter Nutzer; Session mit Status und [Kapazitätsgrenze](E2-glossar.md#e23-alphabetisches-glossar) `max_participants`; Anzahl bestätigter Teilnahmen (`confirmed_count`); vorhandene [Teilnahme](E2-glossar.md#e23-alphabetisches-glossar) des Nutzers. |
 | Ergebnis | Neue Teilnahme mit Status `confirmed` **oder** Ablehnung mit Ergebniscode; bei Ablehnung bleibt der Datenbestand unverändert. |
-| Ergebniscodes | `OK`, `NOT_AUTHENTICATED`, `SESSION_NOT_JOINABLE`, `ALREADY_JOINED`, `SESSION_FULL` |
+| Ergebniscodes | `OK`, `NOT_AUTHENTICATED`, `SESSION_NOT_FOUND`, `SESSION_NOT_JOINABLE`, `ALREADY_JOINED`, `SESSION_FULL` |
 | Zusicherungen | **Kapazitätsinvariante:** `confirmed_count` überschreitet `max_participants` nie; keine Warteliste (P1 NG-10), der Organisator zählt ab Erstellung als [Teilnehmer](E2-glossar.md#e23-alphabetisches-glossar) (F1 GP-01 A2). **[Atomarität](E2-glossar.md#e23-alphabetisches-glossar) statt Reihenfolgegarantie:** Prüfung und Anlage sind unteilbar (technisch: atomare RPC gemäß S1.4); eine bestimmte Eingangsreihenfolge wird nicht zugesichert, garantiert ist nur die Kapazitätsinvariante. |
 | Bezug | [F1](F1-geschaeftsprozesse.md) GP-01 A4; [UC-04](F2-anwendungsfaelle.md#uc-04--session-beitreten); Daten `session`, `participant` ([D1](D1-datenmodell.md)). |
 
@@ -33,6 +33,7 @@ Die Prüfungen laufen in dieser Reihenfolge; die erste zutreffende Bedingung bes
 ```text
 beitreten(nutzer, session):
     wenn nutzer nicht angemeldet                   -> NOT_AUTHENTICATED
+    wenn session nicht existiert                   -> SESSION_NOT_FOUND
     wenn status(session) = completed               -> SESSION_NOT_JOINABLE
     wenn findeTeilnahme(nutzer, session) vorhanden -> ALREADY_JOINED
 
@@ -49,6 +50,7 @@ beitreten(nutzer, session):
 |---|---|
 | `OK` | `200 OK` mit Teilnahme-Datensatz |
 | `NOT_AUTHENTICATED` | `401 Unauthorized` |
+| `SESSION_NOT_FOUND` | `404 Not Found` |
 | `SESSION_NOT_JOINABLE` | `409 Conflict` |
 | `ALREADY_JOINED` | `409 Conflict` |
 | `SESSION_FULL` | `409 Conflict` |
@@ -62,7 +64,7 @@ Die HTTP-Werte folgen der allgemeinen Mapping-Konvention aus [N2.3](N2-querschni
 | Zweck | Prüft für einen [Check-in](E2-glossar.md#e23-alphabetisches-glossar)-Versuch ([QR-Code](E2-glossar.md#e23-alphabetisches-glossar) oder [PIN](E2-glossar.md#e23-alphabetisches-glossar)), ob er gültig ist, und markiert den Teilnehmer bei Gültigkeit als eingecheckt. |
 | Eingaben | Angemeldeter Nutzer; Session (Status, PIN); vorhandene Teilnahme (Status); vorgelegte PIN (aus QR-Code oder manueller Eingabe); aktuelle Zeit. |
 | Ergebnis | Teilnahme-Status wird auf `checked_in` gesetzt und der Zeitpunkt festgehalten **oder** Ablehnung mit Ergebniscode; bei Ablehnung bleibt der Status unverändert. |
-| Ergebniscodes | `OK`, `NOT_JOINED`, `INVALID_CREDENTIAL`, `OUTSIDE_WINDOW`, `ALREADY_CHECKED_IN` |
+| Ergebniscodes | `OK`, `NOT_AUTHENTICATED`, `SESSION_NOT_FOUND`, `NOT_JOINED`, `INVALID_CREDENTIAL`, `OUTSIDE_WINDOW`, `ALREADY_CHECKED_IN` |
 | Zusicherungen | **Keine Statusrücknahme:** ein gesetzter `checked_in`-Status wird nicht zurückgenommen, der einmal festgehaltene Zeitpunkt nicht überschrieben. **Kein Toleranzfenster:** maßgeblich ist ausschließlich der Status `active` (AF-03). |
 | Bezug | [F1](F1-geschaeftsprozesse.md) GP-01 A6; [UC-08](F2-anwendungsfaelle.md#uc-08--check-in-per-qr-code-durchführen), [UC-09](F2-anwendungsfaelle.md#uc-09--check-in-per-pin-durchführen); Daten `session`, `participant` ([D1](D1-datenmodell.md)). |
 
@@ -70,6 +72,9 @@ Die HTTP-Werte folgen der allgemeinen Mapping-Konvention aus [N2.3](N2-querschni
 
 ```text
 einchecken(nutzer, session, vorgelegte_pin, jetzt):
+    wenn nutzer nicht angemeldet                 -> NOT_AUTHENTICATED
+    wenn session nicht existiert                 -> SESSION_NOT_FOUND
+
     teilnahme := findeTeilnahme(nutzer, session)
     wenn teilnahme fehlt                         -> NOT_JOINED
     wenn vorgelegte_pin != session.pin           -> INVALID_CREDENTIAL
@@ -86,6 +91,8 @@ einchecken(nutzer, session, vorgelegte_pin, jetzt):
 | Ergebniscode | HTTP-Status (RPC-Antwort) |
 |---|---|
 | `OK` / `ALREADY_CHECKED_IN` | `200 OK` (beide idempotent erfolgreich, siehe Zusicherungen „Keine Statusrücknahme") |
+| `NOT_AUTHENTICATED` | `401 Unauthorized` |
+| `SESSION_NOT_FOUND` | `404 Not Found` |
 | `NOT_JOINED` | `403 Forbidden` |
 | `INVALID_CREDENTIAL` | `400 Bad Request` |
 | `OUTSIDE_WINDOW` | `409 Conflict` |
