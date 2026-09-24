@@ -31,7 +31,7 @@ Quelle: [`diagrams/A03-technischer-kontext.puml`](diagrams/A03-technischer-konte
 | Verbindung | Übertragung | Authentifizierung |
 |---|---|---|
 | LocalCourt ↔ NB-02 Supabase Auth | HTTPS | E-Mail/Passwort bzw. Token (Anfrage); Antwort liefert JWT |
-| LocalCourt ↔ NB-03 Supabase PostgREST | HTTPS / REST | JWT aus NB-02 je Aufruf |
+| LocalCourt ↔ NB-03 Supabase PostgREST | HTTPS / REST | Öffentlicher Projektschlüssel; bei authentifizierten Aufrufen zusätzlich JWT aus NB-02; anonyme Lesezugriffe nur unter RLS |
 | LocalCourt → NB-04 OpenStreetMap | HTTPS | keine |
 | LocalCourt ↔ NB-05 Nominatim | HTTPS | keine |
 

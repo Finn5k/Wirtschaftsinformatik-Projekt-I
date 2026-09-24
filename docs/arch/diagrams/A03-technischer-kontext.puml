@@ -39,7 +39,7 @@ Organisator --> Browser
 Browser --> LocalCourt : HTTPS
 
 LocalCourt --> Auth : HTTPS\nE-Mail/Passwort bzw. Token\n→ JWT
-LocalCourt --> Daten : HTTPS / REST\nJWT je Aufruf
+LocalCourt --> Daten : HTTPS / REST\nProjektschlüssel; JWT bei\nauthentifizierten Aufrufen
 LocalCourt --> OSM : HTTPS\nkeine Authentifizierung
 LocalCourt --> Nominatim : HTTPS\nkeine Authentifizierung
 
