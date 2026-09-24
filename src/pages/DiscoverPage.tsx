@@ -33,7 +33,9 @@ export function DiscoverPage() {
   // weil das Profil erst mit der wiederhergestellten Sitzung eintrifft.
   const [eigeneEingabe, setEigeneEingabe] = useState<string | null>(null);
   const [letzterSuchort] = useState(leseLetztenSuchort);
-  const searchTerm = eigeneEingabe ?? user?.city ?? letzterSuchort;
+  // `??` hält eine bewusst geleerte Eingabe ("") leer; `||` lässt den
+  // normalisierten leeren Profilort ("") auf den letzten Suchort zurückfallen.
+  const searchTerm = eigeneEingabe ?? (user?.city || letzterSuchort);
 
   function sucheAendern(wert: string) {
     setEigeneEingabe(wert);
