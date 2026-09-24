@@ -15,7 +15,7 @@ if (Organisator der Session?) then (ja)
   else (nein)
     :LocalCourt zeigt leere Liste\nmit Teilnehmerzahl 0;
   endif
-  :Organisator kann die Liste erneut\nladen oder aktualisiert sehen;
+  :Neue Beitritte und Check-ins\nerscheinen nach erneutem Öffnen\nbzw. Neuladen der Session;
 else (nein)
   :LocalCourt verweigert den Zugriff;
 endif
