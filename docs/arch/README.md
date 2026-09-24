@@ -3,8 +3,8 @@
 ## 1. Zweck und Abgrenzung
 
 Dieses Dokument beschreibt die innere Architektur von LocalCourt in Anlehnung
-an arc42. Es verbindet die fachliche Spezifikation mit der späteren
-Implementierung und ergänzt insbesondere:
+an arc42 (<https://arc42.org>). Es verbindet die fachliche Spezifikation mit
+der späteren Implementierung und ergänzt insbesondere:
 
 - den Systemkontext und die Deployment-Topologie aus
   [P2](../spec/P2-architekturueberblick.md),

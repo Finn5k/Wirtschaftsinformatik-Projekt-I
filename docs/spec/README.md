@@ -2,6 +2,10 @@
 
 Dieser Ordner enthält die systematische Softwarespezifikation des LocalCourt-Projekts nach dem Siedersleben-Schema. Er dient als Index über alle Bausteine, deren Status und die Querverweise zwischen ihnen.
 
+Grundlage ist das Spezifikationsschema von Johannes Siedersleben (Bausteine P, F, D, B, S, N; Erläuterung der Bausteingruppen in [E1](E1-leseanleitung.md)).
+
+Literatur: SIEDERSLEBEN, J. (ed.) 2003. *Softwaretechnik — Praxiswissen für Softwareingenieure*. München: Carl Hanser Verlag.
+
 ---
 
 ## Bausteine der Spezifikation
@@ -201,7 +205,7 @@ Einstieg in die Spezifikation: wie sie aufgebaut ist, in welcher Reihenfolge man
 - Überblick der Bausteingruppen (P, F, D, B, S, N, E) mit ihren Leitfragen
 - Namens- und ID-Konventionen (GP-nn, UC-nn, AF-nn, G-nn, NG-nn, DLG-nn, NB-nn, N1-QA-nn)
 - Diagramm- und Notationskonventionen
-- Querverweise und Traceability von der Anforderung bis zu Code und Test
+- Querverweise und Traceability von der Anforderung bis zu Code und manueller Prüfung anhand der Akzeptanzkriterien
 - Umgang mit offenen und nicht anwendbaren Bausteinen
 - Konsistenzregeln für die gesamte Spezifikation
 
@@ -229,7 +233,7 @@ Einheitliche Begriffe für die gesamte Spezifikation, jeweils mit fachlicher Def
 6. **E1/E2 prüfen und pflegen** (✅ vorhanden): Leseanleitung und Glossar aktuell halten
 7. **B2/B3/S2** (✅ als nicht anwendbar dokumentiert)
 8. **Architektur pflegen**: Interne Architektur in [docs/arch/README.md](../arch/README.md) mit der Spezifikation und Implementierung synchron halten
-9. **Anforderungen umsetzen**: Anforderungen aus P1/F1–F3/D1–D2/N1 nachvollziehbar in Architektur, Code und Tests umsetzen
+9. **Anforderungen umsetzen**: Anforderungen aus P1/F1–F3/D1–D2/N1 nachvollziehbar in Architektur und Code umsetzen und anhand der Akzeptanzkriterien manuell prüfen
 10. **S3 prüfen und pflegen** (✅ vorhanden): Inbetriebnahme aktuell halten, insbesondere bei Änderungen an Plattform-Einstellungen, die nicht im Repository liegen
 
 ---

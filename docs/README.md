@@ -34,7 +34,8 @@ alle Dokumente hinweg dienen. Die Architekturdokumentation greift diese IDs
 auf und ordnet ihnen konkrete Bausteine, Code-Pfade (z. B. `src/pages/`,
 `src/services/`) und Architekturentscheidungen zu; `frontend.md` gleicht den
 tatsächlichen Implementierungsstand dagegen ab. Wie Anforderungen von P1/F1–F3
-über D1–D2 bis zu Code und Test nachvollzogen werden können, beschreibt
+über D1–D2 bis zu Code und manueller Prüfung anhand der Akzeptanzkriterien
+nachvollzogen werden können, beschreibt
 [spec/E1 — Leseanleitung](spec/E1-leseanleitung.md).
 
 ## Bezug zum Modul
@@ -46,6 +47,6 @@ Branches, Spezifikationsschema) in [../CLAUDE.md](../CLAUDE.md).
 
 ## Hinweis
 
-LocalCourt befindet sich in aktiver Entwicklung. Spezifikation, Architektur
-und Frontend-Dokumentation werden fortlaufend aktualisiert und an den
-jeweils aktuellen Projektstand angepasst.
+LocalCourt dokumentiert den für die M3-Abgabe umgesetzten MVP-Stand.
+Spezifikation, Architektur, Frontend-Dokumentation und Implementierung wurden
+für diesen Stand miteinander abgeglichen.

@@ -1,6 +1,6 @@
 # E1 — Leseanleitung
 
-E1 ist eine **Leseanleitung** für die Spezifikation von LocalCourt. Der Baustein trifft selbst keine fachlichen Entscheidungen und führt keine neuen Anforderungen ein. Er erklärt, wie die Bausteine P1–P2, F1–F3, D1–D2, B1–B3, S1–S3 und N1–N2 zusammenhängen, welche Zielgruppe welchen Baustein in welcher Reihenfolge liest, welche ID- und Namenskonventionen gelten und wie sich ein einzelner Use Case von der Spezifikation über die Architektur und den Code bis in die Tests nachverfolgen lässt.
+E1 ist eine **Leseanleitung** für die Spezifikation von LocalCourt. Der Baustein trifft selbst keine fachlichen Entscheidungen und führt keine neuen Anforderungen ein. Er erklärt, wie die Bausteine P1–P2, F1–F3, D1–D2, B1–B3, S1–S3 und N1–N2 zusammenhängen, welche Zielgruppe welchen Baustein in welcher Reihenfolge liest, welche ID- und Namenskonventionen gelten und wie sich ein einzelner Use Case von der Spezifikation über die Architektur und den Code bis zur manuellen Prüfung anhand der Akzeptanzkriterien nachverfolgen lässt.
 
 Der Spezifikationsindex [README.md](README.md) bleibt die maßgebliche **Statusübersicht**: welcher Baustein ist fertig, geplant oder nicht anwendbar. Wer die Änderungen eines Bausteins nachvollziehen will, nutzt die Git-Historie. E1 ergänzt den Index um den narrativen Leitfaden: *warum* die Bausteine so aufeinander aufbauen und *wie* man sich als Leser darin orientiert.
 
@@ -121,10 +121,10 @@ P1 (Ziele, Scope, Constraints)
       → N1 (nichtfunktionale Anforderungen) → N2 (technische Umsetzung)
         → Architektur (docs/arch/README.md, arc42)
           → Code
-            → Tests
+            → manuelle Prüfung anhand der Akzeptanzkriterien
 ```
 
-Jeder Schritt in dieser Kette **verfeinert**, ohne den vorherigen Schritt zu widersprechen: F2 leitet Use Cases aus den Geschäftsprozessen in F1 ab; F3 löst die in F2 bewusst offen gelassenen fachlichen Regeln auf; D1/D2, B1, S1 und N1 konkretisieren F2/F3 aus Daten-, Dialog-, Schnittstellen- und Qualitätssicht; N2 setzt die dort offen gelassenen technischen Fragen auf dem konkreten Stack (P1 CON-T-01–CON-T-03, P2) um. [Architektur](../arch/README.md), Code und Tests liegen außerhalb von `docs/spec/` und müssen dieselben IDs referenzieren.
+Jeder Schritt in dieser Kette **verfeinert**, ohne den vorherigen Schritt zu widersprechen: F2 leitet Use Cases aus den Geschäftsprozessen in F1 ab; F3 löst die in F2 bewusst offen gelassenen fachlichen Regeln auf; D1/D2, B1, S1 und N1 konkretisieren F2/F3 aus Daten-, Dialog-, Schnittstellen- und Qualitätssicht; N2 setzt die dort offen gelassenen technischen Fragen auf dem konkreten Stack (P1 CON-T-01–CON-T-03, P2) um. [Architektur](../arch/README.md), Code und die daraus abgeleiteten manuellen Prüfungen liegen außerhalb von `docs/spec/` und müssen dieselben IDs referenzieren.
 
 **Konkretes Beispiel der Kette für UC-04 „Session beitreten":**
 
@@ -137,7 +137,7 @@ Jeder Schritt in dieser Kette **verfeinert**, ohne den vorherigen Schritt zu wid
 | Schnittstelle | [S1.4 NB-03](S1-nachbarsysteme.md#s14-nb-03--supabase-postgrest) | Atomare Operation `join_session`. |
 | Architektur | [Baustein- und Laufzeitsicht](../arch/A06-runtime-view.md#61-session-beitreten) | Frontend-Service ruft `join_session` auf; PostgreSQL prüft und schreibt atomar. |
 | Code | Implementierung des Beitritts-Flows | — |
-| Test | Testfall zu UC-04 (Kapazität voll/frei) | — |
+| Prüfung | Manuelle Prüfung anhand der Akzeptanzkriterien zu UC-04 (Kapazität voll/frei) | — |
 
 Im Review muss diese Kette in beide Richtungen nachvollziehbar sein: von einem Use Case aus F2 bis in Architektur und Code, und umgekehrt von einer Code-Stelle zurück zum auslösenden Use Case. Fehlt ein Glied der Kette (z. B. eine Architekturkomponente ohne erkennbaren UC-Bezug), gilt das als Konsistenzlücke.
 
@@ -165,7 +165,7 @@ Für die gesamte Spezifikation gelten unabhängig vom einzelnen Baustein folgend
 
 - **Relative Markdown-Links.** Querverweise verwenden relative Pfade innerhalb von `docs/spec/`, keine absoluten Repository-URLs.
 - **Stabile IDs.** `G-nn`, `UC-nn`, `AF-nn`, `DLG-nn` & Co. werden nie umnummeriert oder wiederverwendet (siehe [E1.5](#e15-namens--und-id-konventionen)).
-- **Identische Benennungen.** Datentypen, Entitäten und Use-Case-IDs heißen in D1/D2/F2, Architektur, Code und Tests jeweils gleich (siehe [E1.7](#e17-querverweise-und-traceability)).
+- **Identische Benennungen.** Datentypen, Entitäten und Use-Case-IDs heißen in D1/D2/F2, Architektur, Code und manueller Prüfung jeweils gleich (siehe [E1.7](#e17-querverweise-und-traceability)).
 - **Ein Ort für den Status.** Der Bearbeitungsstand jedes Bausteins steht ausschließlich im [Spezifikationsindex](README.md#bausteine-der-spezifikation); andere Bausteine verlinken ihn, statt ihn zu wiederholen oder abweichend darzustellen (siehe [E1.8](#e18-umgang-mit-offenen-und-nicht-anwendbaren-bausteinen)).
 - **Keine neuen Fachentscheidungen in E1.** E1 erklärt die vorhandene Struktur; fachliche Änderungen gehören in den jeweils zuständigen Baustein (P1, F1–F3, D1–D2, B1, S1, N1–N2).
 - **Ebenentrennung.** Jeder Baustein bleibt auf seiner Ebene: F2 beschreibt sichtbare Nutzerziele statt Implementierungsdetails, S1 Operationen und Semantik statt Endpunkt-URLs, N2 setzt fachliche Regeln technisch um, ohne neue zu erfinden.
