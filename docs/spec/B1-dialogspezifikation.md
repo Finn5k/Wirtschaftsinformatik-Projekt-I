@@ -132,7 +132,7 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 
 | Feld | Art | Datentyp | Bezug Datenmodell | Vorbelegung | Prüfung / Hinweise |
 |---|---|---|---|---|---|
-| Kartenansicht | Anzeige | Karte (OSM/Leaflet) | `court.coordinates` | Standardregion | alle gespeicherten Courts besitzen Koordinaten und erscheinen als Pin (UC-02) |
+| Kartenansicht | Anzeige | Karte (OSM/Leaflet) | `court.coordinates` | Standardregion | jeder Court besitzt Koordinaten; angezeigte Sessions erscheinen als Marker an ihrem Court (UC-02) |
 | Sportart-Filter | Eingabe (Kann) | Auswahl | `sport` (Katalog) | „Alle" | wie DLG-02 |
 | Session-Marker | Anzeige | Marker je Session | `session` ↔ `court` | — | nur `scheduled`/`active` |
 | Vorschaukarte | Anzeige | Kachel | `session` (title, sport, status, start_at), abgeleitet Plätze | ausgeblendet | erscheint nach Marker-Auswahl |
