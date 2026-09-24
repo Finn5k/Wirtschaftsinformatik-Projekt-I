@@ -8,7 +8,7 @@ F2 beschreibt dabei die fachlich sichtbaren Nutzerziele und Systemreaktionen. Sy
 
 Die Akzeptanzkriterien je Use Case dienen als manuelle Prüfgrundlage (Festlegung in [N1.3](N1-nichtfunktionale-anforderungen.md#n13-bewusst-nicht-verfolgte-qualitätsziele)) und werden durch die nichtfunktionalen Prüfkriterien in [N1.2](N1-nichtfunktionale-anforderungen.md#n12-qualitätsziele) ergänzt.
 
-Die UC-IDs in diesem Dokument bleiben stabil. Sie dienen später als Referenz in Architektur, Tests und Code, damit im Review nachvollziehbar bleibt: Use Case in der Spezifikation → Architekturkomponente oder Sequenz → Implementierung → Test.
+Die UC-IDs in diesem Dokument bleiben stabil. Sie dienen später als Referenz in Architektur, Code und manueller Prüfung anhand der Akzeptanzkriterien, damit im Review nachvollziehbar bleibt: Use Case in der Spezifikation → Architekturkomponente oder Sequenz → Implementierung → manuelle Prüfung anhand der Akzeptanzkriterien.
 
 ## F2.2 Use-Case-Übersicht
 
@@ -270,5 +270,5 @@ Das Diagramm zeigt eine einzige Systemgrenze „LocalCourt" mit beiden Akteuren 
 | [B1](B1-dialogspezifikation.md) | Konkretisiert die Dialoge für Suche, Detailansicht, Erstellung, Check-in, Profil und Historie. |
 | [S1](S1-nachbarsysteme.md) | Nachbarsysteme und Schnittstellendetails zu Browser, Supabase Auth, Supabase PostgREST und OpenStreetMap/Leaflet. |
 | [N1](N1-nichtfunktionale-anforderungen.md) | Konkretisiert Qualitätsanforderungen wie Usability, Datenschutz, Performance, Sicherheit und Free-/Student-Tier-Betrieb. |
-| [N2](N2-querschnittskonzepte.md) | Technische Umsetzung der nichtfunktionalen Anforderungen, Tests, Monitoring und Sicherheitsmaßnahmen. |
+| [N2](N2-querschnittskonzepte.md) | Systemweite Querschnittskonzepte: Zugriffsregeln per Row-Level-Security (RLS) sowie Ergebnisweitergabe und technisches Mapping fachlicher Ergebniscodes auf HTTP-Status, inklusive Abgrenzung fachlicher Ergebnisse von technischen Fehlern. |
 | [E2](E2-glossar.md) | Glossar und Begriffsklärungen, insbesondere konsistente Begriffe wie Session, Court/Sportort, Participant/Teilnehmer, Profile/Profil und Check-in. |
