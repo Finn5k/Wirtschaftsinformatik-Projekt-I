@@ -84,7 +84,7 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 |---|---|---|---|
 | Anmelden | Schaltfläche „Anmelden" | Zustand *Anmelden*, Felder gültig | *UC-01*: Prüfung über Supabase Auth; bei Erfolg angemeldet, Rücksprung zum Ursprung; bei Fehler Meldung ([B1.5.4](#b154-fehler--und-ladezustände)), Zustand unverändert |
 | Registrieren | Schaltfläche „Konto erstellen" | Zustand *Registrieren*, Felder gültig | *UC-01*: Konto + `profile` anlegen; danach wie Anmelden |
-| Zustand wechseln | Link „Registrieren" / „Anmelden" | — | *Dialog*: Umschalten der Zustände |
+| Zustand wechseln | Schaltflächen „Registrieren" / „Anmelden" | — | *Dialog*: Umschalten der Zustände |
 | Zurück zu Entdecken | Link oben im Dialog | — (in beiden Zuständen) | *Dialog*: Wechsel zu DLG-02 ohne Anmeldung, kein eigener Use Case; ein vorhandener Redirect-Zielpfad wird nicht weiterverfolgt |
 
 ### B1.4.2 DLG-02 — Session entdecken (Liste)
