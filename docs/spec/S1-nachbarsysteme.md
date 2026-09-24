@@ -47,7 +47,7 @@ Fachlicher Datenzugriff auf Sessions, Courts, Teilnahmen und Profile, per Row-Le
 |---|---|
 | Zweck | Lesen von Sessions, Courts, Teilnehmern, Profilen und Sportarten; fachlich geprüftes Anlegen und Aktualisieren. |
 | Schnittstelle | Acht lesende Operationen (u. a. `sessionsSuchen`, `sessionLesen`, `teilnehmerLesen`); drei atomare RPCs — `create_session`, `join_session`, `check_in` —, die Prüfung und Schreibvorgang als unteilbare Einheit ausführen ([F3](F3-anwendungsfunktionen.md)); einfache geprüfte Schreibzugriffe (`profilAktualisieren`, `sportpraeferenzSetzen`/`-Entfernen`). Das Anlegen eines Courts ist kein eigener Schreibzugriff: Ein neu erfasster Sportort entsteht innerhalb von `create_session`, damit kein Court ohne zugehörige Session zurückbleibt ([UC-10](F2-anwendungsfaelle.md#uc-10--court--sportort-erfassen-oder-auswählen)). |
-| Ausgetauschte Daten | Filter bzw. Nutzdaten (Anfrage); Datensätze bzw. Ergebniscode (Antwort). Die Session-PIN ist nur für Organisator und bestätigte Teilnehmer sichtbar. |
+| Ausgetauschte Daten | Filter bzw. Nutzdaten (Anfrage); Datensätze bzw. Ergebniscode (Antwort). Die Session-PIN ist nur für den Organisator abrufbar. |
 | Abgrenzung | Kein Offline-Betrieb und kein lokaler Datenbestand; ohne NB-03 ist LocalCourt fachlich nicht nutzbar. Nicht genutzt: Echtzeit-Kanäle (Realtime), Dateiablage (Storage — das Profilbild ist nur ein Verweis `avatar_url`) und Edge Functions außerhalb der Datenbank. Ergebniscodes (`OK`, `SESSION_FULL` u. a.) und ihre HTTP-Abbildung stehen in [F3](F3-anwendungsfunktionen.md); die allgemeine Mapping-Konvention in [N2.3](N2-querschnittskonzepte.md#n23-ergebnisweitergabe-und-technisches-mapping). |
 
 ## S1.5 NB-04 — OpenStreetMap-Tiles

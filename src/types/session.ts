@@ -59,9 +59,9 @@ export interface Court {
 // derselben Datenbankfunktion, eine eigene Client-Rechnung könnte also anzeigen,
 // was die RPC ablehnt.
 //
-// Die PIN gehört nicht hierher. N2.2 gibt sie nur dem Organisator und
-// bestätigten Teilnehmern frei; sie ist deshalb nicht Teil von `v_session`,
-// sondern wird bei Bedarf über `sessionService.getSessionPin()` geholt.
+// Die PIN gehört nicht hierher. N2.2 gibt sie nur dem Organisator frei; sie
+// ist deshalb nicht Teil von `v_session`, sondern wird bei Bedarf über
+// `sessionService.getSessionPin()` geholt.
 //
 // `participants` enthält nur, was die RLS dem Aufrufer zeigt: die eigene
 // Teilnahme, für den Organisator die vollständige Liste (N2.2, UC-07).

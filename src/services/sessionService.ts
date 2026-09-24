@@ -229,8 +229,9 @@ export async function getSessionById(
 }
 
 /**
- * PIN einer Session. Gibt `null` zurück, wenn der Aufrufer sie laut N2.2 nicht
- * sehen darf — das ist eine Sichtbarkeitsregel, kein Ergebniscode.
+ * PIN einer Session. Gibt `null` zurück, wenn der Aufrufer nicht Organisator der
+ * Session ist und sie laut N2.2 nicht sehen darf — das ist eine
+ * Sichtbarkeitsregel, kein Ergebniscode.
  */
 export async function getSessionPin(sessionId: string): Promise<string | null> {
   const { data, error } = await supabase.rpc("session_pin", {
