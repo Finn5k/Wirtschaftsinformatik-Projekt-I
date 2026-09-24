@@ -16,7 +16,7 @@ Quelle: [`diagrams/D1-er-diagramm.puml`](diagrams/D1-er-diagramm.puml).
 |---|---|---|---|
 | **`profile`** | Technischer Nutzeraccount mit Basisprofil und Sportpräferenzen; referenziert die Supabase-Auth-Kennung. Teilnahme (`participant`) und Organisation (`organizer`) einer Session sind eigene Auflösungsentitäten zwischen Profil und Session — keine Eigenschaften der Person selbst (siehe [Rollenmodellierung](#rollenmodellierung-organisator-und-teilnehmer)). | `user_id` (= Auth-Kennung) | UC-01, UC-12; AF-01/AF-02 (angemeldeter Nutzer) |
 | **`sport`** | Katalogeintrag einer Sportart (z. B. Fußball, Basketball). Vordefinierte Referenzdaten. | `sport_id` | UC-02, UC-06, UC-12 |
-| **`court`** | Sportort/Platz, an dem Sessions stattfinden. Fachlich benannt, optional geokodiert. | `court_id` | UC-10, UC-02, UC-03 |
+| **`court`** | Sportort/Platz, an dem Sessions stattfinden. Fachlich benannt und verortet (Koordinaten verpflichtend). | `court_id` | UC-10, UC-02, UC-03 |
 | **`session`** | Eine konkrete Sport-Session mit Zeit, Ort, Sportart, Kapazität und Check-in-Geheimnis. Zentrales Objekt des Systems. | `session_id` | UC-02..UC-09, UC-11; AF-01..AF-04 |
 | **`organizer`** | Organisation **einer Session** durch ein Profil — löst die 1:1-Beziehung zwischen `session` und dem organisierenden `profile` auf; entsteht atomar mit der Session. | `organizer_id`, fachlich eindeutig über `session_id` | UC-06; F1 GP-01 A2 |
 | **`participant`** | Teilnahme **eines Profils** an einer Session inkl. Beitritts- und Check-in-Zustand — kein eigener Personentyp, sondern Auflösung der n:m-Beziehung Profile↔Session. | `participant_id`, fachlich eindeutig über (`session_id`, `user_id`) | UC-04, UC-07, UC-08, UC-09; AF-01, AF-02 |

@@ -50,9 +50,11 @@ NB02 -[hidden]- NB03
 NB03 -[hidden]- NB05
 
 note bottom of NB03
-  Jeder Aufruf führt das JWT der
-  Sitzung mit; darauf setzen die
-  RLS-Policies auf (N2.2).
+  Authentifizierte Aufrufe führen
+  das JWT der Sitzung mit; öffentliche
+  Lesezugriffe erfolgen ohne Benutzer-JWT
+  unter den dafür vorgesehenen
+  RLS-Regeln (N2.2).
 end note
 
 @enduml

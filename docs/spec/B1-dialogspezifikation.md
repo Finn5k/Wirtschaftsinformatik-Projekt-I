@@ -132,7 +132,7 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 
 | Feld | Art | Datentyp | Bezug Datenmodell | Vorbelegung | Prüfung / Hinweise |
 |---|---|---|---|---|---|
-| Kartenansicht | Anzeige | Karte (OSM/Leaflet) | `court.coordinates` | Standardregion | nur Courts mit Koordinaten; sonst nur Liste (Graceful Degradation, UC-02) |
+| Kartenansicht | Anzeige | Karte (OSM/Leaflet) | `court.coordinates` | Standardregion | jeder Court besitzt Koordinaten; angezeigte Sessions erscheinen als Marker an ihrem Court (UC-02) |
 | Sportart-Filter | Eingabe (Kann) | Auswahl | `sport` (Katalog) | „Alle" | wie DLG-02 |
 | Session-Marker | Anzeige | Marker je Session | `session` ↔ `court` | — | nur `scheduled`/`active` |
 | Vorschaukarte | Anzeige | Kachel | `session` (title, sport, status, start_at), abgeleitet Plätze | ausgeblendet | erscheint nach Marker-Auswahl |
@@ -179,7 +179,7 @@ Der Dialog hat zwei Zustände: *Anmelden* und *Registrieren* (umschaltbar). Die 
 | Titel, Sportart, Status | Anzeige | Text, Katalog, `SessionStatus` | `session.title`, `sport`, abgeleitet `status` | — | Statusdarstellung gemäß AF-03 |
 | Beschreibung | Anzeige | Text | `session.description` | — | leer möglich |
 | Datum / Uhrzeit / Dauer | Anzeige | Timestamp, Duration | `session.start_at`, `duration_min` | — | Ende = Start + Dauer |
-| Sportort | Anzeige | Text (+ Kartenausschnitt) | `court.name`, `city`; Karte nur bei Koordinaten | — | — |
+| Sportort | Anzeige | Text (+ Kartenausschnitt) | `court.name`, `city`; Kartenausschnitt aus `coordinates` | — | — |
 | Organisator | Anzeige | Text | `profile.display_name` via `organizer.user_id` | — | — |
 | Belegung | Anzeige | Text/Balken | abgeleitet `confirmed_count` / `max_participants` | — | in jedem Zustand sichtbar |
 | Teilnehmerliste | Anzeige | Liste | `participant` (→ `profile.display_name`, optional `profile.avatar_url`, `status`) | — | **nur Organisator-Zustand** (UC-07): je Teilnehmer Anzeigename, optionales Profilbild und Check-in-Status. Andere Nutzer sehen keine fremden Teilnahmen — ein beigetretener Teilnehmer nur seine eigene (Anzeigename, Profilbild), ein Gast oder nicht Beigetretener nur die Belegung ([N2.2](N2-querschnittskonzepte.md#n22-row-level-security-rls), N1-QA-03) |

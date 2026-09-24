@@ -16,7 +16,7 @@ Die folgenden Zusagen gelten für jede in S1 beschriebene Operation und werden u
 
 - **Synchron und blockierend.** Jeder Aufruf gehört zu einer Nutzeraktion im Browser und wird synchron beantwortet; es gibt weder Warteschlangen noch Hintergrundprozesse noch Push-Kanäle.
 - **Fehlerbehandlung.** Fehler eines Nachbarsystems werden an den aufrufenden Anwendungsfall weitergegeben und in den Fehlerzuständen aus [B1.5.4](B1-dialogspezifikation.md#b154-fehler--und-ladezustände) angezeigt; fachliche Ablehnungen (Ergebniscodes aus [F3](F3-anwendungsfunktionen.md)) sind davon zu unterscheiden und ändern den fachlichen Zustand nicht. Ist ein Nachbarsystem nicht erreichbar, bleibt LocalCourt so weit bedienbar, wie es ohne dieses System auskommt ([N1-QA-01](N1-nichtfunktionale-anforderungen.md#n1-qa-01--konsistenz-von-beitritt-und-check-in)).
-- **Authentifizierung.** Aufrufe gegen NB-03 tragen das Zugangstoken (JWT) aus NB-02. Der öffentliche Supabase-Projektschlüssel ist kein Geheimnis; der geheime Service-Role-Key wird vom Frontend **nie** verwendet und liegt nicht im Repository ([N1-QA-03](N1-nichtfunktionale-anforderungen.md#n1-qa-03--zugriffsschutz-und-datensparsamkeit)).
+- **Authentifizierung.** Aufrufe gegen NB-03 verwenden den öffentlichen Projektschlüssel; bei authentifizierten Zugriffen trägt der Client zusätzlich das Zugangstoken (JWT) der aktiven Sitzung aus NB-02 zur Benutzeridentifikation. Öffentliche Lesezugriffe (z. B. Suche, Karte, Session-Detail) können ohne Benutzer-JWT unter den dafür vorgesehenen RLS-Regeln erfolgen; auch sie sind durch RLS begrenzt. Der öffentliche Supabase-Projektschlüssel ist kein Geheimnis; der geheime Service-Role-Key wird vom Frontend **nie** verwendet und liegt nicht im Repository ([N1-QA-03](N1-nichtfunktionale-anforderungen.md#n1-qa-03--zugriffsschutz-und-datensparsamkeit)).
 
 ## S1.2 NB-01 — Browser (Nutzerkanal)
 
@@ -36,7 +36,7 @@ Anmeldung und Sitzungsverwaltung per E-Mail und Passwort. LocalCourt übernimmt 
 |---|---|
 | Zweck | Registrierung, An-/Abmeldung, Token-Erneuerung und Auslesen der angemeldeten Nutzerkennung. |
 | Schnittstelle | Fünf Operationen: `registrieren`, `anmelden`, `abmelden`, `sitzungErneuern`, `angemeldetenNutzerLesen`; Antwort ist jeweils eine Sitzung mit Zugangstoken (JWT). |
-| Ausgetauschte Daten | E-Mail/Passwort bzw. Token (Anfrage); Sitzung mit Token und Nutzerkennung (Antwort). Das Token begleitet danach jeden Aufruf gegen NB-03. |
+| Ausgetauschte Daten | E-Mail/Passwort bzw. Token (Anfrage); Sitzung mit Token und Nutzerkennung (Antwort). Bei authentifizierten Zugriffen begleitet das Token den Aufruf gegen NB-03. |
 | Abgrenzung | Kein Social-Login (OAuth), kein Passwort-Reset, keine E-Mail-Bestätigung, keine Mehrfaktor-Authentifizierung — alle setzen E-Mail-Versand voraus, der außerhalb des MVP liegt. Läuft das Token ab, leitet LocalCourt zur Anmeldung um. |
 
 ## S1.4 NB-03 — Supabase PostgREST

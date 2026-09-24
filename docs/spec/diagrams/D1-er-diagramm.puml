@@ -33,7 +33,7 @@ entity "COURT" as court {
   name : Text
   city : Text
   address : Text [0..1]
-  coordinates : GeoCoordinate [0..1]
+  coordinates : GeoCoordinate
   created_by : Identifier <<FK>> [0..1]
   created_at : Timestamp
 }
